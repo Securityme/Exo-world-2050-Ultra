@@ -1,0 +1,117 @@
+{
+  "rootId": "EXOW-ROOT",
+  "rootSemver": "4.0.0-rc.1+full-m0-m15",
+  "specStandard": "DOC-EXW-ARCH-001 v3.3.0-PARTITIONED-LTS",
+  "updatedAt": "2026-11-21",
+  "releaseGatePolicy": "STRICT_ZERO_ERROR",
+  "nodes": [
+    {
+      "id": "EXW.L0.CONTRACTS",
+      "name": "Contrats SSOT, Zod & Gardes Z0",
+      "layer": "L0",
+      "sadtBox": "A1.0",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["42010", "25012"],
+      "matrices": ["M0", "M2", "M3", "M13-D"],
+      "deps": []
+    },
+    {
+      "id": "EXW.L1.CONFIG_DATA",
+      "name": "Constantes, Catalogues 2050 & Art Manifest",
+      "layer": "L1",
+      "sadtBox": "A1.1",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["25012", "12207"],
+      "matrices": ["M4", "M5", "M6", "M11"],
+      "deps": ["EXW.L0.CONTRACTS"]
+    },
+    {
+      "id": "EXW.L2.CORE",
+      "name": "Noyau Pur PCG32 6-Flux, Hash SHA-256 & Boucle Tour",
+      "layer": "L2",
+      "sadtBox": "A1.2",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["25010", "61508"],
+      "matrices": ["M1", "M2", "M3", "M7"],
+      "deps": ["EXW.L0.CONTRACTS", "EXW.L1.CONFIG_DATA"]
+    },
+    {
+      "id": "EXW.L3.SYSTEMS",
+      "name": "Systèmes Métier HK, FP RPG, Terra P1-P4, Ledger & Genèse",
+      "layer": "L3",
+      "sadtBox": "A2.1",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["25010", "25012"],
+      "matrices": ["M2", "M4", "M5", "M6", "M8", "M11"],
+      "deps": ["EXW.L0.CONTRACTS", "EXW.L1.CONFIG_DATA", "EXW.L2.CORE"]
+    },
+    {
+      "id": "EXW.L4.ENGINE3D",
+      "name": "Adapteur Three.js Carte 3D + B3D Isolé + Hangar H3D",
+      "layer": "L4",
+      "sadtBox": "A5.3",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["25010", "9241-210"],
+      "matrices": ["M10"],
+      "deps": ["EXW.L0.CONTRACTS", "EXW.L1.CONFIG_DATA"]
+    },
+    {
+      "id": "EXW.L5.SERVICES",
+      "name": "Matrix Engine M0-M15, BFF 4T, FIP 6-Flux & Migration Save",
+      "layer": "L5",
+      "sadtBox": "A4.2",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["27001", "31320-1", "12207"],
+      "matrices": ["M0", "M9", "M12", "M13-A", "M14", "M15"],
+      "deps": ["EXW.L0.CONTRACTS", "EXW.L1.CONFIG_DATA", "EXW.L2.CORE", "EXW.L3.SYSTEMS"]
+    },
+    {
+      "id": "EXW.L6.STORES_HANDLERS",
+      "name": "Stores Zustand/Jotai, Handlers Event-Only & Hooks Audio/Worker",
+      "layer": "L6",
+      "sadtBox": "A3.2",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["25010", "9241-210"],
+      "matrices": ["M7", "M11", "M12", "M14"],
+      "deps": ["EXW.L0.CONTRACTS", "EXW.L2.CORE", "EXW.L3.SYSTEMS", "EXW.L5.SERVICES"]
+    },
+    {
+      "id": "EXW.L7.INTERFACES",
+      "name": "HUD 3-Onglets, Monde 0-3D, Dossiers, Bilan HK, Genèse & Atlas",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["9241-210", "25010"],
+      "matrices": ["M6", "M7", "M8", "M10", "M11", "M13-A"],
+      "deps": ["EXW.L0.CONTRACTS", "EXW.L1.CONFIG_DATA", "EXW.L3.SYSTEMS", "EXW.L4.ENGINE3D", "EXW.L5.SERVICES", "EXW.L6.STORES_HANDLERS"]
+    },
+    {
+      "id": "EXW.L8.BFF_SERVER",
+      "name": "Serveur Express BFF Gemini 4T (gemini-4-hydrogen -> 3.1-flash-lite)",
+      "layer": "L8",
+      "sadtBox": "A4.3",
+      "semver": "4.0.0-rc.1",
+      "triLock": [1, 1, 1],
+      "status": "ACTIVE",
+      "isoRefs": ["27001", "25010"],
+      "matrices": ["M9", "M15"],
+      "deps": ["EXW.L0.CONTRACTS"]
+    }
+  ]
+}

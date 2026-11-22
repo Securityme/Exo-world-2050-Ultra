@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://exoworld2050.local/schemas/bridge-envelope.schema.json",
+  "title": "RenderBridgeEnvelopeV4",
+  "type": "object",
+  "required": ["tick", "cycle", "activeScale", "atmosphereTier", "overlayMode", "districts"],
+  "properties": {
+    "tick": { "type": "integer", "minimum": 0 },
+    "cycle": { "type": "integer", "minimum": 0 },
+    "activeScale": { "type": "integer", "enum": [1, 2, 3] },
+    "atmosphereTier": { "type": "string", "enum": ["P1", "P2", "P3", "P4"] },
+    "overlayMode": { "type": "string", "enum": ["STANDARD", "MAINTENANCE", "LOGISTICS"] }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://exoworld2050.local/schemas/world-state.schema.json",
+  "title": "ExoWorldStateV4",
+  "type": "object",
+  "required": ["campaignId", "worldSeed", "cycle", "year", "era", "atmosphereTier", "resources", "pa", "districts", "colonists", "activeDossiers", "stateHash"],
+  "properties": {
+    "campaignId": { "type": "string" },
+    "worldSeed": { "type": "integer" },
+    "cycle": { "type": "integer", "minimum": 0 },
+    "year": { "type": "integer", "minimum": 2050 },
+    "era": { "type": "integer", "minimum": 1, "maximum": 6 },
+    "atmosphereTier": { "type": "string", "enum": ["P1", "P2", "P3", "P4"] },
+    "stateHash": { "type": "string" }
+  }
+}

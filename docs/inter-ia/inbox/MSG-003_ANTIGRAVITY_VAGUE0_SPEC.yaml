@@ -1,0 +1,11 @@
+ticket: MSG-003
+sender: ANTIGRAVITY
+deliverable: DEL-001-AG
+target: AISTUDIO_BUILD
+status: RECEIVED
+requirements:
+  - 22_src_directories_L0_L8_with_README_and_eslint
+  - 9_contracts_and_4_parsers_Result_pattern
+  - 8_frozen_config_files_and_R50_catalogs
+  - 16_pure_core_modules_and_5_guardrails
+  - 3_vitest_suites_360_ticks_pa_p0_guardrails

@@ -1,0 +1,135 @@
+{
+  "entities": {
+    "PlayerProfile": {
+      "title": "PlayerProfile",
+      "description": "Private commander profile stored under players/{userId}. Strictly owner-only.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID matching document ID" },
+        "displayName": { "type": "string", "description": "Commander display name (max 80 chars)" },
+        "xpTotal": { "type": "integer", "description": "Cumulative commander XP (>= 0)" },
+        "campaignsCompleted": { "type": "integer", "description": "Number of completed campaigns (>= 0)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
+      },
+      "required": ["uid", "displayName", "xpTotal", "campaignsCompleted", "createdAt", "updatedAt"]
+    },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "Owner-scoped saved EXO WORLD 2050 campaign with full WorldState snapshot.",
+      "type": "object",
+      "properties": {
+        "campaignId": { "type": "string", "description": "Campaign identifier matching document ID" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of the campaign owner" },
+        "worldSeed": { "type": "string", "description": "Deterministic PCG32 world seed" },
+        "superpowerId": { "type": "string", "description": "Selected superpower ID" },
+        "era": { "type": "integer", "description": "Campaign era (1 to 6)" },
+        "cycle": { "type": "integer", "description": "Current turn cycle (>= 0)" },
+        "tick": { "type": "integer", "description": "Simulation tick (>= 0)" },
+        "atmosphereTier": { "type": "string", "enum": ["P1", "P2", "P3", "P4"], "description": "Terraforming atmosphere tier" },
+        "stateHash": { "type": "string", "description": "Deterministic SHA-256 state hash" },
+        "snapshot": { "type": "object", "description": "Full native WorldState map" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
+      },
+      "required": [
+        "campaignId",
+        "ownerId",
+        "worldSeed",
+        "superpowerId",
+        "era",
+        "cycle",
+        "tick",
+        "atmosphereTier",
+        "stateHash",
+        "snapshot",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "TurnSnapshotRecord": {
+      "title": "TurnSnapshotRecord",
+      "description": "Immutable turn_snapshots archive entry with 4-phase combat resolution breakdown.",
+      "type": "object",
+      "properties": {
+        "snapshotId": { "type": "string", "description": "Snapshot ID matching document ID" },
+        "campaignId": { "type": "string", "description": "Parent campaign ID" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of owner" },
+        "cycle": { "type": "integer", "description": "Turn cycle number (>= 0)" },
+        "stateHash": { "type": "string", "description": "Deterministic hash of the turn snapshot" },
+        "combatCount": { "type": "integer", "description": "Number of 4-phase combat engagements recorded" },
+        "snapshot": { "type": "object", "description": "Native TurnSnapshot payload map" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" }
+      },
+      "required": ["snapshotId", "campaignId", "ownerId", "cycle", "stateHash", "combatCount", "snapshot", "createdAt"]
+    },
+    "DriveLinkRecord": {
+      "title": "DriveLinkRecord",
+      "description": "Reference to a Google Drive file selected via Google Picker and linked to a campaign.",
+      "type": "object",
+      "properties": {
+        "linkId": { "type": "string", "description": "Link ID matching document ID" },
+        "campaignId": { "type": "string", "description": "Parent campaign ID" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of owner" },
+        "fileId": { "type": "string", "description": "Google Drive file ID" },
+        "fileName": { "type": "string", "description": "Google Drive file display name" },
+        "mimeType": { "type": "string", "description": "MIME type returned by Google Picker" },
+        "webViewLink": { "type": "string", "description": "HTTPS link to file in Google Drive" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" }
+      },
+      "required": ["linkId", "campaignId", "ownerId", "fileId", "fileName", "mimeType", "webViewLink", "createdAt"]
+    },
+    "UserContextRecord": {
+      "title": "UserContextRecord",
+      "description": "Strictly owner-scoped 3-Dimension User Context isolating shellUxHabits, displaySettingsProfile, and simulationTraceabilityProfile.",
+      "type": "object",
+      "properties": {
+        "contextId": { "type": "string", "description": "Context slot ID matching document ID" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "shellUxHabits": { "type": "object", "description": "Remembered accordions and navigation preferences" },
+        "displaySettingsProfile": { "type": "object", "description": "Theme, Safari sync, saturation and opacity profile" },
+        "simulationTraceabilityProfile": { "type": "object", "description": "TraceabilityMatrix and campaign EventLog records" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
+      },
+      "required": ["contextId", "ownerId", "shellUxHabits", "displaySettingsProfile", "simulationTraceabilityProfile", "updatedAt"]
+    },
+    "MetaHonorsRecord": {
+      "title": "MetaHonorsRecord",
+      "description": "Cross-campaign player lobby showcase (Medals, Badges, Career Title, Avatar/Portrait, Banner).",
+      "type": "object",
+      "properties": {
+        "honorsId": { "type": "string", "description": "Showcase profile document ID" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of the owner" },
+        "payload": { "type": "object", "description": "Serialized Tier-1 lobby honors showcase" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
+      },
+      "required": ["honorsId", "ownerId", "payload", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/players/{userId}": {
+      "schema": { "$ref": "#/entities/PlayerProfile" },
+      "description": "Private player profiles restricted strictly to the authenticated verified owner."
+    },
+    "/players/{userId}/context/{contextId}": {
+      "schema": { "$ref": "#/entities/UserContextRecord" },
+      "description": "Owner-only 3D User Context persistence (UX habits, display settings, traceability)."
+    },
+    "/players/{userId}/metaHonors/{honorsId}": {
+      "schema": { "$ref": "#/entities/MetaHonorsRecord" },
+      "description": "Owner-only cross-campaign lobby honors showcase (medals, badges, titles, avatar)."
+    },
+    "/campaigns/{campaignId}": {
+      "schema": { "$ref": "#/entities/Campaign" },
+      "description": "Saved EXO WORLD 2050 campaigns scoped to ownerId == request.auth.uid."
+    },
+    "/campaigns/{campaignId}/turnSnapshots/{snapshotId}": {
+      "schema": { "$ref": "#/entities/TurnSnapshotRecord" },
+      "description": "Append-only turn_snapshots and 4-phase combat history records under an owner-verified campaign."
+    },
+    "/campaigns/{campaignId}/driveLinks/{linkId}": {
+      "schema": { "$ref": "#/entities/DriveLinkRecord" },
+      "description": "Google Picker linked Drive files associated with an owner-verified campaign."
+    }
+  }
+}

@@ -1,0 +1,93 @@
+﻿00_INDEX_PROJET — EXO WORLD : 2050 (Partition Maître)
+Identifiant : IDX-EXW-000 | Version : 1.1.0 | Date : 2026-11-20 | Partition : EXO_WORLD_2050 — Partition Maître (totalement isolée d&apos;Astralis)
+Superviseur Architecture IA : Gemini Lead (Google AI Studio &amp; Claude en exécution déléguée sous contrôle)
+
+
+________________
+
+
+1. Objet de l'Index & Règle de Transmission Multi-IA
+Ce document est le point d&apos;entrée unique du dossier Drive EXO_WORLD_2050 — Partition Maître. Il recense l&apos;arborescence physique du dossier, les branches documentaires et Git, l&apos;inventaire des documents actifs et les règles exactes de transmission vers Google AI Studio Build ou Claude afin d&apos;éviter toute confusion avec l&apos;ancienne partition Astralis.
+2. Arborescence Complète du Dossier Drive &amp; Rôle des 6 Branches
+EXO_WORLD_2050 — Partition Maître/
+├── 00_INDEX_PROJET — EXO WORLD : 2050 (Arborescence, Branches &amp; Délégation) [Ce fichier]
+├── 01_MASTER_BLUEPRINT/
+│ └── DOC-EXW-ARCH-001 — Master Blueprint — EXO WORLD : 2050 (v2.8.0-MAITRE)
+├── 02_SYSTEM_INSTRUCTIONS_AI_STUDIO/
+│ └── SYS-INST-EXW-001 — System Instruction Google AI Studio Build (Nouvelle Partition v1.1.0)
+├── 03_MATRICES_ICOM_ET_CONTRATS/
+│ └── [À accueillir : Exports Zod packages/shared-contracts/ &amp; Fiches SM-01..SM-05]
+├── 04_DELEGATION_CLAUDE_ET_QA/
+│ └── DELEG-EXW-001 — Protocole de Délégation &amp; Tickets (Google AI Studio / Claude)
+├── 05_LIVRABLES_VAGUES_SRC/
+│ └── [À accueillir : Rapports de Vagues V0->V5, Journaux SHA-256 &amp; Releases]
+└── 06_CHARTE_FORMATAGE_ET_AGENTS/
+└── FMT-EXW-001 — Charte de Formatage, Mise en Page &amp; Légende des Couleurs (v1.0.0)
+
+
+Tableau des 6 Branches et Propriétaires IA
+Dossier / Branche
+	Lien Direct
+	Propriétaire IA
+	Contenu &amp; Usage
+	Racine
+	EXO_WORLD_2050 — Partition Maître
+	Baptiste Lecoustre &amp; Gemini Lead
+	Point d&apos;entrée unique &amp; Index maître
+	Branche 01
+	01_MASTER_BLUEPRINT
+	Gemini-Argon
+	Source de vérité unique (DOC-EXW-ARCH-001 v2.8.0-MAITRE)
+	Branche 02
+	02_SYSTEM_INSTRUCTIONS_AI_STUDIO
+	Gemini-Argon / Silicium
+	System Instruction prêt à coller (SYS-INST-EXW-001 v1.1.0) &amp; Prompt d&apos;amorçage Vague 0
+	Branche 03
+	03_MATRICES_ICOM_ET_CONTRATS
+	Gemini-Argon / Hydrogène
+	Matrices MC-00, SM-01..SM-05 &amp; schémas Zod src/contracts/
+	Branche 04
+	04_DELEGATION_CLAUDE_ET_QA
+	Gemini-Bore
+	Ordres de mission (DELEG-EXW-001 v1.0.0), audits Claude &amp; QA DoD
+	Branche 05
+	05_LIVRABLES_VAGUES_SRC
+	Gemini-Hydrogène / Bore
+	Livrables validés Vagues V0→V5, benchmarks &amp; preuves SHA-256
+	Branche 06
+	06_CHARTE_FORMATAGE_ET_AGENTS
+	Gemini Lead / Formatting Agent
+	Charte de formatage &amp; mise en page (FMT-EXW-001 v1.0.0)
+	3. Stratégie de Branches Git &amp; Partitionnement Technique (Isolation Totale d&apos;Astralis)
+3.1. Structure des Branches Git
+* Branches Git verrouillées : main (releases scellées vX.Y.Z) ← develop (intégration continue Vague en cours) ← feat/FUP-XXX-<slug> (1 branche par FUP-001..012) ← audit/claude-<id> (revue/tests délégués).
+* Isolation stricte : Nouveau projet Google AI Studio Build (exo-world-2050), nouveau projet Firebase (exo-world-2050-prod), nouvelle base Cloud SQL PostgreSQL 16 (exo_world_db + pgvector), zéro import de code ou d&apos;identifiant issu d&apos;Astralis, zéro Google Chat, zéro Chatbot libre, zéro multijoueur en v1.0.
+3.2. Protocole de Travail sur Dossier Cloud Unique (Google AI Studio + Gemini + Antigravity)
+Afin de garantir un alignement absolu sans aucune divergence entre les différents environnements d&apos;exécution et d&apos;assistance, tous les agents (Google AI Studio, Gemini Lead et Antigravity) opèrent selon un modèle à Source de Vérité Unique et Synchronisée :
+* Drive (Partition Maître) : Constitue le référentiel documentaire maître des spécifications (Master Blueprint, System Instructions, Charte FMT-EXW-001, Protocole DELEG-EXW-001).
+* Git &amp; Dépôt de Code : Centralise le code source (src/) et les contrats typés Zod (packages/shared-contracts/), alignés stricto sensu sur la Partition Maître.
+* Firebase &amp; Cloud SQL : Hébergent les environnements d&apos;exécution isolés exo-world-2050-prod et la base exo_world_db (PostgreSQL 16 + pgvector).
+* Dossier local .agents/ : Contient la configuration opérationnelle partagée entre Gemini Lead et Antigravity pour assurer la continuité des règles de prompt, des checksums SHA-256 et des validations DoD à chaque vague de développement.
+4. Guide Rapide de Transmission des Documents (Qui reçoit quoi ?)
+Destinataire
+	Documents à Transmettre
+	Ce qu&apos;il a le droit de faire
+	Contrôle de Retour par Gemini Lead
+	Google AI Studio Build (Nouvelle Partition)
+	1. Copier-coller SYS-INST-EXW-001 en System Instruction
+2. Joindre DOC-EXW-ARCH-001 (Partitions IV &amp; VI)
+3. Envoyer le Prompt Vague 0 (Annexe D)
+	Générer src/ couche par couche (L0→L8), exécuter les FUP-001..012 un par un
+	Vérification tsc --strict, plafonds 300/200 lignes, test SHA-256, respect MC-00 &amp; SM-01..05
+	Claude (Tâches Déléguées Sous Supervision)
+	1. 00_INDEX_PROJET
+2. Extrait ciblé de DOC-EXW-ARCH-001 (1 seule Partition ou SM-XX)
+3. Ticket issu de DELEG-EXW-001
+	Audit documentaire/cohérence, rédaction de suites de tests Vitest, revue de schémas Zod, stress-test de formules
+	Validation systématique par Gemini Lead + ratification Baptiste Lecoustre (R-25) avant fusion
+	5. Journal d&apos;État de la Partition (v1.1.0)
+* DOC-EXW-ARCH-001 (v2.8.0-MAITRE) : SCELLÉ &amp; PRÊT (6 Partitions, ISO 2145, MC-00 + SM-01..05, Annexes A–D).
+* SYS-INST-EXW-001 (v1.1.0) : SCELLÉ &amp; PRÊT pour collage direct dans une nouvelle partition Google AI Studio Build.
+* FMT-EXW-001 (v1.0.0) : SCELLÉ &amp; PRÊT (Charte de Formatage, Mise en Page &amp; Légende des Couleurs).
+* DELEG-EXW-001 (v1.0.0) : SCELLÉ &amp; PRÊT avec 4 tickets pré-remplis (DEL-001 à DEL-004).
+* Code source src/ : v0.0.0 — prêt pour amorçage Vague 0 (FUP-010, FUP-001, FUP-002, FUP-012).

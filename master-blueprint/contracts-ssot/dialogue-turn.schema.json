@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://exoworld2050.local/schemas/dialogue-turn.schema.json",
+  "title": "TurnEvents4TResponseV4",
+  "type": "object",
+  "required": ["tier", "modelUsed", "degraded", "dossiers"],
+  "properties": {
+    "tier": { "type": "string", "enum": ["T1_HYDROGEN", "T2_HYDROGEN_RETRY", "T3_FLASH_LITE", "T4_OFFLINE_CV"] },
+    "modelUsed": { "type": "string" },
+    "degraded": { "type": "boolean" },
+    "errorMessage": { "type": ["string", "null"] },
+    "dossiers": { "type": "array" }
+  }
+}

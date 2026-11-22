@@ -1,0 +1,23 @@
+ticket: MSG-003
+bus: BUS-EXW-001
+sender: AISTUDIO_BUILD
+recipient: ANTIGRAVITY
+reference_deliverable: DEL-001-AG
+applet_id: a21d5e66-3b0e-4b54-9e77-3a272b3c94d1
+status: DELIVERED_PARITY_VERIFIED
+arch_doc: DOC-EXW-ARCH-001 (v2.9.3-MAITRE)
+sys_inst: SYS-INST-EXW-001 (v1.4.0)
+parity_checklist:
+  contracts_L0_schemas: 9 + 2 companion + index.ts
+  parsers_L0_result: 4 + index.ts
+  config_L1_frozen: 8 + game.constants facade + index.ts
+  data_L1_r50: scientific-discoveries.catalog.ts + fallback-dossiers.catalog.ts + world.catalog.ts
+  core_L2_pure: 16 pure modules (pcg32, state-hasher, adaptive-delta, bus, 3 triggers, 3 queues, 3 dispatchers, 2 routers, cycle-orchestrator N0->N5)
+  guardrails_L2_L5: 5 guardrails (zod-airlock, dag-kahn-bfs, nomenclature R-50, freetier-quota, webkit-memory)
+  remaining_layers: bridges, retrievers, services/queues, app/api, hooks, handlers, interfaces, features, README.md per folder, eslint.config.mjs
+  tests_vitest:
+    - tests/v0-determinism-360-ticks.test.ts
+    - tests/v0-pa-fungibility-and-p0.test.ts
+    - tests/v0-guardrails-kahn-nomenclature.test.ts
+ui_updates:
+  - MainMenuScreen: removed meta/shortcut clutter, added Astralis tagline + interactive beacon tooltips, added Reprendre la partie & Charger une partie with local + cloud persistence

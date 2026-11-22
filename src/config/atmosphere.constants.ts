@@ -1,0 +1,55 @@
+/**
+ * [L1] FUP-003 | SM-02 | SADT A3.1–A3.2
+ * Frozen Open-Sky Atmospheric Terraforming Constants (P1..P4) (R-16, R-23).
+ */
+export const ATMOSPHERE_CONSTANTS = Object.freeze({
+  P1: Object.freeze({
+    tier: 'P1' as const,
+    name: 'Hostile',
+    buildSpeedMod: -0.4,
+    kitCostMultiplier: 2.0,
+    kitsPerColonist: 1,
+    moraleDelta: -15,
+    foodYieldBonus: 0,
+    maxExposureHours: 4,
+    thresholdProgress: 0,
+    accentHex: '#c26d3a',
+  }),
+  P2: Object.freeze({
+    tier: 'P2' as const,
+    name: 'Stabilisé',
+    buildSpeedMod: 0,
+    kitCostMultiplier: 0.45,
+    kitsPerColonist: 0.4,
+    moraleDelta: 0,
+    foodYieldBonus: 0.1,
+    maxExposureHours: 10,
+    thresholdProgress: 33,
+    accentHex: '#6488a6',
+  }),
+  P3: Object.freeze({
+    tier: 'P3' as const,
+    name: 'Respirable',
+    buildSpeedMod: 0.25,
+    kitCostMultiplier: 0,
+    kitsPerColonist: 0,
+    moraleDelta: 20,
+    foodYieldBonus: 0.35,
+    maxExposureHours: 24,
+    thresholdProgress: 66,
+    accentHex: '#10b981',
+  }),
+  P4: Object.freeze({
+    tier: 'P4' as const,
+    name: 'Éden',
+    buildSpeedMod: 0.4,
+    kitCostMultiplier: 0,
+    kitsPerColonist: 0,
+    moraleDelta: 30,
+    foodYieldBonus: 0.5,
+    maxExposureHours: 24,
+    thresholdProgress: 92,
+    accentHex: '#14b8a6',
+  }),
+  BIOME_STABILITY_CYCLES_REQUIRED: 3,
+});

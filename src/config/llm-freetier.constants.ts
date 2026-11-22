@@ -1,0 +1,15 @@
+/**
+ * [L1] FUP-006 / FUP-010 | SM-05 | R-68
+ * Frozen Gemini Free-Tier Strict Quotas, Airlock Clamps & WebKit Memory Ceilings.
+ */
+export const LLM_FREETIER_CONSTANTS = Object.freeze({
+  MAX_RPM_FREE_TIER: 10,
+  MAX_RPD_FREE_TIER: 250,
+  RAG_LATENCY_BUDGET_MS: 180,
+  ZOD_AIRLOCK_MIN_DELTA: -0.15,
+  ZOD_AIRLOCK_MAX_DELTA: 0.15,
+  ADAPTIVE_DELTA_MIN: -0.2,
+  ADAPTIVE_DELTA_MAX: 0.25,
+  WEBKIT_MEMORY_BUDGET_MB: 250,
+  PGVECTOR_DIMENSIONS: 768,
+});

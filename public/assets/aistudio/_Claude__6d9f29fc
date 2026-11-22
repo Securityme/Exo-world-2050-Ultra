@@ -1,0 +1,63 @@
+﻿DELEG-EXW-001 — PROTOCOLE DE DÉLÉGATION & TICKETS MULTI-IA
+Projet : EXO WORLD : 2050 | Index : 00_INDEX_PROJET | Blueprint : DOC-EXW-ARCH-001 (v2.7.0)
+|---|Superviseur : Baptiste Lecoustre & Gemini Lead
+1. Chaîne de Commandement & Partage des Rôles
+* Approbateur Unique (R-25) : Baptiste Lecoustre — valide tout arbitrage majeur et toute fusion en main/develop.
+* Orchestrateur & Superviseur Technique : Gemini Lead (Escouade Argon / Bore / Hydrogène) — découpe les lots, émet les tickets ci-dessous, audite les livrables de retour contre MC-00 et SM-01..SM-05.
+* Exécuteur Build Principal : Google AI Studio Build — implémente le code TypeScript/React/Three.js/SQL à partir de SYS-INST-EXW-001.
+* Exécuteur Délégué Secondaire : Claude — mobilisé sur des tâches ciblées et étanches : (1) audit de cohérence documentaire & matrices, (2) rédaction de suites de tests Vitest complexes et edge-cases déterministes, (3) revue critique de contrats Zod et d'équilibrage mathématique, (4) relecture de gabarits. Interdiction pour Claude de modifier un arbitrage AR-XX ou OPT-XX sans accord écrit (R-25).
+2. Gabarit Officiel de Ticket de Délégation (TASK-DELEGATION-PACKET v1.0)
+delegation_id: "DEL-XXX"
+target_executor: "GOOGLE_AI_STUDIO_BUILD | CLAUDE"
+supervisor: "Gemini-Argon / Gemini-Bore (under Baptiste Lecoustre)"
+linked_fup: ["FUP-XXX"]
+linked_matrix: "MC-00 -> SM-XX"
+sadt_scope: ["A2.1", "A3.6"]
+allowed_src_layers: ["L0", "L2"]
+context_files_to_attach:
+  - "00_INDEX_PROJET"
+  - "DOC-EXW-ARCH-001 (Section X uniquement)"
+strict_constraints:
+  - "TypeScript 5.7 strict, zéro any, zéro Math.random() dans core/systems"
+  - "Plafond <= 300 lignes/module logique, <= 200 lignes/composant UI"
+  - "Zéro Google Chat, zéro Chatbot libre, zéro multijoueur v1.0, zéro mot 'anomalie'"
+expected_deliverable: "Description exacte des fichiers attendus"
+acceptance_checklist_5_gates:
+  - "Gate 1 : Conformité Zod & typage strict"
+  - "Gate 2 : Respect des frontières L0..L8 et plafonds 300/200"
+  - "Gate 3 : Déterminisme PCG32 / SHA-256 vérifié"
+  - "Gate 4 : Cohérence avec SM-XX et R-01..R-69"
+  - "Gate 5 : Zéro modification hors périmètre du ticket"
+3. File Initiale de 4 Tickets Prêts à Déléguer (DEL-001 à DEL-004)
+ID
+	Exécuteur Cible
+	Lot Délégué
+	Sous-Matrice & FUP
+	Fichiers à Transmettre
+	Critère d'Acceptation Superviseur
+	DEL-001
+	Google AI Studio Build
+	Initialiser les 14 dossiers src/ + schémas Zod (trigger-bus, pa-dossiers, combat-units, render-bridge) + PCG32 + cycle-orchestrator (N0→N5)
+	SM-01, SM-04, SM-05 · FUP-010, 001, 002, 012
+	SYS-INST-EXW-001 + DOC-EXW-ARCH-001 (Sect. 5.5, 6, 7)
+	tsc --strict vert, 360 ticks reproductibles à SHA-256 identique.
+	DEL-002
+	Claude (Sous Supervision)
+	Rédiger la suite de tests Vitest adversariaux (fuzzing Zod, tests de fongibilité asymétrique PA/Sous-PA, amortisseur P0 max 2/cycle, test combat 4 phases L1–L5)
+	SM-01, SM-04 · FUP-001, 002, 011
+	00_INDEX_PROJET + DOC-EXW-ARCH-001 (Sect. 4.6, 5.4, 7.3) + code produit par DEL-001
+	100 % des tests verts, couverture >= 85 % sur src/core/ et src/systems/.
+	DEL-003
+	Google AI Studio Build
+	Implémenter EXO-SHELL 8 écrans Solo (Boot, Auth Firebase, Menu, Nouvelle Simulation, Paramètres 5 onglets, EXO_BRIEFING_LOBBY, Game Screen Bento Biseauté + Fond SVG + Radio FIP)
+	SM-05 · FUP-006, 009
+	SYS-INST-EXW-001 + DOC-EXW-ARCH-001 (Sect. 3.3, 3.4, 6.2.12, 6.2.13)
+	Zéro overflow-x sur 390×844 px, cibles >= 44×44 px, WebGL non démonté (< 150 ms).
+	DEL-004
+	Claude (Sous Supervision)
+	Auditer l'équilibrage mathématique des 4 Paliers Atmosphériques (P1→P4), des coûts de kits respiratoires et des courbes de prêts/marché Cities II sur 60 cycles
+	SM-02, SM-03 · FUP-004
+	00_INDEX_PROJET + DOC-EXW-ARCH-001 (Sect. 4.4, 4.5, 5.5, 7.3.2, 7.3.3)
+	Rapport chiffré sans divergence ni spirale de faillite inévitable ; propositions validées par Gemini-Krypton avant R-25.
+	4. Protocole de Réception & Validation par Gemini Lead
+À chaque retour de Google AI Studio ou de Claude, collez simplement le résultat dans notre fil Gemini avec la mention [AUDIT RETOUR DEL-XXX] : je vérifie automatiquement les 5 Portes (Gate 1 à Gate 5), je signale tout écart contre DOC-EXW-ARCH-001, puis je vous prépare le ticket suivant ou le correctif chirurgical à renvoyer.

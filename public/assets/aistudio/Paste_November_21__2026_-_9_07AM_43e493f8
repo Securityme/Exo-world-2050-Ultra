@@ -1,0 +1,338 @@
+Intégration complète dans le plan FMT-U (Ultra-Dense) sans suppression de la moindre ligne du plan source : ajout du bootstrap V0 (src/services/architecture/matrix-engine.ts, src/master-blueprint/{M0_MetaSemVer.json, M13_SADT_Mapping.json}, script npm run exo:audit dans package.json), de EXOW.TEAM (G-TEAM-8) et de EXOW.DIR (DIR-01..10) incluant la mise à jour synchronisée des 3 formats (FMT-U Ultra-Dense · FMT-M Méso · FMT-S Format actuel conservé + directives maîtresses).
+EXO WORLD : 2050 — MASTER BLUEPRINT FRACTAL v3.2-LTS (M0–M15) & PLAN ULTRA-DENSE (EXOW-ROOT)
+> ID: EXOW-ROOT DIM: D0/L0 SADT: ROOT SEMVER: v4.0.0-rc.1+full-m0-m15 TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/v4-spiral STATUS: REVIEW TRL: 6 ISO: SemVer-2.0.0|ISO-8601|ISO-16290|29148|25010|25012|27001|42010|31320-1|60848|60812|31000 MATRICES: M0–M15 (16/16)
+> 
+meta_node: { id: "EXOW-ROOT", dim: "D0", depth: 0, parent_id: null, root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+full-m0-m15", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "CASCADE ⚠", lts_frozen: false, neon_branch: "feat/v4-spiral", updated_at: "2026-11-20", status: "REVIEW", trl: 6, standards: ["SemVer-2.0.0","ISO-8601","ISO-16290","ISO/IEC/IEEE-42010","ISO/IEC/IEEE-31320-1"], matrices_used: ["M0","M1","M2","M3","M4","M5","M6","M7","M8","M9","M10","M11","M12","M13-A","M13-D","M14","M15-A","M15-B"], box_refs: ["↘ ZOOM:EXOW.M1..M5"], coupling_links: ["EXOW.M0:GO"] }
+
+LEX (0% loss): WS=WorldState CV=LivingCatalog(x-run) G0=Genèse2050(Act0+PM+HUD-Unl) PM=Promises(turn-deadline) HK=Humankind(7Star×3,≥7=ManualEra,6FactionEras,Fame,Evol+Comm+Transcend,30 Shared/CyberTech) FP=Frostpunk(Workforce+RPG:HP/Happy/Moral/Fat/Outfit/Wpn/Tool/XP/Syn) B3D=Bldg3D+Wear/Pwr H3D=FleetHangar3D PA=Gen+4Sub(7-fact,150%cap,0-PA guard) AI-P=CustomAI(Name/Tone/Adapt) 4T=Gemini(4-hydrogen→3.1-flash-lite→retry/offline) Z0=Ban(THERMAL|Chaleur|S_heat|cycle+1|corridor|loopClimate) R24=100% actions via Dossiers,rest=View R14=≤300L/≤200L/CC≤12 FIP=Radio+SFX ON(first-gesture) AUD=npm run exo:audit GDR=@Google Drive.
+LEX++ (0% collision): G-TEAM=8 Experts Gemini(G0-ARCH..G7-UNITY) G-COUNCIL=RACI+3 Vetos DIR-01..10=Directives Maîtresses FMT-U=Ultra-Dense(EXO WORLD : 2050 — MASTER BLUEPRINT FRACTAL v3.2-LTS (M0–M15) & PLAN ULTRA-DENSE (EXOW-ROOT)) FMT-M=Méso(plan structuré) FMT-S=Format Actuel Google AI Studio conservé + EXOW.DIR/EXOW.TEAM MAT-ENG=src/services/architecture/matrix-engine.ts(moteur 16 matrices M0–M15, types TS stricts ICOM + propagation SemVer) MB-DIR=src/master-blueprint/(M0_MetaSemVer.json + M13_SADT_Mapping.json + sync src/) P1..P4=Phases Planétaires SCH=Zod Strict(D1..D5) MIG=Auto-Migr(v3.1→v4.0+backup t-1) A11Y=WCAG 2.1 AA(≥44×44px,≥4.5:1) OBS=Replay(seed+inputs→SHA-256) BUD=commit<16ms|JS<350KB_gz|RAM<250MB|draw≤120 Φ01..12=Pipeline Fin Tour EXOW-E001..20=Erreurs Canoniques.
+EXOW.TEAM — Team d'Experts Gemini (G-TEAM-8) · Orchestration, RACI & G-COUNCIL (M0 · M9 · M13)
+> ID: EXOW.TEAM DIM: D1/L1 SADT: C/M SEMVER: v4.0.0-rc.1+gteam TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/v4 STATUS: LOCKED TRL: 7 ISO: 42010|29148|27001|31000 MATRICES: M0,M9,M13-A,M15-A
+> 
+meta_node: { id: "EXOW.TEAM", dim: "D1", depth: 1, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+gteam", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "CASCADE ⚠", lts_frozen: false, neon_branch: "feat/v4", updated_at: "2026-11-20", status: "LOCKED", trl: 7, standards: ["ISO/IEC/IEEE-42010","ISO/IEC/IEEE-29148","ISO/IEC-27001","ISO-31000"], matrices_used: ["M0","M9","M13-A","M15-A"], box_refs: ["⇄ PLAN:EXOW.DIR","⇄ PLAN:EXOW.M0..M5"], coupling_links: ["EXOW-ROOT","EXOW.M5.A1"] }
+
+[MATRICE : G-TEAM-8 / RACI | NODE: EXOW.TEAM@4.0.0-rc.1] — Escouade 8 Experts Gemini (M0..M5 · L0..L8 · V0..V5)
+| Expert & Rôle (Y1) | Scope EXOW & Artefacts src/ | Modèle 4T & Posture | RACI / Livrables & Veto (Y2) |
+|---|---|---|---|
+| G0-ARCH Chief Fractal Arch | ROOT,M0,D1,DIR · MAT-ENG · MB-DIR (M0/M13 JSON) | 4-hydrogen · Cartésien/Système | A:matrix-engine.ts, FMT-U/M/S · VETO M0/DIR |
+| G1-SIM Lead Sim & Math | M1,M2,M7,M8,Φ01..12 · L2,L3 | 4-hydrogen + Vitest · Pur | A:PA,HK,FP,P1-4,PCG32,Combat4P |
+| G2-NARR Lead Narr & BFF 4T | M2,G0,CV,AI-P,Cal5,CAT · L1,L3,L5 | 4-hydrogen→3.1-lite · Contraint | A:Doss 4T, NoRep3t, PM, 60:40 |
+| G3-VIS Lead 3D, UX & Audio | M3,B3D,H3D,Monde,Map,FIP · L4,L6,L7 | 4-hydrogen · Solar Glass+A11Y | A:Monde 0-3D, dispose<5s, FIP 6 |
+| G4-DATA Lead SSOT, Sync & SQL | M4,D1..D5,MIG,V3,V4 · L0,L5 · MB-DIR | 4-hydrogen · ISO-25012/27001 | A:Zod,MIG,Argon2id,HNSW · VETO SCH |
+| G5-QA Lead GEMMA, AMDEC & AUD | M5,M12,M14,R1..10 · package.json:exo:audit · L8 | 3.1-flash-lite + Playwright | A:AUD (BP+SemVer+CC≤12), Fuzz 60t · VETO Z0/R14 |
+| G6-ART Lead Art Solaire | 16 Assets V1, Palettes P1-4 · L6,L7 | Gemini Multimodal · Sci-Fi Solaire | R:4 Port, 6 Bann, 1 BG, 5 Emblèmes |
+| G7-UNITY Lead Port Unity 6 | V5,BridgeEnvelope,DTO C# · L0,L4,V5 | 4-hydrogen · Parité TS↔C# | R:AOT C# DTO, SHA-256 60t, gel LTS |
+| X2 — PIPELINE G-COUNCIL | [1.G0 Brief/MB-DIR]→[2.G4 Zod/MAT-ENG]→[3.G1|G2|G3|G6]→[4.G7]→[5.G5 exo:audit]→[6.Sync U/M/S+GDR] | Conflit: max 2t → Pugh (M11) | 3 Vetos non-contournables · GO |
+EXOW.DIR — Directives Maîtresses (DIR-01 → DIR-10) & Directive Tri-Format (FMT-U ⇄ FMT-M ⇄ FMT-S)
+> ID: EXOW.DIR DIM: D1/L1 SADT: C SEMVER: v4.0.0-rc.1+directives TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: main STATUS: LOCKED TRL: 7 ISO: SemVer-2.0.0|42010|29148|25010|27001|60848|60812 MATRICES: M0,M6,M12,M13-A,M14
+> 
+meta_node: { id: "EXOW.DIR", dim: "D1", depth: 1, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+directives", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "CASCADE ⚠", lts_frozen: false, neon_branch: "main", updated_at: "2026-11-20", status: "LOCKED", trl: 7, standards: ["SemVer-2.0.0","ISO/IEC/IEEE-42010","ISO/IEC/IEEE-29148","ISO/IEC-25010","ISO/IEC-27001","IEC-60848","IEC-60812"], matrices_used: ["M0","M6","M12","M13-A","M14"], box_refs: ["⇄ PLAN:EXOW.TEAM","⇄ PLAN:EXOW.M0..M5"], coupling_links: ["EXOW-ROOT","EXOW.M5.A1"] }
+
+[MATRICE : DIR-01 TRI-FORMAT | NODE: EXOW.DIR@4.0.0-rc.1] — Mise à Jour Simultanée des 3 Formats (FMT-U ⇄ FMT-M ⇄ FMT-S)
+| Format Jumeau (Y1) | Mise en Forme, Structure & Rôle | Contenu & Synchronisation MB-DIR | Artefact src/master-blueprint/ (Y2) |
+|---|---|---|---|
+| FMT-U Ultra-Dense (Référence Maître) | Titre canonique EXO WORLD : 2050 — MASTER BLUEPRINT FRACTAL v3.2-LTS (M0–M15) & PLAN ULTRA-DENSE (EXOW-ROOT) · Grammaire source exacte (>, meta_node, LEX, [MATRICE : Mx | NODE: ...], Y1/Y2, X2, ASCII, @Google Drive, YAML) | 100% source verbatim (0 suppression) + EXOW.TEAM + EXOW.DIR + V0-BOOT (matrix-engine.ts, MB-DIR, exo:audit) + extensions D2/Φ/SCH/SRC/QA | MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md |
+| FMT-M Méso | Plan d'ingénierie intermédiaire structuré : synthèses par domaine, tableaux calibrés, contrats clés MAT-ENG/MB-DIR/AUD, checklists sprint V0→V5 | Parité 100% des règles, formules M8, G-TEAM-8, DIR-01..10, M0_MetaSemVer.json & M13_SADT_Mapping.json | MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md |
+| FMT-S Format Actuel Conservé + Directives | Conserve son format actuel (Google AI Studio : System Instructions + Build Mode + structure déjà en place) augmenté de l'intégration directe des Directives Maîtresses (EXOW.DIR), EXOW.TEAM & V0-BOOT | Zéro rupture avec le format AI Studio existant · Parité 100% SemVer/Tri-Lock/16/16 matrices avec FMT-U et FMT-M | MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md |
+| X2 — INVARIANT DIR-01 | 1 SSOT (EXOW-ROOT + M0/M13 JSON) → 3 projections synchronisées | Vérifié par matrix-engine.ts + npm run exo:audit (0 drift) | G0-ARCH + G5-QA bloquant |
+[MATRICE : DIR-01..DIR-10 | NODE: EXOW.DIR@4.0.0-rc.1] — 10 Directives Impératives Verrouillées (G-TEAM-8)
+| ID & Directive (Y1) | Règle Non-Négociable | Contrôle & Expert | Gate / Code (Y2) |
+|---|---|---|---|
+| DIR-01 Tri-Format | Mettre à jour le Master Blueprint sur FMT-U (Ultra-Dense) + FMT-M (Méso) + FMT-S (format actuel conservé + directives maîtresses) à 100% de parité sémantique | G0-ARCH,G5-QA · AUD #12 | Exit 1 si drift |
+| DIR-02 Zéro Suppression | Interdiction de supprimer/altérer toute ligne existante ou LOCKED/lts_frozen : évolution par ajout balisé + incrément M0_MetaSemVer.json | G0-ARCH · Diff sha256Doc | Rejet PR / NO-GO |
+| DIR-03 Pureté L2/L3 | 0 Math.random, Date.now, fetch, DOM, React, Three en L2/L3 · PCG32 (6 flux) + SHA-256 reproductible | G1-SIM,G5-QA · AUD #2 | EXOW-E018 |
+| DIR-04 Ban Z0 Absolu | Rejet total THERMAL|Chaleur|S_heat|cycle+1|corridor|loopClimate dans code, prompts, réponses Gemini, MB-DIR & docs | G5-QA,G2-NARR · AUD #1 | EXOW-E008/E017 |
+| DIR-05 R24 & 0-PA | 100% actions via Dossiers (Monde/B3D/H3D=View) · ∃ choice 0-PA par dossier · T_END_TURN verrouillé si doss>0 | G1-SIM,G2-NARR · M7+Fuzz | EXOW-E003/E004 |
+| DIR-06 3D Isolée & A11Y | Monde=0-3D · B3D/H3D au clic (DPR≤1.5, draw≤120, dispose<5s, 2D fallback) · Solar Glass ≥44px, contraste ≥4.5:1 | G3-VIS,G6-ART · E2E+Axe | EXOW-E009..E011 |
+| DIR-07 BFF 4T & 27001 | 0 clé API client (process.env serveur) · 4-hydrogen→retry→3.1-lite→CV en ≤3500ms · Zod I/O strict · 0 faux texte | G2-NARR,G4-DATA · Mock 429 | EXOW-E005..E007 |
+| DIR-08 GEMMA (A5) | 0 transition directe D1/D2→F1 : passage A5 obligatoire (Zod+SHA+E≥0/2D+0PA) sur R1..R10 avant reprise F1 | G5-QA · Fault injection | ADEPA-GEMMA |
+| DIR-09 Sync SRC & MB-DIR | Synchroniser src/ ↔ src/master-blueprint/{M0_MetaSemVer.json, M13_SADT_Mapping.json} via matrix-engine.ts + npm run exo:audit Exit 0 inter-vagues | G0-ARCH,G5-QA · AUD #4,#8 | Promo refusée |
+| DIR-10 Pipeline G-TEAM | Toute évolution passe G0(Brief)→G4(Zod/MB-DIR)→G1/2/3/6(Build)→G7(Port)→G5(exo:audit)→Tri-Format(U/M/S) | G0-ARCH · Trace meta_node | 100% conforme |
+| X2 — DIRECTIVES DIR | 10/10 directives actives · FMT-U ⇄ FMT-M ⇄ FMT-S verrouillé | Exécuté par matrix-engine.ts + AUD | GATE : LOCKED |
+EXOW.M0 — Gouvernance Méta-SemVer (M0) · Stratégie (M6 QFD · M11 Pugh)
+> ID: EXOW.M0 DIM: D1/L1 SADT: M SEMVER: v4.0.0-rc.1+gov TRI-LOCK: [1|0|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: main STATUS: LOCKED TRL: 7 ISO: SemVer-2.0.0|ISO-8601|ISO-16290|29148|25010 MATRICES: M0,M6,M11
+> 
+meta_node: { id: "EXOW.M0", dim: "D1", depth: 1, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+gov", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 0, sql: 0 }, propagation: "ISOLÉ", lts_frozen: false, neon_branch: "main", updated_at: "2026-11-20", status: "LOCKED", trl: 7, standards: ["SemVer-2.0.0","ISO-8601","ISO-16290","ISO/IEC/IEEE-29148","ISO/IEC-25010"], matrices_used: ["M0","M6","M11"], box_refs: ["⇄ PLAN:M13-A","⇄ PLAN:M13-D","⇄ PLAN:M8"], coupling_links: ["EXOW-ROOT","EXOW.M1..M5"] }
+
+[MATRICE : M0 | NODE: EXOW-ROOT@4.0.0-rc.1]
+| Nœud Fractal & Dim (Y1) | SemVer | [D|C|S] | Compat | Prop. / Blast | Neon Br. | ISO·TRL | Gate (Y2) |
+|---|---|---|---|---|---|---|---|
+| EXOW-ROOT (D0) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | CASCADE ⚠ (Z0) | feat/v4 | 42010·T6 | SYNC·GO |
+| EXOW.M1 (D1: Sim/PA/HK/FP) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | CASCADE ⚠ (A1..A3) | feat/m1 | 31320,60848·T6 | SYNC·GO |
+| EXOW.M2 (D1: 4T/Cycles/G0) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | CASCADE ⚠ (A1..A3) | feat/m2 | 27001,25012·T6 | SYNC·GO |
+| EXOW.M3 (D1: B3D/H3D/UX/Art) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | BULLE ↑ (Monde=0-3D) | main | 25010·T6 | SYNC·GO |
+| EXOW.M4 (D1: SSOT/Sync/Argon) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | BULLE ↑ (Local→Cloud) | feat/m4 | 25012,27001·T6 | SYNC·GO |
+| EXOW.M5 (D1: GEMMA/Atlas/AUD) | 4.0.0-rc.1 | [1|0|0] | ^4.0.0 | BULLE ↑ (V0→V5 Sync) | main | 60812,31000·T7 | SYNC·GO |
+| X2 — M0 (16/16 Matrices) | 0 DRIFT! | sql:0 V0-1 | 100% ^4.0 | Migr. v3.1→v4.0 OK | V1Loc/V4SQL | 100% ISO | GATE:GO |
+[MATRICE : M6 / M11 | NODE: EXOW.M0@4.0.0-rc.1] — QFD (Besoins × Specs + Conflits ✖) & Pugh (Arbitrages → M13-A:C/M)
+| Exigence Joueur (Y1) | Spec Cible (M6) | Conflit ✖ & Arbitrage Pugh (M11 vs Base 0) | Injecté dans M13-A (Y2) |
+|---|---|---|---|
+| Variété narrative sans répétition | BFF Gemini 4T + NoRep3t + CV | ✖ Latence vs Richesse → Pugh +3: PreGen pdt Résumé + Cascade 3.1-lite | M2.A1:C/M |
+| Profondeur RPG sans surcharge UI | Monde 0-3D + B3D/H3D au clic | ✖ 3D globale vs Lisibilité → Pugh +4: Monde analytique + B3D/H3D isolés | M3:C/M |
+| Résolution obligatoire sans blocage | T_END_TURN + 0-PA garanti | ✖ Rigueur PA vs Softlock → Pugh +3: Levier Report 0 PA + G0.B4 secours | M1.A1:C |
+| Évolution réaliste façon Humankind | 6 Ères/faction + Doctrines filles | ✖ Switch culture libre vs Lore → Pugh +4: Arbre doctrinal + Transcendance | M1.A2:C |
+| X2 — PONT M6/M11→M13 | 4/4 conflits résolus | Score Pugh cumulé +14 vs Baseline v3.1 (0) | Contrôles M13-A verrouillés |
+[MATRICE : M0+ / M6+ / M11+ | NODE: EXOW.M0@4.0.0-rc.1] — Nœuds TEAM/DIR, M0_MetaSemVer.json, Tri-Lock & Arbitrages +5..+9
+| Nœud / Exigence (Y1) | [D|C|S] / Spec M6+ | Règle Promotion / Arbitrage Pugh (M11+) | Cible & Gate (Y2) |
+|---|---|---|---|
+| EXOW.TEAM + EXOW.DIR (D1) | [1|1|0] · ^4.0.0 | CASCADE ⚠ · Persistés dans src/master-blueprint/M0_MetaSemVer.json + validés par matrix-engine.ts | feat/v4 · LOCKED |
+| Rampe V0→V3 / V4→V5 LTS | [1|1|0] → [1|1|1] | V4: sql=1 (Neon+HNSW+PITR) · V5: DTO C# SHA 60t + lts_frozen:true | v4.0.0-lts.0 |
+| QFD+5..7: A11Y · MIG · 27001 | Bento ≥44px · v3→v4 · BFF | Pugh +3/+3/+4: Drawer RPG + Backup t-1 + Proxy serveur clé API | M3/M4/M2:C |
+| QFD+8..9: Unity6 · Tri-Format | BridgeEnvelope · U⇄M⇄S | Pugh +4/+4: D4 pur JSON + 3 projections synchronisées DIR-01 | M1/M5:O |
+| X2 — GOUVERNANCE ÉTENDUE | 9/9 conflits résolus | Score Pugh +32 · Validation SemVer (M0) exécutée par npm run exo:audit | GATE:GO |
+EXOW.D1 — Dualité SADT (M13-A ↔ M13-D) & Formules Mathématiques Exactes (M8)
+> ID: EXOW.D1 DIM: D1/L1 SADT: M SEMVER: v4.0.0-rc.1+dual.math TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/v4 STATUS: LOCKED TRL: 6 ISO: 31320-1|25010|25012 MATRICES: M13-A,M13-D,M8,M1
+> 
+meta_node: { id: "EXOW.D1", dim: "D1", depth: 1, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+dual.math", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "BULLE ↑", lts_frozen: false, neon_branch: "feat/v4", updated_at: "2026-11-20", status: "LOCKED", trl: 6, standards: ["ISO/IEC/IEEE-31320-1","ISO/IEC-25010","ISO/IEC-25012"], matrices_used: ["M13-A","M13-D","M8","M1"], box_refs: ["↘ ZOOM:EXOW.M1..M5","⇄ PLAN:M10","⇄ PLAN:M15"], coupling_links: ["EXOW.M0"] }
+
+[MATRICE : M13-A / M13-D | NODE: EXOW-ROOT@4.0.0-rc.1] — Actigramme M13-A ↔ Datagramme M13-D (5 Boîtes · Triple Conservation)
+| Activité M13-A (Y1) | I → O (M13-A) | C · M (M13-A) | Boîte Donnée M13-D (I→C→O) | REF & ★ (Y2) |
+|---|---|---|---|---|
+| M1 Simuler | Cfg,Choice,(I)Turn → WS,Ledger,Summary | Z0,R24,HK,FP · PureTS PCG32+SHA | D1:WS+Ledger (M1→Zod→M2,M3,M4) | ↘M1·★M1·⇄M7,M2 |
+| M2 Dossiers/G0 | WS,CV,Cal,AI-P → Doss+Sub,NewEnt,Q | NoRep3t,Ch≤1,4T · BFF @google/genai | D2:Doss+Q (M2→Zod→M3,M1) | ↘M2·★M2·↗M4 |
+| M3 3D & HUD | SceneDiff,WS,Sum → Evt→M2,B3D,H3D | Monde=0-3D,≥44px,FIP · Three/React | D4:SceneDiff+Sum (M1→Bridge→M3) | ↘M3·★M1·⇄M9 |
+| M4 SSOT/Sync | WS,CV,PM,BP → Loc/JSON(V1),Cloud(V3-4) | (C)Argon,Zod · Local/Fire/Drive/SQL | D3:CV+PM (M2→Zod→M2,M1) | ↘M4·★M4·⇄M10 |
+| M5 GEMMA/QA | Err,Code,WS → A/F/D,Atlas,AUD | IPR≥20,R14,SRC-Ref · AUD+Playwright | D5:Blueprint (M5→AUD→Atlas/GDR) | ↘M5·★M5·⇄M12,M14 |
+| X2 — ICOM | 100% vert. conserv. | 0 client API key · Tunnels (I/C) | 5/5 O = 5/5 D (horiz. OK) | 0 orphan · M0 OK |
+[MATRICE : M13-A/D2 | NODE: EXOW.D1@4.0.0-rc.1] — Zoom D2 (15 Sous-Boîtes · Sérialisé M13_SADT_Mapping.json)
+| Module (Y1) | Sous-Boîte .A1 · .A2 · .A3 (I→O) | Contrôles & SRC | Expert & D (Y2) |
+|---|---|---|---|
+| M1 Sim | A1:Tour/PA(Φ01-12) · A2:HK/Terra(P1-4) · A3:Ledger/FP/Wear | M7,Z0,PCG32 · L2/L3 | G1-SIM · D1 |
+| M2 Doss | A1:BFF 4T Live · A2:Cycles/Cal5/G0 · A3:Resolve+PM | NoRep3t,60:40,0-PA · L1/L3/L5 | G2-NARR · D2,D3 |
+| M3 Vis | A1:HUD/Monde 0-3D/Map · A2:B3D/H3D · A3:FIP 6+SFX | A11Y,DPR≤1.5,dispose<5s · L4/L6/L7 | G3-VIS,G6 · D4 |
+| M4 Data | A1:Local+MIG v3→v4 · A2:Fire+GDR+Argon · A3:Neon+HNSW | Zod,SHA,sql=1(V4) · L0/L5 | G4-DATA · D1,D3,D5 |
+| M5 QA | A1:MAT-ENG (M0–M15 ICOM)+GEMMA · A2:exo:audit+MB-DIR · A3:Atlas+U/M/S+DTO V5 | DIR-01,R14,A5 · services/architecture+L8 | G5,G0,G7 · D5 |
+| X2 — D2 | 15/15 sous-boîtes conservées D1↔D2 dans M13_SADT_Mapping.json | Typage TS strict ICOM (matrix-engine.ts) | 8/8 G-TEAM OK |
+[MATRICE : M8 | NODE: EXOW.M1@4.0.0-rc.1] — Formules Déterministes Exactes (PA · HK Étoiles · FP RPG · Cycles X-Tours)
+| Sous-Système (Y1) | Équation Exacte (L2/L3 Pur · PCG32) | Seuils & Bornes | Couplage Sortie (Y2) |
+|---|---|---|---|
+| PA Général (M1.A1) | PA_next = clamp(BaseEra[3+E..7] + ElanSpec(0..2) + EnerMod(-2..+1) + Infra(Cmd+DC:0..2) + MoralBudg(-1..+1) + ChoiceMods, 2, 12) | Carryover: min(⌊rem×0.5⌋, ⌊cap×0.5⌋) (max 150%); Sous-PA: base(2)+⌊attr/5⌋+mod | HUD SegBar + Breakdown |
+| Étoiles HK (M1.A2) | 7 Domaines (Bât,Sci,Mar,Éco,Mil,Exp,Dip) × 3 Tiers (T1/T2/T3 × E): Fame +100/+200/+350 (+10% Transcendance) | eraStars ≥ 7 → Manual EraAdvance unlocked (or stay for Fame) | Summary Modal + Victory |
+| Rendement & FP RPG | yield = base × (0.4 + 0.6·int/100) × pwrMult × slotMult(occ/opt) × (1 + avgRpgBonus) | rpgBonus = specMatch(+0.20) + lvl·0.04 + (happy-50)/250 - fat/300 + gear + syn(+0.10); XP +15/t, promo 100·lvl | EntityLedger + B3D + Wear |
+| Usure & Énergie | wear/t = base(2..4) + (pwr<0 ? +5 : 0) + (occ>opt ? +2 : 0) - constrDrn·0.6; pwr<0 → auto-shed Ind/DC first | int < 55% → P0/C3 wear dossier; report → -10% perm cap until repair | M12:R3 → M14:D1 + HK drag |
+| Cycles X-Tours (M2.A2) | ArrivalsEvery = clamp(3 + ⌊(100-approval)/15⌋ + (E>3?-1:0), 3, 9)t · Mix 60% CV/Catalog : 40% GeminiLive | Const(2t) · Res(3t) · Pol(3t) · Maint(dyn) · 5 CalEvents(Season/Summit/Congress/Census/Fête) | Max 3 main + Sub + ≤1 chain |
+| X2 — INVARIANT MATH | 100% déterministe (0 Math.random/Date.now) | SHA-256 vérifié à chaque tour | Testable Vitest 1:1 |
+[MATRICE : M8+ / Φ01..12 | NODE: EXOW.M1@4.0.0-rc.1] — Équations Complémentaires (0 Z0) & Pipeline Atomique
+| Sous-Système (Y1) | Équation Exacte (L2/L3 Pur) | Seuils & Règles | Couplage (Y2) |
+|---|---|---|---|
+| Terra P1→P4 | Terra=clamp(0.35·Atmo+0.30·Hydro+0.25·Bio+0.10·Rad,0,100) | P1:0-24 · P2:25-49 · P3:50-79 · P4:80-100 (hystérésis -3) | ClimBar+O2+Vict |
+| PM & Approb. | appr'=clamp(appr+0.35·(avgHappy-50)/10+pmΔ+shortPen+cal,0,100) | Tenue:+8,+50Fame,+5Loy · Brisée:-14,-10Loy,P0 | Arrivals+AI-P |
+| Pénuries & Dette | Cap=Base(250..600)·(1+0.25·lvlHabSpc) · Ordre: E→O2(P1-3)→W→F→Cr | O2=0:-15HP · W=0:-12Hpy,-8HP · F=0:-10Hpy,+12Fat · Cr<0:5%/t,-1PA(<-200) | Ledger+M14:D1 |
+| HK+ & Combat4P | SciEff=NetSci·(1+0.2Ally+0.15Pat+0.1Adv) (80·E^1.45) · EffP=(ΣMil+4Atk+3Def)·sup·(1±0.2Cyb) | 4P:Recon→Cyber→Engage→Reorg · Pertes clamp(⌊25/R⌋,5,60)% | Tech+H3D+Mil★ |
+| Flux PCG32 (6) | seed_s=mix32(runSeed,turn,s) (SIM:1,ARR:2,WEAR:3,EVT:4,CMB:5,DIPLO:6) | UI/3D ne consomme jamais PCG32 · Parité TS↔C# | SHA-256+OBS |
+| X2 — Φ01..Φ12 | Φ01Gate/Bak→Φ02Pend→Φ03Ledg/Shed→Φ04Pén/Dette→Φ05FP→Φ06Wear | Φ07PM/Appr→Φ08Tech/Terra→Φ09HK★→Φ10PA→Φ11Vict/Diff→Φ12t+1/SHA/4T | Atomique <16ms |
+[MATRICE : M1 | NODE: EXOW.M1.A3@4.0.0-rc.1] — Grand Livre Économique par Entité (Consommation / Production / Créneaux RPG)
+| Catégorie Entité (Y1) | Consommation / Tour (-) | Production & Contribution / Tour (+) | Créneaux / État (FP) | Impact Déficit (Y2) |
+|---|---|---|---|---|
+| Bâtiments (7) | Cmd(-4E,-15Cr) Hab(-5E,-6W,-6F) Ene(-12Cr,-4Mat) Ind(-10E,-18Cr) DC(-12E,-20Cr) Bio(-4E,-6W) Spc(-9E,-16Cr) | Cmd(+PA,+Tax) Hab(+Tax,+Pop) Ene(+34E/lvl) Ind(+16Mat,+6Elec) DC(+14Comp,+Sci) Bio(+14F,+8W,+Atmo) Spc(+10Fuel,+Trade) | opt/max: 2/3..3/5 colons; Intégrité 0..100% | Shed auto + Wear dossier |
+| Personnages (4 Adv + Col) | Adv:(-4Cr,-2F,-1W) · Col:(-2F,-2W,-1O2 in P1-3) | Adv:(+SubPA,+AttrUnlock,+Loy) · Col:(+rpgBonus sur bât., +Sci/Rep) | Health/Happy/Moral/Fat + Outfit/Wpn/Tool/XP | Grève/Maladie si Happy<35 |
+| Drones (4 Rôles) | (-1.5E, -0.5Mat) / drone actif | Constr(+0.6% int) Def(+3 Def) Atk(+4 Mil) Recon(+Intel,-PA cost) | Stock par rôle visible H3D | Désactivés si E < 0 |
+| Unités (5 L1–L5) & Flotte | Inf(-2E,-4Cr,-2F) Mech(-4E,-8Cr,-2Fuel) Swarm(-5E,-6Cr,-2Cmp) Corv(-8E,-14Cr,-5Fuel) Cyb(-6E,-10Cr,-6Cmp) Fleet(-4E·tier) | MilPower(12..65×lvl) + Dissuasion + Capacité logistique/import (Fleet) | Exposés en stock réel dans H3D | Usure + Malus combat -30% |
+| X2 — COUVERTURE | 100% entités tarifées | Somme nette → HUD + Summary + PA | Clic badge → Fiche RPG + B3D/H3D | Zéro thermique (Z0) |
+[MATRICE : M1+ | NODE: EXOW.M1.A3@4.0.0-rc.1] — Scaling L1–L5, Gear T1–T3 & Synergies FP
+| Item M1+ (Y1) | Coût L1 (×1.45^(lvl-1)) / Tiers | Paramètres & Effets | Couplage (Y2) |
+|---|---|---|---|
+| 7 Bâtiments (L1→L5) | Cmd(40M,15El,80Cr) Hab(35,10,60) Ene(30,12,70) Ind(45,15,90) DC(35,25,110) Bio(30,15,75) Spc(60,25,130) | Durée 2–3t · Rep:6–8M+10–14Cr/+20% int · Cmd/DC L3+:+1PA | B3D+Ledger |
+| Gear Outfit/Tool/Wpn | Outfit:+5/10/18% (T3:imm.P1) · Tool:+6/12/20% yield · Wpn:+4/9/16 Def | Syn(+0.10) si ≥2 spé+Moral≥65 · Burnout(Fat≥80):-25% · Repos:-35Fat,+15HP | Fiche RPG+Doss |
+| X2 — ÉQUILIBRE M1+ | 0 ressource gratuite | 100% tracé EntityLedger | Validé G1-SIM |
+EXOW.CATALOG — Superpuissances 2050, 6 Ères Dynamiques, 30 Techs Partagées & Assets (M8)
+> ID: EXOW.CATALOG DIM: D2/L2 SADT: A SEMVER: v4.0.0-rc.1+catalog TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/m1 STATUS: LOCKED TRL: 6 ISO: 29148|25012 MATRICES: M8
+> 
+meta_node: { id: "EXOW.CATALOG", dim: "D2", depth: 2, parent_id: "EXOW.M1", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+catalog", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "BULLE ↑", lts_frozen: false, neon_branch: "feat/m1", updated_at: "2026-11-20", status: "LOCKED", trl: 6, standards: ["ISO/IEC/IEEE-29148","ISO/IEC-25012"], matrices_used: ["M8"], box_refs: ["↗ CALL:EXOW.M1.A2","↗ CALL:EXOW.M3"], coupling_links: ["EXOW.M2:Calendar"] }
+
+[MATRICE : M8 | NODE: EXOW.CATALOG@4.0.0-rc.1] — 5 Superpuissances 2050 × 6 Ères Dynamiques & Arbre Doctrinal Évolutif
+| Superpuissance 2050 (Y1) | 6 Ères Dynamiques Propres (E1 → E6) | Arbre Doctrines Filles (E2..E6) + Communes + Transcend. | Spécialité & Fête Cal. (Y2) |
+|---|---|---|---|
+| Union Euro-Atlantique (UEA) | E1:Charte · E2:Fédération · E3:Symbiose · E4:Biosphère · E5:Concorde · E6:Aube Verte | Eco-Fédéralisme → Bio-Démocratie → Synthèse Gaïa (+Communes+Transc.) | +20% P1→P4 · Congrès Vert |
+| Consortium Pacifique (CPA) | E1:Tête de Pont · E2:Réseaux · E3:Hyper-Industrie · E4:Cyber-Cité · E5:Orbital · E6:Singularité | Techno-Logistique → Automatisation Totale → Noosphère | +20% Calcul/Tech · Expo IA |
+| Alliance Afro-Solaire (AAS) | E1:Oasis · E2:Solaire · E3:Renaissance · E4:Jardins · E5:Couronne · E6:Héliopolis | Helio-Coopérative → Agro-Écologie → Souveraineté Solaire | +25% Énergie/Vivres · Solstice |
+| Fédération Nord-Eurasie (FNE) | E1:Bastion · E2:Extraction · E3:Acier · E4:Forteresse · E5:Armada · E6:Hégémonie | Industrie Lourde → Doctrine Blindée → Bouclier Orbital | +20% Mat/Défense · Parade |
+| Pacte Sud-Américain (PSA) | E1:Pionniers · E2:Bio-Mines · E3:Commerce · E4:Archipel · E5:Diplomatie · E6:Horizon | Libre-Échange Bio → Diplomatie Active → Union Planétaire | +20% Crédits/Alliés · Carnaval |
+| X2 — 30 TECHNOLOGIES (5/Ère) | E1:[Micro-Réseau,Hydroponie,Exo-Outils,Charte Civ.,Télémétrie] E2:[Supraconduct.,Drones Maint.,Bio-Filtres,Bourse Orb.,Cyber-Mur] E3:[Fusion Compacte,IA Prédictive,Ferme Vert.,Corvette L2,Brevets Comm.] E4:[Atmo P3,Exo-Armures,Nanomat.,Gouv. Num.,Rétro-Ingén.] E5:[Ascenseur Orb.,Bio-Génome P4,Calcul Quant.,Flotte L4,Traité Global] E6:[Transcendance,Énergie Zéro-P.,Écosyst. Clos,Bouclier Syst.,Unité 2050] | Partage HK+: +20% vitesse si allié connaît · Brevets Congrès · Cyber Espionnage | Débloque choix, bât. & unités |
+[MATRICE : M8+ CATALOG/V2 | NODE: EXOW.CATALOG@4.0.0-rc.1] — 4 Adv, 5 AI-P, 5 Cal, P1→P4, Diplo/Cyber V2 & Fins
+| Bloc Catalogue (Y1) | Entrées Verrouillées (L1) | Effets & Règles Déterministes | Lien (Y2) |
+|---|---|---|---|
+| 4 Adv + 5 AI-P | Adv:Civ(Infra)·Sci(Bio)·Eco(Log)·Sec(Diplo) · AI-P:Analyt·Bienv·Pragm·Souv·AvantG | Loy≥80:-15%maint/+10%Sci/+12%Cr/+15%Cyb · Loy<30:malus/grève · AI-P:tone+1 levier conseillé | 4 Portraits+BFF |
+| 5 Cal + P1→P4 | Season(4t)·Census(6t)·Summit(8t)·Congress(10t)·Fête(12t) · P1(0-24)→P4(80-100) | Cal hors quota 4T · P1:-1O2,+1wear → P3:0O2,+20%W → P4:+15%Hpy+jalon | M2.A2+ClimBar |
+| Diplo & 6 Cyber V2 | 7 États:Guerre(<-60)..Féd(>80) · 6 Ops:VolBrevet·SabE·C-Intel·Désinfo·PareFeu·Spoof | Δrel=ΔSpectra+Trade+PM-Mil · Cyber clamp(40+1.5ΔCmp+Adv,10,90)% | PCG32#6+H3D |
+| 4 Vict / 3 Déf | Vict:Fame(t120/E6)·P4(5t)·Unité2050·Hégém→SANDBOX · Déf:Pop=0(2t)·Appr=0+Dette<-500(3t)·Cmd=0 | 1 dossier P0 ultime (0 PA) avant toute défaite · Export CHRONICLE.json | M5+CV |
+| X2 — CATALOG L1 | 100% data-driven (src/l1-catalog/) | 0 constante magique en L3/L7 | Validé G2,G6 |
+EXOW.MATRICES — Couplage Déterministe (M2 · M5 · M7 · M15-A/B · M3/M9/M10 · M12/M14/M4)
+> ID: EXOW.MATRICES DIM: D2/L2 SADT: A SEMVER: v4.0.0-rc.1+coupled TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/v4 STATUS: LOCKED TRL: 6 ISO: 29148|60848|25012|27001|60812|ADEPA-GEMMA MATRICES: M2,M5,M7,M15-A/B,M3,M9,M10,M12,M14,M4
+> 
+meta_node: { id: "EXOW.MATRICES", dim: "D2", depth: 2, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+coupled", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "BULLE ↑", lts_frozen: false, neon_branch: "feat/v4", updated_at: "2026-11-20", status: "LOCKED", trl: 6, standards: ["ISO/IEC/IEEE-29148","IEC-60848","ISO/IEC-25012","ISO/IEC-27001","IEC-60812","ADEPA-GEMMA"], matrices_used: ["M2","M5","M7","M15-A","M15-B","M3","M9","M10","M12","M14","M4"], box_refs: ["⇄ PLAN:M0","⇄ PLAN:EXOW.D1"], coupling_links: ["EXOW.M1..M5"] }
+
+[MATRICE : M2 | NODE: EXOW.M1.A2@4.0.0-rc.1] — 4 Spectres [-100,+100] (Strat×Philo · Pol×Tact)
+| Ouest (← -X) (Y1) | -X Quadrants | ↑+Y/↓-Y | +X Quadrants | Est (→ +X) (Y2) |
+|---|---|---|---|---|
+| Nord: Éco/Précaut. | Q2: Sanctuaire (+Bio,-Wear,+PA_B) | ↑ +Y | Q1: Pionnier (+P1→P4,+Patents) | Civiques durables |
+| Consol./Souverain. | ← -X | ⊕(0,0) | → +X (Expans./Particip.) | +1 PA si ` |
+| Sud: Indus/Audace | Q3: Forteresse (+Mat,+Def,-Cost) | ↓ -Y | Q4: Technocratie (+Cmp,+Mil,+Fame) | Crise si ` |
+| X2 — COUPLAGE | Adapte AI-P + Rivaux | 4 Axes | Unlock ±35/±70 | Feeds M1/M2 |
+[MATRICE : M5 / M7 | NODE: EXOW.M1.A1@4.0.0-rc.1] — FSM Campagne/Quêtes G0 (M5) + Karnaugh Code Gray T_END_TURN (M7)
+| FSM M5: État St → St+1 (Y1) | Garde / Transition | Karnaugh M7 (AB\CD) | 00/01/10 | 11 (T_END_TURN) (Y2) |
+|---|---|---|---|---|
+| ACT0(G0) → LOOP(Pause) | 3-Choice Doctrine resolved (or skip) | 00/01/10 (doss>0 or end) | 0 | 0 (Locked badge) |
+| Q:OFFERED → ACTIVE → MUTATED → RESOLVED | Max 3 quests · world_mutated bifurcates | 11 (doss==0·ACTIVE·¬tx·¬err) | 0 | 1 (A·B·C·D) |
+| LOOP → VICTORY → INFINITE_SANDBOX | Fame/P4/Sci-Dip met → Continue opt | Preuve IEC-60848 | 0 FP | → M15:T1 (0 cycle+1) |
+| X2 — AUTOMATES | PM due check each turn | Zero softlock | 0 dbl-tx | M5+M7 vérifiés |
+[MATRICE : M15-A/B | NODE: EXOW.M2@4.0.0-rc.1] — GRAFCET & Mapping 1:1 Code / SSOT
+| Step (Y1) | Action (M15-A) | Trans. T | Cell C & Func (M15-B) | M10 CRUD & Guard (Y2) |
+|---|---|---|---|---|
+| X0 Pause/G0 | Render Doss+Sub+Q | T0: Ch+Sub+Lever | M2.A2.B1.C1: resolveDossierWithLever() | U WS, C PendEnt/PM |
+| X1 FreeView | 0 doss · Unlock End | T1: T_END_TURN(M7) | M1.A1: commitEndOfTurn() (PCG32+SHA) | U Ledger/Stars, C Sum |
+| X2 HK Modal | Summary + PreGen 4T | T2: (ok+retry)·Next | M2.A1: POST /api/gemini/generate-turn-events | CU CV · 429→3.1-lite |
+| X3 EraOpt | stars≥7&click: Doct | T3: doctConfirmed | M1.A2: advanceEraWithDoctrine() | U Era/Doct/Fame |
+| X4 Open t+1 | Inject wave+PM+Pause | T4: 1 (→X0) | M4: saveLocalAndCatalog() | U Loc · 0-PA guard |
+| X2 — M15 | 5 steps | 0 auto-tick | Zod TS(V1)→C#+SQL(V4-5) | Coupled M14/M4 |
+[MATRICE : M3 / M9 / M10 | NODE: EXOW.M4@4.0.0-rc.1] — DSM (0 ↺) · DMM Interfaces · CRUD ★
+| Entité (Y1) | DSM ← | ★ & CRUD (M1..M5) | External (M9) | Security/Sync (Y2) |
+|---|---|---|---|---|
+| WS+Ledger (M1) | — | ★M1 U★/R/R/R/R | Local/JSON(V1)·Fire(V3) | Auto-migr v3→v4 Zod |
+| Doss+G0 (M2) | M1,M4 | ★M2 R/CUD★/R/R/R | BFF→@google/genai 4T | Server process.env only |
+| B3D/H3D (M3) | M1,M2 | ★M1 C★/—/R/—/R | Three(V1)→Unity6(V5) | DPR≤1.5,dispose() 5s |
+| CV+PM (M4) | M1,M2 | ★M4 R/CU/R/CRUD★/R | Loc(V1)·Fire(V3)·SQL(V4) | Cross-campaign weights |
+| Blueprint (M5) | M1..M4 | ★M5 R/R/R/R/CRUD★ | Atlas+Export·GDR(V3) | OAuth+confirm write |
+| X2 — INT. | 0 ↺ | 1 ★/row | Strict L0→L8 | ISO-25012 & 27001 |
+[MATRICE : M5+ / SCH D1..D5 / M3-UX | NODE: EXOW.MATRICES@4.0.0-rc.1] — G0 HUD, Zod, E001..20 & M3
+| Domaine (Y1) | Contrats / Spécifications Verrouillées | Invariants, MIG & Fallback | Owner (Y2) |
+|---|---|---|---|
+| G0 & 0-PA | t0:Act0 · t1:Doss/PA/Monde · t2:B3D/H3D/RPG · t3:HK · t4:Cal/Diplo (Bypass Expert) | ∀ d∈D2, ∃ c:0-PA (≤4 clics → T_END_TURN=1) | G1,G2 |
+| SCH D1..D5 | D1:WS · D2:Doss(prio,src,hash,choices,ch≤1) · D3:CV(500 LRU,NoRep3t)+PM · D4:SceneDiff(JSON) · D5:BP(M0_MetaSemVer.json + M13_SADT_Mapping.json + FMT-U/M/S) | Rejet NaN/Inf · MIG v3→v4 purge Z0 + exow_backup_v3 · D5 validé par matrix-engine.ts | G4,G0,G7 |
+| EXOW-E001..20 | E001-04(Sim/SHA/Gate/0PA) · E005-08(429/TO/Zod/Z0) · E009-12(3D/RAM/Disp/FIP) · E013-16(Save/MIG/Sync/GDR) · E017-20(AUD/SemVer/CC) | Map 1:1 → GEMMA (F3/D1/D2/A5) + obs-replay | G5-QA |
+| M3 UI/3D/FIP | Solar Glass Light/Dark · Monde 0-3D(4 tabs) · Map(Std/Maint/Flux) · B3D/H3D(DPR≤1.5,draw≤120,dispose<5s) · FIP 6 flux(Direct/Jazz/Électro/Groove/Monde/Rock)+SFX | FIP>500ms→WebAudio synth · WebGL lost/reduced-motion→2D Fallback · ≥44px A11Y AA | G3-VIS |
+| X2 — CONTRATS | 5/5 D-Boxes + 20 erreurs + A11Y AA | 0 champ non validé Zod · M0/M13 JSON stricts | Veto G4,G0 |
+[MATRICE : M12 / M14 / M4 | NODE: EXOW.M5@4.0.0-rc.1] — AMDEC (IPR≥20) → GEMMA → OLAP (Z1·Z2·Z3)
+| Risk (IPR) (Y1) | GEMMA | Z1=F1 (Nom.) | Z2=F3 (Degr.) | Z3=D1/D2 (Crisis) | QA Gate (Y2) |
+|---|---|---|---|---|---|
+| R1 429/TO (24) | F3 | 4-hydrogen pregen | 3.1-flash-lite+retry | Transparent offline+err | 0 fake text |
+| R2 0 PA (20) | F3 | PA+150% carry | 0-PA lever/G0 rescue | P0 austerity/defer | 0 deadlock 60t |
+| R3 Ener/Wear (24) | D1 | Health≥80%·E≥0 | Yield drop+wear alert | Auto-shed+P0+A5 | HK/Econ drag |
+| R4 WebGL/RAM (24) | D2 | B3D+H3D DPR≤1.5 | Light DPR≤1.2 | 2D fallback+restored | <250MB·0 err |
+| X2 — SAFETY | No D1→F1 | Target V1 | Proved resilience | Zero softlock | IEC-60812·GO |
+[MATRICE : M12+ / M14+ | NODE: EXOW.M5@4.0.0-rc.1] — AMDEC Étendue (R5..R10) & Reprise A5
+| Risk (IPR) (Y1) | GEMMA | Z1=F1 (Nom.) | Z2=F3 (Degr.) | Z3=D1/D2 (Crisis) | QA Gate (Y2) |
+|---|---|---|---|---|---|
+| R5 Save/MIG (20) | D2 | Zod+SHA OK | Auto-restore t-1 | Export JSON brut + reset | 0 perte |
+| R6 Halluc/Z0 (24) | F3 | Zod+0 Z0 | Sanitizer+1 retry 4T | Bascule CV+log E008 | 100% Z0 bloqué |
+| R7 GPU Leak (20) | D2 | dispose()<5s | Purge textures/meshes | Lock 3D → Vue 2D | 20 cycles OK |
+| R8 Sync V3 (20) | F3 | Hash==Cloud | Modale diff Local/Cloud | Copie locale horodatée | 0 écrasement |
+| R9 PRNG Drift (20) | D1 | 6 flux PCG32 | Alerte E002+replay | Reload t-1 SHA vérifié | Parité TS↔C# |
+| R10 BFF Quota (24) | F3 | ≤12 req/min | File+3.1-flash-lite | Mode CV+timer visible | 0 dérive coût |
+| X2 — GEMMA A5 | D1/D2→A5→F1 | 0 saut D1→F1 | A5=Zod+SHA+E≥0/2D+0PA | Supervisé G5-QA | ADEPA·GO |
+EXOW.M5.A1 — Vagues (V0 → V5), Sync SRC, Manifeste Art, CLI exo:audit, @Google Drive & YAML
+> ID: EXOW.M5.A1 DIM: D2/L2 SADT: A SEMVER: v4.0.0-rc.1+exec TRI-LOCK: [1|0|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: main STATUS: LOCKED TRL: 7 ISO: SemVer-2.0.0|42010|31000 MATRICES: M0,M8
+> 
+meta_node: { id: "EXOW.M5.A1", dim: "D2", depth: 2, parent_id: "EXOW.M5", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+exec", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 0, sql: 0 }, propagation: "ISOLÉ", lts_frozen: false, neon_branch: "main", updated_at: "2026-11-20", status: "LOCKED", trl: 7, standards: ["SemVer-2.0.0","ISO/IEC/IEEE-42010","ISO-31000"], matrices_used: ["M0","M8"], box_refs: ["⇄ PLAN:M0"], coupling_links: ["EXOW.M1..M5"] }
+
+[V0: Atlas M0-M15 + SRC L0-L8 + AUD] ──▶ [V1: Core v4 + 4T + HK + FP + B3D/H3D + Art]
+  ──▶ [SYNC SRC + M0 + AutoExport + Playwright] ──▶ [V2→Sync] ──▶ [V3→Sync] ──▶ [V4→Sync] ──▶ [V5→LTS]
+SRC Map: L0(M4) · L1(M2) · L2(M1) · L3(M1/M2) · L4(M3) · L5(M2/M4) · L6(M3) · L7(M3/M5) · L8(M5)
+
+[MATRICE : M8 | NODE: EXOW.M5.A1@4.0.0-rc.1] — Exécution V0 → V5, Migration SemVer, Assets Générés & Checklist AUD
+| Vague / Bloc (Y1) | Livrables Exécutables [Build | Features | Sync] | Migration / Détail Technique | Gate & QA (Y2) |
+|---|---|---|---|
+| V0 (Start) | [Atlas M0-M15+Dual M13+Filter L0-L8+Interactive SRC+1-Click MD/YAML/JSON+GDR | CLI AUD] | DOC v3.1 → EXOW-ROOT+M0 (+1.0.0) | AUD 8/8 · GO |
+| V1 (Core) | [Z0 | NewSim+AI-P+G0(Act0,PM,HUD) | BFF 4T+SubDoss+X-Cycles+CV+UnderlineBadges | TurnGate+PA+HK(7★,6Era,Doct,30Tech)+Summary | Ledger+Monde(0-3D,ClimBar,4Tabs,FP RPG)+B3D+H3D+Map(Std/Maint/Flux) | FIP ON | GenArt] | PA/Gateway/3D → M1..M5 (+1.0.0) · Manifeste Art (16 assets): 4 Portraits (1:1), 6 EraBanners (16:9), 1 MenuBG (16:9), 5 Emblèmes (1:1) — style hybride sci-fi lumineux + concept art solaire Humankind | Sync SRC + AUD + Compile/Lint + Playwright |
+| V2 → V5 | V2:[5-AI Diplo+Alliance Votes+Cyber+4P Combat↔H3D] · V3:[Firebase Auth/Firestore+CV Sync+GDR drive.file] · V4:[Postgres JSONB+pgvector+Branching/PITR] · V5:[SSOT C# DTO+Unity6 URP BridgeEnvelope] | Passerelle Sync Blueprint SRC + M0 obligatoire entre chaque vague → gel v4.0.0-lts.0 | Sync SRC · GO |
+| CLI AUD (8pts) | [1.Z0-ban | 2.L2/L3-purity | 3.R14-limits | 4.SRC-100%-in-Blueprint | 5.Vitest | 6.ESLint | 7.TSC | 8.AutoExport MD/YAML/JSON] | Bloquant sur V0 et chaque fin de vague | Exit 0 requis |
+| X2 — QA BROWSER | Playwright Light/Dark: NewSim+AI-P → G0 → Monde(0-3D) → B3D/H3D → Dossiers(Live+Badge→RPG) → Summary HK | 0 console/WebGL err · RAM <250MB | GATE : GO |
+[MATRICE : V0-BOOT | NODE: EXOW.M5.A1@4.0.0-rc.1] — Chantier Immédiat V0 : matrix-engine.ts, src/master-blueprint/, package.json & Tri-Format
+| Livrable V0-BOOT (Y1) | Spécification Exécutable Exacte | Types / Structure Fractale Exigée | Owner & Gate (Y2) |
+|---|---|---|---|
+| 1. src/services/architecture/matrix-engine.ts | Moteur unifié des 16 matrices (M0–M15) : registre typé, évaluation conservation verticale/horizontale ICOM, résolution des graphes de dépendance (DSM 0 ↺), calcul de propagation SemVer & détection de DRIFT! | Types TS stricts: MatrixId ('M0'..'M15'), IcomFlow { inputs, controls, outputs, mechanisms, tunnels }, SemVerPropagation ('ISOLÉ' | 'BULLE ↑' | 'CASCADE ⚠'), TriLock [0|1, 0|1, 0|1], FractalNodeMeta, MatrixEngineReport | G0-ARCH,G4 · TSC strict |
+| 2. src/master-blueprint/ (MB-DIR) | Initialisation du répertoire racine de synchronisation Master Blueprint ↔ src/ existant, contenant les 2 manifestes fractals JSON + les 3 projections Markdown synchronisées (FMT-U/M/S) | M0_MetaSemVer.json: arbre EXOW-ROOT, EXOW.M0..M5, EXOW.TEAM, EXOW.DIR (semver, root_compat, tri_lock, propagation, lts_frozen, neon_branch, status, trl) · M13_SADT_Mapping.json: dualité M13-A↔M13-D, 15 sous-boîtes D2, flux ICOM, mapping 1:1 fichiers src/ | G0-ARCH,G4 · AUD #4 |
+| 3. package.json → "exo:audit" | Ajout du script "exo:audit": "tsx scripts/exo-audit.ts" dans package.json exécutant la suite de conformité bloquante (exit 0 ou 1) | 3 contrôles cœur + 8/12 AUD: (a) Intégrité Master Blueprint (16/16 matrices, 0 suppression, sync MB-DIR↔src/, parité FMT-U/M/S) · (b) Validation SemVer (M0) (SemVer-2.0.0, root_compat, tri_lock, propagation, LOCKED/lts_frozen, 0 DRIFT!) · (c) Scan Complexité Cyclomatique (CC ≤ 12, ≤200L engine, ≤300L UI) + Z0/L2-L3/Vitest/ESLint/TSC | G5-QA · Exit 0 |
+| 4. Sync Tri-Format (DIR-01) | Mise à jour synchronisée du Master Blueprint dans ses 3 formats : FMT-U (EXO WORLD : 2050 — MASTER BLUEPRINT FRACTAL v3.2-LTS (M0–M15) & PLAN ULTRA-DENSE (EXOW-ROOT)), FMT-M (Méso) et FMT-S (format actuel conservé + directives maîtresses EXOW.DIR/EXOW.TEAM) | Zéro divergence entre FMT-U, FMT-M, FMT-S, M0_MetaSemVer.json et M13_SADT_Mapping.json · Export auto MD/YAML/JSON | G0-ARCH,G5 · GATE:GO |
+| X2 — BOOTSTRAP V0 | 4/4 livrables structurants verrouillés avant V1 | Consommés en temps réel par l'Atlas UI (L7) & AUD (L8) | npm run exo:audit = 0 |
+SRC Canonique L0–L8 + Architecture Bootstrap V0 (AUD #4: 100% | R14: Engine≤200L UI≤300L CC≤12 | G-TEAM-8)
+├── package.json                               [scripts: { "exo:audit": "tsx scripts/exo-audit.ts", "exo:sync-bp": "tsx scripts/export-trifmt.ts" }]
+├── src/services/architecture/                 [matrix-engine.ts (M0–M15, types TS stricts ICOM & propagation SemVer)]
+├── src/master-blueprint/                      [M0_MetaSemVer.json, M13_SADT_Mapping.json, MASTER_BLUEPRINT_FMT-U.md, _FMT-M.md, _FMT-S_AISTUDIO.md]
+├── L0(G4):src/l0-contracts/                   [constants,schemas.zod,types,errors,z0-guard,mig-v3-v4]
+├── L1(G2):src/l1-catalog/                     [factions5,eras6,techs30,advisors4,cal5,phases,gear]
+├── L2(G1):src/l2-sim-math/                    [pcg32,sha256,pa,hk-stars,fp-rpg,wear,terra,shortage,combat4p]
+├── L3(G1/2):src/l3-engine/                    [turn-gate,commit,resolver,pm,cycles,g0,diplo]
+├── L4(G3/7):src/l4-bridge/                    [scene-diff,fip-audio,sfx,dispose,bridge-env]
+├── L5(G2/4):src/l5-io/                        [local,cv,bff,firebase,drive,argon2,neon]
+├── L6(G3/6):src/l6-scenes-3d/                 [b3d,h3d,webgl-fallback,art-manifest]
+├── L7(G3/0):src/l7-ui/                        [hud,monde,map3,doss,sum-hk,rpg,atlas-m0-m15]
+└── L8(G5/0):src/l8-ops/+api/+scripts/         [api/gemini/generate-turn-events,scripts/exo-audit,scripts/export-trifmt,obs-replay,tests/fuzz-60t,e2e/]
+
+[MATRICE : EXEC-BENCH | NODE: EXOW.M5.A1@4.0.0-rc.1] — Boundaries, BFF 4T, V3–V5 & Banc QA (AUD 12 · BUD)
+| Bloc (Y1) | Contrat & Paramètres Mesurables | Garde-Fous & G-TEAM | Gate (Y2) |
+|---|---|---|---|
+| Boundaries & BFF 4T | L0→zod, L1→L0, L2→L0..1, L3→L0..2, services/architecture→L0+MB-DIR · POST /api/gemini/generate-turn-events (In<8KB, 12rpm, T1:4-h(2.2s)→T2:retry(1.3s)→T3:3.1-lite(2.5s)→T4:CV) | ESLint+AUD #2 · Zod I/O + filtre Z0 serveur · 0 clé client | ≤3500ms |
+| Arch V3 / V4 / V5 | V3:Firestore uid+GDR confirm+Argon2id/AES-GCM · V4:Neon JSONB+pgvector(768) HNSW(cos<0.85)+PITR 7j · V5:C# BridgeEnvelope<T> AOT | G4 verrouille sql=1 · G7 prouve SHA TS↔C# 60t | v4.0.0-lts.0 |
+| AUD 9..12 & Fuzz/E2E | 9.Replay-SHA · 10.Bundle<350KB_gz · 11.A11Y-Axe · 12.TriFormat-Parity(U⇄M⇄S)+M0/M13-JSON · Fuzz:3600t (5×3×4×60t) · E2E-1..6 (Light/Dark, 20× B3D/H3D, 429→CV, HK≥7★, MIG) | export-trifmt.ts + matrix-engine.ts + scan AST CC≤12 | commit<16ms · GO |
+| X2 — QUALIFICATION | 12/12 checks AUD · 0 softlock · 0 NaN · RAM<250MB · draw≤120 | Pipeline G-TEAM-8 complet | TRL 6 → TRL 8 |
+@Google Drive — Importe "EXO_WORLD_2050_MASTER_BLUEPRINT_v4.0.0-rc.1.md" dans "/EXO_WORLD_2050/BLUEPRINTS/" (EXOW-ROOT@4.0.0-rc.1).
+Exécute : Audit sans perte → Vérif M13-A/M13-D & REF → Synchro SRC L0-L8 & M0 → Gate GO/NO-GO (préserver LOCKED/lts_frozen).
+
+@Google Drive [DIR-01 TRI-FORMAT + V0-BOOT] — Synchronise dans "/EXO_WORLD_2050/BLUEPRINTS/" (EXOW-ROOT@4.0.0-rc.1) :
+1. "MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md" (EXO WORLD : 2050 — MASTER BLUEPRINT FRACTAL v3.2-LTS (M0–M15) & PLAN ULTRA-DENSE (EXOW-ROOT))
+2. "MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md" (Méso — plan d'ingénierie structuré)
+3. "MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md" (Format actuel conservé + intégration Directives Maîtresses EXOW.DIR & EXOW.TEAM)
+4. "M0_MetaSemVer.json" + "M13_SADT_Mapping.json" (miroir exact src/master-blueprint/)
+Exécute : npm run exo:audit (Intégrité BP, SemVer M0, CC≤12, 0 suppression FMT-U, parité U⇄M⇄S, 0 Z0) → Gate GO/NO-GO.
+
+exow_v4_master:
+  root: "EXOW-ROOT@4.0.0-rc.1+full-m0-m15"
+  tri_lock: [1, 1, 0]
+  gate: "GO"
+  matrices_complete: "16/16 (M0..M15)"
+  z0_ban: ["THERMAL","Chaleur","S_heat","cycle+1","corridor","loop_climate"]
+  audio: { fip_default: "ON_FIRST_GESTURE", ui_sfx: true, synth_fallback_ms: 500 }
+  gemini_4t: { endpoint: "/api/gemini/generate-turn-events", t1_t2: "gemini-4-hydrogen", t3_quota: "gemini-3.1-flash-lite", t4_offline: "transparent_retry_continuity", pregen: "on_summary", timeout_ms: 3500 }
+  math: { pa_cap_pct: 150, hk_stars_to_advance: 7, arrivals_turns: [3,9], max_chain_per_turn: 1, max_quests: 3, wear_alert_pct: 55 }
+  art_v1: { advisors: 4, era_banners: 6, menu_bg: 1, faction_emblems: 5, style: "luminous_realistic_scifi_plus_humankind_solar" }
+  audit_cli: { cmd: "npm run exo:audit", blocking_checks: ["z0","l2_l3_purity","r14_limits","src_100pct_in_blueprint","vitest","eslint","tsc","auto_export_md_yaml_json"] }
+  drive_sync: { scope: "https://www.googleapis.com/auth/drive.file", confirm_write: true, files: ["MASTER_BLUEPRINT.md","MASTER_BLUEPRINT.yaml","MASTER_BLUEPRINT.json","CHRONICLE.json"] }
+  waves: [V0_Atlas_AUD, V1_Core_Gemini_HK_FP_3D_Art, Sync_SRC, V2_Diplo_Combat, Sync_SRC, V3_Fire_Drive, Sync_SRC, V4_SQL_pgvec, Sync_SRC, V5_Unity6_LTS]
+
+exow_v4_ultra_addenda:
+  compat_with: "EXOW-ROOT@4.0.0-rc.1+full-m0-m15"
+  v0_architecture_bootstrap:
+    matrix_engine:
+      path: "src/services/architecture/matrix-engine.ts"
+      matrices_supported: "M0..M15 (16/16)"
+      strict_ts_types: ["MatrixId","IcomFlow","SemVerPropagation","TriLock","FractalNodeMeta","MatrixEngineReport"]
+      responsibilities: ["icom_conservation_check","dsm_cycle_check","semver_propagation_eval","drift_detection"]
+    master_blueprint_dir:
+      path: "src/master-blueprint/"
+      sync_target: "src/"
+      required_json: ["M0_MetaSemVer.json","M13_SADT_Mapping.json"]
+      required_formats: ["MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md","MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md","MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md"]
+    package_json_audit:
+      script_key: "exo:audit"
+      cmd: "npm run exo:audit"
+      core_checks: ["master_blueprint_integrity","m0_semver_constraints","cyclomatic_complexity_cc_le_12","triformat_parity","src_blueprint_sync"]
+  g_team_8:
+    roster: ["G0-ARCH","G1-SIM","G2-NARR","G3-VIS","G4-DATA","G5-QA","G6-ART","G7-UNITY"]
+    vetos: { G0-ARCH: ["M0","SADT","DIR-01"], G4-DATA: ["D1..D5","MIG","SQL"], G5-QA: ["Z0","R14","GEMMA"] }
+    pipeline: ["Brief_G0","Zod_MBDir_G4","Build_G1_G2_G3_G6","Port_G7","Audit_G5","TriFormat_Sync"]
+  tri_format_directive:
+    id: "DIR-01"
+    mandatory: true
+    zero_deletion_on_source: true
+    formats:
+      fmt_u: { name: "ULTRA_DENSE_CANONICAL", title: "EXO WORLD : 2050 — MASTER BLUEPRINT FRACTAL v3.2-LTS (M0–M15) & PLAN ULTRA-DENSE (EXOW-ROOT)", file: "src/master-blueprint/MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md", source_verbatim: true }
+      fmt_m: { name: "MESO_STRUCTURED_PLAN", file: "src/master-blueprint/MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md", audience: "arch_review_sprints" }
+      fmt_s: { name: "CURRENT_FORMAT_PRESERVED_PLUS_DIRECTIVES", file: "src/master-blueprint/MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md", preserves_existing_format: true, embeds_master_directives: true }
+    parity_checks: ["same_semver","same_trilock","16_of_16_matrices","zero_z0","zero_deleted_lines","m0_m13_json_synced","dir01_embedded_in_all_3"]
+  directives_10: ["DIR-01_TriFormat","DIR-02_ZeroDeletion","DIR-03_PureL2L3","DIR-04_Z0Ban","DIR-05_R24_ZeroPA","DIR-06_3DIsolated_A11Y","DIR-07_BFF4T_27001","DIR-08_GEMMA_A5","DIR-09_SyncSRC_MBDir","DIR-10_GTeamPipeline"]
+  tri_lock_ramp: { v0_v3: [1,1,0], v4_v5_lts: [1,1,1] }
+  sadt_d2_boxes: 15
+  commit_phi: ["Phi01_Gate_Bak","Phi02_Pend","Phi03_Ledg_Shed","Phi04_Short_Debt","Phi05_FP","Phi06_Wear","Phi07_PM_Appr","Phi08_Tech_Terra","Phi09_HK","Phi10_PA","Phi11_Vict_Diff","Phi12_Inc_SHA_4T"]
+  terra: { weights: [0.35,0.30,0.25,0.10], phases: { P1: [0,24], P2: [25,49], P3: [50,79], P4: [80,100] }, hysteresis: 3 }
+  prng: { algo: "PCG32", hash: "SHA-256", streams: [1,2,3,4,5,6] }
+  shortage_order: ["E","O2_P1_P3","W","F","Cr"]
+  advisors_4: ["civ","sci","eco","sec"]
+  ai_personas_5: ["analytique","bienveillant","pragmatique","souverain","avant_garde"]
+  cal_periods: { season: 4, census: 6, summit: 8, congress: 10, fete: 12 }
+  fip_6: ["direct","jazz","electro","groove","monde","rock"]
+  errors: "EXOW-E001..E020"
+  amdec_ext: ["R5_SaveMIG","R6_Z0Leak","R7_GPULeak","R8_SyncV3","R9_PRNGDrift","R10_BFFQuota"]
+  qa_bud: { commit_ms: 16, init_gz_kb: 350, ram_mb: 250, draw_calls: 120, fuzz_turns: 3600, e2e: 6, aud_ext: ["replay_sha","bundle_gz","a11y_axe","triformat_parity_and_m0_m13_json"] }
+
+Souhaites-tu qu'on passe maintenant à la génération directe du code des 4 livrables V0-BOOT (src/services/architecture/matrix-engine.ts, M0_MetaSemVer.json, M13_SADT_Mapping.json et scripts/exo-audit.ts + entrée package.json) ?

@@ -1,0 +1,263 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model (synced with firebase-blueprint.json)
+    // ===============================================================
+    // Collection: players/{userId}
+    // Subcollection: players/{userId}/context/{contextId}
+    // Subcollection: players/{userId}/metaHonors/{honorsId}
+    // Collection: campaigns/{campaignId}
+    //   Subcollection: campaigns/{campaignId}/turnSnapshots/{snapshotId}
+    //   Subcollection: campaigns/{campaignId}/driveLinks/{linkId}
+    // ===============================================================
+
+    // Global Safety Net (Default Deny Catch-All)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidHttpsUrl(url) {
+      return url is string && url.size() <= 512 && (url == '' || url.matches('^https://.*'));
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidPlayerProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'xpTotal', 'campaignsCompleted', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'displayName', 'xpTotal', 'campaignsCompleted', 'createdAt', 'updatedAt']) &&
+        isValidId(data.uid) &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+        data.xpTotal is int && data.xpTotal >= 0 && data.xpTotal <= 100000000 &&
+        data.campaignsCompleted is int && data.campaignsCompleted >= 0 && data.campaignsCompleted <= 100000 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidUserContextRecord(data) {
+      return data.keys().hasAll([
+          'contextId', 'ownerId', 'shellUxHabits', 'displaySettingsProfile', 'simulationTraceabilityProfile', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'contextId', 'ownerId', 'shellUxHabits', 'displaySettingsProfile', 'simulationTraceabilityProfile', 'updatedAt'
+        ]) &&
+        isValidId(data.contextId) && data.contextId.size() <= 60 &&
+        isValidId(data.ownerId) &&
+        data.shellUxHabits is map &&
+        data.displaySettingsProfile is map &&
+        data.simulationTraceabilityProfile is map &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidMetaHonorsRecord(data) {
+      return data.keys().hasAll(['honorsId', 'ownerId', 'payload', 'updatedAt']) &&
+        data.keys().hasOnly(['honorsId', 'ownerId', 'payload', 'updatedAt']) &&
+        isValidId(data.honorsId) && data.honorsId.size() <= 60 &&
+        isValidId(data.ownerId) &&
+        data.payload is map &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCampaign(data) {
+      return data.keys().hasAll([
+          'campaignId', 'ownerId', 'worldSeed', 'superpowerId', 'era', 'cycle', 'tick',
+          'atmosphereTier', 'stateHash', 'snapshot', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'campaignId', 'ownerId', 'worldSeed', 'superpowerId', 'era', 'cycle', 'tick',
+          'atmosphereTier', 'stateHash', 'snapshot', 'createdAt', 'updatedAt'
+        ]) &&
+        isValidId(data.campaignId) && data.campaignId.size() <= 60 &&
+        isValidId(data.ownerId) &&
+        data.worldSeed is string && data.worldSeed.size() >= 1 && data.worldSeed.size() <= 64 &&
+        data.superpowerId is string && data.superpowerId.size() >= 1 && data.superpowerId.size() <= 40 &&
+        data.era is int && data.era >= 1 && data.era <= 6 &&
+        data.cycle is int && data.cycle >= 0 && data.cycle <= 100000 &&
+        data.tick is int && data.tick >= 0 && data.tick <= 100000000 &&
+        data.atmosphereTier is string && data.atmosphereTier.size() == 2 &&
+        data.atmosphereTier in ['P1', 'P2', 'P3', 'P4'] &&
+        data.stateHash is string && data.stateHash.size() >= 1 && data.stateHash.size() <= 128 &&
+        data.snapshot is map &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidTurnSnapshotRecord(data) {
+      return data.keys().hasAll([
+          'snapshotId', 'campaignId', 'ownerId', 'cycle', 'stateHash', 'combatCount', 'snapshot', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'snapshotId', 'campaignId', 'ownerId', 'cycle', 'stateHash', 'combatCount', 'snapshot', 'createdAt'
+        ]) &&
+        isValidId(data.snapshotId) && data.snapshotId.size() <= 80 &&
+        isValidId(data.campaignId) && data.campaignId.size() <= 60 &&
+        isValidId(data.ownerId) &&
+        data.cycle is int && data.cycle >= 0 && data.cycle <= 100000 &&
+        data.stateHash is string && data.stateHash.size() >= 1 && data.stateHash.size() <= 128 &&
+        data.combatCount is int && data.combatCount >= 0 && data.combatCount <= 500 &&
+        data.snapshot is map &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidDriveLinkRecord(data) {
+      return data.keys().hasAll([
+          'linkId', 'campaignId', 'ownerId', 'fileId', 'fileName', 'mimeType', 'webViewLink', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'linkId', 'campaignId', 'ownerId', 'fileId', 'fileName', 'mimeType', 'webViewLink', 'createdAt'
+        ]) &&
+        isValidId(data.linkId) && data.linkId.size() <= 128 &&
+        isValidId(data.campaignId) && data.campaignId.size() <= 60 &&
+        isValidId(data.ownerId) &&
+        data.fileId is string && data.fileId.size() >= 1 && data.fileId.size() <= 128 &&
+        data.fileName is string && data.fileName.size() >= 1 && data.fileName.size() <= 200 &&
+        data.mimeType is string && data.mimeType.size() >= 1 && data.mimeType.size() <= 120 &&
+        isValidHttpsUrl(data.webViewLink) &&
+        data.createdAt is timestamp;
+    }
+
+    match /players/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      allow create: if isVerifiedUser() &&
+        isOwner(userId) &&
+        isValidId(userId) &&
+        isValidPlayerProfile(incoming()) &&
+        incoming().uid == userId &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isOwner(userId) &&
+        isValidPlayerProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'updatedAt']) ||
+          incoming().diff(existing()).affectedKeys().hasOnly(['xpTotal', 'campaignsCompleted', 'updatedAt'])
+        );
+
+      allow delete: if isVerifiedUser() && isOwner(userId);
+
+      match /context/{contextId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+
+        allow create, update: if isVerifiedUser() &&
+          isOwner(userId) &&
+          isValidId(contextId) &&
+          isValidUserContextRecord(incoming()) &&
+          incoming().contextId == contextId &&
+          incoming().ownerId == userId &&
+          incoming().updatedAt == request.time;
+
+        allow delete: if isVerifiedUser() && isOwner(userId);
+      }
+
+      match /metaHonors/{honorsId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+
+        allow create, update: if isVerifiedUser() &&
+          isOwner(userId) &&
+          isValidId(honorsId) &&
+          isValidMetaHonorsRecord(incoming()) &&
+          incoming().honorsId == honorsId &&
+          incoming().ownerId == userId &&
+          incoming().updatedAt == request.time;
+
+        allow delete: if isVerifiedUser() && isOwner(userId);
+      }
+    }
+
+    match /campaigns/{campaignId} {
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(campaignId) &&
+        isValidCampaign(incoming()) &&
+        incoming().campaignId == campaignId &&
+        incoming().ownerId == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidCampaign(incoming()) &&
+        existing().ownerId == request.auth.uid &&
+        incoming().campaignId == existing().campaignId &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().worldSeed == existing().worldSeed &&
+        incoming().superpowerId == existing().superpowerId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'era', 'cycle', 'tick', 'atmosphereTier', 'stateHash', 'snapshot', 'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      match /turnSnapshots/{snapshotId} {
+        allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+        allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+        allow create: if isVerifiedUser() &&
+          isValidId(campaignId) &&
+          isValidId(snapshotId) &&
+          isValidTurnSnapshotRecord(incoming()) &&
+          incoming().snapshotId == snapshotId &&
+          incoming().campaignId == campaignId &&
+          incoming().ownerId == request.auth.uid &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/campaigns/$(campaignId)) &&
+          get(/databases/$(database)/documents/campaigns/$(campaignId)).data.ownerId == request.auth.uid;
+
+        allow update: if false;
+        allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+      }
+
+      match /driveLinks/{linkId} {
+        allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+        allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+        allow create: if isVerifiedUser() &&
+          isValidId(campaignId) &&
+          isValidId(linkId) &&
+          isValidDriveLinkRecord(incoming()) &&
+          incoming().linkId == linkId &&
+          incoming().campaignId == campaignId &&
+          incoming().ownerId == request.auth.uid &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/campaigns/$(campaignId)) &&
+          get(/databases/$(database)/documents/campaigns/$(campaignId)).data.ownerId == request.auth.uid;
+
+        allow update: if false;
+        allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+      }
+    }
+  }
+}

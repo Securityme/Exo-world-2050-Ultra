@@ -1,0 +1,407 @@
+Index des 16 blocs d'ajout ultra-denses (0 ligne supprimée ou altérée sur le document source) :
+ * [+ AJOUT 1] LEX++ & Constantes Globales (CONST_ROOT).
+ * [+ AJOUT 2] EXOW.M0+ : Rampe Tri-Lock [D|C|S], règles SemVer, QFD/Pugh +5..+8 et traçabilité ISO.
+ * [+ AJOUT 3] EXOW.D1+ : Zoom SADT D2 complet (15 sous-boîtes M1.A1..M5.A3).
+ * [+ AJOUT 4] EXOW.D1++ : Équations M8+ (P1→P4, PM, pénuries, HK+, combat 4P, PCG32) + Pipeline ordonné commitEndOfTurn() (Φ01→Φ12).
+ * [+ AJOUT 5] EXOW.D1+++ : Grand Livre M1+ (coûts L1–L5 des 7 bâtiments, équipement RPG T1–T3, synergies & statuts FP).
+ * [+ AJOUT 6] EXOW.CATALOG+ : 4 Conseillers (Adv1..4), Personas AI-P, 5 CalEvents, 4 Phases P1→P4 & matrice des 30 Techs.
+ * [+ AJOUT 7] EXOW.CATALOG++ : Spécification V2 (5 IA rivales, états diplo, 6 Ops Cyber, conditions de Victoire/Défaite).
+ * [+ AJOUT 8] EXOW.MATRICES+ : Schémas Zod canoniques (D1..D5), codes d'erreur EXOW-E001..E020 & pipeline MIG v3→v4.
+ * [+ AJOUT 9] EXOW.MATRICES++ : EXOW.M3 détaillé (Bento Solar Glass, Monde 0-3D 4 onglets, B3D/H3D, Map 3 calques, FIP 6 flux, A11Y).
+ * [+ AJOUT 10] EXOW.MATRICES+++ : Sous-automates G0 (déverrouillage HUD t1→t4), quêtes mutantes & preuve anti-softlock 0-PA.
+ * [+ AJOUT 11] EXOW.MATRICES++++ : Extension AMDEC (R5→R10) & protocole de reprise GEMMA (D1/D2 → A5 → F1).
+ * [+ AJOUT 12] EXOW.M5.A1+ : Arborescence SRC L0–L8 complète, budgets R14 et matrice d'imports interdits.
+ * [+ AJOUT 13] EXOW.M5.A1++ : Contrat HTTP BFF 4T, garde-fous prompt (NoRep3t/Z0/mix 60:40) & télémétrie OBS.
+ * [+ AJOUT 14] EXOW.M5.A1+++ : Architecture détaillée V3 (Firebase/Drive/Argon2id), V4 (Neon SQL/pgvector) & V5 (Unity 6 URP C# DTO).
+ * [+ AJOUT 15] EXOW.M5.A1++++ : Banc QA étendu (AUD 8 bloquants + 4 étendus, fuzzing 60t, 6 parcours Playwright E2E, budgets BUD).
+ * [+ AJOUT 16] exow_v4_hyper_addenda : Bloc YAML machine-readable exhaustif (sans toucher exow_v4_master).
+EXO WORLD : 2050 — MASTER BLUEPRINT FRACTAL v3.2-LTS (M0–M15) & PLAN ULTRA-DENSE (EXOW-ROOT)
+> ID: EXOW-ROOT DIM: D0/L0 SADT: ROOT SEMVER: v4.0.0-rc.1+full-m0-m15 TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/v4-spiral STATUS: REVIEW TRL: 6 ISO: SemVer-2.0.0|ISO-8601|ISO-16290|29148|25010|25012|27001|42010|31320-1|60848|60812|31000 MATRICES: M0–M15 (16/16)
+> 
+meta_node: { id: "EXOW-ROOT", dim: "D0", depth: 0, parent_id: null, root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+full-m0-m15", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "CASCADE ⚠", lts_frozen: false, neon_branch: "feat/v4-spiral", updated_at: "2026-11-20", status: "REVIEW", trl: 6, standards: ["SemVer-2.0.0","ISO-8601","ISO-16290","ISO/IEC/IEEE-42010","ISO/IEC/IEEE-31320-1"], matrices_used: ["M0","M1","M2","M3","M4","M5","M6","M7","M8","M9","M10","M11","M12","M13-A","M13-D","M14","M15-A","M15-B"], box_refs: ["↘ ZOOM:EXOW.M1..M5"], coupling_links: ["EXOW.M0:GO"] }
+
+LEX (0% loss): WS=WorldState CV=LivingCatalog(x-run) G0=Genèse2050(Act0+PM+HUD-Unl) PM=Promises(turn-deadline) HK=Humankind(7Star×3,≥7=ManualEra,6FactionEras,Fame,Evol+Comm+Transcend,30 Shared/CyberTech) FP=Frostpunk(Workforce+RPG:HP/Happy/Moral/Fat/Outfit/Wpn/Tool/XP/Syn) B3D=Bldg3D+Wear/Pwr H3D=FleetHangar3D PA=Gen+4Sub(7-fact,150%cap,0-PA guard) AI-P=CustomAI(Name/Tone/Adapt) 4T=Gemini(4-hydrogen→3.1-flash-lite→retry/offline) Z0=Ban(THERMAL|Chaleur|S_heat|cycle+1|corridor|loopClimate) R24=100% actions via Dossiers,rest=View R14=≤300L/≤200L/CC≤12 FIP=Radio+SFX ON(first-gesture) AUD=npm run exo:audit GDR=@Google Drive.
+> [+ AJOUT 1 — LEX++ & Table des Constantes Globales (CONST_ROOT)]
+> LEX++ (0% collision): P1..P4=Phases Planétaires(P1:Stérile/O2-requis→P2:Atmo-Fine→P3:Hydrosphère→P4:Biosphère-Autonome) SCH=Schémas Zod Stricts(D1..D5) MIG=Auto-Migration Idempotente(v3.1→v4.0 + backup t-1) A11Y=WCAG 2.1 AA(≥44×44px, contraste ≥4.5:1, clavier, prefers-reduced-motion) I18N=Clés dictionnaire(FR natif, EN prêt) OBS=Replay Déterministe(runSeed+inputs→SHA-256) + Crash-Dump sans PII BUD=Budgets Perf(commit<16ms, JS_init<350KB_gz, RAM<250MB, drawCalls≤120) Φ01..Φ12=Pipeline ordonné de fin de tour EXOW-E###=Catalogue d'erreurs canoniques DTO=Contrats AOT C# Unity6(V5) HNSW=Index vectoriel pgvector(768)(V4).
+> 
+[+ AJOUT : CONST_ROOT | NODE: EXOW-ROOT@4.0.0-rc.1] — Invariants Numériques Verrouillés (SSOT L0)
+| Constante (Y1) | Valeur Verrouillée | Portée | Garantie / Guard (Y2) |
+|---|---|---|---|
+| MAX_MAIN_DOSSIERS / MAX_CHAIN | 3 / 1 | M2.A2 · L3 | Jamais plus de 3 principaux + sous-dossiers + ≤1 chaîne/tour |
+| MAX_ACTIVE_QUESTS / NOREP_WIN | 3 / 3 tours | M2 · D3 | Exclusion stricte par themeHash sur fenêtre glissante t-3..t |
+| PA_BOUNDS / PA_CARRY_MAX | [2..12] / 150% | M1.A1 · L2 | Au moins 1 choix 0 PA garanti par dossier (R2 anti-softlock) |
+| HK_ERA_STARS / ERAS_MAX | ≥ 7 / 6 (E1..E6) | M1.A2 · L1 | Passage manuel uniquement (jamais forcé) · Transcendance +10% |
+| CV_LIVE_RATIO / CV_LRU_CAP | 60% CV : 40% 4T / 500 | M2.A1 · M4 | Pondération inter-campagnes + purge LRU bornée |
+| PRNG_ALGO / HASH_ALGO | PCG32 (64-bit state) / SHA-256 | L2 · OBS | 0 Math.random, 0 Date.now, 5 flux isolés par tour |
+EXOW.M0 — Gouvernance Méta-SemVer (M0) · Stratégie (M6 QFD · M11 Pugh)
+> ID: EXOW.M0 DIM: D1/L1 SADT: M SEMVER: v4.0.0-rc.1+gov TRI-LOCK: [1|0|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: main STATUS: LOCKED TRL: 7 ISO: SemVer-2.0.0|ISO-8601|ISO-16290|29148|25010 MATRICES: M0,M6,M11
+> 
+meta_node: { id: "EXOW.M0", dim: "D1", depth: 1, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+gov", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 0, sql: 0 }, propagation: "ISOLÉ", lts_frozen: false, neon_branch: "main", updated_at: "2026-11-20", status: "LOCKED", trl: 7, standards: ["SemVer-2.0.0","ISO-8601","ISO-16290","ISO/IEC/IEEE-29148","ISO/IEC-25010"], matrices_used: ["M0","M6","M11"], box_refs: ["⇄ PLAN:M13-A","⇄ PLAN:M13-D","⇄ PLAN:M8"], coupling_links: ["EXOW-ROOT","EXOW.M1..M5"] }
+
+[MATRICE : M0 | NODE: EXOW-ROOT@4.0.0-rc.1]
+| Nœud Fractal & Dim (Y1) | SemVer | [D|C|S] | Compat | Prop. / Blast | Neon Br. | ISO·TRL | Gate (Y2) |
+|---|---|---|---|---|---|---|---|
+| EXOW-ROOT (D0) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | CASCADE ⚠ (Z0) | feat/v4 | 42010·T6 | SYNC·GO |
+| EXOW.M1 (D1: Sim/PA/HK/FP) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | CASCADE ⚠ (A1..A3) | feat/m1 | 31320,60848·T6 | SYNC·GO |
+| EXOW.M2 (D1: 4T/Cycles/G0) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | CASCADE ⚠ (A1..A3) | feat/m2 | 27001,25012·T6 | SYNC·GO |
+| EXOW.M3 (D1: B3D/H3D/UX/Art) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | BULLE ↑ (Monde=0-3D) | main | 25010·T6 | SYNC·GO |
+| EXOW.M4 (D1: SSOT/Sync/Argon) | 4.0.0-rc.1 | [1|1|0] | ^4.0.0 | BULLE ↑ (Local→Cloud) | feat/m4 | 25012,27001·T6 | SYNC·GO |
+| EXOW.M5 (D1: GEMMA/Atlas/AUD) | 4.0.0-rc.1 | [1|0|0] | ^4.0.0 | BULLE ↑ (V0→V5 Sync) | main | 60812,31000·T7 | SYNC·GO |
+| X2 — M0 (16/16 Matrices) | 0 DRIFT! | sql:0 V0-1 | 100% ^4.0 | Migr. v3.1→v4.0 OK | V1Loc/V4SQL | 100% ISO | GATE:GO |
+[MATRICE : M6 / M11 | NODE: EXOW.M0@4.0.0-rc.1] — QFD (Besoins × Specs + Conflits ✖) & Pugh (Arbitrages → M13-A:C/M)
+| Exigence Joueur (Y1) | Spec Cible (M6) | Conflit ✖ & Arbitrage Pugh (M11 vs Base 0) | Injecté dans M13-A (Y2) |
+|---|---|---|---|
+| Variété narrative sans répétition | BFF Gemini 4T + NoRep3t + CV | ✖ Latence vs Richesse → Pugh +3: PreGen pdt Résumé + Cascade 3.1-lite | M2.A1:C/M |
+| Profondeur RPG sans surcharge UI | Monde 0-3D + B3D/H3D au clic | ✖ 3D globale vs Lisibilité → Pugh +4: Monde analytique + B3D/H3D isolés | M3:C/M |
+| Résolution obligatoire sans blocage | T_END_TURN + 0-PA garanti | ✖ Rigueur PA vs Softlock → Pugh +3: Levier Report 0 PA + G0.B4 secours | M1.A1:C |
+| Évolution réaliste façon Humankind | 6 Ères/faction + Doctrines filles | ✖ Switch culture libre vs Lore → Pugh +4: Arbre doctrinal + Transcendance | M1.A2:C |
+| X2 — PONT M6/M11→M13 | 4/4 conflits résolus | Score Pugh cumulé +14 vs Baseline v3.1 (0) | Contrôles M13-A verrouillés |
+> [+ AJOUT 2 — EXOW.M0+ : Rampe Tri-Lock [D|C|S], Règles SemVer, QFD/Pugh +5..+8 & Traçabilité Normative ISO]
+> 
+[+ AJOUT : M0+ / SEMVER | NODE: EXOW.M0@4.0.0-rc.1] — Promotion Tri-Lock, Branches & Règles d'Incrément SemVer
+| Jalon / Règle (Y1) | [D|C|S] | Condition d'Activation & Blast Radius | Branche & Tag (Y2) |
+|---|---|---|---|
+| V0–V2 (Local + Core + Diplo) | [1|1|0] | doc=1 (Atlas+M0 0 drift), contract=1 (Zod D1..D5 + Vitest 100%), sql=0 (LocalStorage/IndexedDB) | feat/v4-spiral → v4.0.0-rc.1..3 |
+| V3 (Cloud Firebase + Drive) | [1|1|0] | Auth Firebase + Firestore Rules + OAuth GDR drive.file + confirmation écrite + Argon2id export | feat/v4-cloud → v4.0.0-rc.4 |
+| V4 (Neon SQL + pgvector) | [1|1|1] | sql=1 verrouillé: migrations idempotentes, index HNSW 768d, branching + PITR 7j validés | feat/v4-sql → v4.0.0-rc.5 |
+| V5 (Unity 6 URP + Gel LTS) | [1|1|1] | Parité SHA-256 TS ↔ C# sur 60 tours, lts_frozen: true, aucune rupture ^4.0.0 autorisée | main → v4.0.0-lts.0 |
+| Règle Bump SemVer-2.0.0 | M.m.p | MAJOR: rupture D1..D5/Z0/M13 · MINOR: ajout Tech/Faction/Vague rétro-compat · PATCH: équilibrage/bugfix M8 | Bloqué si AUD ≠ 0 |
+[+ AJOUT : M6+ / M11+ / ISO | NODE: EXOW.M0@4.0.0-rc.1] — Arbitrages QFD/Pugh +5..+8 & Matrice de Conformité ISO
+| Exigence / Norme (Y1) | Spec Cible (M6+) / Preuve ISO | Conflit ✖ & Arbitrage Pugh (M11+) | Cible M13-A (Y2) |
+|---|---|---|---|
+| QFD+5: Ergonomie Mobile/Desktop | Bento Solar Glass Light/Dark + ≥44×44px + A11Y | ✖ Densité 4X vs Tactile → Pugh +3: Cartes pliables + Drawer RPG au tap + 0 scroll X | M3:C/M (ISO-25010) |
+| QFD+6: Survie des Sauvegardes | MIG auto v3→v4 + Snapshot t-1 + Export JSON | ✖ Refactor schéma vs Run actif → Pugh +3: Adaptateur pur + backup avant écriture | M4:C/M (ISO-25012) |
+| QFD+7: Sécurité & Zéro Fuite Clé | BFF strict + process.env + Zod I/O + Rate-limit | ✖ Simplicité client vs Sécurité clé → Pugh +4: Proxy /api/gemini/* obligatoire | M2.A1:C (ISO-27001) |
+| QFD+8: Portabilité Web→Unity 6 | Moteur L2/L3 sans DOM + BridgeEnvelope JSON | ✖ Couplage Three.js vs Unity6 → Pugh +4: D4:SceneDiff agnostique du moteur 3D | M1/M3:O (ISO-42010) |
+| Traçabilité Normative Complète | 42010(Vues D0-D2) · 31320-1(SADT) · 60848(GRAFCET) · 60812(AMDEC) · 29148(QFD) · 16290(TRL 6→8) · 31000(Risques) | Score Pugh cumulé étendu : +28 vs Baseline v3.1 (0) — 8/8 conflits tranchés | 100% vérifié AUD |
+EXOW.D1 — Dualité SADT (M13-A ↔ M13-D) & Formules Mathématiques Exactes (M8)
+> ID: EXOW.D1 DIM: D1/L1 SADT: M SEMVER: v4.0.0-rc.1+dual.math TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/v4 STATUS: LOCKED TRL: 6 ISO: 31320-1|25010|25012 MATRICES: M13-A,M13-D,M8,M1
+> 
+meta_node: { id: "EXOW.D1", dim: "D1", depth: 1, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+dual.math", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "BULLE ↑", lts_frozen: false, neon_branch: "feat/v4", updated_at: "2026-11-20", status: "LOCKED", trl: 6, standards: ["ISO/IEC/IEEE-31320-1","ISO/IEC-25010","ISO/IEC-25012"], matrices_used: ["M13-A","M13-D","M8","M1"], box_refs: ["↘ ZOOM:EXOW.M1..M5","⇄ PLAN:M10","⇄ PLAN:M15"], coupling_links: ["EXOW.M0"] }
+
+[MATRICE : M13-A / M13-D | NODE: EXOW-ROOT@4.0.0-rc.1] — Actigramme M13-A ↔ Datagramme M13-D (5 Boîtes · Triple Conservation)
+| Activité M13-A (Y1) | I → O (M13-A) | C · M (M13-A) | Boîte Donnée M13-D (I→C→O) | REF & ★ (Y2) |
+|---|---|---|---|---|
+| M1 Simuler | Cfg,Choice,(I)Turn → WS,Ledger,Summary | Z0,R24,HK,FP · PureTS PCG32+SHA | D1:WS+Ledger (M1→Zod→M2,M3,M4) | ↘M1·★M1·⇄M7,M2 |
+| M2 Dossiers/G0 | WS,CV,Cal,AI-P → Doss+Sub,NewEnt,Q | NoRep3t,Ch≤1,4T · BFF @google/genai | D2:Doss+Q (M2→Zod→M3,M1) | ↘M2·★M2·↗M4 |
+| M3 3D & HUD | SceneDiff,WS,Sum → Evt→M2,B3D,H3D | Monde=0-3D,≥44px,FIP · Three/React | D4:SceneDiff+Sum (M1→Bridge→M3) | ↘M3·★M1·⇄M9 |
+| M4 SSOT/Sync | WS,CV,PM,BP → Loc/JSON(V1),Cloud(V3-4) | (C)Argon,Zod · Local/Fire/Drive/SQL | D3:CV+PM (M2→Zod→M2,M1) | ↘M4·★M4·⇄M10 |
+| M5 GEMMA/QA | Err,Code,WS → A/F/D,Atlas,AUD | IPR≥20,R14,SRC-Ref · AUD+Playwright | D5:Blueprint (M5→AUD→Atlas/GDR) | ↘M5·★M5·⇄M12,M14 |
+| X2 — ICOM | 100% vert. conserv. | 0 client API key · Tunnels (I/C) | 5/5 O = 5/5 D (horiz. OK) | 0 orphan · M0 OK |
+> [+ AJOUT 3 — EXOW.D1+ : Zoom SADT D2 Complet (15 Sous-Boîtes M1.A1..M5.A3 · Conservation Verticale D1↔D2)]
+> 
+[+ AJOUT : M13-A/D2 | NODE: EXOW.D1@4.0.0-rc.1] — Décomposition Fractale D2 (5 × 3 = 15 Activités Élémentaires)
+| Sous-Boîte D2 (Y1) | Entrée I → Sortie O | Contrôle C · Mécanisme M | Couche SRC & D-Box (Y2) |
+|---|---|---|---|
+| M1.A1 Résoudre Tour & PA | Choices,WS → WS_next,PA_next,SHA | M7:T_END_TURN,0-PA,Φ01..Φ12 · L2/L3 PCG32 | L2/L3 · D1 |
+| M1.A2 Progresser HK & P1→P4 | Ledger,Techs → Stars,Fame,EraOpt,Terra | ≥7★,6Eras,4Spectra · hk-stars.ts,terra.ts | L2/L3 · D1 |
+| M1.A3 Calculer Ledger & FP RPG | Bldgs,Actors,Drn,Units → NetYield,Wear,XP | Z0,ShortageOrder · fp-rpg.ts,wear-energy.ts | L2 · D1 |
+| M2.A1 Générer Vague 4T BFF | wsDigest,AI-P,CV → LiveDoss,ModelMeta | NoRep3t,Z0,3500ms · BFF @google/genai | L5/L8 · D2 |
+| M2.A2 Orchestrer Cycles & G0 | Turn,Cal,PM,CV → Wave(≤3)+Sub+≤1Ch | 60:40,Arrivals,Cal5 · cycles.ts,g0-fsm.ts | L3 · D2,D3 |
+| M2.A3 Valider & Arbitrer Choix | UserChoice,Lever → Effects,PM_new,PendEnt | R24,SubPA,0-PA · dossier-resolver.ts | L3 · D2,D3 |
+| M3.A1 Rendre HUD & Monde 0-3D | WS,Sum,Doss → UI_Events,RPGDrawer | Monde=0-3D,≥44px,A11Y · React19,Tailwind4 | L7 · D4 |
+| M3.A2 Rendre Scènes B3D/H3D | SceneDiff,Click → Canvas3D|2DFallback | DPR≤1.5,dispose<5s · Three.js/WebGL2 | L4/L6 · D4 |
+| M3.A3 Piloter Audio FIP & SFX | FirstGesture,UIEvt → Stream6|WebAudio | Fallback<500ms,Mute · fip-audio.ts,sfx | L4 · D4 |
+| M4.A1 Persister Local & MIG | WS,CV,PM → IndexedDB/LS,Backup_t-1 | Zod,SHA,MIG v3→v4 · local-store.ts | L0/L5 · D1,D3 |
+| M4.A2 Synchroniser Cloud & GDR | WS,CV,BP → Firestore,DriveFiles | OAuth,ConfirmWrite,Argon2id · V3 adapters | L5 · D3,D5 |
+| M4.A3 Indexer SQL & pgvector | Runs,Catalog → NeonJSONB,Vec768 | TriLock sql=1,PITR · V4 Postgres/HNSW | L5/L8 · D1,D3 |
+| M5.A1 Superviser GEMMA & OBS | Errors,Metrics → A/F/D State,ReplayDump | AMDEC R1..R10,No D1→F1 · obs-replay.ts | L8 · D5 |
+| M5.A2 Auditer & Exporter AUD | Repo,BP → Exit0,MD/YAML/JSON | 8+4 checks,R14,Z0 · scripts/exo-audit.ts | L8 · D5 |
+| M5.A3 Générer Atlas & Sync M0 | SRC,BP → AtlasUI,M0_Lock,BridgeV5 | SRC-100%,SemVer · atlas-m0-m15/ | L7/L8 · D5 |
+| X2 — ZOOM D2 | 15/15 flux bouclés | 0 dépendance inverse L2→L7 | Conservation D1↔D2 100% |
+[MATRICE : M8 | NODE: EXOW.M1@4.0.0-rc.1] — Formules Déterministes Exactes (PA · HK Étoiles · FP RPG · Cycles X-Tours)
+| Sous-Système (Y1) | Équation Exacte (L2/L3 Pur · PCG32) | Seuils & Bornes | Couplage Sortie (Y2) |
+|---|---|---|---|
+| PA Général (M1.A1) | PA_next = clamp(BaseEra[3+E..7] + ElanSpec(0..2) + EnerMod(-2..+1) + Infra(Cmd+DC:0..2) + MoralBudg(-1..+1) + ChoiceMods, 2, 12) | Carryover: min(⌊rem×0.5⌋, ⌊cap×0.5⌋) (max 150%); Sous-PA: base(2)+⌊attr/5⌋+mod | HUD SegBar + Breakdown |
+| Étoiles HK (M1.A2) | 7 Domaines (Bât,Sci,Mar,Éco,Mil,Exp,Dip) × 3 Tiers (T1/T2/T3 × E): Fame +100/+200/+350 (+10% Transcendance) | eraStars ≥ 7 → Manual EraAdvance unlocked (or stay for Fame) | Summary Modal + Victory |
+| Rendement & FP RPG | yield = base × (0.4 + 0.6·int/100) × pwrMult × slotMult(occ/opt) × (1 + avgRpgBonus) | rpgBonus = specMatch(+0.20) + lvl·0.04 + (happy-50)/250 - fat/300 + gear + syn(+0.10); XP +15/t, promo 100·lvl | EntityLedger + B3D + Wear |
+| Usure & Énergie | wear/t = base(2..4) + (pwr<0 ? +5 : 0) + (occ>opt ? +2 : 0) - constrDrn·0.6; pwr<0 → auto-shed Ind/DC first | int < 55% → P0/C3 wear dossier; report → -10% perm cap until repair | M12:R3 → M14:D1 + HK drag |
+| Cycles X-Tours (M2.A2) | ArrivalsEvery = clamp(3 + ⌊(100-approval)/15⌋ + (E>3?-1:0), 3, 9)t · Mix 60% CV/Catalog : 40% GeminiLive | Const(2t) · Res(3t) · Pol(3t) · Maint(dyn) · 5 CalEvents(Season/Summit/Congress/Census/Fête) | Max 3 main + Sub + ≤1 chain |
+| X2 — INVARIANT MATH | 100% déterministe (0 Math.random/Date.now) | SHA-256 vérifié à chaque tour | Testable Vitest 1:1 |
+> [+ AJOUT 4 — EXOW.D1++ : Équations Complémentaires (M8+) & Pipeline Ordonné commitEndOfTurn() (Φ01→Φ12)]
+> 
+[+ AJOUT : M8+ | NODE: EXOW.M1@4.0.0-rc.1] — Formules Déterministes Étendues (0 Violation Z0)
+| Sous-Système M8+ (Y1) | Équation Exacte (L2/L3 Pur · PCG32) | Seuils, Bornes & Effets | Couplage Sortie (Y2) |
+|---|---|---|---|
+| Terraformation P1→P4 | Terra = clamp(0.35·Atmo + 0.30·Hydro + 0.25·Bio + 0.10·RadShield, 0, 100); ΔInd = Σ(Bio/Tech/UEA) - IndPoll·(1-Filter) | P1:[0..24] · P2:[25..49] · P3:[50..79] · P4:[80..100]; hystérésis -3 pts anti-oscillation | ClimBar + O2 Colons + Victoire |
+| Promesses PM & Approb. | approval_t+1 = clamp(approval_t + 0.35·(avgHappy-50)/10 + pmDelta + shortPen + calMod, 0, 100) | Tenue: +8 appr, +50 Fame, +5 Loy · Brisée (t > dueTurn): -14 appr, -10 Loy, dossier P0 | ArrivalsEvery + AI-P Tone |
+| Stockage, Dette & Pénurie | Cap(r) = Base(250..600)·(1+0.25·lvlHabSpc); résolution fixe: 1.E → 2.O2(P1-3) → 3.W → 4.F → 5.Cr | O2=0→-15 HP/t · W=0→-12 Happy,-8 HP · F=0→-10 Happy,+12 Fat · Cr<0→dette 5%/t, -1 PA si <-200 | Ledger + M14:D1 + FP RPG |
+| Partage Tech HK+ & Sci | SciEff = NetSci · (1 + 0.20·AllyKnows + 0.15·CongressPatent + 0.10·AdvSciHigh - 0.10·EraGap) | Coût Tech Ère E: 80 · E^1.45 pts Sci · Vol cyber V2 accorde +35% progrès instantané | TechTree + HK Étoile Sci |
+| Combat 4P & Flotte (V2) | EffPow = (ΣUnitMil + AtkDrn·4 + DefDrn·3) · (0.5 + 0.5·supplyOk) · (1 + cyberMod±0.20) · Terrain | R = EffAtk / max(1,EffDef); pertes = clamp(⌊25/R⌋, 5, 60)%; 4 phases: Recon→Cyber→Engage→Reorg | H3D Stock + Diplo + Étoile Mil |
+| Isolation Flux PCG32 | seed_s = mix32(runSeed, turn, streamId) avec streamId ∈ {SIM:1, ARR:2, WEAR:3, EVT:4, CMB:5, DIPLO:6} | Ordre UI/3D sans effet sur PCG32; parité SHA-256 bit-à-bit Web(TS) ↔ Unity6(C#) | OBS Replay + Vitest Fuzz |
+[+ AJOUT : PIPELINE Φ01..Φ12 | NODE: EXOW.M1.A1@4.0.0-rc.1] — Ordre Atomique de commitEndOfTurn() (0 Effet de Bord Hors Ordre)
+| Phase | Opération Atomique | Phase | Opération Atomique |
+|---|---|---|---|
+| Φ01 | Vérif M7:T_END_TURN + snapshot rollback t-1 | Φ07 | Évaluation PM arrivées à dueTurn + approval_t+1 |
+| Φ02 | Application effets différés (PendEnt, constructions finies) | Φ08 | Progression Sci/Techs + calcul TerraScore (P1→P4) |
+| Φ03 | Calcul Ledger brut + bilan Énergie E + auto-shed si E<0 | Φ09 | Mise à jour 7×3 Étoiles HK, Fame, déblocage EraOpt |
+| Φ04 | Résolution pénuries (E→O2→W→F→Cr) + intérêts dette | Φ10 | Calcul PA_next + carryover ≤150% + 4 Sous-PA |
+| Φ05 | Mise à jour FP RPG (HP/Happy/Moral/Fat/XP/Promo/Syn) | Φ11 | Vérif Victoire/Défaite (M5) + génération D4:SceneDiff |
+| Φ06 | Calcul usure bâtiments (wear/t) + flags int<55% (R3) | Φ12 | Incrément turn←turn+1, calcul SHA-256(WS), trigger PreGen 4T |
+[MATRICE : M1 | NODE: EXOW.M1.A3@4.0.0-rc.1] — Grand Livre Économique par Entité (Consommation / Production / Créneaux RPG)
+| Catégorie Entité (Y1) | Consommation / Tour (-) | Production & Contribution / Tour (+) | Créneaux / État (FP) | Impact Déficit (Y2) |
+|---|---|---|---|---|
+| Bâtiments (7) | Cmd(-4E,-15Cr) Hab(-5E,-6W,-6F) Ene(-12Cr,-4Mat) Ind(-10E,-18Cr) DC(-12E,-20Cr) Bio(-4E,-6W) Spc(-9E,-16Cr) | Cmd(+PA,+Tax) Hab(+Tax,+Pop) Ene(+34E/lvl) Ind(+16Mat,+6Elec) DC(+14Comp,+Sci) Bio(+14F,+8W,+Atmo) Spc(+10Fuel,+Trade) | opt/max: 2/3..3/5 colons; Intégrité 0..100% | Shed auto + Wear dossier |
+| Personnages (4 Adv + Col) | Adv:(-4Cr,-2F,-1W) · Col:(-2F,-2W,-1O2 in P1-3) | Adv:(+SubPA,+AttrUnlock,+Loy) · Col:(+rpgBonus sur bât., +Sci/Rep) | Health/Happy/Moral/Fat + Outfit/Wpn/Tool/XP | Grève/Maladie si Happy<35 |
+| Drones (4 Rôles) | (-1.5E, -0.5Mat) / drone actif | Constr(+0.6% int) Def(+3 Def) Atk(+4 Mil) Recon(+Intel,-PA cost) | Stock par rôle visible H3D | Désactivés si E < 0 |
+| Unités (5 L1–L5) & Flotte | Inf(-2E,-4Cr,-2F) Mech(-4E,-8Cr,-2Fuel) Swarm(-5E,-6Cr,-2Cmp) Corv(-8E,-14Cr,-5Fuel) Cyb(-6E,-10Cr,-6Cmp) Fleet(-4E·tier) | MilPower(12..65×lvl) + Dissuasion + Capacité logistique/import (Fleet) | Exposés en stock réel dans H3D | Usure + Malus combat -30% |
+| X2 — COUVERTURE | 100% entités tarifées | Somme nette → HUD + Summary + PA | Clic badge → Fiche RPG + B3D/H3D | Zéro thermique (Z0) |
+> [+ AJOUT 5 — EXOW.D1+++ : Grand Livre M1+ — Coûts L1–L5 Bâtiments, Équipement RPG T1–T3 & Synergies FP]
+> 
+[+ AJOUT : M1+ | NODE: EXOW.M1.A3@4.0.0-rc.1] — Barème Construction/Upgrade (L1→L5), Gear RPG & Seuils FP
+| Élément M1+ (Y1) | Coût Base L1 & Scaling (×1.45^(lvl-1)) | Slots opt/max · Durée · Réparation | Bonus / Effet Spécial (Y2) |
+|---|---|---|---|
+| Cmd / Hab / Ene | Cmd(40M,15El,80Cr) · Hab(35M,10El,60Cr) · Ene(30M,12El,70Cr) | 2/3 · 2t · Rep:6M+10Cr/+20% int | Cmd L3+: +1 PA · Hab: +25% Cap · Ene: priorité 0 shed |
+| Ind / DC / Bio / Spc | Ind(45M,15El,90Cr) · DC(35M,25El,110Cr) · Bio(30M,15El,75Cr) · Spc(60M,25El,130Cr) | 3/5 · 2–3t · Rep:8M+14Cr/+20% int | DC L3+: +1 PA · Bio: +Atmo/Hydro · Spc: débloque Fleet |
+| Gear Outfit (T1/T2/T3) | T1:Combi Exo(+5% eff,-10% fat) · T2:Nano-Tissu(+10%,-20% fat) · T3:Exo-Armure(+18%,imm. P1) | Craft via Dossier Ind/Res · Équipable fiche RPG | Protège HP si O2 ou wear critique |
+| Gear Tool & Wpn (T1–T3) | Tool: +6%/+12%/+20% yield · Wpn: +4/+9/+16 Def interne (sécurise grèves/raids V2) | Affinité classe (Ingé/Bio/Log/Sec) → +0.20 | Visible en badges soulignés dans Dossiers |
+| États FP & Synergies (Syn) | Syn(+0.10) si ≥2 colons même spé + Moral≥65 · Burnout si Fat≥80 (-25% yield) · Maladie si HP<40 | Repos 1 tour (-35 Fat, +15 HP) via levier dossier | Réduit risque crise P0 & booste HK |
+EXOW.CATALOG — Superpuissances 2050, 6 Ères Dynamiques, 30 Techs Partagées & Assets (M8)
+> ID: EXOW.CATALOG DIM: D2/L2 SADT: A SEMVER: v4.0.0-rc.1+catalog TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/m1 STATUS: LOCKED TRL: 6 ISO: 29148|25012 MATRICES: M8
+> 
+meta_node: { id: "EXOW.CATALOG", dim: "D2", depth: 2, parent_id: "EXOW.M1", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+catalog", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "BULLE ↑", lts_frozen: false, neon_branch: "feat/m1", updated_at: "2026-11-20", status: "LOCKED", trl: 6, standards: ["ISO/IEC/IEEE-29148","ISO/IEC-25012"], matrices_used: ["M8"], box_refs: ["↗ CALL:EXOW.M1.A2","↗ CALL:EXOW.M3"], coupling_links: ["EXOW.M2:Calendar"] }
+
+[MATRICE : M8 | NODE: EXOW.CATALOG@4.0.0-rc.1] — 5 Superpuissances 2050 × 6 Ères Dynamiques & Arbre Doctrinal Évolutif
+| Superpuissance 2050 (Y1) | 6 Ères Dynamiques Propres (E1 → E6) | Arbre Doctrines Filles (E2..E6) + Communes + Transcend. | Spécialité & Fête Cal. (Y2) |
+|---|---|---|---|
+| Union Euro-Atlantique (UEA) | E1:Charte · E2:Fédération · E3:Symbiose · E4:Biosphère · E5:Concorde · E6:Aube Verte | Eco-Fédéralisme → Bio-Démocratie → Synthèse Gaïa (+Communes+Transc.) | +20% P1→P4 · Congrès Vert |
+| Consortium Pacifique (CPA) | E1:Tête de Pont · E2:Réseaux · E3:Hyper-Industrie · E4:Cyber-Cité · E5:Orbital · E6:Singularité | Techno-Logistique → Automatisation Totale → Noosphère | +20% Calcul/Tech · Expo IA |
+| Alliance Afro-Solaire (AAS) | E1:Oasis · E2:Solaire · E3:Renaissance · E4:Jardins · E5:Couronne · E6:Héliopolis | Helio-Coopérative → Agro-Écologie → Souveraineté Solaire | +25% Énergie/Vivres · Solstice |
+| Fédération Nord-Eurasie (FNE) | E1:Bastion · E2:Extraction · E3:Acier · E4:Forteresse · E5:Armada · E6:Hégémonie | Industrie Lourde → Doctrine Blindée → Bouclier Orbital | +20% Mat/Défense · Parade |
+| Pacte Sud-Américain (PSA) | E1:Pionniers · E2:Bio-Mines · E3:Commerce · E4:Archipel · E5:Diplomatie · E6:Horizon | Libre-Échange Bio → Diplomatie Active → Union Planétaire | +20% Crédits/Alliés · Carnaval |
+| X2 — 30 TECHNOLOGIES (5/Ère) | E1:[Micro-Réseau,Hydroponie,Exo-Outils,Charte Civ.,Télémétrie] E2:[Supraconduct.,Drones Maint.,Bio-Filtres,Bourse Orb.,Cyber-Mur] E3:[Fusion Compacte,IA Prédictive,Ferme Vert.,Corvette L2,Brevets Comm.] E4:[Atmo P3,Exo-Armures,Nanomat.,Gouv. Num.,Rétro-Ingén.] E5:[Ascenseur Orb.,Bio-Génome P4,Calcul Quant.,Flotte L4,Traité Global] E6:[Transcendance,Énergie Zéro-P.,Écosyst. Clos,Bouclier Syst.,Unité 2050] | Partage HK+: +20% vitesse si allié connaît · Brevets Congrès · Cyber Espionnage | Débloque choix, bât. & unités |
+> [+ AJOUT 6 — EXOW.CATALOG+ : 4 Conseillers (Adv), AI-P Personas, 5 CalEvents, 4 Phases P1→P4 & Effets des 30 Techs]
+> 
+[+ AJOUT : M8+ CATALOG | NODE: EXOW.CATALOG@4.0.0-rc.1] — Conseillers (4 Portraits V1), AI-P, Calendrier & Phases
+| Entité Catalogue (Y1) | Attributs, Périodicité ou Seuils | Effets Déterministes en Jeu | Couplage UI/Sim (Y2) |
+|---|---|---|---|
+| Adv 1 — Civique & Infra | Sous-PA Infra (2+⌊attr/5⌋) · Affinité Cmd/Hab/Ene | Loy≥80: -15% coût maint · Loy<30: +1 PA décrets civiques | adv_civic (1:1) + B3D |
+| Adv 2 — Science & Bio | Sous-PA Sci (2+⌊attr/5⌋) · Affinité Bio/DC/P1-P4 | Loy≥80: +10% Sci/Atmo · Loy<30: risque fuite brevet | adv_sci (1:1) + ClimBar |
+| Adv 3 — Éco & Logistique | Sous-PA Eco (2+⌊attr/5⌋) · Affinité Ind/Spc/Fleet | Loy≥80: +12% Cr/Trade · Loy<30: SubDoss grève fret | adv_eco (1:1) + H3D |
+| Adv 4 — Sécurité & Diplo | Sous-PA Sec (2+⌊attr/5⌋) · Affinité Mil/Drn/Diplo | Loy≥80: +15% Recon/Cyber · Loy<30: hausse tension IA | adv_sec (1:1) + V2 |
+| Custom AI-P (5 Tons) | Analytique · Bienveillant · Pragmatique · Souverain · Avant-Garde + Nom custom | Adapte style narratif 4T + met en avant 1 levier recommandé par tour selon M2 Spectres | Injecté dans wsDigest BFF |
+| 5 CalEvents Fixes | Season(4t) · Census(6t) · Summit(8t) · Congress(10t) · Fête(12t) | Season: ±15% E/Bio · Census: audit FP · Summit: PM globales · Congress: brevets HK+ · Fête: +10 Happy,+75 Fame | Hors quota 4T (M2.A2) |
+| 4 Phases (P1 → P4) | P1(0-24): -1 O2/col,+1 wear · P2(25-49): -0.5 O2,+10% Bio · P3(50-79): 0 O2,+20% W · P4(80-100): +15% Happy | Transition ouvre dossier jalon + bascule palette Map + badge ClimBar | M1.A2 + M3 + Victoire |
+| Mapping 30 Techs (E1→E6) | E1: +15% E, +20% F, Tool T1, +5 Appr, Recon Drn · E2: -15% E loss, Constr Drn+50%, RadShield+10, +15% Trade, CyberDef+15 · E3: Ene L3(+60E), -10% Wear, Bio L3, Corv L2, Patent+15% · E4: Atmo+18, Outfit T3, -20% BuildCost, +1 PA, ReverseEng · E5: Spc L5/Import×2, Bio+25(P4), DC L5(+25 Cmp), Fleet L4, Diplo+20 · E6: Transcend+10% Fame, E ∞ base, 0 O2/W net, Def+40, Victoire Unité 2050 | Chaque tech débloque ≥1 levier de dossier ou niveau bâtiment/unité | Vérifié L1/techs30.ts |
+> [+ AJOUT 7 — EXOW.CATALOG++ : Spécification V2 — 5 IA Rivales, Diplomatie, 6 Ops Cyber & Victoires/Défaites]
+> 
+[+ AJOUT : M8-DIPLO/V2 | NODE: EXOW.CATALOG@4.0.0-rc.1] — Géopolitique 2050 (V2), Cyber-Opérations & Fins de Partie
+| Domaine V2 (Y1) | États / Opérations / Conditions | Mécanique Déterministe (PCG32 Stream 6) | Sortie / Couplage (Y2) |
+|---|---|---|---|
+| 5 IA Rivales (Poids M2) | UEA(+Y,+X) CPA(-Y,+X) AAS(+Y,0) FNE(-Y,-X) PSA(0,+X) | Score relation [-100,+100]: Δrel = ΔSpectraAlign + TradeMod + PM_Ally - BorderMil | Dossiers Diplo + Votes Congrès |
+| 7 États Diplomatiques | Guerre(<-60) · Hostile(-60..-31) · Méfiance(-30..-11) · Neutre(-10..20) · Accord(21..50) · Alliance(51..80) · Fédération(>80) | Accord: partage Tech +20% · Alliance: défense mutuelle + vote lié · Guerre: combat 4P | H3D + HK Étoile Dip |
+| 6 Opérations Cyber | Vol Brevet(+35% Tech) · Sabotage E(-25% E 2t) · Contre-Intel(+30% Def) · Désinfo(-10 Appr cible) · Pare-Feu(imm. 3t) · Spoof Recon(reveal Fleet) | Succès = clamp(40 + (Cmp_atk - Cmp_def)·1.5 + AdvSecMod, 10, 90)%; échec → -25 rel + dossier crise | M2.A2 + DC (Comp) |
+| 4 Victoires → SANDBOX | 1.Fame(max à t=120 ou E6) · 2.Terra P4(≥80 stable 5t) · 3.Unité 2050(Tech E6 + ≥2 Alliés) · 4.Hégémonie(Mil+Éco #1) | Modale Victoire + Chronique complète + option INFINITE_SANDBOX (M5) | CHRONICLE.json + CV |
+| 3 Défaites (Hard Fail) | 1.Pop = 0 (2t consécutifs) · 2.Approval = 0 & Dette < -500 (3t) · 3.Destruction Cmd (int = 0 non réparé) | Avant défaite: 1 dossier ultime P0 de sauvetage (0 PA) — zéro défaite surprise | OBS Dump + CV persistant |
+EXOW.MATRICES — Couplage Déterministe (M2 · M5 · M7 · M15-A/B · M3/M9/M10 · M12/M14/M4)
+> ID: EXOW.MATRICES DIM: D2/L2 SADT: A SEMVER: v4.0.0-rc.1+coupled TRI-LOCK: [1|1|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: feat/v4 STATUS: LOCKED TRL: 6 ISO: 29148|60848|25012|27001|60812|ADEPA-GEMMA MATRICES: M2,M5,M7,M15-A/B,M3,M9,M10,M12,M14,M4
+> 
+meta_node: { id: "EXOW.MATRICES", dim: "D2", depth: 2, parent_id: "EXOW-ROOT", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+coupled", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 1, sql: 0 }, propagation: "BULLE ↑", lts_frozen: false, neon_branch: "feat/v4", updated_at: "2026-11-20", status: "LOCKED", trl: 6, standards: ["ISO/IEC/IEEE-29148","IEC-60848","ISO/IEC-25012","ISO/IEC-27001","IEC-60812","ADEPA-GEMMA"], matrices_used: ["M2","M5","M7","M15-A","M15-B","M3","M9","M10","M12","M14","M4"], box_refs: ["⇄ PLAN:M0","⇄ PLAN:EXOW.D1"], coupling_links: ["EXOW.M1..M5"] }
+
+[MATRICE : M2 | NODE: EXOW.M1.A2@4.0.0-rc.1] — 4 Spectres [-100,+100] (Strat×Philo · Pol×Tact)
+| Ouest (← -X) (Y1) | -X Quadrants | ↑+Y/↓-Y | +X Quadrants | Est (→ +X) (Y2) |
+|---|---|---|---|---|
+| Nord: Éco/Précaut. | Q2: Sanctuaire (+Bio,-Wear,+PA_B) | ↑ +Y | Q1: Pionnier (+P1→P4,+Patents) | Civiques durables |
+| Consol./Souverain. | ← -X | ⊕(0,0) | → +X (Expans./Particip.) | +1 PA si ` |
+| Sud: Indus/Audace | Q3: Forteresse (+Mat,+Def,-Cost) | ↓ -Y | Q4: Technocratie (+Cmp,+Mil,+Fame) | Crise si ` |
+| X2 — COUPLAGE | Adapte AI-P + Rivaux | 4 Axes | Unlock ±35/±70 | Feeds M1/M2 |
+[MATRICE : M5 / M7 | NODE: EXOW.M1.A1@4.0.0-rc.1] — FSM Campagne/Quêtes G0 (M5) + Karnaugh Code Gray T_END_TURN (M7)
+| FSM M5: État St → St+1 (Y1) | Garde / Transition | Karnaugh M7 (AB\CD) | 00/01/10 | 11 (T_END_TURN) (Y2) |
+|---|---|---|---|---|
+| ACT0(G0) → LOOP(Pause) | 3-Choice Doctrine resolved (or skip) | 00/01/10 (doss>0 or end) | 0 | 0 (Locked badge) |
+| Q:OFFERED → ACTIVE → MUTATED → RESOLVED | Max 3 quests · world_mutated bifurcates | 11 (doss==0·ACTIVE·¬tx·¬err) | 0 | 1 (A·B·C·D) |
+| LOOP → VICTORY → INFINITE_SANDBOX | Fame/P4/Sci-Dip met → Continue opt | Preuve IEC-60848 | 0 FP | → M15:T1 (0 cycle+1) |
+| X2 — AUTOMATES | PM due check each turn | Zero softlock | 0 dbl-tx | M5+M7 vérifiés |
+> [+ AJOUT 10 — EXOW.MATRICES+++ : Sous-Automate G0 (Déverrouillage HUD t1→t4), Quêtes Mutantes & Preuve Anti-Softlock 0-PA]
+> 
+[+ AJOUT : M5+ / G0-HUD | NODE: EXOW.M2.A2@4.0.0-rc.1] — Séquence Genèse 2050 (G0) & Invariant Anti-Softlock
+| Étape G0 / Règle (Y1) | Déverrouillage Progressif HUD / Mutation | Contenu Obligatoire & Bypass | Garantie M7 (Y2) |
+|---|---|---|---|
+| Act0 (t=0) | Création Faction + AI-P + 3 Choix Doctrinaux initiaux (option Passer G0 active) | Positionne Spectres ±15, 1 PM fondatrice (dueTurn=5), 1er Seed | Débloque t=1 |
+| Déverrouillage HUD (t1→t4) | t1: Dossiers + PA + Monde · t2: B3D/H3D + RPG Drawer · t3: HK Étoiles/Tech · t4: CalEvents/Diplo | Jamais plus de 2 nouveaux panneaux par tour (zéro surcharge cognitive) | Mode Expert: tout ouvert t1 |
+| Bifurcation Quête (MUTATED) | Si événement majeur (E<0 2t, changement P1→P4, PM brisée, changement Ère), Q:ACTIVE bascule MUTATED | Reformule objectif + propose branche alternative (pas d'échec sec sans choix) | Max 3 actives simultanées |
+| Preuve Anti-Softlock 0-PA | ∀ dossier d ∈ D2: ∃ c ∈ d.choices tel que c.paCost == 0 ∧ c.subPaCost == 0 (levier Report/Austérité/Délégation) | ∀ état WS, ∃ chemin fini de longueur ≤ 4 clics ramenant doss == 0 → T_END_TURN = 1 | Prouvé sur 60t Fuzz |
+[MATRICE : M15-A/B | NODE: EXOW.M2@4.0.0-rc.1] — GRAFCET & Mapping 1:1 Code / SSOT
+| Step (Y1) | Action (M15-A) | Trans. T | Cell C & Func (M15-B) | M10 CRUD & Guard (Y2) |
+|---|---|---|---|---|
+| X0 Pause/G0 | Render Doss+Sub+Q | T0: Ch+Sub+Lever | M2.A2.B1.C1: resolveDossierWithLever() | U WS, C PendEnt/PM |
+| X1 FreeView | 0 doss · Unlock End | T1: T_END_TURN(M7) | M1.A1: commitEndOfTurn() (PCG32+SHA) | U Ledger/Stars, C Sum |
+| X2 HK Modal | Summary + PreGen 4T | T2: (ok+retry)·Next | M2.A1: POST /api/gemini/generate-turn-events | CU CV · 429→3.1-lite |
+| X3 EraOpt | stars≥7&click: Doct | T3: doctConfirmed | M1.A2: advanceEraWithDoctrine() | U Era/Doct/Fame |
+| X4 Open t+1 | Inject wave+PM+Pause | T4: 1 (→X0) | M4: saveLocalAndCatalog() | U Loc · 0-PA guard |
+| X2 — M15 | 5 steps | 0 auto-tick | Zod TS(V1)→C#+SQL(V4-5) | Coupled M14/M4 |
+[MATRICE : M3 / M9 / M10 | NODE: EXOW.M4@4.0.0-rc.1] — DSM (0 ↺) · DMM Interfaces · CRUD ★
+| Entité (Y1) | DSM ← | ★ & CRUD (M1..M5) | External (M9) | Security/Sync (Y2) |
+|---|---|---|---|---|
+| WS+Ledger (M1) | — | ★M1 U★/R/R/R/R | Local/JSON(V1)·Fire(V3) | Auto-migr v3→v4 Zod |
+| Doss+G0 (M2) | M1,M4 | ★M2 R/CUD★/R/R/R | BFF→@google/genai 4T | Server process.env only |
+| B3D/H3D (M3) | M1,M2 | ★M1 C★/—/R/—/R | Three(V1)→Unity6(V5) | DPR≤1.5,dispose() 5s |
+| CV+PM (M4) | M1,M2 | ★M4 R/CU/R/CRUD★/R | Loc(V1)·Fire(V3)·SQL(V4) | Cross-campaign weights |
+| Blueprint (M5) | M1..M4 | ★M5 R/R/R/R/CRUD★ | Atlas+Export·GDR(V3) | OAuth+confirm write |
+| X2 — INT. | 0 ↺ | 1 ★/row | Strict L0→L8 | ISO-25012 & 27001 |
+> [+ AJOUT 8 — EXOW.MATRICES+ : Contrats Zod Stricts (D1..D5), Catalogue Erreurs (EXOW-E001..E020) & Pipeline MIG v3→v4]
+> 
+[+ AJOUT : SCH / D1..D5 | NODE: EXOW.M4@4.0.0-rc.1] — Schémas Canoniques Zod Strict & Pipeline MIG
+| Boîte M13-D (Y1) | Champs Obligatoires (L0/schemas.zod.ts) | Invariants & Règles MIG | Consommateurs (Y2) |
+|---|---|---|---|
+| D1: WorldState | schemaVersion("4.0.0"), runId, seed, turn, sha256, factionId, era(1..6), doctrinePath[], spectra[4], resources, debt, terra{atmo,hydro,bio,rad,phase}, pa{gen,sub[4],carry}, buildings[], actors[], drones, units, techs[], stars[7], fame, ledger, pending[], history[] | Rejet strict NaN/Infinity · Auto-migr v3.1→v4.0: purge clés Z0, convertit ancien état en TerraScore, crée exow_backup_v3 avant commit | M1,M2,M3,M4 |
+| D2: DossierEnvelope | id, turn, priority(P0|P1|P2), source(4T|CV|CAL|G0), themeHash, title, body, badges[{entityId,type}], choices[2..4]{id,paCost,subPa,lever,effects,pm?}, subDossiers[], chainDepth(0|1) | ∃ choice 0-PA · chainDepth ≤ 1 · Filtre Z0 bloquant sur title+body+choices · Max 4 badges/dossier | M2→M3→M1 |
+| D3: LivingCatalog | catalogVersion, entries[{id,themeHash,lastUsedTurn,weight,eraRange,origin(seed|gemini),tags[]}], activePromises[{id,dueTurn,metric,target,reward,penalty}] | Exclusion NoRep3t (turn - lastUsedTurn ≤ 3) · Cap 500 LRU · Fusion sans écrasement en V3 | M4↔M2 |
+| D4: SceneDiff | turn, mode(Monde|B3D|H3D), changedBuildings[], wearAlerts[], fleetCounts, phaseVisual(P1..P4), summaryPayload, mapLayers{std,maint,flux} | Pur JSON (0 ref Three/DOM) · Compatible BridgeEnvelope<T> C# Unity6 (V5) | M1→M3 |
+| D5: BlueprintManifest | rootRef, semver, triLock[3], matricesCount(16), srcFiles[], sha256Doc, exportedAt | Recalculé à chaque AUD · Requis avant toute écriture @Google Drive | M5→Atlas/GDR |
+[+ AJOUT : ERR-CAT | NODE: EXOW.M5@4.0.0-rc.1] — Catalogue d'Erreurs Canoniques (EXOW-E001..E020)
+| Plage Codes (Y1) | Codes & Causes Exactes | Action Système & GEMMA (Y2) |
+|---|---|---|
+| E001–E004 (Sim/Math) | E001:NaN_State · E002:SHA_Mismatch · E003:TurnGate_Locked · E004:ZeroPA_Missing | Rollback t-1 + A5 · Blocage commit · Inject levier secours (F3) |
+| E005–E008 (BFF/4T) | E005:Quota_429 · E006:Timeout_3500ms · E007:Zod_Reject_AI · E008:Z0_Leak_Blocked | Cascade 4-hydrogen → 3.1-lite → retry → CV offline (F3) |
+| E009–E012 (3D/Audio) | E009:WebGL_Lost · E010:RAM_Exceed_250MB · E011:Dispose_Timeout · E012:FIP_Stream_Fail | Bascule 2D Fallback (D2) · Fallback WebAudio <500ms (F3) |
+| E013–E016 (SSOT/Sync) | E013:Save_Corrupt · E014:MIG_Fail · E015:Sync_Conflict · E016:Drive_Scope_Denied | Restore t-1 + Export JSON · Modale diff horodatée (D2/F3) |
+| E017–E020 (QA/AUD) | E017:Z0_Code_Found · E018:L2L3_Impure · E019:R14_Exceeded · E020:SRC_Unmapped | AUD Exit 1 bloquant · Promotion vague refusée |
+> [+ AJOUT 9 — EXOW.MATRICES++ : Spécification EXOW.M3 (Solar Glass Bento, Monde 0-3D, B3D/H3D, Map 3 Calques, FIP & A11Y)]
+> 
+[+ AJOUT : M3-SPEC | NODE: EXOW.M3@4.0.0-rc.1] — Design System, Scènes 3D Isolées, Audio FIP & A11Y
+| Composant M3 (Y1) | Spécification Exécutable (L4/L6/L7) | Contraintes Perf / Fallback | Gate QA (Y2) |
+|---|---|---|---|
+| HUD & Monde (0-3D) | Thème Solar Glass Light par défaut (+ Dark) · Bento Grid responsive · ClimBar (P1→P4) · SegBar PA + 4 Sous-PA · 4 Onglets: 1.Vue Globale 2.Bâtiments/Ledger 3.Colons/RPG 4.Flotte/Drones | Zéro canvas WebGL dans Monde · Cibles ≥44×44px · Badges soulignés cliquables → Drawer RPG / B3D / H3D | 0 overflow X · A11Y AA |
+| Carte Map (3 Calques) | Vue SVG/Canvas 2D haute précision à 3 filtres 1-clic: Std(secteurs/phase P1..P4) · Maint(intégrité 0..100%, alertes <55%) · Flux(réseau E/W/F/Mat/Cmp animé) | Respect prefers-reduced-motion (désactive animations de flux) | <4ms redraw |
+| B3D & H3D (3D Isolée) | Ouverts uniquement au clic sur un bâtiment (B3D: usure visuelle, état énergie, slots colons) ou flotte/drones (H3D: stock réel des 4 rôles drones + 5 unités L1–L5) | DPR≤1.5 · InstancedMesh · drawCalls≤120 · dispose() complet <5s à la fermeture · Gestion webglcontextlost/restored | <250MB RAM · 20 cycles |
+| Audio FIP + UI SFX | 6 flux FIP (Direct · Jazz · Électro · Groove · Monde · Rock) + SFX WebAudio (click, chime T_END_TURN, pulse P0, fanfare Era) · Démarrage sur first-gesture | Timeout flux >500ms ou offline → nappe ambiante WebAudio synthétisée (0 erreur console) · Mute 1-clic persistant | Latence SFX <25ms |
+[MATRICE : M12 / M14 / M4 | NODE: EXOW.M5@4.0.0-rc.1] — AMDEC (IPR≥20) → GEMMA → OLAP (Z1·Z2·Z3)
+| Risk (IPR) (Y1) | GEMMA | Z1=F1 (Nom.) | Z2=F3 (Degr.) | Z3=D1/D2 (Crisis) | QA Gate (Y2) |
+|---|---|---|---|---|---|
+| R1 429/TO (24) | F3 | 4-hydrogen pregen | 3.1-flash-lite+retry | Transparent offline+err | 0 fake text |
+| R2 0 PA (20) | F3 | PA+150% carry | 0-PA lever/G0 rescue | P0 austerity/defer | 0 deadlock 60t |
+| R3 Ener/Wear (24) | D1 | Health≥80%·E≥0 | Yield drop+wear alert | Auto-shed+P0+A5 | HK/Econ drag |
+| R4 WebGL/RAM (24) | D2 | B3D+H3D DPR≤1.5 | Light DPR≤1.2 | 2D fallback+restored | <250MB·0 err |
+| X2 — SAFETY | No D1→F1 | Target V1 | Proved resilience | Zero softlock | IEC-60812·GO |
+> [+ AJOUT 11 — EXOW.MATRICES++++ : Extension AMDEC (R5→R10) & Protocole de Reprise GEMMA (D1/D2 → A5 → F1)]
+> 
+[+ AJOUT : M12+ / M14+ | NODE: EXOW.M5@4.0.0-rc.1] — Risques Critiques R5 → R10 (IPR≥20) & Séquence A5
+| Risk (IPR) (Y1) | GEMMA | Z1=F1 (Nom.) | Z2=F3 (Degr.) | Z3=D1/D2 (Crisis) | QA Gate (Y2) |
+|---|---|---|---|---|---|
+| R5 Save Corrupt/MIG (20) | D2 | Zod valid + SHA OK | Auto-restore snapshot t-1 | Modale export JSON brut + reset sain | 0 perte silencieuse |
+| R6 Halluc./Z0 Leak (24) | F3 | JSON Zod + 0 Z0 | Sanitizer + 1 retry strict 4T | Bascule CV local + log E008 | 100% Z0 bloqué |
+| R7 GPU/Dispose Leak (20) | D2 | dispose() <5s | Purge forcée textures/géométries | Lock 3D → Vue 2D analytique | 20 cycles stables |
+| R8 Sync Conflict V3 (20) | F3 | Hash Local==Cloud | Modale diff Local vs Cloud/Drive | Copie locale horodatée préservée | 0 écrasement forcé |
+| R9 PRNG/Clock Desync (20) | D1 | 5 flux PCG32 purs | Alerte E002 + replay vérif | Rechargement état t-1 vérifié SHA | Parité TS↔C# 100% |
+| R10 BFF Abuse/Quota (24) | F3 | ≤12 req/min | File d'attente + 3.1-flash-lite | Mode CV pur transparent + timer | 0 dépassement budget |
+| Protocole GEMMA A5 | D1/D2→A5→F1 | Interdit: D1→F1 direct | A5 valide: Zod + SHA + E≥0/2D + 0-PA | Reprise F1 uniquement après A5=OK | ADEPA-GEMMA OK |
+EXOW.M5.A1 — Vagues (V0 → V5), Sync SRC, Manifeste Art, CLI exo:audit, @Google Drive & YAML
+> ID: EXOW.M5.A1 DIM: D2/L2 SADT: A SEMVER: v4.0.0-rc.1+exec TRI-LOCK: [1|0|0] ROOT-COMPAT: ^4.0.0 NEON-BRANCH: main STATUS: LOCKED TRL: 7 ISO: SemVer-2.0.0|42010|31000 MATRICES: M0,M8
+> 
+meta_node: { id: "EXOW.M5.A1", dim: "D2", depth: 2, parent_id: "EXOW.M5", root_ref: "EXOW-ROOT@4.0.0-rc.1", semver: "4.0.0-rc.1+exec", root_compat: "^4.0.0", tri_lock: { doc: 1, contract: 0, sql: 0 }, propagation: "ISOLÉ", lts_frozen: false, neon_branch: "main", updated_at: "2026-11-20", status: "LOCKED", trl: 7, standards: ["SemVer-2.0.0","ISO/IEC/IEEE-42010","ISO-31000"], matrices_used: ["M0","M8"], box_refs: ["⇄ PLAN:M0"], coupling_links: ["EXOW.M1..M5"] }
+
+[V0: Atlas M0-M15 + SRC L0-L8 + AUD] ──▶ [V1: Core v4 + 4T + HK + FP + B3D/H3D + Art]
+  ──▶ [SYNC SRC + M0 + AutoExport + Playwright] ──▶ [V2→Sync] ──▶ [V3→Sync] ──▶ [V4→Sync] ──▶ [V5→LTS]
+SRC Map: L0(M4) · L1(M2) · L2(M1) · L3(M1/M2) · L4(M3) · L5(M2/M4) · L6(M3) · L7(M3/M5) · L8(M5)
+
+[MATRICE : M8 | NODE: EXOW.M5.A1@4.0.0-rc.1] — Exécution V0 → V5, Migration SemVer, Assets Générés & Checklist AUD
+| Vague / Bloc (Y1) | Livrables Exécutables [Build | Features | Sync] | Migration / Détail Technique | Gate & QA (Y2) |
+|---|---|---|---|
+| V0 (Start) | [Atlas M0-M15+Dual M13+Filter L0-L8+Interactive SRC+1-Click MD/YAML/JSON+GDR | CLI AUD] | DOC v3.1 → EXOW-ROOT+M0 (+1.0.0) | AUD 8/8 · GO |
+| V1 (Core) | [Z0 | NewSim+AI-P+G0(Act0,PM,HUD) | BFF 4T+SubDoss+X-Cycles+CV+UnderlineBadges | TurnGate+PA+HK(7★,6Era,Doct,30Tech)+Summary | Ledger+Monde(0-3D,ClimBar,4Tabs,FP RPG)+B3D+H3D+Map(Std/Maint/Flux) | FIP ON | GenArt] | PA/Gateway/3D → M1..M5 (+1.0.0) · Manifeste Art (16 assets): 4 Portraits (1:1), 6 EraBanners (16:9), 1 MenuBG (16:9), 5 Emblèmes (1:1) — style hybride sci-fi lumineux + concept art solaire Humankind | Sync SRC + AUD + Compile/Lint + Playwright |
+| V2 → V5 | V2:[5-AI Diplo+Alliance Votes+Cyber+4P Combat↔H3D] · V3:[Firebase Auth/Firestore+CV Sync+GDR drive.file] · V4:[Postgres JSONB+pgvector+Branching/PITR] · V5:[SSOT C# DTO+Unity6 URP BridgeEnvelope] | Passerelle Sync Blueprint SRC + M0 obligatoire entre chaque vague → gel v4.0.0-lts.0 | Sync SRC · GO |
+| CLI AUD (8pts) | [1.Z0-ban | 2.L2/L3-purity | 3.R14-limits | 4.SRC-100%-in-Blueprint | 5.Vitest | 6.ESLint | 7.TSC | 8.AutoExport MD/YAML/JSON] | Bloquant sur V0 et chaque fin de vague | Exit 0 requis |
+| X2 — QA BROWSER | Playwright Light/Dark: NewSim+AI-P → G0 → Monde(0-3D) → B3D/H3D → Dossiers(Live+Badge→RPG) → Summary HK | 0 console/WebGL err · RAM <250MB | GATE : GO |
+> [+ AJOUT 12 — EXOW.M5.A1+ : Arborescence Canonique SRC L0–L8, Budgets R14 & Matrice d'Imports Interdits]
+> 
+SRC Canonique (Règle AUD #4: 100% mappé | R14: Engine ≤200L, UI ≤300L, CC≤12)
+├── L0 (M4)   : src/l0-contracts/   [constants.ts, schemas.zod.ts, types.ts, errors.ts, z0-guard.ts, mig-v3-v4.ts]
+├── L1 (M2)   : src/l1-catalog/     [factions5.ts, eras6.ts, techs30.ts, advisors4.ts, calEvents5.ts, phasesP1P4.ts, gearT1T3.ts]
+├── L2 (M1)   : src/l2-sim-math/    [pcg32.ts, sha256.ts, pa.ts, hk-stars.ts, fp-rpg.ts, wear-energy.ts, terra.ts, shortage.ts, combat4p.ts]
+├── L3 (M1/2) : src/l3-engine/      [turn-gate.ts, commit-turn.ts, dossier-resolver.ts, promises.ts, cycles.ts, g0-fsm.ts, diplo-ai.ts]
+├── L4 (M3)   : src/l4-bridge/      [scene-diff.ts, fip-audio.ts, sfx-synth.ts, dispose-registry.ts, bridge-envelope.ts]
+├── L5 (M2/4) : src/l5-io/          [local-store.ts, catalog-cv.ts, bff-client.ts, firebase-sync.ts, drive-sync.ts, argon2-vault.ts, neon-repo.ts]
+├── L6 (M3)   : src/l6-scenes-3d/   [b3d-viewer.ts, h3d-hangar.ts, webgl-fallback.ts, asset-manifest.ts]
+├── L7 (M3/5) : src/l7-ui/          [hud/, monde-0d/, map-3layers/, dossiers/, summary-hk/, rpg-drawer/, atlas-m0-m15/]
+└── L8 (M5)   : src/l8-ops/ + api/  [api/gemini/generate-turn-events.ts, scripts/exo-audit.ts, obs-replay.ts, tests/fuzz-60t.spec.ts, e2e/]
+
+[+ AJOUT : BOUNDARIES | NODE: EXOW.M5.A1@4.0.0-rc.1] — Matrice d'Imports Autorisés (Enforced par ESLint + AUD #2)
+| Couche | Imports Autorisés | Imports Strictement Interdits | Plafond R14 |
+|---|---|---|---|
+| L0 | zod uniquement | L1..L8, react, three, window, fs | ≤200L · CC≤10 |
+| L1 | L0 uniquement | L2..L8, Math.random, Date.now, I/O | ≤200L · CC≤8 |
+| L2 | L0, L1 uniquement | L3..L8, react, three, fetch, Math.random, Date.now | ≤200L · CC≤12 |
+| L3 | L0, L1, L2 uniquement | L4..L8, react, three, fetch, DOM, Math.random | ≤200L · CC≤12 |
+| L4..L6 | L0..L3 (+ three en L6) | L7 (UI), process.env.GEMINI_API_KEY | ≤250L · CC≤12 |
+| L7 | L0, L1, L3(types), L4..L6 | Mutation directe WS hors L3, accès clé API | ≤300L · CC≤12 |
+> [+ AJOUT 13 — EXOW.M5.A1++ : Contrat HTTP BFF 4T, Garde-Fous Prompt & Télémétrie OBS]
+> 
+[+ AJOUT : BFF-4T | NODE: EXOW.M2.A1@4.0.0-rc.1] — Protocole POST /api/gemini/generate-turn-events & Cascade 4T
+| Palier / Paramètre (Y1) | Contrat Exact & Timing | Garde-Fous & Validation | Sortie / Fallback (Y2) |
+|---|---|---|---|
+| Payload Requête (In) | { runId, turn, era, phase, factionId, spectra[4], aiPersona{name,tone}, recentHashes[3], activePM[], topAlerts[], seedHash } | Validation Zod · Payload <8KB · Rate-limit 12 req/min/session · Zéro PII | Rejet 400/429 typé |
+| Cascade T1→T4 (4T) | T1: gemini-4-hydrogen (2200ms) → T2: retry strict (1300ms) → T3: gemini-3.1-flash-lite (2500ms) → T4: offline CV local | responseMimeType: "application/json" + schéma JSON strict · Filtre regex Z0 serveur bloquant | Total max ≤3500ms (PreGen X2) |
+| Payload Réponse (Out) | { dossiers[1..2], modelUsed, tier(1..4), latencyMs, degraded:bool, retryable:bool, z0Filtered:int, errorCode? } | Vérifie ∃ choice 0-PA, themeHash ∉ recentHashes, mix 60% CV : 40% Live côté M2.A2 | Injection X4 sans faux texte |
+| Télémétrie OBS (Local) | Journal circulaire 100 tours: {turn, seed, inputs[], sha256, commitMs, tier4T, ramMB} exportable en JSON sans PII | Permet reproduction déterministe 1-clic de tout bug rapporté | obs-replay.ts |
+> [+ AJOUT 14 — EXOW.M5.A1+++ : Spécifications Techniques V3 (Firebase/Drive) · V4 (Neon SQL/pgvector) · V5 (Unity 6 URP)]
+> 
+[+ AJOUT : V3-V5-ARCH | NODE: EXOW.M4@4.0.0-rc.1] — Passerelles Cloud, SQL Vectoriel & Portabilité Unity 6
+| Vague (Y1) | Modèle de Stockage / Contrat | Sécurité, Indexation & Parité | Critère GO (Y2) |
+|---|---|---|---|
+| V3 Firebase + GDR | Firestore: users/{uid}/runs/{runId}, users/{uid}/catalog/cv · Drive: /EXO_WORLD_2050/BLUEPRINTS/ (MD/YAML/JSON/CHRONICLE) | Rules: request.auth.uid == uid · Scope strict drive.file + modale confirmation écrite · Chiffrement optionnel export local Argon2id + AES-GCM | Résolution conflit R8 testée |
+| V4 Neon Postgres + pgvector | Tables: runs(id,uid,semver,ws_jsonb,sha256,turn), turn_snapshots(run_id,turn,diff_jsonb), catalog_entries(id,theme_hash,embedding vector(768),weight) | Index HNSW (vector_cosine_ops) pour NoRep3t sémantique (cos_sim < 0.85) · Neon Branch par PR · PITR 7 jours · tri_lock.sql = 1 | Requête vectorielle <25ms |
+| V5 Unity 6 URP C# DTO | BridgeEnvelope<T>(string SchemaVersion, int Turn, string Sha256, T Payload) généré depuis L0/schemas.zod.ts via générateur SSOT | System.Text.Json SourceGen (AOT/IL2CPP) · Test croisé: même runSeed + 60 inputs ⇒ SHA-256 C# === SHA-256 TS | Gel v4.0.0-lts.0 (lts_frozen:true) |
+> [+ AJOUT 15 — EXOW.M5.A1++++ : Banc QA Étendu (AUD 8+4 Points, Fuzzing 60t, 6 Parcours Playwright & Budgets BUD)]
+> 
+[+ AJOUT : QA-BENCH | NODE: EXOW.M5.A1@4.0.0-rc.1] — Qualification Automatisée & Budgets Non-Négociables (BUD)
+| Suite / Contrôle (Y1) | Périmètre Exact Exécuté | Critère de Réussite Mesurable | Statut Gate (Y2) |
+|---|---|---|---|
+| AUD Étendu (9..12) | En plus des 8 bloquants: 9.Parity-Replay-SHA · 10.Bundle-Budget(<350KB gz) · 11.A11Y-Axe-Check · 12.Prompt-Z0-Fuzz | 1..8 bloquants dès V0; 9..12 bloquants dès fin V1 | Exit 0 requis |
+| Fuzzing 60 Tours (Vitest) | 5 superpuissances × 3 seeds × 4 profils (0-PA, Austérité, Rush P4, Crise E<0) = 3600 tours simulés | 0 softlock, 0 NaN, 0 divergence SHA-256 au replay, commit < 16ms/t (p99) | Bloquant fin V1 |
+| 6 Parcours Playwright E2E | E2E-1: NewSim+AI-P+G0 · E2E-2: Monde 0-3D 4 onglets+Map 3 calques · E2E-3: 20 cycles B3D/H3D + webglcontextlost · E2E-4: Dossiers 4T + simulation 429→3.1-lite→offline · E2E-5: Passage Ère HK ≥7★ + Transcendance · E2E-6: Export/Import JSON + MIG v3→v4 + Light/Dark | 0 erreur console/WebGL · JSHeap < 250MB · drawCalls ≤ 120 · Contraste ≥4.5:1 · Cibles ≥44px | GATE : GO |
+@Google Drive — Importe "EXO_WORLD_2050_MASTER_BLUEPRINT_v4.0.0-rc.1.md" dans "/EXO_WORLD_2050/BLUEPRINTS/" (EXOW-ROOT@4.0.0-rc.1).
+Exécute : Audit sans perte → Vérif M13-A/M13-D & REF → Synchro SRC L0-L8 & M0 → Gate GO/NO-GO (préserver LOCKED/lts_frozen).
+
+exow_v4_master:
+  root: "EXOW-ROOT@4.0.0-rc.1+full-m0-m15"
+  tri_lock: [1, 1, 0]
+  gate: "GO"
+  matrices_complete: "16/16 (M0..M15)"
+  z0_ban: ["THERMAL","Chaleur","S_heat","cycle+1","corridor","loop_climate"]
+  audio: { fip_default: "ON_FIRST_GESTURE", ui_sfx: true, synth_fallback_ms: 500 }
+  gemini_4t: { endpoint: "/api/gemini/generate-turn-events", t1_t2: "gemini-4-hydrogen", t3_quota: "gemini-3.1-flash-lite", t4_offline: "transparent_retry_continuity", pregen: "on_summary", timeout_ms: 3500 }
+  math: { pa_cap_pct: 150, hk_stars_to_advance: 7, arrivals_turns: [3,9], max_chain_per_turn: 1, max_quests: 3, wear_alert_pct: 55 }
+  art_v1: { advisors: 4, era_banners: 6, menu_bg: 1, faction_emblems: 5, style: "luminous_realistic_scifi_plus_humankind_solar" }
+  audit_cli: { cmd: "npm run exo:audit", blocking_checks: ["z0","l2_l3_purity","r14_limits","src_100pct_in_blueprint","vitest","eslint","tsc","auto_export_md_yaml_json"] }
+  drive_sync: { scope: "https://www.googleapis.com/auth/drive.file", confirm_write: true, files: ["MASTER_BLUEPRINT.md","MASTER_BLUEPRINT.yaml","MASTER_BLUEPRINT.json","CHRONICLE.json"] }
+  waves: [V0_Atlas_AUD, V1_Core_Gemini_HK_FP_3D_Art, Sync_SRC, V2_Diplo_Combat, Sync_SRC, V3_Fire_Drive, Sync_SRC, V4_SQL_pgvec, Sync_SRC, V5_Unity6_LTS]
+
+> [+ AJOUT 16 — Extension Machine-Readable Complète (exow_v4_hyper_addenda · 0 modification sur exow_v4_master)]
+> 
+exow_v4_hyper_addenda:
+  compat_with: "EXOW-ROOT@4.0.0-rc.1+full-m0-m15"
+  tri_lock_ramp: { v0_v2: [1, 1, 0], v3_cloud: [1, 1, 0], v4_sql: [1, 1, 1], v5_lts: [1, 1, 1] }
+  sadt_d2_subboxes: 15
+  commit_pipeline: ["Phi01_Gate_Backup","Phi02_Pending","Phi03_Ledger_Shed","Phi04_Shortages_Debt","Phi05_FP_RPG","Phi06_Wear","Phi07_Promises_Appr","Phi08_Tech_Terra","Phi09_HK_Stars","Phi10_PA_Next","Phi11_Victory_SceneDiff","Phi12_TurnInc_SHA_PreGen"]
+  terra_phases:
+    weights: { atmo: 0.35, hydro: 0.30, bio: 0.25, rad_shield: 0.10 }
+    thresholds: { P1: [0, 24], P2: [25, 49], P3: [50, 79], P4: [80, 100] }
+    hysteresis_pts: 3
+  prng: { algo: "PCG32", hash: "SHA-256", streams: { sim: 1, arrival: 2, wear: 3, event: 4, combat: 5, diplo: 6 } }
+  shortage_order: ["E", "O2_P1_P3", "W", "F", "Cr"]
+  debt: { interest_pct_per_turn: 5, pa_penalty_threshold: -200, hard_fail_threshold: -500 }
+  advisors_4: ["adv_civic", "adv_sci", "adv_eco", "adv_sec"]
+  ai_personas_5: ["analytique", "bienveillant", "pragmatique", "souverain", "avant_garde"]
+  cal_events_period: { season: 4, census: 6, summit: 8, congress: 10, faction_fete: 12 }
+  diplo_v2:
+    states: ["war","hostile","wary","neutral","accord","alliance","federation"]
+    cyber_ops: ["patent_theft","energy_sabotage","counter_intel","disinfo","firewall","spoof_recon"]
+    victories: ["fame","terra_p4","unity_2050","hegemony"]
+    defeats: ["pop_zero_2t","collapse_3t","cmd_destroyed"]
+  ui_m3:
+    theme_default: "solar_glass_light"
+    monde_tabs: ["overview","buildings_ledger","colonists_rpg","fleet_drones"]
+    map_layers: ["std","maint","flux"]
+    fip_streams: ["direct","jazz","electro","groove","monde","rock"]
+    a11y: { wcag: "2.1-AA", min_touch_px: 44, contrast_ratio: 4.5, reduced_motion_2d_fallback: true }
+  errors_catalog: "EXOW-E001..EXOW-E020"
+  amdec_extended: ["R5_save_corrupt_mig","R6_gemini_halluc_z0","R7_webgl_dispose_leak","R8_cloud_drive_conflict","R9_prng_desync","R10_bff_quota_abuse"]
+  gemma_recovery_rule: "D1_D2_to_A5_before_F1"
+  bff_guard: { max_payload_kb: 8, rate_limit_rpm: 12, strict_zod_io: true, server_z0_filter: true, norep_window_turns: 3, cv_live_ratio: [60, 40], cv_lru_cap: 500 }
+  v3_security: { firestore_uid_isolation: true, drive_confirm_write: true, local_export_crypto: "Argon2id+AES-GCM" }
+  v4_sql: { engine: "neon_postgres", vector_dim: 768, index: "hnsw_cosine", semantic_norep_max_sim: 0.85, pitr_days: 7 }
+  v5_unity6: { dto_envelope: "BridgeEnvelope<T>", serialization: "System.Text.Json_AOT", cross_sha256_turns: 60 }
+  qa_budgets: { commit_p99_ms: 16, init_js_gz_kb: 350, max_ram_mb: 250, max_draw_calls: 120, fuzz_total_turns: 3600, e2e_scenarios: 6, aud_extended_checks: ["parity_replay_sha","bundle_budget","a11y_axe","prompt_z0_fuzz"] }
+
+Veux-tu que je génère ce blueprint consolidé en fichier .md téléchargeable, ou préfères-tu qu'on attaque directement le code de V0 (L0/schemas.zod.ts + L0/z0-guard.ts + scripts/exo-audit.ts) ?

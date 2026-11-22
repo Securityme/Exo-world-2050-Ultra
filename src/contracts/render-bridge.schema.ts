@@ -1,0 +1,68 @@
+import { z } from 'zod';
+
+/**
+ * [L0] FUP-007 / FUP-010 | SM-05 | SADT A5.3
+ * Dual-Adapter 3D Render Contract (Three.js r170+ ↔ Unity 6 URP V5) (OPT-02 A, R-15).
+ */
+export const CameraScaleSchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
+
+export const AtmosphereTierSchema = z.enum(['P1', 'P2', 'P3', 'P4']);
+
+export const ViewportOverlayModeSchema = z.enum(['STANDARD', 'MAINTENANCE', 'LOGISTICS']);
+
+export const DossierPinPacketSchema = z.object({
+  dossierId: z.string(),
+  dossierClass: z.enum(['P0', 'C1', 'C2', 'C3', 'C4', 'C5']),
+  tileIndex: z.number().int().min(0).max(71),
+  label: z.string(),
+});
+
+export const CityDistrictPacketSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  kind: z.enum(['COMMAND', 'HABITAT', 'ENERGY', 'INDUSTRY', 'DATACENTER', 'BIOPARK', 'SPACEPORT']),
+  level: z.number().int().min(1).max(5),
+  modulesCount: z.number().int().min(0).max(3),
+  integrity: z.number().min(0).max(100),
+  gridX: z.number().int(),
+  gridZ: z.number().int(),
+});
+
+export const SceneDiffPacketSchema = z.object({
+  tick: z.number().int().nonnegative(),
+  cycle: z.number().int().nonnegative(),
+  activeScale: CameraScaleSchema,
+  activeSlotIndex: z.number().int().min(1).max(6),
+  unlockedSlots: z.number().int().min(1).max(6),
+  atmosphereTier: AtmosphereTierSchema,
+  atmosphereProgress: z.number().min(0).max(100),
+  weatherState: z.enum(['CLEAR', 'DUST_STORM', 'SOLAR_FLARE', 'RAIN', 'CRYO_FRONT']),
+  selectedTileIndex: z.number().int().min(0).max(71).nullable(),
+  capturedTiles: z.array(z.number().int().min(0).max(71)),
+  rivalTiles: z.array(z.number().int().min(0).max(71)),
+  activeDossierPins: z.array(DossierPinPacketSchema),
+  districts: z.array(CityDistrictPacketSchema),
+  droneCount: z.number().int().min(0),
+  themeMode: z.enum(['DARK_BENTO', 'LIGHT_ANNO']),
+  hologramPreviewDistrict: z.string().nullable(),
+  overlayMode: ViewportOverlayModeSchema.optional(),
+  season: z.enum(['PRINTEMPS', 'ETE', 'AUTOMNE', 'HIVER']).optional(),
+  themeAccentHex: z.string().optional(),
+  themeAccent2Hex: z.string().optional(),
+});
+
+export const RenderToGameEventSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('TILE_SELECTED'), tileIndex: z.number().int().min(0).max(71) }),
+  z.object({ type: z.literal('SLOT_SELECTED'), slotIndex: z.number().int().min(1).max(6) }),
+  z.object({ type: z.literal('DOSSIER_PIN_CLICKED'), dossierId: z.string() }),
+  z.object({ type: z.literal('DISTRICT_CLICKED'), districtId: z.string() }),
+  z.object({ type: z.literal('SCALE_CHANGED'), scale: CameraScaleSchema }),
+]);
+
+export type CameraScale = z.infer<typeof CameraScaleSchema>;
+export type AtmosphereTier = z.infer<typeof AtmosphereTierSchema>;
+export type ViewportOverlayMode = z.infer<typeof ViewportOverlayModeSchema>;
+export type DossierPinPacket = z.infer<typeof DossierPinPacketSchema>;
+export type CityDistrictPacket = z.infer<typeof CityDistrictPacketSchema>;
+export type SceneDiffPacket = z.infer<typeof SceneDiffPacketSchema>;
+export type RenderToGameEvent = z.infer<typeof RenderToGameEventSchema>;

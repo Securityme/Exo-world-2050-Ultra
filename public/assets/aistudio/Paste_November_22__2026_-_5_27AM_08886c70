@@ -1,0 +1,1120 @@
+#!/usr/bin/env node
+/**
+ * Exo World 2050 — AAA Monorepo Scaffolder (v4.0)
+ * Génère les 6 strates, 20 workspaces pnpm/Turborepo et 262 fichiers sources.
+ *
+ * Usage :
+ *   node scaffold-exoworld-aaa.mjs [dossier-cible] [--force]
+ */
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+const args = process.argv.slice(2);
+const FORCE = args.includes('--force');
+const targetArg = args.find((a) => !a.startsWith('--')) ?? 'exo-world-2050';
+const ROOT_DIR = path.resolve(process.cwd(), targetArg);
+
+// ============================================================================
+// 1. DÉFINITION DES 20 WORKSPACES & DES 262 FICHIERS SOURCES (S1 → S6)
+// ============================================================================
+
+const WORKSPACES = [
+  // --------------------------------------------------------------------------
+  // STRATE S1 · FOUNDATION (34 fichiers)
+  // --------------------------------------------------------------------------
+  {
+    stratum: 'S1',
+    name: '@exo/pal',
+    dir: 'packages/01-foundation/pal',
+    description: 'Platform Abstraction Layer (OPFS, IndexedDB, sondes GPU, horloge)',
+    deps: [],
+    extDeps: {},
+    devDeps: { '@webgpu/types': '^0.1.48' },
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du module PAL'],
+      ['src/capabilities/GpuCapabilityProbe.ts', 'Détection WebGPU / WebGL2 et limites VRAM'],
+      ['src/capabilities/HardwareConcurrency.ts', 'Dimensionnement dynamique du pool de workers'],
+      ['src/storage/StorageBackendPort.ts', 'Contrat de stockage binaire haute vitesse'],
+      ['src/storage/OpfsStorageAdapter.ts', 'Origin Private File System (accès quasi-natif)'],
+      ['src/storage/IndexedDbAdapter.ts', 'Fallback persistance navigateur standard'],
+      ['src/input/GamepadAndPointerDriver.ts', 'Normalisation souris, tactile et manette'],
+      ['src/time/HighResClock.ts', 'Horloge monotone haute résolution'],
+    ],
+  },
+  {
+    stratum: 'S1',
+    name: '@exo/math-det',
+    dir: 'packages/01-foundation/math-det',
+    description: 'Mathématiques déterministes, virgule fixe, bruit, projections et checksums',
+    deps: [],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: false,
+    files: [
+      ['src/index.ts', 'Point d’entrée public des utilitaires mathématiques déterministes'],
+      ['src/deterministic/FixedPointMath.ts', 'Arithmétique déterministe anti-dérive flottante'],
+      ['src/deterministic/SeededPrng.ts', 'PRNG reproductible (PCG32 / Xoshiro)'],
+      ['src/deterministic/StateChecksum.ts', 'Hash rapide de l’état de simulation par tick'],
+      ['src/procedural/SimplexNoise.ts', 'Bruit cohérent multi-octaves'],
+      ['src/procedural/WorleyNoise.ts', 'Bruit cellulaire pour plaques tectoniques et cratères'],
+      ['src/procedural/InterpolationUtils.ts', 'Courbes lerp, slerp, smoothstep et easing'],
+      ['src/spatial/HexGridProjection.ts', 'Topologie géodésique sphère vers grille hexagonale'],
+      ['src/spatial/SphericalCoords.ts', 'Conversions lat/lon vers vecteurs 3D et grand cercle'],
+      ['src/spatial/SpatialHashGrid.ts', 'Indexation spatiale O(1) pour requêtes de voisinage'],
+    ],
+  },
+  {
+    stratum: 'S1',
+    name: '@exo/core-runtime',
+    dir: 'packages/01-foundation/core-runtime',
+    description: 'Mémoire (Arenas, RingBuffer), Job System, FSM, Bus CQRS, DI et Profiler',
+    deps: ['@exo/pal', '@exo/math-det'],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du runtime noyau'],
+      ['src/memory/SharedArenaAllocator.ts', 'Allocation linéaire dans SharedArrayBuffer (zéro GC)'],
+      ['src/memory/RingBuffer.ts', 'Buffer circulaire lock-free inter-threads'],
+      ['src/memory/ObjectPool.ts', 'Recyclage d’objets temporaires hors boucle chaude'],
+      ['src/jobs/JobGraphScheduler.ts', 'Ordonnanceur de graphe de dépendances (DAG)'],
+      ['src/jobs/WorkerPoolManager.ts', 'Cycle de vie et supervision des Web Workers'],
+      ['src/jobs/WorkStealingQueue.ts', 'Équilibrage dynamique des tâches entre threads'],
+      ['src/jobs/TransferableCodec.ts', 'Transfert zero-copy d’ArrayBuffers'],
+      ['src/kernel/GameLoop.ts', 'Boucle fixed-timestep (sim) + alpha + RAF (rendu)'],
+      ['src/kernel/SessionStateMachine.ts', 'FSM stricte (Boot, Menu, Loading, Play, Save)'],
+      ['src/bus/CommandBus.ts', 'Routage typé des commandes validables et rejouables'],
+      ['src/bus/EventBus.ts', 'Bus pub/sub découplé des faits du domaine'],
+      ['src/di/ServiceContainer.ts', 'Conteneur d’injection de dépendances par jetons'],
+      ['src/diagnostics/StructuredLogger.ts', 'Journalisation filtrable par module et sévérité'],
+      ['src/diagnostics/FrameBudgetProfiler.ts', 'Mesure temps CPU/GPU par passe (budget 16.6 ms)'],
+      ['src/diagnostics/CrashDumpCollector.ts', 'Capture de contexte et derniers ticks avant crash'],
+    ],
+  },
+
+  // --------------------------------------------------------------------------
+  // STRATE S2 · ENGINE (72 fichiers)
+  // --------------------------------------------------------------------------
+  {
+    stratum: 'S2',
+    name: '@exo/ecs',
+    dir: 'packages/02-engine/ecs',
+    description: 'Moteur ECS SoA, DirtyFlags, buffers partagés, codec binaire et diffs',
+    deps: ['@exo/math-det', '@exo/core-runtime'],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: false,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du moteur ECS'],
+      ['src/World.ts', 'Registre central des entités, archétypes et systèmes'],
+      ['src/EntityManager.ts', 'Allocation et recyclage d’IDs générationnels'],
+      ['src/QueryEngine.ts', 'Requêtes mises en cache par signature de composants'],
+      ['src/storage/ArchetypeRegistry.ts', 'Regroupement mémoire contigu par archétype'],
+      ['src/storage/SoaComponentPool.ts', 'Stockage Structure-of-Arrays (Float32/Uint32)'],
+      ['src/storage/DirtyFlagBitset.ts', 'Masques binaires pour mises à jour différentielles'],
+      ['src/storage/SharedBufferBridge.ts', 'Exposition mémoire ECS vers workers et rendu'],
+      ['src/serialization/BinaryWorldEncoder.ts', 'Sérialisation binaire compacte du monde ECS'],
+      ['src/serialization/BinaryWorldDecoder.ts', 'Réhydratation directe en mémoire contiguë'],
+      ['src/serialization/SnapshotDiffEngine.ts', 'Calcul de deltas binaires pour sauvegardes et replays'],
+    ],
+  },
+  {
+    stratum: 'S2',
+    name: '@exo/rhi-render',
+    dir: 'packages/02-engine/rhi-render',
+    description: 'RHI WebGPU/WebGL2, RenderGraph, pont d’interpolation, LOD et shaders WGSL',
+    deps: ['@exo/pal', '@exo/math-det', '@exo/core-runtime', '@exo/ecs'],
+    extDeps: { three: '^0.170.0' },
+    devDeps: { '@types/three': '^0.170.0', '@webgpu/types': '^0.1.48' },
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du moteur de rendu RHI'],
+      ['src/RenderEngine.ts', 'Chef d’orchestre du pipeline graphique'],
+      ['src/rhi/IRenderDevice.ts', 'Interface matérielle abstraite (buffers, pipelines)'],
+      ['src/rhi/WebGpuDeviceBackend.ts', 'Backend natif WebGPU (compute shaders + instancing)'],
+      ['src/rhi/WebGl2FallbackBackend.ts', 'Backend de compatibilité WebGL2 / Three.js'],
+      ['src/rhi/GpuResourceTracker.ts', 'Comptabilité VRAM et libération stricte des ressources'],
+      ['src/graph/RenderGraph.ts', 'Graphe déclaratif des passes (Shadow, GBuffer, Post)'],
+      ['src/graph/RenderPassNode.ts', 'Contrat d’entrée/sortie d’une passe graphique'],
+      ['src/graph/FrameResourcePool.ts', 'Réutilisation des RenderTargets temporaires par frame'],
+      ['src/bridge/EcsRenderSync.ts', 'Synchronisation incrémentale pilotée par DirtyFlags'],
+      ['src/bridge/RenderStateInterpolator.ts', 'Interpolation fluide (t-1 vers t) entre 10 Hz et 60+ FPS'],
+      ['src/scene/camera/OrbitalCameraRig.ts', 'Contrôles orbitaux sphériques et inertie douce'],
+      ['src/scene/camera/SurfaceCameraRig.ts', 'Vue tactique rasante pour gestion locale'],
+      ['src/scene/camera/CameraTransitionBlender.ts', 'Transition continue orbite vers surface'],
+      ['src/scene/lighting/SolarCycleRig.ts', 'Position solaire, cycle jour/nuit et éclairage ambiant'],
+      ['src/scene/lighting/AtmosphereShadowRig.ts', 'Ombres nuageuses et terminateur crépusculaire'],
+      ['src/geometry/lod/quadtree/QuadtreeChunkBuilder.ts', 'Subdivision adaptative selon distance caméra'],
+      ['src/geometry/lod/quadtree/TerrainHeightSampler.ts', 'Échantillonnage d’élévation et normales'],
+      ['src/geometry/lod/quadtree/ChunkMeshRecycler.ts', 'Pool de géométries GPU sans allocation'],
+      ['src/geometry/lod/transitions/LodMorphSkirtBuilder.ts', 'Jupes de jonction anti-fissures entre LODs'],
+      ['src/geometry/lod/transitions/NormalSeamStitcher.ts', 'Lissage des normales aux bordures des tuiles'],
+      ['src/geometry/lod/transitions/FrustumCullEvaluator.ts', 'Élagage hors-champ et horizon planétaire'],
+      ['src/geometry/instancing/BuildingInstancer.ts', 'Rendu GPU instancié de milliers de structures'],
+      ['src/geometry/instancing/UnitInstancer.ts', 'Flottes, convois et drones animés en instancing'],
+      ['src/geometry/instancing/BiomePropInstancer.ts', 'Végétation, roches et détails de biome'],
+      ['src/shaders/atmosphere/atmosphere.vert.wgsl', 'Vertex shader du volume atmosphérique orbital'],
+      ['src/shaders/atmosphere/rayleigh.frag.wgsl', 'Fragment shader diffusion de Rayleigh et halo'],
+      ['src/shaders/atmosphere/mieHaze.frag.wgsl', 'Fragment shader brume de Mie et aérosols'],
+      ['src/shaders/atmosphere/cloudVolume.frag.wgsl', 'Fragment shader couche nuageuse dynamique'],
+      ['src/shaders/surface/terrainSplat.frag.wgsl', 'Fragment shader mélange multi-biomes et élévation'],
+      ['src/shaders/surface/triplanarDetail.frag.wgsl', 'Fragment shader projection triplanaire sur falaises'],
+      ['src/shaders/surface/oceanSurface.frag.wgsl', 'Fragment shader houle, Fresnel et niveau des mers'],
+      ['src/shaders/surface/hexOverlay.frag.wgsl', 'Fragment shader grille tactique et filtres thermiques'],
+      ['src/vfx/GpuParticleEmitter.ts', 'Particules simulées côté GPU (panaches, étincelles)'],
+      ['src/vfx/WeatherOverlayPass.ts', 'Tempêtes solaires, pluies acides et aurores'],
+    ],
+  },
+  {
+    stratum: 'S2',
+    name: '@exo/assets-vfs',
+    dir: 'packages/02-engine/assets-vfs',
+    description: 'Virtual File System, streaming LOD/Mipmaps, loaders Draco/KTX2 et budget GPU',
+    deps: ['@exo/pal', '@exo/core-runtime'],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du Virtual File System et loaders'],
+      ['src/vfs/VirtualFileSystem.ts', 'Résolution abstraite des chemins (core / DLC / mods)'],
+      ['src/vfs/MountPointRegistry.ts', 'Priorité de surcharge des packs d’assets'],
+      ['src/streaming/AssetStreamScheduler.ts', 'Chargement prioritaire selon distance caméra'],
+      ['src/streaming/MipmapLodStreamer.ts', 'Montée progressive en résolution des textures'],
+      ['src/loaders/GltfDracoLoader.ts', 'Décodage asynchrone des maillages compressés'],
+      ['src/loaders/Ktx2TextureLoader.ts', 'Décodage GPU natif Basis/KTX2'],
+      ['src/cache/GpuMemoryBudgeter.ts', 'Plafond strict de VRAM selon la sonde PAL'],
+      ['src/cache/LruAssetCache.ts', 'Éviction contrôlée des assets hors champ'],
+    ],
+  },
+  {
+    stratum: 'S2',
+    name: '@exo/audio',
+    dir: 'packages/02-engine/audio',
+    description: 'Moteur Web Audio spatial 3D, occlusion, bus et directeur musical adaptatif',
+    deps: ['@exo/pal', '@exo/core-runtime', '@exo/assets-vfs'],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du moteur audio'],
+      ['src/SpatialAudioEngine.ts', 'Moteur Web Audio 3D et gestion des voix actives'],
+      ['src/buses/AudioBusGraph.ts', 'Bus Master, SFX, Ambiance, UI, Musique et ducking'],
+      ['src/buses/DynamicOcclusionSolver.ts', 'Atténuation selon l’altitude caméra (sol vers orbite)'],
+      ['src/music/AdaptiveMusicDirector.ts', 'Stems musicaux synchronisés (calme, crise, guerre)'],
+      ['src/banks/SoundBankStreamer.ts', 'Préchargement et déchargement par scène'],
+      ['src/banks/ProceduralAmbienceSynth.ts', 'Vent, pluie et rumeur industrielle synthétisés'],
+    ],
+  },
+  {
+    stratum: 'S2',
+    name: '@exo/persistence-net',
+    dir: 'packages/02-engine/persistence-net',
+    description: 'Replay déterministe, détection de désync, migrations, sync cloud et télémétrie',
+    deps: ['@exo/pal', '@exo/math-det', '@exo/core-runtime', '@exo/ecs'],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public persistance, replay et réseau'],
+      ['src/replay/DeterministicReplayRecorder.ts', 'Enregistrement du flux de commandes et graine'],
+      ['src/replay/ReplayPlaybackEngine.ts', 'Relecture rapide à l’identique (QA / Spectateur)'],
+      ['src/replay/DesyncDetector.ts', 'Comparaison des checksums entre sessions/builds'],
+      ['src/saves/SaveSlotManager.ts', 'Gestion des slots, autosaves et métadonnées'],
+      ['src/saves/SaveMigrationPipeline.ts', 'Migrations séquentielles de schémas versionnés'],
+      ['src/cloud/CloudSyncAdapter.ts', 'Synchronisation différentielle (Firebase / S3)'],
+      ['src/cloud/ConflictResolutionEngine.ts', 'Arbitrage horodaté local vs cloud'],
+      ['src/network/ApiHttpClient.ts', 'Client HTTP résilient avec backoff exponentiel'],
+      ['src/network/TelemetryBatcher.ts', 'Envoi groupé opt-in des métriques FPS et erreurs'],
+    ],
+  },
+
+  // --------------------------------------------------------------------------
+  // STRATE S3 · FRAMEWORK (19 fichiers)
+  // --------------------------------------------------------------------------
+  {
+    stratum: 'S3',
+    name: '@exo/sim-framework',
+    dir: 'packages/03-framework/sim-framework',
+    description: 'Pipeline de phases, pile de modificateurs, WorldGen et IA Utility/FlowField',
+    deps: ['@exo/math-det', '@exo/core-runtime', '@exo/ecs'],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du framework de simulation 4X'],
+      ['src/SimulationOrchestrator.ts', 'Exécution déterministe des phases de tick'],
+      ['src/phases/PhasePipeline.ts', 'Ordonnancement pre-tick, core-tick et post-tick'],
+      ['src/modifiers/StatModifierStack.ts', 'Empilement additif/multiplicatif (techs, crises, lois)'],
+      ['src/modifiers/ModifierTagQuery.ts', 'Ciblage déclaratif par tags (ex. energy.fusion)'],
+      ['src/worldgen/WorldGenPipeline.ts', 'Chaînage asynchrone des étapes de génération'],
+      ['src/worldgen/workers/BiomeNoise.worker.ts', 'Worker génération fractale du relief et températures'],
+      ['src/worldgen/workers/HydrologyErosion.worker.ts', 'Worker érosion hydraulique, rivières et bassins'],
+      ['src/worldgen/workers/DepositScatter.worker.ts', 'Worker distribution géologique des ressources'],
+      ['src/ai/UtilityAiEvaluator.ts', 'Scoring continu des actions IA par courbes d’utilité'],
+      ['src/ai/workers/FlowFieldPathfinding.worker.ts', 'Worker champs de flux multi-unités sur sphère'],
+      ['src/ai/workers/FactionStrategy.worker.ts', 'Worker planification stratégique asynchrone des factions'],
+    ],
+  },
+  {
+    stratum: 'S3',
+    name: '@exo/plugin-sdk',
+    dir: 'packages/03-framework/plugin-sdk',
+    description: 'Hôte de plugins/DLC/mods, hooks, fusions de données et garde-fous sandbox',
+    deps: ['@exo/core-runtime'],
+    extDeps: { zod: '^3.23.8' },
+    devDeps: {},
+    jsx: false,
+    dom: false,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du SDK Plugins & Mods'],
+      ['src/PluginManifest.schema.ts', 'Validation SemVer et dépendances d’un plugin/mod'],
+      ['src/PluginHostManager.ts', 'Découverte, chargement et déchargement à chaud'],
+      ['src/HookRegistry.ts', 'Points d’extension typés (tick, UI, commandes, events)'],
+      ['src/ContentOverrideMerger.ts', 'Fusion non destructive des catalogues de données'],
+      ['src/SandboxPermissionGuard.ts', 'Restriction d’accès API pour les mods communautaires'],
+      ['src/PluginLifecycleBus.ts', 'Isolation des erreurs d’un plugin sans planter le jeu'],
+    ],
+  },
+
+  // --------------------------------------------------------------------------
+  // STRATE S4 · GAME EXO WORLD 2050 (78 fichiers)
+  // --------------------------------------------------------------------------
+  {
+    stratum: 'S4',
+    name: '@exo/game-data',
+    dir: 'packages/04-game-exoworld/game-data',
+    description: 'Schémas Zod, DataRegistry multi-index et catalogues déclaratifs 2050',
+    deps: ['@exo/math-det'],
+    extDeps: { zod: '^3.23.8' },
+    devDeps: {},
+    jsx: false,
+    dom: false,
+    files: [
+      ['src/index.ts', 'Point d’entrée public des données et schémas Exo World 2050'],
+      ['src/DataRegistry.ts', 'Indexation multi-tags O(1) et support des surcharges DLC'],
+      ['src/schemas/building.schema.ts', 'Contrat Zod des structures et paliers'],
+      ['src/schemas/techTree.schema.ts', 'Contrat Zod du graphe technologique DAG'],
+      ['src/schemas/biome.schema.ts', 'Contrat Zod des biomes et rendements'],
+      ['src/schemas/crisis.schema.ts', 'Contrat Zod des crises et dilemmes'],
+      ['src/schemas/faction.schema.ts', 'Contrat Zod des doctrines et biais IA'],
+      ['src/schemas/saveFile.schema.ts', 'Contrat versionné des sauvegardes Exo World'],
+      ['src/catalogs/buildings/energy/solarOrbital.data.ts', 'Catalogue collecteurs solaires, miroirs et relais'],
+      ['src/catalogs/buildings/energy/fusionReactors.data.ts', 'Catalogue tokamaks, fusion et géothermie profonde'],
+      ['src/catalogs/buildings/habitat/domes.data.ts', 'Catalogue dômes pressurisés et abris climatiques'],
+      ['src/catalogs/buildings/habitat/arcologies.data.ts', 'Catalogue tours écologiques et support vital'],
+      ['src/catalogs/buildings/industrial/extractors.data.ts', 'Catalogue foreuses profondes et mines automatisées'],
+      ['src/catalogs/buildings/industrial/terraformers.data.ts', 'Catalogue capture CO2 et ingénierie atmosphérique'],
+      ['src/catalogs/world/biomes.data.ts', 'Catalogue des biomes planétaires et paramètres climatiques'],
+      ['src/catalogs/world/resources.data.ts', 'Catalogue matières premières, terres rares et énergie'],
+      ['src/catalogs/strategy/techTree2050.data.ts', 'Catalogue arbre technologique 2050-2150'],
+      ['src/catalogs/strategy/crisesAndFactions.data.ts', 'Catalogue crises planétaires et factions de base'],
+    ],
+  },
+  {
+    stratum: 'S4',
+    name: '@exo/domain-planet',
+    dir: 'packages/04-game-exoworld/domain-planet',
+    description: 'Thermodynamique, hydrologie, géosphère et workers climatiques',
+    deps: ['@exo/math-det', '@exo/core-runtime', '@exo/ecs', '@exo/sim-framework', '@exo/game-data'],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du domaine planétaire'],
+      ['src/atmosphere/AtmosphereMacroState.ts', 'État global des couches gazeuses et pression'],
+      ['src/atmosphere/thermodynamics/GasCompositionModel.ts', 'Bilans molaires O2, CO2, N2, CH4 et toxicité'],
+      ['src/atmosphere/thermodynamics/GreenhouseForcingSolver.ts', 'Forçage radiatif et courbe de température'],
+      ['src/atmosphere/thermodynamics/AlbedoFeedbackSolver.ts', 'Rétroaction glace, nuages et océans'],
+      ['src/atmosphere/hydrology/SeaLevelRiseSolver.ts', 'Fonte des calottes et submersion côtière'],
+      ['src/atmosphere/hydrology/EvaporationCycleModel.ts', 'Flux hydriques océan-atmosphère'],
+      ['src/atmosphere/hydrology/PrecipitationZoneModel.ts', 'Ceintures pluvieuses et désertification'],
+      ['src/atmosphere/workers/FluidAtmosphereGrid.worker.ts', 'Worker courants aériens et dispersion polluants'],
+      ['src/atmosphere/workers/ThermalDiffusion.worker.ts', 'Worker diffusion thermique matricielle régionale'],
+      ['src/geosphere/PlanetMacroState.ts', 'Orbite, gravité, rayon et graine planétaire'],
+      ['src/geosphere/BiomeClassifier.ts', 'Matrice de Whittaker (température par humidité)'],
+      ['src/geosphere/TectonicActivityModel.ts', 'Risque sismique et potentiel géothermique'],
+      ['src/geosphere/DepositDepletionModel.ts', 'Rendements décroissants des gisements'],
+      ['src/systems/AtmosphereTickSystem.ts', 'Phase pre-tick : recalcul climatique global'],
+      ['src/systems/ClimateFeedbackSystem.ts', 'Phase pre-tick : application des rétroactions'],
+    ],
+  },
+  {
+    stratum: 'S4',
+    name: '@exo/domain-gameplay',
+    dir: 'packages/04-game-exoworld/domain-gameplay',
+    description: 'Composants ECS, colonies, économie, stratégie, systèmes et handlers CQRS',
+    deps: [
+      '@exo/math-det',
+      '@exo/core-runtime',
+      '@exo/ecs',
+      '@exo/sim-framework',
+      '@exo/game-data',
+      '@exo/domain-planet',
+    ],
+    extDeps: {},
+    devDeps: {},
+    jsx: false,
+    dom: false,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du domaine gameplay'],
+      ['src/components/TransformComponent.ts', 'Position sphérique, rotation et échelle (SoA)'],
+      ['src/components/BuildingStateComponent.ts', 'Type, palier, santé, alimentation et chantier'],
+      ['src/components/UnitMotionComponent.ts', 'Vélocité, cap et cible des convois et drones'],
+      ['src/components/DepositComponent.ts', 'Ressource, stock restant et débit d’extraction'],
+      ['src/colony/ColonyRegistry.ts', 'Registre macro reliant colonies et IDs ECS'],
+      ['src/colony/TerritoryControlModel.ts', 'Frontières hexagonales et rayon d’influence'],
+      ['src/colony/HabitatViabilityIndex.ts', 'Habitabilité, pression interne et survie'],
+      ['src/colony/PopulationDynamicsModel.ts', 'Démographie, santé, moral et main-d’œuvre'],
+      ['src/economy/ResourceLedger.ts', 'Comptabilité des stocks et flux nets'],
+      ['src/economy/EnergyGridSolver.ts', 'Équilibrage MW, stockage et délestages'],
+      ['src/economy/ProductionChainGraph.ts', 'Graphe matières premières vers biens finis'],
+      ['src/economy/TradeBalanceModel.ts', 'Routes commerciales et tarifs orbitaux'],
+      ['src/strategy/TechTreeModel.ts', 'Progression scientifique et modificateurs'],
+      ['src/strategy/DiplomacyMatrix.ts', 'Traités, tensions, embargos et alliances'],
+      ['src/strategy/FactionDoctrineModel.ts', 'Bonus/malus idéologiques des factions'],
+      ['src/strategy/CrisisDirector.ts', 'Évaluation probabiliste et escalade des crises'],
+      ['src/systems/core-tick/EconomyTickSystem.ts', 'Résolution réseau MW et chaînes industrielles'],
+      ['src/systems/core-tick/ExtractionTickSystem.ts', 'Extraction minière et usure des gisements'],
+      ['src/systems/core-tick/PopulationTickSystem.ts', 'Consommation vitale, natalité et migrations'],
+      ['src/systems/core-tick/ConstructionTickSystem.ts', 'Avancement des chantiers et maintenance'],
+      ['src/systems/core-tick/LogisticsTickSystem.ts', 'Déplacement des convois/drones et livraisons'],
+      ['src/systems/post-tick/ResearchTickSystem.ts', 'Accumulation scientifique et déblocages'],
+      ['src/systems/post-tick/DiplomacyTickSystem.ts', 'Évolution diplomatique et fin de traités'],
+      ['src/systems/post-tick/CrisisResolutionSystem.ts', 'Application des dégâts et sortie de crise'],
+      ['src/handlers/colony/PlaceBuildingHandler.ts', 'Création entité ECS et déduction des coûts'],
+      ['src/handlers/colony/PlacementValidator.ts', 'Contrôle pente, biome, territoire et prérequis'],
+      ['src/handlers/colony/UpgradeStructureHandler.ts', 'Montée de palier et recalcul du réseau'],
+      ['src/handlers/colony/DemolishStructureHandler.ts', 'Démantèlement et récupération de matériaux'],
+      ['src/handlers/strategy/UnlockTechNodeHandler.ts', 'Vérification DAG et activation technologie'],
+      ['src/handlers/strategy/ProposeTreatyHandler.ts', 'Soumission et validation d’accord diplomatique'],
+      ['src/handlers/events/SolarStormEventHandler.ts', 'Réaction transversale tempête solaire'],
+    ],
+  },
+  {
+    stratum: 'S4',
+    name: '@exo/ui-kit',
+    dir: 'packages/04-game-exoworld/ui-kit',
+    description: 'Design system autonome Solar Glass, pont Store throttled et hooks React',
+    deps: ['@exo/core-runtime', '@exo/game-data'],
+    extDeps: { react: '^19.0.0', 'react-dom': '^19.0.0', zustand: '^5.0.0' },
+    devDeps: { '@types/react': '^19.0.0', '@types/react-dom': '^19.0.0' },
+    jsx: true,
+    dom: true,
+    files: [
+      ['src/index.ts', 'Point d’entrée public du design system et hooks UI'],
+      ['src/tokens/solarGlassTokens.ts', 'Palette, contrastes, typographie et rayons'],
+      ['src/primitives/GlassPanel.tsx', 'Surface translucide structurée et lisible'],
+      ['src/primitives/TactileButton.tsx', 'Bouton accessible (cible tactile 44x44 px min)'],
+      ['src/primitives/MetricSparkline.tsx', 'Mini-graphe SVG temps réel'],
+      ['src/primitives/DataTableVirtual.tsx', 'Table virtualisée pour centaines de colonies/unités'],
+      ['src/primitives/RadialGaugeSvg.tsx', 'Jauge circulaire pour métriques planétaires'],
+      ['src/store/createGameStore.ts', 'Fabrique de store découplée'],
+      ['src/store/workerSyncMiddleware.ts', 'Ingestion plafonnée (10 Hz) des snapshots moteur'],
+      ['src/hooks/useSimulationTick.ts', 'Abonnement throttled à la cadence UI'],
+      ['src/hooks/useCommandDispatch.ts', 'Émission typée vers CommandBus'],
+      ['src/hooks/useLocalizedFormat.ts', 'Formatage MW, Gt CO2, K/C et dates 2050'],
+    ],
+  },
+
+  // --------------------------------------------------------------------------
+  // STRATE S5 · PLUGINS & EXTENSIONS (11 fichiers)
+  // --------------------------------------------------------------------------
+  {
+    stratum: 'S5',
+    name: '@exo/plugin-orbital-megastructures',
+    dir: 'plugins/orbital-megastructures',
+    description: 'Extension isolée : ascenseurs spatiaux et anneaux orbitaux',
+    deps: [
+      '@exo/core-runtime',
+      '@exo/ecs',
+      '@exo/plugin-sdk',
+      '@exo/game-data',
+      '@exo/domain-gameplay',
+      '@exo/ui-kit',
+    ],
+    extDeps: { react: '^19.0.0' },
+    devDeps: { '@types/react': '^19.0.0' },
+    jsx: true,
+    dom: true,
+    files: [
+      ['plugin.manifest.json', 'Déclaration SemVer, hooks requis et points de montage VFS'],
+      ['src/index.ts', 'Enregistrement du plugin sur @exo/plugin-sdk'],
+      ['src/data/orbitalRing.data.ts', 'Catalogue des mégastructures orbitales'],
+      ['src/systems/OrbitalElevatorSystem.ts', 'Logistique orbitale greffée sur core-tick'],
+      ['src/ui/OrbitalMegastructurePanel.tsx', 'Panneau dédié injecté dans le HUD'],
+    ],
+  },
+  {
+    stratum: 'S5',
+    name: '@exo/plugin-narrative-director',
+    dir: 'plugins/narrative-director',
+    description: 'Directeur narratif procédural / LLM optionnel avec fallback déterministe',
+    deps: [
+      '@exo/core-runtime',
+      '@exo/plugin-sdk',
+      '@exo/game-data',
+      '@exo/domain-planet',
+      '@exo/domain-gameplay',
+      '@exo/ui-kit',
+    ],
+    extDeps: { react: '^19.0.0', zod: '^3.23.8' },
+    devDeps: { '@types/react': '^19.0.0' },
+    jsx: true,
+    dom: true,
+    files: [
+      ['plugin.manifest.json', 'Manifeste du directeur narratif procédural'],
+      ['src/index.ts', 'Branchement sur CrisisDirector via HookRegistry'],
+      ['src/PromptContextSerializer.ts', 'Synthèse déterministe de l’état monde pour LLM'],
+      ['src/EventChoiceValidator.ts', 'Validation stricte Zod des choix générés'],
+      ['src/FallbackRulebookProvider.ts', 'Repli hors-ligne 100 % déterministe sans API'],
+      ['src/ui/NarrativeDilemmaModal.tsx', 'Modale de décision diplomatique ou de crise'],
+    ],
+  },
+
+  // --------------------------------------------------------------------------
+  // STRATE S6 · APPS & TOOLS (48 fichiers)
+  // --------------------------------------------------------------------------
+  {
+    stratum: 'S6',
+    name: '@exo/web-client',
+    dir: 'apps/web-client',
+    description: 'Exécutable navigateur complet (Bootstrap, HUD, panneaux, DevTools in-game)',
+    isApp: true,
+    deps: [
+      '@exo/pal',
+      '@exo/math-det',
+      '@exo/core-runtime',
+      '@exo/ecs',
+      '@exo/rhi-render',
+      '@exo/assets-vfs',
+      '@exo/audio',
+      '@exo/persistence-net',
+      '@exo/sim-framework',
+      '@exo/plugin-sdk',
+      '@exo/game-data',
+      '@exo/domain-planet',
+      '@exo/domain-gameplay',
+      '@exo/ui-kit',
+      '@exo/plugin-orbital-megastructures',
+      '@exo/plugin-narrative-director',
+    ],
+    extDeps: { react: '^19.0.0', 'react-dom': '^19.0.0', zustand: '^5.0.0' },
+    devDeps: { '@types/react': '^19.0.0', '@types/react-dom': '^19.0.0', vite: '^6.0.0' },
+    jsx: true,
+    dom: true,
+    files: [
+      ['src/main.tsx', 'Montage navigateur et initialisation PAL'],
+      ['src/App.tsx', 'Routeur d’écrans piloté par SessionStateMachine'],
+      ['src/bootstrap/composeApp.ts', 'Assemblage global DI (~30 lignes)'],
+      ['src/bootstrap/registerEngineModules.ts', 'Liaison ECS, RHI, Audio, VFS et Persistence'],
+      ['src/bootstrap/registerPluginHost.ts', 'Montage des plugins actifs au démarrage'],
+      ['src/input/PointerRaycastHandler.ts', 'Picking GPU/raycast d’entités et d’hexagones'],
+      ['src/input/CameraGestureHandler.ts', 'Traduction souris/tactile/manette vers CameraRig'],
+      ['src/input/ShortcutDispatchHandler.ts', 'Raccourcis clavier contextuels'],
+      ['src/store/planetMetricsSlice.ts', 'Instantanés climatiques et terraformation'],
+      ['src/store/colonySelectionSlice.ts', 'Entité ou colonie inspectée'],
+      ['src/store/hudOverlaySlice.ts', 'Modales, tiroirs et filtres de carte'],
+      ['src/layouts/GameViewportLayout.tsx', 'Empilement Canvas WebGPU + HUD non bloquant'],
+      ['src/hud/TopResourceRibbon.tsx', 'Bandeau ressources critiques et bilans nets'],
+      ['src/hud/AtmosphericGaugeWidget.tsx', 'Jauges O2, CO2 et température globale'],
+      ['src/hud/TimeSpeedToolbar.tsx', 'Pause, x1/x2/x5 et calendrier 2050'],
+      ['src/hud/TacticalMiniMap.tsx', 'Projection planétaire et pings d’alerte'],
+      ['src/panels/colony/inspector/ColonyInspectorDrawer.tsx', 'Coquille d’inspection multi-onglets'],
+      ['src/panels/colony/inspector/tabs/ColonyEnergyTab.tsx', 'Bilan MW, stockage et délestage'],
+      ['src/panels/colony/inspector/tabs/ColonyPopTab.tsx', 'Démographie, santé et viabilité dômes'],
+      ['src/panels/colony/build/BuildCatalogDrawer.tsx', 'Catalogue filtrable piloté par DataRegistry'],
+      ['src/panels/strategy/tech-tree/TechTreeCanvasModal.tsx', 'Graphe interactif pan/zoom 2050'],
+      ['src/panels/strategy/tech-tree/DagLayoutEngine.ts', 'Positionnement topologique sans croisement'],
+      ['src/panels/strategy/DiplomacyMatrixModal.tsx', 'Relations, traités et échanges'],
+      ['src/panels/strategy/ClimateAnalyticsModal.tsx', 'Courbes historiques et projections'],
+      ['src/screens/MainMenuScreen.tsx', 'Accueil, reprise rapide et slots de sauvegarde'],
+      ['src/screens/WorldGenSetupScreen.tsx', 'Graine, paramètres planétaires et factions'],
+      ['src/devtools/ProfilerHudOverlay.tsx', 'Graphe temps réel CPU/GPU/VRAM (touche F3)'],
+      ['src/devtools/EcsEntityInspectorOverlay.tsx', 'Inspection en direct des archétypes ECS'],
+    ],
+  },
+  {
+    stratum: 'S6',
+    name: '@exo/headless-sim',
+    dir: 'apps/headless-sim',
+    description: 'Exécutable CLI/Node sans DOM ni moteur de rendu (stress-tests & équilibrage CI)',
+    isApp: true,
+    // ISOLATION STRICTE : aucun import de @exo/rhi-render, @exo/audio, @exo/ui-kit ou react
+    deps: [
+      '@exo/pal',
+      '@exo/math-det',
+      '@exo/core-runtime',
+      '@exo/ecs',
+      '@exo/persistence-net',
+      '@exo/sim-framework',
+      '@exo/game-data',
+      '@exo/domain-planet',
+      '@exo/domain-gameplay',
+    ],
+    extDeps: {},
+    devDeps: { '@types/node': '^22.0.0', tsx: '^4.19.0' },
+    jsx: false,
+    dom: false,
+    files: [
+      ['src/cli.ts', 'Point d’entrée ligne de commande (zéro DOM)'],
+      ['src/SimulationHarness.ts', 'Montage ultra-rapide Foundation + ECS + Domaine'],
+      ['src/scenarios/TerraformingStressTest.ts', 'Simulation 1000 tours de stabilité climatique'],
+      ['src/scenarios/EconomyBalanceSweeper.ts', 'Balayage paramétrique d’équilibrage énergétique'],
+      ['src/reporters/MetricsCsvExporter.ts', 'Export CSV des courbes de simulation'],
+      ['src/reporters/DesyncRegressionCheck.ts', 'Vérification de déterminisme entre builds CI'],
+    ],
+  },
+  {
+    stratum: 'S6',
+    name: '@exo/world-editor',
+    dir: 'apps/world-editor',
+    description: 'Studio interne : pinceau de biomes, éditeur de graphe techno et debug crises',
+    isApp: true,
+    deps: [
+      '@exo/pal',
+      '@exo/math-det',
+      '@exo/core-runtime',
+      '@exo/ecs',
+      '@exo/rhi-render',
+      '@exo/assets-vfs',
+      '@exo/sim-framework',
+      '@exo/game-data',
+      '@exo/domain-planet',
+      '@exo/domain-gameplay',
+      '@exo/ui-kit',
+    ],
+    extDeps: { react: '^19.0.0', 'react-dom': '^19.0.0' },
+    devDeps: { '@types/react': '^19.0.0', '@types/react-dom': '^19.0.0', vite: '^6.0.0' },
+    jsx: true,
+    dom: true,
+    files: [
+      ['src/main.tsx', 'Point d’entrée du studio éditeur interne'],
+      ['src/EditorShell.tsx', 'Workspace réutilisant @exo/rhi-render et @exo/ui-kit'],
+      ['src/tools/BiomeBrushTool.ts', 'Peinture directe de reliefs et biomes sur sphère'],
+      ['src/tools/TechGraphEditor.tsx', 'Édition visuelle du DAG technologique 2050'],
+      ['src/tools/CrisisTriggerDebugger.tsx', 'Déclenchement forcé de crises pour QA'],
+      ['src/export/ScenarioBundleExporter.ts', 'Export de scénarios validés vers @exo/game-data'],
+    ],
+  },
+  {
+    stratum: 'S6',
+    name: '@exo/tools',
+    dir: 'tools',
+    description: 'Pipeline offline & CI : Asset Cooker, validateur WGSL, QA et audit DAG',
+    isApp: true,
+    noSrcDir: true,
+    deps: ['@exo/ecs', '@exo/game-data', '@exo/persistence-net'],
+    extDeps: { zod: '^3.23.8' },
+    devDeps: { '@types/node': '^22.0.0', tsx: '^4.19.0' },
+    jsx: false,
+    dom: false,
+    files: [
+      ['asset-cooker/cookGltfDraco.ts', 'Compression maillages GLTF et génération des LODs'],
+      ['asset-cooker/compressKtx2Textures.ts', 'Transcodage textures PBR en KTX2/Basis'],
+      ['asset-cooker/generateVfsManifest.ts', 'Calcul des hashes et index du VirtualFileSystem'],
+      ['shader-pipeline/validateWgslShaders.ts', 'Compilation statique WGSL en CI'],
+      ['shader-pipeline/generateShaderUniformTypes.ts', 'Génération des structs TS depuis WGSL'],
+      ['qa/analyzeBalanceLogs.ts', 'Détection automatique de spirales économiques/climat'],
+      ['qa/inspectBinarySave.ts', 'Utilitaire CLI de diagnostic d’une sauvegarde binaire'],
+      ['architecture/verifyDependencyDag.ts', 'Audit CI bloquant toute violation entre strates S1-S6'],
+    ],
+  },
+];
+
+// ============================================================================
+// 2. UTILITAIRES D'ÉCRITURE & GÉNÉRATEURS DE CONTENU
+// ============================================================================
+
+function writeFileSafe(filePath, content) {
+  if (!FORCE && fs.existsSync(filePath)) {
+    return false;
+  }
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content, 'utf8');
+  return true;
+}
+
+function toIdentifier(filePath) {
+  const base = path.basename(filePath).replace(/\.(tsx|ts|wgsl|json)$/i, '');
+  return base
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .map((part, idx) =>
+      idx === 0 && /^[a-z]/.test(base)
+        ? part
+        : part.charAt(0).toUpperCase() + part.slice(1)
+    )
+    .join('');
+}
+
+function buildRootFiles() {
+  const rootPkg = {
+    name: 'exo-world-2050',
+    private: true,
+    version: '0.1.0',
+    packageManager: 'pnpm@9.15.0',
+    engines: { node: '>=18.18.0', pnpm: '>=9.0.0' },
+    scripts: {
+      dev: 'turbo run dev',
+      build: 'turbo run build',
+      typecheck: 'turbo run typecheck',
+      test: 'turbo run test',
+      clean: 'turbo run clean',
+      'sim:headless': 'pnpm --filter @exo/headless-sim start',
+      'arch:verify': 'pnpm --filter @exo/tools exec tsx architecture/verifyDependencyDag.ts',
+    },
+    devDependencies: {
+      turbo: '^2.3.0',
+      typescript: '^5.7.2',
+    },
+  };
+
+  const pnpmWorkspace = [
+    'packages:',
+    '  - "packages/01-foundation/*"',
+    '  - "packages/02-engine/*"',
+    '  - "packages/03-framework/*"',
+    '  - "packages/04-game-exoworld/*"',
+    '  - "plugins/*"',
+    '  - "apps/*"',
+    '  - "tools"',
+    '',
+  ].join('\n');
+
+  const turboJson = {
+    $schema: 'https://turbo.build/schema.json',
+    ui: 'tui',
+    tasks: {
+      build: {
+        dependsOn: ['^build'],
+        outputs: ['dist/**'],
+      },
+      typecheck: {
+        dependsOn: ['^typecheck'],
+      },
+      test: {
+        dependsOn: ['^build'],
+      },
+      dev: {
+        cache: false,
+        persistent: true,
+      },
+      clean: {
+        cache: false,
+      },
+    },
+  };
+
+  const tsconfigBase = {
+    compilerOptions: {
+      target: 'ES2022',
+      module: 'ESNext',
+      moduleResolution: 'Bundler',
+      strict: true,
+      noUncheckedIndexedAccess: true,
+      exactOptionalPropertyTypes: true,
+      noEmitOnError: true,
+      isolatedModules: true,
+      verbatimModuleSyntax: true,
+      skipLibCheck: true,
+      resolveJsonModule: true,
+      declaration: true,
+      declarationMap: true,
+      sourceMap: true,
+    },
+  };
+
+  const gitignore = [
+    'node_modules/',
+    'dist/',
+    '.turbo/',
+    'coverage/',
+    '*.tsbuildinfo',
+    '.DS_Store',
+    '.env.local',
+    '',
+  ].join('\n');
+
+  const npmrc = [
+    'auto-install-peers=true',
+    'strict-peer-dependencies=false',
+    'prefer-workspace-packages=true',
+    '',
+  ].join('\n');
+
+  writeFileSafe(path.join(ROOT_DIR, 'package.json'), JSON.stringify(rootPkg, null, 2) + '\n');
+  writeFileSafe(path.join(ROOT_DIR, 'pnpm-workspace.yaml'), pnpmWorkspace);
+  writeFileSafe(path.join(ROOT_DIR, 'turbo.json'), JSON.stringify(turboJson, null, 2) + '\n');
+  writeFileSafe(path.join(ROOT_DIR, 'tsconfig.base.json'), JSON.stringify(tsconfigBase, null, 2) + '\n');
+  writeFileSafe(path.join(ROOT_DIR, '.gitignore'), gitignore);
+  writeFileSafe(path.join(ROOT_DIR, '.npmrc'), npmrc);
+}
+
+function buildWorkspacePackageJson(ws) {
+  const dependencies = {};
+  for (const dep of ws.deps) {
+    dependencies[dep] = 'workspace:*';
+  }
+  Object.assign(dependencies, ws.extDeps);
+
+  const scripts = {
+    typecheck: 'tsc --noEmit',
+    clean: 'rm -rf dist *.tsbuildinfo',
+  };
+
+  if (ws.name === '@exo/web-client' || ws.name === '@exo/world-editor') {
+    scripts.dev = 'vite';
+    scripts.build = 'tsc --noEmit && vite build';
+  } else if (ws.name === '@exo/headless-sim') {
+    scripts.start = 'tsx src/cli.ts';
+    scripts.build = 'tsc --noEmit';
+  } else if (ws.name === '@exo/tools') {
+    scripts.build = 'tsc --noEmit';
+  } else {
+    scripts.build = 'tsc --noEmit';
+  }
+
+  const pkg = {
+    name: ws.name,
+    version: '0.1.0',
+    private: true,
+    type: 'module',
+    description: ws.description,
+    'x-exo-stratum': ws.stratum,
+    ...(ws.isApp
+      ? {}
+      : {
+          main: './src/index.ts',
+          types: './src/index.ts',
+          exports: { '.': './src/index.ts' },
+        }),
+    scripts,
+    ...(Object.keys(dependencies).length > 0 ? { dependencies } : {}),
+    ...(Object.keys(ws.devDeps).length > 0 ? { devDependencies: ws.devDeps } : {}),
+  };
+
+  return JSON.stringify(pkg, null, 2) + '\n';
+}
+
+function buildWorkspaceTsconfig(ws) {
+  const wsAbsDir = path.join(ROOT_DIR, ws.dir);
+  const relToBase = path.relative(wsAbsDir, path.join(ROOT_DIR, 'tsconfig.base.json')).replace(/\\/g, '/');
+
+  const libs = ws.dom ? ['ES2022', 'DOM', 'DOM.Iterable', 'WebWorker'] : ['ES2022'];
+  const compilerOptions = {
+    lib: libs,
+    noEmit: true,
+    ...(ws.jsx ? { jsx: 'react-jsx' } : {}),
+  };
+
+  const tsconfig = {
+    extends: relToBase,
+    compilerOptions,
+    include: ws.noSrcDir ? ['**/*.ts'] : ['src/**/*.ts', 'src/**/*.tsx'],
+    exclude: ['node_modules', 'dist'],
+  };
+
+  return JSON.stringify(tsconfig, null, 2) + '\n';
+}
+
+function buildSourceContent(ws, relFile, responsibility) {
+  const ext = path.extname(relFile);
+
+  // 1. Manifestes JSON de plugins (S5)
+  if (relFile.endsWith('plugin.manifest.json')) {
+    const manifest = {
+      id: ws.name,
+      version: '0.1.0',
+      stratum: ws.stratum,
+      description: ws.description,
+      entry: './src/index.ts',
+      compatibleEngineRange: '>=0.1.0 <1.0.0',
+      hooks: ws.name.includes('orbital')
+        ? ['core-tick', 'hud-panels', 'catalog-override']
+        : ['crisis-director', 'modal-portal'],
+      permissions: ['read:world-state', 'emit:commands'],
+    };
+    return JSON.stringify(manifest, null, 2) + '\n';
+  }
+
+  // 2. Shaders WGSL (S2 · @exo/rhi-render)
+  if (ext === '.wgsl') {
+    const isVert = relFile.includes('.vert.');
+    return [
+      `// ============================================================================`,
+      `// Package        : ${ws.name} (${ws.stratum})`,
+      `// Fichier        : ${relFile}`,
+      `// Responsabilité : ${responsibility}`,
+      `// ============================================================================`,
+      '',
+      isVert
+        ? [
+            'struct VertexOutput {',
+            '  @builtin(position) position: vec4<f32>,',
+            '  @location(0) uv: vec2<f32>,',
+            '};',
+            '',
+            '@vertex',
+            'fn main(@location(0) pos: vec3<f32>, @location(1) uv: vec2<f32>) -> VertexOutput {',
+            '  var out: VertexOutput;',
+            '  out.position = vec4<f32>(pos, 1.0);',
+            '  out.uv = uv;',
+            '  return out;',
+            '}',
+          ].join('\n')
+        : [
+            '@fragment',
+            'fn main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {',
+            '  return vec4<f32>(uv.x, uv.y, 0.5, 1.0);',
+            '}',
+          ].join('\n'),
+      '',
+    ].join('\n');
+  }
+
+  // 3. Audit DAG réel pour tools/architecture/verifyDependencyDag.ts
+  if (relFile === 'architecture/verifyDependencyDag.ts') {
+    return [
+      '/**',
+      ` * @package ${ws.name}`,
+      ` * @stratum ${ws.stratum}`,
+      ` * @responsibility ${responsibility}`,
+      ' */',
+      "import fs from 'node:fs';",
+      "import path from 'node:path';",
+      '',
+      'const STRATUM_ORDER: Record<string, number> = { S1: 1, S2: 2, S3: 3, S4: 4, S5: 5, S6: 6 };',
+      '',
+      'function collectPackageJsons(dir: string, acc: string[] = []): string[] {',
+      '  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {',
+      "    if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === '.git') continue;",
+      '    const full = path.join(dir, entry.name);',
+      '    if (entry.isDirectory()) collectPackageJsons(full, acc);',
+      "    else if (entry.name === 'package.json') acc.push(full);",
+      '  }',
+      '  return acc;',
+      '}',
+      '',
+      'export function verifyDependencyDag(rootDir = process.cwd()): void {',
+      '  const pkgFiles = collectPackageJsons(rootDir);',
+      '  const strata = new Map<string, { stratum: string; deps: string[] }>();',
+      '',
+      '  for (const file of pkgFiles) {',
+      "    const json = JSON.parse(fs.readFileSync(file, 'utf8'));",
+      "    if (!json['x-exo-stratum']) continue;",
+      "    const deps = Object.entries(json.dependencies ?? {}).filter(([, v]) => String(v).startsWith('workspace:')).map(([k]) => k);",
+      "    strata.set(json.name, { stratum: json['x-exo-stratum'], deps });",
+      '  }',
+      '',
+      '  const violations: string[] = [];',
+      '  for (const [pkg, info] of strata.entries()) {',
+      '    const currentRank = STRATUM_ORDER[info.stratum] ?? 99;',
+      '    for (const dep of info.deps) {',
+      '      const target = strata.get(dep);',
+      '      if (!target) { violations.push(`${pkg} -> dépendance workspace introuvable: ${dep}`); continue; }',
+      '      const targetRank = STRATUM_ORDER[target.stratum] ?? 99;',
+      '      if (targetRank > currentRank) {',
+      '        violations.push(`VIOLATION STRATE: ${pkg} (${info.stratum}) importe ${dep} (${target.stratum})`);',
+      '      }',
+      "      if (pkg === '@exo/headless-sim' && (dep === '@exo/rhi-render' || dep === '@exo/ui-kit' || dep === '@exo/audio')) {",
+      '        violations.push(`VIOLATION HEADLESS: ${pkg} ne doit jamais importer ${dep}`);',
+      '      }',
+      '    }',
+      '  }',
+      '',
+      '  if (violations.length > 0) {',
+      "    console.error('❌ Violations DAG détectées :\\n' + violations.map((v) => '  - ' + v).join('\\n'));",
+      '    process.exit(1);',
+      '  }',
+      '  console.log(`✅ DAG AAA validé : ${strata.size} workspaces conformes (S1 → S6).`);',
+      '}',
+      '',
+      'verifyDependencyDag(path.resolve(process.cwd(), ".."));',
+      '',
+    ].join('\n');
+  }
+
+  // 4. Barrels src/index.ts
+  if (relFile === 'src/index.ts') {
+    const exportLines = ws.files
+      .map(([f]) => f)
+      .filter((f) => f !== 'src/index.ts' && (f.endsWith('.ts') || f.endsWith('.tsx')) && !f.endsWith('.worker.ts'))
+      .map((f) => {
+        const relImport = './' + f.slice('src/'.length).replace(/\.(tsx|ts)$/, '');
+        return `export * from '${relImport}';`;
+      });
+
+    return [
+      '/**',
+      ` * @package ${ws.name}`,
+      ` * @stratum ${ws.stratum}`,
+      ` * @responsibility ${responsibility}`,
+      ' */',
+      ...exportLines,
+      '',
+    ].join('\n');
+  }
+
+  // 5. Composants React (.tsx)
+  if (ext === '.tsx') {
+    const compName = toIdentifier(relFile);
+    const isEntry = relFile.endsWith('main.tsx');
+    if (isEntry) {
+      return [
+        '/**',
+        ` * @package ${ws.name}`,
+        ` * @stratum ${ws.stratum}`,
+        ` * @responsibility ${responsibility}`,
+        ' */',
+        "import { StrictMode } from 'react';",
+        "import { createRoot } from 'react-dom/client';",
+        '',
+        'export function mountApplication(containerId = "root"): void {',
+        '  const rootEl = document.getElementById(containerId);',
+        '  if (!rootEl) return;',
+        '  createRoot(rootEl).render(',
+        '    <StrictMode>',
+        `      <main data-exo-app="${ws.name}">Exo World 2050 — ${ws.name}</main>`,
+        '    </StrictMode>',
+        '  );',
+        '}',
+        '',
+      ].join('\n');
+    }
+
+    return [
+      '/**',
+      ` * @package ${ws.name}`,
+      ` * @stratum ${ws.stratum}`,
+      ` * @responsibility ${responsibility}`,
+      ' */',
+      "import type { ReactElement } from 'react';",
+      '',
+      `export interface ${compName}Props {`,
+      '  readonly className?: string;',
+      '}',
+      '',
+      `export function ${compName}({ className }: ${compName}Props): ReactElement {`,
+      `  return <section className={className} data-exo-component="${compName}" />;`,
+      '}',
+      '',
+    ].join('\n');
+  }
+
+  // 6. Web Workers (.worker.ts)
+  if (relFile.endsWith('.worker.ts')) {
+    const workerId = toIdentifier(relFile);
+    return [
+      '/**',
+      ` * @package ${ws.name}`,
+      ` * @stratum ${ws.stratum}`,
+      ` * @responsibility ${responsibility}`,
+      ' */',
+      `export interface ${workerId}Request {`,
+      '  readonly taskId: string;',
+      '  readonly payload: ArrayBuffer;',
+      '}',
+      '',
+      `export interface ${workerId}Response {`,
+      '  readonly taskId: string;',
+      '  readonly ok: boolean;',
+      '}',
+      '',
+      'self.onmessage = (event: MessageEvent<unknown>): void => {',
+      '  const data = event.data as Partial<{ taskId: string }>;',
+      '  self.postMessage({ taskId: data?.taskId ?? "unknown", ok: true });',
+      '};',
+      '',
+    ].join('\n');
+  }
+
+  // 7. Modules TypeScript standards (.ts)
+  const symbol = toIdentifier(relFile);
+  const pascal = symbol.charAt(0).toUpperCase() + symbol.slice(1);
+  return [
+    '/**',
+    ` * @package ${ws.name}`,
+    ` * @stratum ${ws.stratum}`,
+    ` * @file ${relFile}`,
+    ` * @responsibility ${responsibility}`,
+    ' */',
+    '',
+    `export const ${pascal}Meta = {`,
+    `  package: '${ws.name}',`,
+    `  stratum: '${ws.stratum}',`,
+    `  module: '${relFile}',`,
+    '} as const;',
+    '',
+    `export interface ${pascal}Contract {`,
+    '  readonly id: string;',
+    '}',
+    '',
+  ].join('\n');
+}
+
+// ============================================================================
+// 3. EXÉCUTION DU SCAFFOLDING & CONTRÔLE D'INTÉGRITÉ
+// ============================================================================
+
+function main() {
+  fs.mkdirSync(ROOT_DIR, { recursive: true });
+  buildRootFiles();
+
+  let totalSourceFiles = 0;
+  let writtenFiles = 0;
+  const countsByStratum = {};
+
+  for (const ws of WORKSPACES) {
+    const wsDir = path.join(ROOT_DIR, ws.dir);
+    fs.mkdirSync(wsDir, { recursive: true });
+
+    // 1. package.json + tsconfig.json du workspace
+    writeFileSafe(path.join(wsDir, 'package.json'), buildWorkspacePackageJson(ws));
+    writeFileSafe(path.join(wsDir, 'tsconfig.json'), buildWorkspaceTsconfig(ws));
+
+    // 2. Fichiers sources du workspace
+    for (const [relFile, responsibility] of ws.files) {
+      totalSourceFiles += 1;
+      countsByStratum[ws.stratum] = (countsByStratum[ws.stratum] ?? 0) + 1;
+      const absFile = path.join(wsDir, relFile);
+      const content = buildSourceContent(ws, relFile, responsibility);
+      if (writeFileSafe(absFile, content)) {
+        writtenFiles += 1;
+      }
+    }
+  }
+
+  // Contrôle strict des compteurs AAA
+  if (WORKSPACES.length !== 20 || totalSourceFiles !== 262) {
+    throw new Error(
+      `Écart détecté : ${WORKSPACES.length} workspaces (attendu 20), ${totalSourceFiles} fichiers sources (attendu 262).`
+    );
+  }
+
+  console.log(`\n🚀 Monorepo AAA Exo World 2050 initialisé dans : ${ROOT_DIR}\n`);
+  console.log('Répartition vérifiée par strate :');
+  for (const [stratum, count] of Object.entries(countsByStratum)) {
+    console.log(`  • ${stratum} : ${count} fichiers sources`);
+  }
+  console.log(`\nTotal : ${WORKSPACES.length} workspaces · ${totalSourceFiles} fichiers sources (${writtenFiles} créés/mis à jour).`);
+  console.log('\nCommandes suivantes :');
+  console.log(`  cd ${path.relative(process.cwd(), ROOT_DIR) || '.'}`);
+  console.log('  pnpm install');
+  console.log('  pnpm arch:verify');
+  console.log('  pnpm typecheck\n');
+}
+
+main();

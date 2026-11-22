@@ -1,0 +1,27 @@
+================================================================================
+EXO WORLD : 2050 — CHANGELOG STRUCTURÉ (ACTUEL / DEMANDES / PROJETÉ)
+Version : v5.0.0-roadmap-complete | Date : 2026-11-22
+================================================================================
+
+[ACTUEL — IMPLÉMENTÉ & VÉRIFIÉ (VAGUES P1 -> P13)]
+- P1 : Thème Rose Astralis verrouillé, bouclier Safari/iOS WebKit (100dvh, pinch zoom 2 doigts, resize split-pane).
+- P2 : Masquage HUD 100%, Super-Widget Météo/Air/3 Tours, Centre de Notifications Header priorisé.
+- P3 : Contexte Utilisateur 3D (Temps/Catégorie/Détail), Tiroir Dev Palmier, Firestore Rules déployées, React Query Devtools.
+- P4 : Routeur Gemini 6 Canaux 100% Free Tier (gemini-4-hydrogen, gemini-3.1-flash-lite, gemini-decision-1), Bilan groupé Fin de tour, Tri IA non-restrictif.
+- P5 : Système Honneurs 2 Niveaux — Niveau 1 Vitrine Multi-Parties (Lobby CoD, Avatar, Bannière, Blason, Titre, Médailles Bronze->Platine + Trophée symbolique Conception Globale) & Niveau 2 Commandant Campagne (5 attributs CK3, Traits, Titres territoriaux).
+- P6 : Onglet Monde purifié (5 domaines sans "et"/"&"), Fiche État Souverain, Stats vs Gestionnaires, Atlas interactif des chemins, lancement d'initiatives PA depuis Monde.
+- P7 : Fiche Colon Zoom + Vue 3D Exosuit, Citoyens Ordinaires Frostpunk (Santé/Éducation/Loisirs/Pollution/Origines), Badges empilés 3 niveaux (Provenance + 5 Pôles / 12 Écoles philosophiques + icône (i) légende), Bulles de suggestions cliquables, Module Monde Contextuel en fin de choix.
+- P8 : 4 Théâtres Militaires (Spatial/Ciel/Terrestre/Maritime), Planificateur Taskforce 72 secteurs, Pression Civile 0..5 étoiles (inspiration OpenGTA), Cités Extérieures + Respect Faction, Polities locales, Chat Diplomatie Libre & Générateur de Scénario Matriciel (Pax Historia).
+- P9 : Cité 3D vivante 24-Hex, Dual Maglev (Ligne Civile Rose/Émeraude + Fret Militaire Ambre), Piétons sur boucles waypoints (inspiration OpenRW), cycle solaire directionnel.
+- P10 : Studio Vidéo Climat & Catastrophes (12 catégories) avec capture native WebM 3D Free Tier (canvas.captureStream + MediaRecorder + repli Storyboard SVG).
+- P11 : Gouvernance documentaire 4 catégories (exo:doc-mesh), INDEX.md, CHANGELOG.txt, Brief UX Pax Historia.
+
+[DEMANDES — INTÉGRÉES SUR CETTE ITÉRATION]
+- Analyse légale & technique open-source GTA (OpenRW / OpenGTA GPLv3 sans assets Rockstar) + adaptations 100% originales EXO.
+- Respect strict du Free Tier Gemini (aucun modèle payant suite au refus de clé payante).
+- Playtest communautaire virtuel multi-personas (P13) basé sur vérifications Playwright réelles.
+
+[PROJETÉ — PROCHAINES ÉTAPES POST-V5]
+- Export multi-campagnes comparatif (courbes de score & d'éthique sur 6 ères).
+- Extension Unity 6 URP consommant le même contrat SceneDiffPacket L4.
+- Mode créateur de cartes communautaires partageables via JSON signé SHA-256.

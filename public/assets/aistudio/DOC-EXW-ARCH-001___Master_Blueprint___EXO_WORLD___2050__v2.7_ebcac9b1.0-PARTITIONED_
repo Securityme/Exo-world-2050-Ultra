@@ -1,0 +1,1705 @@
+﻿MASTER BLUEPRINT — EXO WORLD : 2050
+Identifiant : DOC-EXW-ARCH-001 | Version : 2.7.0-PARTITIONED | Statut : Référentiel Souverain Partitionné — Nouvelle Partition Vierge | Date : 2026-11-20
+Balises : NOUVELLE-PARTITION ISO-2145-FRACTAL MATRICES-RELATIONNELLES-ICOM APP-JEU-AI-STUDIO SOLO-VS-IA THREEJS-UNITY6 GEMINI-EXCLUSIF MOBILE-FIRST
+---
+PARTITION I — CADRE, GOUVERNANCE & SOMMAIRE CONVENTIONNEL
+1. MÉTADONNÉES, DÉFINITION DU JEU, FRAMEWORK & LIGNAGE
+1.1 Identification & Gouvernance Documentaire
+Champ Metadonnee
+	Spécification Technique & Valeurs de Référence
+	Correspondances
+	Titre Officiel du Jeu
+	EXO WORLD : 2050 (Application de Jeu complète sur Google AI Studio + Adaptateur Unity 6 URP — pas un OS virtuel)
+	1.2, 3.3, AR-12
+	Identifiant & Version
+	DOC-EXW-ARCH-001 · v2.7.0-PARTITIONED (Nouvelle Partition souveraine indépendante d'Astralis · Code source src/ : v0.0.0 prêt pour Vague 0)
+	6.1, 11., 12.
+	Architecte Général
+	Baptiste Lecoustre (Lead System Architect & Game Director — Approbateur Unique)
+	R-25, 3.1
+	Moteur IA Principal
+	Google Gemini Exclusif (Gemini Pro High Thinking + Gemini Flash — suppression définitive de Google Chat et rejet du skill Chatbot libre)
+	AR-01, AR-02, R-68, R-69
+	Relecture Pattern
+	Mistral / Claude (hors runtime, contrôle ponctuel de gabarit documentaire uniquement)
+	3.1
+	Référentiels Normatifs
+	SADT / IDEF0 (Actigrammes imbriqués ICOM), VSM, ISO/IEC/IEEE 26512 & 25010, NIST SP 800-207 (Zero-Trust)
+	R-06, R-11, 5.
+	Hiérarchie de Vérité
+	1. Contrats Zod (src/contracts/) → 2. Formules & Constantes (src/config/) → 3. Actigrammes SADT & Noyaux (src/core/, src/systems/) → 4. App Shell & 3D (src/interfaces/, src/engine3d/) → 5. Prose
+	R-01, R-09, R-12, 6.2
+	1.2 Spécifications Conventionnelles du Jeu (Fiche GDD Intégrée)
+Axe GDD
+	Description Exécutive & Invariants
+	Correspondances
+	Nature du Produit
+	Application de Jeu Web/Mobile sur Google AI Studio (EXO-SHELL hérité de l'App Shell d'Astralis).
+	3.3, FEAT-01
+	Genre Principal
+	Stratégie 4X & Gestion de Civilisation Pilotée par Décisions (Decision-Driven Grand Strategy & Multi-World City-Builder).
+	4.1, R-24
+	Sous-Genre / Hybride
+	Executive Dispatch 4X — Fusion de gestion urbaine modulaire (Anno 2205), progression par ères & comparaison IA (Humankind), économie/prêts/marché (Cities: Skylines II), colons (RimWorld), dialogues à skill-checks (Fallout: New Vegas), PA/Cabinet (Alliance of the Sacred Suns) et conquête territoriale par unités multi-niveaux (AtWar).
+	4.1, AR-06, AR-07, AR-10
+	Type de Gameplay
+	Gestion systémique à médiation événementielle (Invariant Souverain) : toute action transformative transite par des Dossiers Exécutifs affinables arbitrés par PA Général + 4 Sous-PA Conseillers Présidentiels, couplée à l'envoi stratégique d'unités de combat multi-niveaux et au moteur de combats déterministe.
+	R-24, R-26, 4.6, 5.4
+	Époque & Chronologie
+	2050 – 2180+ en 6 Ères spatiales progressives (Ère I Horizon 2050 → Ère II Orbite & Lune → Ère III Genèse Martienne → Ère IV Cyber-Industrie → Ère V Exoplanètes Lointaines → Ère VI Suprématie Exosphérique) + Mode Post-Victoire Infini (OPT-08 : A → C)
+	R-04, OPT-08, FEAT-23
+	Modèle Temporel
+	Temps réel hybride pausable (0x / 1x / 2x / 4x) + Cycles Exécutifs de 15 ticks (régénération PA/Sous-PA, opérations de conseillers, transitions atmosphériques, résolution IA).
+	R-51, R-52, 5.2
+	Univers & Direction Artistique
+	Hard-ish Sci-Fi Solarpunk & Corporatif (Anno 2205 × The Universim) : superpuissances (OTAN, UE, BRICS+...) en compétition sur lunes & exoplanètes, métropoles lumineuses à ciel ouvert (zéro dôme), globes sphériques vivants et biomes dynamiques.
+	4.2, 4.5, R-16
+	Caméra & Échelles 3D
+	3D orbitale & tactique sur 3 échelles fluides (650 ms) : Échelle 1 Carte Spatiale & Slots Planétaires ↔ Échelle 2 Globe Planétaire (72 tuiles géodésiques) ↔ Échelle 3 Quartiers Urbains Ouverts.
+	R-15, FEAT-43, FEAT-45
+	Plateformes & Modes
+	Mobile-First (iOS / Android) & Desktop (Web / Natif) · 100 % Solo contre 5 Superpuissances IA rivales déterministes + coopération Super-Alliance IA(zéro multijoueur en v1.0 — OPT-12)
+	3.3, OPT-12, FEAT-40
+	Boucle Principale
+	Observer (3D + Télémétrie + Courbes IA) → Trier Dossiers (P0, C1..C5) → Affiner (PA/Sous-PA, Ressources, Colon, Module/Prêt, Ordres d'Envoi d'Unités Militaires, Preview 3D) → Exécuter (PCG32 + Moteur de Combats) → Assumer mutations, conquêtes, échos différés & Ères.
+	5.2, 5.4, 5.5
+	Conditions de Victoire / Défaite
+	Victoires : Score d'Ères Humankind, Biosphère P4 stabilisée, Monopole Orbital, Suprématie Territoriale / Victoire de Super-Alliance (puis bascule libre vers Mode Infini C).  Défaites : Référendum perdu / coup d'État, faillite critique irréversible, perte de la capitale ou victoire d'une Superpuissance IA rivale.
+	FEAT-23, FEAT-31, FEAT-38
+	1.3 Framework & Stack Technique Verrouillée (7 Couches)
+Couche Technique
+	Technologies Retenues & Rôles Architecturaux
+	Correspondances
+	1. Runtime & App Shell
+	Google AI Studio Build · Next.js 15 (App Router) · Turbopack · React 19 · TypeScript 5.7 strict (strict, noUncheckedIndexedAccess, zéro any) · Stores Zustand + Jotai.
+	R-10, 3.3, FEAT-01
+	2. Interface Tactile & Audio
+	Tailwind CSS v4 · Framer Motion · Glassmorphisme Bento à bords lumière biseautés (135deg) · Fond SVG dynamique à fondus enchaînés (1 200 ms) · Web Audio API + Web Radio FIP (5 stations, filtre passe-bas par échelle, repli synthétique < 500 ms).
+	R-54..65, FEAT-02, FEAT-05..08
+	3. Noyau Simulation Pur
+	TypeScript 100 % pur (src/core/, src/systems/) + miroir optionnel C++17 (.wasm Web & plugin natif Unity Burst/IL2CPP) · PCG32, boucle SADT A3, StateHash SHA-256 bit-à-bit, zéro I/O.
+	R-13, R-66, R-67, FEAT-41, FEAT-48
+	4. Rendu 3D Dual-Adapter
+	Adaptateur A : Three.js r170+ / React Three Fiber v9 (WebGL2/WebGPU, preview Google AI Studio & Web Mobile léger).  Adaptateur B : Unity 6 URP (C# + Shader Graph + .jslib / Metal & Vulkan Natif) via contrat unique SceneDiffPacket.
+	R-15, FEAT-43..46, AR-12
+	5. Cloud, Persistance & RAG SQL
+	Firebase Authentication obligatoire (JWT, zéro hors-ligne, zéro Supabase) + Cloud Firestore (profils, lobbies temps réel, sessions) + Cloud SQL PostgreSQL 16 (Drizzle ORM, pgvector, turn_snapshots GZIP, chronicle_turns).
+	R-11, AR-01, FEAT-42
+	6. Intelligence Artificielle
+	Google Gemini API Exclusif (Add Gemini Intelligence + Add High Thinking, Dual-Pass temp 0.70 / 0.0) + Sas Zod + Tri Kahn + Parcours BFS + Gemini Free Tier Strict Governor (bornage [-0.15, +0.15], bascule déterministe si quota ou > 6 000 ms).
+	R-68, R-69, AR-02, FEAT-13..15, FEAT-47
+	7. Skills Google AI Studio Actifs
+	Create Game · Three.js 3D · Add Database and Auth · Add SQL Database · Add Gemini Intelligence · Add High Thinking (exclusion explicite de Chatbot et Google Chat).
+	3.2, AR-01, AR-02
+	1.4 Lignage Historique Complet & Liens vers les Référentiels Sources
+* HOLON-32 — Architecture Cybernétique VSM 12 Couches (Juil 2026 : circulation cybernétique Artérielle/Veineuse, VSM, SADT)
+* Horizon Galactique v42.0.0 (Août–Sept 2026 : V.A.R.E., WebKit Memory Shield < 500 Mo, Radio FIP DSP)
+* GALAXIA ULTRA — Master Blueprint Architecture v2.3.0-ED-CASCADE & GALAXIA ULTRA — Master Compilé FSMS v2.0.0-LTS (Sept–Oct 2026 : Invariant Souverain R-24, Protocole 0.3 R-25, Lignage R-24..R-69, Monopole d'Oracle R-69)
+* ExoPlanète : Terraformation v9.1.0 (Oct 2026 : Perspectives P1–P6, 7 flux, terraformation)
+* DOC-AST-ARCH-001 — Projet Astralis v1.2.0 (15 Nov 2026 : App Shell 8 écrans, PCG32, SHA-256, AR-12 DAG 5 paliers, AR-13 RAG Hybride) — Séparation nette de partition établie pour EXO WORLD : 2050 + branches dérivées (ASTRALIS : SOVEREIGN METROPOLIS, DOC-VITA-ARCH-001 — VITA-FORGE v1.0.0, Astralis : Genesis Ultra & continuité réservée Astralis vMax v7..v10).
+* EXO WORLD : 2050 (DOC-EXW-ARCH-001 · v2.7.0-PARTITIONED) — Référentiel Souverain Partitionné (Nouvelle Partition Vierge).
+2. SOMMAIRE GRANULAIRE FRACTAL CONVENTIONNEL (NORME ISO 2145 — PLAFOND NIVEAU 6)
+1. 2.1 Règle de Profondeur Conventionnelle ISO 2145 : Profondeur restante D_restant = 6 - k. Numérotation décimale pure pour le corps (1. → 1.1 → 1.1.1 → 1.1.1.1 → 1.1.1.1.1 → 1.1.1.1.1.1) et notation lettre pour les Annexes (A. → A.1 → A.1.1).
+2. 2.2 Table des Matières Intégrale Partitionnée
+3. PARTITION I — CADRE, GOUVERNANCE & SOMMAIRE CONVENTIONNEL
+1. MÉTADONNÉES, DÉFINITION DU JEU, FRAMEWORK & LIGNAGE
+1.1 Identification & Gouvernance Documentaire
+1.2 Spécifications Conventionnelles du Jeu (Fiche GDD Intégrée)
+1.3 Framework & Stack Technique Verrouillée (7 Couches)
+1.4 Lignage Historique Complet & Référentiels Sources Drive
+2. SOMMAIRE GRANULAIRE FRACTAL CONVENTIONNEL (NORME ISO 2145 — PLAFOND NIVEAU 6)
+2.1 Règle de Profondeur Conventionnelle ISO 2145
+2.2 Table des Matières Intégrale Partitionnée
+4. PARTITION II — FRAMEWORK APPLICATIF, APP SHELL & SYSTÈMES DU MONDE
+3. FRAMEWORK APPLICATIF, APP SHELL ADAPTÉ (EXO-SHELL), STUDIO AA & ASSETS 3D
+3.1 Effectif Studio AA Réel (36 Postes) & Escouade 100 % Gemini
+3.2 Architecture Skills Google AI Studio
+3.3 Adaptation de l'App Shell d'Astralis à EXO WORLD : 2050 (EXO-SHELL — 8 États Solo)
+3.3.1 Tableau de Transposition Astralis → EXO-SHELL
+3.3.2 Machine à États de Navigation ASCII
+3.3.3 Sélecteurs OPT-SHELL-01..03 Verrouillés
+3.4 Bus de Circulation Cybernétique Tri-Voies, Bento Biseauté 135deg, Fond SVG 1 200 ms, Radio FIP & Budgets GPU/RAM
+3.5 Audit Légal & Bibliothèques d'Assets 3D Game-Ready
+4. VISION PRODUIT, HIÉRARCHIE DES INSPIRATIONS & SYSTÈMES DU MONDE
+4.1 Hiérarchisation (P1→P4) des 12 Inspirations
+4.2 Géopolitique des 6 Superpuissances & Super-Alliance Hors Contrôle
+4.3 Slots Planétaires Débloquables (1→6) : Lunes & Exoplanètes Lointaines
+4.4 Économie Villes ↔ État, Prêts, Marché, 18 Ressources par Ère (I→VI), Tri-Jauge XP & Succès
+4.5 Atmosphère (4 Paliers P1→P4), Météo/Climat, 9 Biomes, Kits Respiratoires & Vitesse PNJ
+4.6 Moteur de Combats Déterministe 4 Phases, Unités Militaires Multi-Niveaux (L1–L5), Drones, Datacenters Cyber, Transporteurs & Nomenclature Scientifique
+5. PARTITION III — MOTEUR CENTRAL SADT / IDEF0 & PLAN DIRECTEUR DES CYCLES
+5. ARCHITECTURE SADT / IDEF0 MULTI-NIVEAUX & PLAN DIRECTEUR DES CYCLES
+5.1 Niveau 0 — Actigramme A-0 (Boîte Noire Globale ICOM)
+5.2 Niveau 1 — Actigramme Général A0 Imbriquant A1 à A5
+5.3 Niveau 2 — Matrice ICOM Détaillée des Actigrammes Enfants (A1 à A5)
+5.4 Formules Déterministes Clés (A1.2, A2.1, A3.2x3.4, A3.6)
+5.5 Plan Directeur des Cycles, Sous-Cycles & Sous-Sous-Cycles Multi-Échelles
+5.5.1 Pyramide Temporelle Imbriquée (N0 → N5)
+5.5.2 Matrice Spatiale Multi-Échelles (S-0 → S-4) & Couplage Vertical
+5.5.3 Classification des 10 Familles de Cycles Métier (CYC-01 à CYC-10)
+5.5.4 Matrice Maîtresse de Coordination Globale
+5.5.5 Protocole de Synchronisation Déterministe & Anti-Oscillation
+6. PARTITION IV — ARCHITECTURE SRC/ & SYSTÈME DE MATRICES RELATIONNELLES ICOM
+6. ARCHITECTURE TECHNIQUE DU CODE SOURCE (SRC/) & CORRESPONDANCE MODULES
+6.1 Arborescence Globale Monorepo & 14 Dossiers Niveau 0 (L0 à L8)
+6.2 Développement Détaillé des 14 Dossiers (6.2.1 à 6.2.14)
+6.3 Matrice des Dépendances Autorisées & Interdites par Couche
+7. SYSTÈME DE MATRICES RELATIONNELLES, MATRICE DE CORRESPONDANCE CENTRALE & SOUS-MATRICES ICOM
+7.1 Architecture du Graphe Matriciel (Modèle en Étoile 3NF Documentaire)
+7.2 Matrice de Correspondance Centrale (MC-00 — Jointure Globale des 7 Référentiels)
+7.3 Sous-Matrices Relationnelles avec Flux ICOM (SM-01 à SM-05)
+7.3.1 SM-01 — Sous-Matrice Décisionnelle : PA, Cabinet, Dossiers & TRIGGER_BUS
+7.3.2 SM-02 — Sous-Matrice Physique : Atmosphère P1..P4, Biomes, Maintenance C3 & PNJ
+7.3.3 SM-03 — Sous-Matrice Macro-Économique : Villes-État, Prêts, Marché, Super-Alliance & Slots 1-6
+7.3.4 SM-04 — Sous-Matrice Militaire & Cyber : Datacenters, Drones, Unités L1–L5 & Combats 4 Phases
+7.3.5 SM-05 — Sous-Matrice Technique : RAG pgvector, Oracle Gemini, Noyau PCG32 & Dual-Adapter 3D
+7.4 Sélecteurs d'Options Verrouillés (OPT-01 à OPT-12) & Synthèse Décisionnelle
+7. PARTITION V — RÉFÉRENTIELS CATALOGUES & ROADMAPS DE PRODUCTION
+8. CATALOGUE CLASSIFIÉ DES 48 FEATURES (FEAT-01 À FEAT-48)
+8.1 Domaine 1 : App Shell, UI Bento Biseauté, SVG & Audio (FEAT-01..FEAT-08)
+8.2 Domaine 2 : Dossiers Exécutifs, PA & Oracle Gemini (FEAT-09..FEAT-16)
+8.3 Domaine 3 : Gestion, Build Modulaire, Villes, Prêts & Marché (FEAT-17..FEAT-24)
+8.4 Domaine 4 : Supervision, Maintenance, Biomes, Atmosphère & Colons (FEAT-25..FEAT-32)
+8.5 Domaine 5 : Super-Alliance, Slots Planétaires, Drones, Cyber & Flottes (FEAT-33..FEAT-40)
+8.6 Domaine 6 : Noyau Pur, Cloud SQL/Firebase, Dual-Adapter 3D & FinOps (FEAT-41..FEAT-48)
+9. REGISTRE INTÉGRÉ DES 16 ARBITRAGES (AR-01 À AR-16)
+10. REGISTRE SOUVERAIN DES RÈGLES (R-01 À R-69)
+11. ROADMAP DE PRODUCTION GLOBALE DU JEU (VAGUE 0 → VAGUE 5)
+12. SOUS-ROADMAP DES FEATURES EN COURS DE MISE À JOUR (FUP-PATTERN v1.0)
+12.1 Cycle de Vie Normé en 7 Portes (P1_BACKLOG → P7_MERGED)
+12.2 Gabarit Réutilisable FUP-PATTERN v1.0
+12.3 File Active des 12 FUP (FUP-001 à FUP-012)
+8. PARTITION VI — ANNEXES OPÉRATIONNELLES
+A. ANNEXE A — SYSTEM INSTRUCTION MAÎTRE POUR GOOGLE AI STUDIO BUILD (NOUVELLE PARTITION VIERGE)
+A.1 Identité & Rôle d'Exécution
+A.2 Isolation Stricte de Partition (Zéro Contamination Astralis)
+A.3 Stack Verrouillée & Frontières de Couches (L0→L8)
+A.4 Invariants Bloquants de Code (R-01 à R-69)
+A.5 Protocole de Réponse & Livraison Incrémentale
+B. ANNEXE B — PROTOCOLE D'ISOLATION & CRÉATION DE LA NOUVELLE PARTITION (VS ASTRALIS)
+C. ANNEXE C — PROTOCOLE DE DÉLÉGATION & SUPERVISION MULTI-IA (GEMINI LEAD → GOOGLE AI STUDIO / CLAUDE)
+D. ANNEXE D — PROMPT D'AMORÇAGE VAGUE 0 (BOOTSTRAPPING SRC/ VIERGE DANS GOOGLE AI STUDIO)
+---
+PARTITION II — FRAMEWORK APPLICATIF, APP SHELL & SYSTÈMES DU MONDE
+3. FRAMEWORK APPLICATIF, APP SHELL ADAPTÉ D'ASTRALIS, STUDIO AA & PIPELINE 3D
+3.1 Effectif Studio AA Réel (36 Postes : AA Léger → AA+) & Escouade 100 % Gemini
+3.1.1 Répartition des 6 Pôles Studio & Correspondance Agents Gemini
+Pole Studio (36 Postes)
+	Rôle Humain & Lead Agent Gemini
+	Périmètre d'Action & Responsabilités
+	1. Direction (3 postes)
+	Baptiste Lecoustre (Game Director / Lead Architect) + Gemini-Argon
+	Approbation unique (R-25), architecture globale A0, contrats Zod (R-09), arbitrage des règles AR-01..16.
+	2. Production & QA (4 postes)
+	Gemini-Bore (Mistral/Claude en relecture doc secondaire)
+	Sprint planning, gates DoD, roadmap 9., FUP-PATTERN 10., plafonds code R-14, tests SHA-256.
+	3. Game Design & Narrative (7 postes)
+	Gemini-Krypton (Systems) + Gemini-Mercure (Narrative)
+	Équilibrage PA/Sous-PA A2, atmosphère P1..P4, économie Cities/Anno, DAG New Vegas, réputation.
+	4. Ingénierie Core & Cloud (10 postes)
+	Gemini-Hydrogène (Core/Sim) + Gemini-Titane (Cloud/DB)
+	Noyau Pur TS/C++17, PCG32, boucle A3, IA Humankind, Auth Firebase, Cloud SQL pgvector, governor Gemini.
+	5. Art 3D, Tech Art & Audio (9 postes)
+	Gemini-Néon (3D/Shader) + Gemini-Silicium (UI/Audio)
+	Dual-Adapter Three.js / Unity 6 URP, Shaders Universim/Anno, EXO-SHELL, Bento Biseauté, SVG, FIP.
+	6. Data & Live-Balance (3 postes)
+	Gemini-Xénon
+	Séries temporelles SQL, analyses comparatives Humankind, réglage ΔP_adapt, XP & Succès.
+	3.2 Architecture Skills Google AI Studio (Gemini Intelligence vs Chatbot & Retrait Google Chat)
+   * Suppression définitive de Google Chat (AR-01) : Toute la mémoire épisodique de campagne est gérée dans Cloud SQL PostgreSQL 16 (campaign_chronicle_turns pour les 15 derniers dossiers résolus + narrative_event_embeddings en pgvector 768d pour le rappel long terme et l'anti-répétition cosinus ≤ 0.82) couplé à Cloud Firestore.
+   * Supériorité d'Add Gemini Intelligence + Add High Thinking sur Chatbot (AR-02) : Un skill Chatbot produit un fil conversationnel libre non contraint, incompatible avec un moteur d'actions à PA. Add Gemini Intelligence + Add High Thinking en mode Structured Outputs (JSON validé par Zod + tri topologique de Kahn + parcours BFS) garantit des Dossiers exécutables, bornés dans [-0.15, +0.15] (R-69).
+   * 6 Skills AI Studio actifs : Create Game, Three.js 3D, Add Database and Auth, Add SQL Database, Add Gemini Intelligence, Add High Thinking.
+   * 6 Modules internes spécialisés : Gemini Free Tier Strict Governor (FEAT-47), Unity 6 URP Dual-Bridge (FEAT-45), WebKit Memory Shield (FEAT-46), Universim Biome Shaders (FEAT-44), Pawn & New Vegas Check Engine (FEAT-13), Trigger Watchdogs (FEAT-03).
+3.3 Adaptation Complète de l'App Shell d'Astralis à EXO WORLD : 2050 (EXO-SHELL — 8 États)
+3.3.1 Tableau de Transposition Astralis → EXO WORLD : 2050
+
+
+Composant App Shell Astralis
+	Adaptation EXO WORLD : 2050
+	Correspondances src/ & FEAT
+	BOOT (Bootloader 3D + Check Firebase)
+	EXO_BOOT : Ajoute la détection Dual-Adapter (Three.js / Unity 6) et le calibrage WebKit Memory Shield (< 250 Mo).
+	src/interfaces/boot/, FEAT-01, FEAT-46
+	AUTH (Firebase obligatoire Email/Google)
+	EXO_AUTH : Identique Zero-Trust, création profil Firestore + Cloud SQL players + initialisation XP Tri-Jauges.
+	src/interfaces/auth/, R-11
+	MAIN_MENU (Arrière-plan 3D stellaire)
+	EXO_MAIN_MENU : Arrière-plan 3D de la Terre/Orbite 2050 + Fond SVG dynamique + aperçu des Succès & Campagnes actives.
+	src/interfaces/main-menu/
+	GAME_CONFIG (Seed, taille galaxie, IA)
+	EXO_NEW_SIMULATION : Choix worldSeed, sélection de la Superpuissance et de la Super-Alliance hors contrôle, planète Slot 1, nombre d'IA concurrentes (1–5), profil de PA et profil Gemini Free Tier Strict.
+	src/interfaces/new-simulation/, AR-04, AR-07
+	SYSTEM_SETTINGS (5 onglets)
+	EXO_SETTINGS : 5 onglets adaptés (3D Three.js/Unity 6, Audio & Radio FIP 5 flux, Oracle Gemini Free Tier, Thème Bento Biseauté + Intensité Fond SVG + Accessibilité WCAG, Contrôles tactiles/clavier).
+	src/interfaces/system-settings/, FEAT-05..08
+	GAME_LOBBY (Sync Firestore + Fil Google Chat)
+	EXO_BRIEFING_LOBBY : Briefing Pré-Lancement Solo (zéro multijoueur v1.0 OPT-12) : récapitulatif worldSeed, fiche des 5 IA rivales, choix Doctrine Humankind, Cabinet initial, init SQL/pgvector.
+	src/interfaces/game-lobby/, AR-01
+	GAME_SCREEN (Viewport 3D + HUD + 3 échelles)
+	EXO_GAME_SCREEN : Viewport 3D plein écran + Barre Supérieure (PA Général, File Crises P0, Ressources d'Ère, Prêts/Trésorerie, Horloge Cycle 15 ticks, Radio FIP) + Navigation Principale par Onglets Diégétiques (Monde 3D, Dossiers PA C1..C5, Journal & Chronique, Supervision C3, Biomes & Colons C4, Géopolitique & IA C5).
+	src/interfaces/game-screen/, FEAT-09..11
+	IN_GAME_SUBSCREENS (6 sous-écrans Astralis)
+	EXO_SUBSCREENS (8 sous-écrans overlay < 150 ms sans démontage WebGL) : 1. Atelier d'Affinage 3 Étages & DAG New Vegas ; 2. Onglet Monde / Villes, Quartiers & Modules Anno 2205 ; 3. Gestion Planétaire, Slots (1→6) & Atmosphère (P1→P4) ; 4. Supervision & Maintenance (C3) ; 5. Cabinet Présidentiel (Sous-PA) & Roster Colons RimWorld ; 6. Super-Alliance, Diplomatie & Comparateur Humankind ; 7. Centre Opérations Militaires, Envoi d'Unités Multi-Niveaux (L1–L5), Drones, Datacenters Cyber & Transporteurs ; 8. Journal/Archives SQL, Pause & Sauvegardes SHA-256.
+	src/interfaces/subscreens/, FEAT-04, FEAT-07
+	3.3.2 Machine à États de Navigation (EXO-SHELL)
+
+
+[LANCEMENT] ──► (1) BOOT / BOOTLOADER 3D (WebGL2/WebGPU + Check JWT Firebase + Memory Shield)
+                      │
+                      ├── Session absente ──► (2) AUTH FIREBASE OBLIGATOIRE (Email / Google OAuth)
+                      │                              │ (JWT valide + Sync Firestore/SQL)
+                      ▼                              ▼
+                (3) MENU PRINCIPAL (Arrière-plan 3D orbital temps réel)
+                 ├──► (4) NOUVELLE SIMULATION (Seed, Superpuissance, Super-Alliance, IA, PA)
+                 │          └──► (6) BRIEFING LOBBY SOLO (Récap Seed, 5 IA, Doctrine, Init SQL/pgvector)
+                 ├──► (5) PARAMÈTRES SYSTÈME (5 Onglets : 3D, Audio/FIP, Gemini, Bento/SVG, Contrôles)
+                 ├──► Charger Sauvegarde Cloud/SQL (Vérification SHA-256) ──┐
+                 └──► Déconnexion sécurisée ──► (2) AUTH                    │
+                                                                            ▼
+                                                           (7) ÉCRAN DE JEU PRINCIPAL 3D (SOLO)
+                                                            ├── Échelle 1 : Carte Spatiale & Slots
+                                                            ├── Échelle 2 : Globe Planétaire (72 tuiles)
+                                                            ├── Échelle 3 : Quartiers Urbains Ouverts
+                                                            ├──► (8) 8 SOUS-ÉCRANS OVERLAY (dont Militaire L1–L5)
+                                                            └──► VICTOIRE ÈRE VI ──► MODE INFINTI C (15h+)
+3.3.3 Sélecteurs d'Options de l'App Shell (OPT-SHELL)
+ID Sélecteur
+	Options de Configuration UX
+	Statut & Impact
+	OPT-SHELL-01
+	Mode de navigation Mobile :
+[x] Bottom Sheets tactiles (55% / 92%) + Barre 5 Onglets
+[ ] Drawer latéral classique
+[ ] Carrousel Scroll-Snap
+	P1 · VERROUILLÉ
+	OPT-SHELL-02
+	Démarrage Radio FIP :
+[x] Muet par défaut, lecture sur 1er geste utilisateur (R-61)
+[ ] Synthèse ambiante auto dès le Menu Principal
+	P1 · VERROUILLÉ
+	OPT-SHELL-03
+	Mode de Jeu Solo vs IA :
+[x] Briefing Solo Exclusif vs 5 IA rivales en v1.0 (multijoueur différé v1.1+)
+[ ] Multijoueur synchrone activé
+	P1 · VERROUILLÉ
+	3.4 Bus de Circulation Cybernétique Tri-Voies, UI Bento Biseauté, SVG & Dual-Adapter 3D
+3.4.1 Circulation Tri-Voies & Watchdogs (AR-03, R-53)
+
+
+[EXO-SHELL UI / JOUEUR]
+   │
+   ├── Voie 1 : Contrôle Artériel ──► [MOTEUR CENTRAL A0 (Noyau TS/C++)] ──► [ORACLE GEMINI HIGH THINKING]
+   │    (Intents, PA/Sous-PA, Prêts)     │ (Validation Zod / PCG32)             │ (Dossiers Dual-Pass JSON)
+   │                                     │                                      │
+   ├── Voie 2 : Télémétrie Veineuse  ◄──┼──────────────────────────────────────┘
+   │    (SceneDiffPacket 3D, Hashing)    │
+   │                                     │
+   └── Voie 3 : TRIGGER_BUS ─────────────┴──► [WATCHDOGS DÉTERMINISTES & TRIGGERS GEMINI]
+        (Surveillance Usure <25%, CO₂, Dette, Intrusions Cyber, Chaînes Causales)
+3.4.2 Direction UI (Bento Biseauté + Fond SVG) & Budgets Matériels
+   * Bento à bords lumière biseautés (FEAT-05) : Double bordure directionnelle 135deg (arête supérieure lumineuse 45 % + ombre basse 10 %) + filet spéculaire 1 px codé par classe (Rouge P0 · Or C1 · Cyan C2 · Ambre C3 · Émeraude C4 · Violet C5).
+   * Fond SVG Dynamique (FEAT-06) : Fondus enchaînés (1 200 ms) glissant visuellement selon le palier atmosphérique (P1 ocre/cuivre → P3/P4 cyan/émeraude) et l'état du TRIGGER_BUS.
+   * Budgets bloquants (AR-12) : Desktop 60 FPS (RAM ≤ 512 Mo, Draw Calls ≤ 160) · Web Mobile 30–60 FPS (RAM ≤ 250 Mo sous WebKit Memory Shield, DPR ≤ 1.5, Draw Calls ≤ 120) · Natif Unity 6 iOS/Android 60 FPS (VRAM ≤ 300 Mo).
+3.5 Audit Légal & Bibliothèques d'Assets 3D Game-Ready
+Categorie Assets
+	Source Légale Valide & Contrat Direct
+	Utilisation dans EXO WORLD : 2050
+	Personnages & Colons
+	Quaternius (CC0), Mixamo, OS3A (CC0) | Pro : Synty Sidekick Modular, POLYGON Sci-Fi Space.
+	PNJ urbains, colons RimWorld, Conseillers du Cabinet.
+	Villes & Datacenters
+	Kenney (City/Space Kits CC0), Quaternius (Sci-Fi CC0) | Pro : KitBash3D (Neo-Utopia), Synty Sci-Fi City.
+	Quartiers Anno 2205, fermes verticales, datacenters quantiques.
+	Drones & Flottes
+	Kenney, Quaternius (Spaceships/Vehicles), Sloyd | Pro : Unity Asset Store (Autonomous Drones URP), Fab.
+	Drones 4 classes, transporteurs T1–T4, flottes orbitales.
+	Routes & Réseaux
+	Kenney (Roads CC0) + Splines procédurales (Unity Splines / Three.js) | Pro : EasyRoads3D.
+	Connexions entre quartiers urbains et zones industrielles.
+	Biomes & Environnement
+	Poly Haven (CC0), ambientCG (CC0), Quaternius Nature | Pro : Quixel Megascans / Fab, Gaia Pro.
+	Shaders de terrain Universim, biomes P1 à P4, faune/flore.
+	4. VISION PRODUIT, HIÉRARCHIE DES INSPIRATIONS & SYSTÈMES DU MONDE
+4.1 Hiérarchisation par Priorité (P1→P4) & Classification Multi-Domaines des 12 Inspirations
+Priorité
+	Jeu Inspirateur
+	Mécanique Transposée & Adaptation Exécutive
+	P1 (Noyau)
+	Alliance of the Sacred Suns
+	Système de PA Général + 4 Sous-PA Conseillers, arbitrage par Dossiers Exécutifs.
+	P1 (Noyau)
+	Anno 2205
+	DA Sci-Fi lumineuse, métropoles à ciel ouvert, 3 modules greffés par bâtiment, 4 paliers sociaux.
+	P1 (Noyau)
+	Humankind
+	6 Ères chronologiques, Étoiles d'Ère, comparateur statistique IA, quartiers urbains contigus.
+	P1 (Noyau)
+	Fallout: New Vegas
+	Dialogues & résolutions à skill-checks déterministes, quêtes à arborescence DAG, réputation.
+	P2 (Majeur)
+	The Universim
+	Globes planétaires sphériques 3D, 9 biomes dynamiques, météo, végétation et faune évolutives.
+	P2 (Majeur)
+	Cities: Skylines II
+	Économie Villes ↔ État, prêts bancaires avec taux de solvabilité, marché dynamique de ressources.
+	P2 (Majeur)
+	RimWorld
+	Roster de Colons & Conseillers à caractéristiques individuelles (traits, passions, fatigue, moral).
+	P2 (Majeur)
+	Per Aspera + Surviving Mars
+	Terraformation atmosphérique (CO₂, pression, eau), drones autonomes, transition abris → villes ouvertes.
+	P3 (Ciblé)
+	Terra Invicta
+	Granularité chiffrée des fiches d'entités, modificateurs transparents et gestion orbitale.
+	P3 (Ciblé)
+	Aven Colony
+	Référendums civiques d'évaluation de mandat, saisons hostiles et overlays de télémétrie.
+	P3 (Ciblé)
+	AtWar
+	Conflits territoriaux par zones adjacentes et lignes de ravitaillement (sans micro-RTS).
+	P4 (Recadré)
+	Fallout 4
+	Modularité d'avant-postes (rejet de la roue à 4 choix flous, remplacée par la rigueur New Vegas).
+	4.2 Géopolitique des Superpuissances & Super-Alliance Hors Contrôle (AR-04, R-27)
+   * Superpuissances en compétition : Alliance Atlantique (OTAN-Orbite), Union Européenne Spatiale, Pacte BRICS+, Ligue Indo-Pacifique, Consortium Pan-Africain, Fédération Andine-Australe.
+   * Hiérarchie ordonnée : 1. Super-Alliance Économico-Étatique (IA autonome hors contrôle) → 2. Alliés IA Pairs → 3. Joueur (Directeur d'État Colonial Galactique) ↔ 4. Superpuissances IA Rivales. Soutenir vos alliés IA accélère leur développement, élève le rang de la Super-Alliance et débloque pour vous des Slots Planétaires, taux d'emprunt réduits, brevets et escortes fédérales.
+4.3 Slots Planétaires Débloquables (1→6) (AR-05)
+Slot
+	Nom & Type
+	Ressource Spécifique
+	Déblocage & Bénéfices Majeurs
+	Slot 1
+	Planète Principale (Tellurique)
+	Main-d'œuvre, Crédits, Water/Food
+	Départ — Centre politique, métropole primaire et premier port spatial.
+	Slot 2
+	Lune du Système Solaire
+	Hélium-3, Glace pure
+	Ère II — Centrales à fusion, carburant orbital T2, drones autonomes.
+	Slot 3
+	Planète Tellurique Secondaire
+	Isotopes Piégés, Oxydes lourds
+	Ère III — Spatioports de flottes lourdes, agro-expansion terraformée.
+	Slot 4
+	Exoplanète Cryo-Océanique
+	Cryo-Polymères, Supra-conducteurs
+	Ère IV — Datacenters Quantiques T4, boucliers radiatifs avancés.
+	Slot 5
+	Exoplanète Xéno-Biologique
+	Bio-Enzymes Extrêmophiles
+	Ère V — Capacités d'élite Colons/Conseillers, terraformation rapide.
+	Slot 6
+	Monde Pivot Exosphérique
+	Influence Galactique, Antimatière
+	Ère VI — Rang max Super-Alliance, course à la Victoire Finale.
+	4.4 Économie Villes ↔ État, Prêts, Marché, Ressources par Ère, XP & Succès (AR-06, AR-15)
+   * Double couche Cities: Skylines II : Chaque ville calcule ses recettes fiscales, salaires, entretien, coûts respiratoires et balance locale, consolidés dans l'État galactique qui gère la Trésorerie, les Prêts & Crédits (taux indexé sur cote de solvabilité) et le Marché d'Échange de Ressources à cours dynamiques.
+   * Ressources par Ère (I→VI) : Ère I (Crédits, Énergie, Matériaux, Eau, Vivres, Électronique) → Ère II (+ Carburant Orbital, Alliages Composites, Compute, Kits Respiratoires) → Ère III (+ Hélium-3, Terres Rares, Bio-Polymères, Pièces Drones) → Ère IV–VI (+ Supra-conducteurs, Isotopes Exotiques, Bio-Enzymes, Compute Quantique, Influence Galactique).
+   * XP & Succès : 3 compteurs (XP Civilisation, XP Conseillers & Colons augmentant la régénération des Sous-PA, XP Super-Alliance) + Succès à récompenses permanentes.
+4.5 Atmosphère (4 Paliers & Cycles de Transition), Météo & Productivité PNJ (AR-11, R-39)
+Palier Atmosphère
+	Conditions & Impacts Physiques
+	Vitesse Chantier
+	Coût Équipements
+	Moral & PNJ
+	Palier P1 — Hostile
+	Radiations, tempêtes abrasives, air toxique. Exo-combinaisons 4h/j max.
+	-40 %
+	+100 %
+	Moral -15, fatigue rapide.
+	Palier P2 — Stabilisé
+	Pression filtrable, mousses pionnières, masques légers en extérieur.
+	0 %
+	-55 %
+	Moral 0, productivité standard.
+	Palier P3 — Respirable
+	Air respirable, biomes actifs, forêts, météo stabilisée.
+	+25 %
+	0 %
+	Moral +20, boom démographique.
+	Palier P4 — Éden
+	Climat régulé idéal, biodiversité riche, biosphère auto-entretenue.
+	+40 %
+	0 %
+	Productivité PNJ +40 %.
+	4.6 Drones, Datacenters Cyber, Flotte, Transporteurs & Découvertes (AR-10, AR-16)
+   * Drones (4 classes) : Chantier (neutralisent le malus P1/P2 + maintenance préventive C3), Défense, Attaque (fronts AtWar), Espionnage.
+   * Datacenters (T1–T5) & Cyberguerre : Génèrent Compute pour pare-feu défensifs, espionnage et cyberattaques paralysant centrales, spatioports ou réseaux de drones rivaux pendant 1 à 3 cycles.
+   * Transporteurs (T1–T4) & Flotte Orbitale : Lanceurs chimiques (T1) → Navettes fusion (T2) → Cargos lourds (T3) → Transporteurs exoplanétaires (T4) déterminant le fret inter-slots et la projection orbitale.
+   * Nomenclature scientifique obligatoire (bannissement total du mot « anomalie ») : Gisement d'Isotopes Piégés, Fosse Hydrothermale Active, Cavité Glaciaire Pressurisée, Poche Microbienne Extrêmophile, Épave de Sonde Précurseur, Faille Magnétique Sub-Croûtale, Signature Spectrale Artificielle.
+---
+PARTITION III — MOTEUR CENTRAL SADT / IDEF0 & PLAN DIRECTEUR DES CYCLES
+5. ARCHITECTURE SADT / IDEF0 MULTI-NIVEAUX DU MOTEUR CENTRAL DE JEU
+5.1 Niveau 0 — Actigramme A-0 (Contexte Boîte Noire Globale)
+5.2 Niveau 1 — Actigramme Général A0 (Imbrication des 5 Actigrammes Enfants A1 à A5)
+
+
+[CONTROLS (C)]
+├── PA Général + 4 Sous-PA Conseillers (R-26)
+├── Contrats Zod strictes & Types TS (R-12)
+├── Pureté déterministe PCG32 (R-66)
+├── Paliers Atmosphère P1..P4 & Ères I..VI
+└── Gemini Free Tier Strict Governor (R-68)
+│
+▼
+[INPUTS (I)] ──► +---------------------------------------------------+ ──► [OUTPUTS (O)]
+├── Intents Joueur  |                                                   |  ├── Monde 3D Muté (Anno/Universim)
+├── Flux Physiques  |   ACTIVITÉ A-0 : PILOTER UNE CIVILISATION        |  ├── Bilans Économiques Villes/État
+├── Superpuissances |   EXOSPHÉRIQUE PAR DOSSIERS, PA & TRIGGERS        |  ├── Courbes Comparatives Humankind
+├── Super-Alliance  |   (MOTEUR CENTRAL EXO WORLD : 2050)               |  ├── StateHash SHA-256 (Bit-à-Bit)
+└── Découvertes     +---------------------------------------------------+  └── Snapshot SQL & Embeddings pgvector
+▲
+│
+[MECHANISMS (M)]
+├── Bus Tri-Voies EXO-SHELL (Arterial / Venous / TRIGGER_BUS)
+├── Noyau Pur TS 5.7 / C++17 (Boucle A3 sans I/O)
+├── Oracle Gemini High Thinking (JSON Dual-Pass)
+└── Dual-Adapter 3D (Three.js r170+ / Unity 6 URP)
+
++======================================================================================+
+| ACTIGRAMME GÉNÉRAL A0 — MOTEUR CENTRAL DE CYCLE EXÉCUTIF (15 TICKS)                  |
++======================================================================================+
+|                                                                                      |
+|  [A1 · SURVEILLANCE, TRIGGERS & DOSSIERS]                                            |
+|   ├── A1.1 Watchdogs TRIGGER_BUS (Usure <25%, CO₂, Dette, Cyber)                     |
+|   ├── A1.2 Calcul Delta de Probabilité Adaptatif (ΔP_adapt)                          |
+|   └── A1.3 Synthèse Gemini Dual-Pass (PCG32 + Zod + Tri Kahn + BFS)                  |
+|                    │                                                                 |
+|                    ▼  (File P0 + 4 à 7 Dossiers C1..C5 ancrés en 3D)                 |
+|  [A2 · ÉCONOMIE DE PA & ATELIER D'AFFINAGE]                                          |
+|   ├── A2.1 Régénération PA Général + 4 Sous-PA Conseillers Présidentiels             |
+|   ├── A2.2 Triage à Fongibilité Asymétrique (P0 = PA Général | C2..C5 = Sous-PA)     |
+|   └── A2.3 Atelier 3 Étages (A2.3.a Axe New Vegas -> A2.3.b Colon/Mod -> A2.3.c 3D)  |
+|                    │                                                                 |
+|                    ▼  (ExecutiveDecisionIntent[] signés & irrévocables -PA)          |
+|  [A3 · SIMULATION DÉTERMINISTE MULTI-ÉCHELLES (NOYAU PUR PCG32)]                     |
+|   ├── A3.1 Supervision & Maintenance (C3) -> A3.2 Atmosphère P1..P4, Météo & PNJ     |
+|   ├── A3.3 Économie Villes/État, Prêts & Marché -> A3.4 Build Modulaire & Drones     |
+|   └── A3.5 Datacenters Compute & Cyber -> A3.6 Transporteurs T1-T4, Flottes & AtWar  |
+|                    │                                                                 |
+|                    ▼  (WorldState T+15 + Nouveaux Triggers de seuils)                |
+|  [A4 · COMPÉTITION IA HUMANKIND, SUPER-ALLIANCE & PROGRESSION]                       |
+|   ├── A4.1 Résolution IA Rivales & Alliés Pairs (Arbre d'utilité pur, 0 LLM)         |
+|   ├── A4.2 Évaluation Super-Alliance -> Déblocage Slots Planétaires (1->6) & Crédits |
+|   └── A4.3 Comparateur Humankind & Étoiles d'Ère -> A4.4 Attribution XP & Succès     |
+|                    │                                                                 |
+|                    ▼  (État consolidé de fin de cycle)                               |
+|  [A5 · CONSOLIDATION, PERSISTANCE CLOUD & PROJECTION 3D/SVG]                         |
+|   ├── A5.1 Calcul StateHash SHA-256 & TurnRecord (Rejeu bit-à-bit DRP-RS)            |
+|   ├── A5.2 Sync Atomique Firestore + Cloud SQL PostgreSQL (pgvector & snapshots)     |
+|   └── A5.3 Émission SceneDiffPacket (Three.js/Unity 6) + Fond SVG + Filtre Radio FIP |
+|                    │                                                                 |
+|                    └──────────► (Feedback Veineux & Échos Différés vers A1)          |
++======================================================================================+
+5.3 Niveau 2 — Matrice ICOM Détaillée des Actigrammes Enfants (A1 à A5)
+Code SADT
+	Intitulé & Sous-Actigrammes
+	Inputs (I) & Controls (C)
+	Outputs (O) & Mechanisms (M)
+	A1
+	Surveillance, Triggers & Dossiers  (A1.1 Watchdogs · A1.2 ΔP_adapt · A1.3 Synthèse Gemini)
+	I: Télémétrie T, seuils physiques, échos différés.  C: Rules R-68/69, Zod, Kahn/BFS, PCG32.
+	O: File P0 Crises + Dossiers C1..C5.  M: Gemini High Thinking, TRIGGER_BUS.
+	A2
+	Économie de PA & Atelier d'Affinage  (A2.1 Regen PA · A2.2 Triage · A2.3 Atelier 3 Étages)
+	I: File P0, Dossiers C1..C5, choix joueur.  C: Budget PA Général & 4 Sous-PA, Roster RimWorld.
+	O: ExecutiveDecisionIntent[] signés.  M: Engine Affinage, Modale DAG New Vegas.
+	A3
+	Simulation Déterministe Multi-Échelles  (A3.1 Mnt → A3.2 Atmo → A3.3 Éco → A3.4 Build → A3.5 Cyber → A3.6 Flotte)
+	I: ExecutiveDecisionIntent[], WorldState(T).  C: Ordre fixe topologique A3.1..A3.6, PCG32.
+	O: WorldState(T+15), Triggers de seuil.  M: Noyau Pur TS 5.7 / Miroir C++17.
+	A4
+	Compétition IA, Super-Alliance & Progression  (A4.1 IA Rivales · A4.2 Super-Alliance · A4.3 Humankind · A4.4 XP)
+	I: WorldState(T+15), états des 5 IA rivales.  C: Arbre d'utilité déterministe, Étoiles d'Ère.
+	O: Mutations IA, rang Alliance, Slots 1..6, XP.  M: Engine IA Humankind, Evaluator Alliance.
+	A5
+	Consolidation, Persistance Cloud & Projection  (A5.1 Hash SHA-256 · A5.2 Cloud Sync · A5.3 Render 3D/SVG/FIP)
+	I: WorldState(T+15) finalisé, historique du cycle.  C: Standards JSON strict, clés Firebase/SQL.
+	O: StateHash, enregistrement DB, SceneDiffPacket.  M: Firestore, Cloud SQL pgvector, Dual-Adapter 3D.
+	5.4 Formules Déterministes Clés des Actigrammes (A1.2, A2.1, A3.2, A3.6)
+   * Delta de Probabilité Adaptatif (A1.2, AR-09) :
+ΔP_adapt = clamp[-0.20, +0.25]( w1 × ScoreGestionPassée + w2 × RetardRelatifIA − w3 × DetteCrisesNonRésolues )
+   * Régénération Sous-PA par Conseiller Présidentiel (A2.1, AR-07) :
+Regen_SousPA(c) = 1 + ⌊(Attr_c + BonusTrait_c) / 3⌋ + ⌊NiveauXP_c / 3⌋ − (1 si Fatigue_c > 80 sinon 0)
+   * Vitesse Effective de Construction (A3.2 × A3.4, AR-11) :
+V_chantier = V_base × (1 + ModAtmo_PNJ(P_k) + BonusDronesChantier) × FacteurMaintenance_C3 (avec ModAtmo_PNJ = −40 %, 0 %, +25 %, +40 % pour P1..P4)
+   * Formule Dégâts Round de Combat Déterministe (A3.6, AR-10, R-47) :
+DegatsRound(A → B) = PuissanceBase(Unité, L1..L5) × BonusBiome × ModAtmo × FacteurRavitaillement × (1 − Blindage_B) × PCG32_Range(0.90, 1.10)
+5.5 PLAN DIRECTEUR DES CYCLES, SOUS-CYCLES & SOUS-SOUS-CYCLES MULTI-ÉCHELLES
+5.5.1 Pyramide Temporelle Imbriquée (N0 → N5) — Du Tick au Cycle de Campagne
+[N5 · CYCLE DE CAMPAGNE & MODE INFINI] (40–60 Cycles Exécutifs = 600–900 Ticks -> Post-Victoire 15h+)
+ └── [N4 · MÉGA-CYCLE D'ÈRES & PALIERS] (6–12 Cycles/Ère | 3–6 Cycles/Palier Atmosphérique P1->P4)
+      └── [N3 · CYCLE ANNUEL / ORBITAL] (24 Cycles = 360 Ticks = 1 An : Transferts, Référendums, Alliance)
+           └── [N2 · SOUS-CYCLE MENSUEL & SAISONNIER] (2 Cycles = 30 Ticks Mois | 4 Cycles = 60 Ticks Saison)
+                └── [N1 · CYCLE EXÉCUTIF PIVOT A0] (15 Ticks = Quinzaine : PA/Sous-PA, Dossiers, Combats, SHA-256)
+                     └── [N0 · SOUS-SOUS-CYCLE TEMPS RÉEL] (1 Tick = 1 Jour [0x/1x/2x/4x] | Frame 3D 60/120 Hz)
+
+Niveau Temporel
+	Cadence & Durée
+	Ce qui s'exécute exactement
+	Nœuds SADT & Règles
+	N0 — Micro-Cycle Temps Réel
+	Frame 16,6 ms (60 Hz) · 1 Tick = 1 Jour (1 000 ms en 1x, 500 ms en 2x, 250 ms en 4x)
+	Animations 3D (navettes, drones, météo instantanée), flux continus de ressources, usure incrémentale, surveillance continue des watchdogs TRIGGER_BUS, filtrage audio Radio FIP
+	A1.1, A5.3, R-22, R-51
+	N1 — Cycle Exécutif Pivot (A0 — Quinzaine)
+	15 Ticks (15 Jours simulés)
+	Cœur du jeu : Régénération PA Général + 4 Sous-PA, apparition & résolution des Dossiers (P0, C1..C5), opérations Conseillers, maintenance C3, météo locale, réaffectation drones (R-41), cyber-paralysies (R-44), Moteur de Combats 4 phases (R-47), évaluation des 5 IA rivales, calcul StateHash SHA-256 & snapshot SQL
+	A0, A1..A5, R-52, R-67
+	N2 — Sous-Cycle Mensuel & Saisonnier
+	30 Ticks (2 Cycles = 1 Mois) · 60 Ticks (4 Cycles = 1 Saison)
+	Mensuel : Consolidation fiscale Villes ↔ État, prélèvement des intérêts de prêts (R-37), révision des cours du Marché de ressources, croissance démographique & montée des 4 paliers sociaux Anno. Saisonnier : Bascule des saisons Aven Colony (tempêtes solaires/poussière, vagues de froid, pluies), évaluation des 3 cycles consécutifs de stabilité pour mutation de biome (R-40), déclenchement des DELAYED_ECHO courts
+	A3.2, A3.3, R-37, R-40
+	N3 — Cycle Annuel / Orbital
+	360 Ticks (24 Cycles = 1 An)
+	Ouverture des fenêtres de transfert orbitales optimales (Transporteurs T1–T4 inter-slots), référendums civiques d'évaluation de mandat (Aven Colony), bilan macro-économique & cote de solvabilité annuelle, renouvellement des directives et subventions de la Super-Alliance, recalcul stratégique de ΔP_adapt et audit Humankind
+	A1.2, A3.6, A4.2, R-31
+	N4 — Méga-Cycle de Paliers & d'Ères
+	3–6 Cycles par Palier Atmosphérique · 6–12 Cycles par Ère
+	Transitions irréversibles des 4 Paliers Atmosphériques (P1→P4) (changement météo, disparition des kits respiratoires, saut de vitesse PNJ -40 %→+40 %), franchissement des 6 Ères Humankind (I→VI) (déblocage des 18 ressources, doctrines d'héritage, unités L1–L5, nouveaux Slots Planétaires 1→6)
+	A3.2, A4.2, A4.3, R-04, R-39
+	N5 — Cycle de Campagne & Continuation Infinie
+	40–60 Cycles (2h30–4h) → Mode Infini 15h+ (OPT-08 : A → C)
+	Résolution des conditions de victoire en Ère VI, bilan de légende & récompenses de carrière, puis bascule libre sans rupture vers le Mode Bac à Sable Infini Post-Victoire (expansion totale Slots 1–6, conquête, biosphère P4 universelle)
+	A4.4, OPT-08
+	5.5.2 Matrice Spatiale Multi-Échelles (S-0 → S-4) & Couplage Vertical
+Échelle Spatiale
+	Entités Pivot
+	Cycles Dominants Associés
+	Propagation Ascendante / Descendante
+	S-4 — Secteur Galactique & Exoplanètes Lointaines
+	Slots 4–6 (Exoplanètes Cryo-Océanique, Xéno-Biologique, Monde Pivot), 6 Superpuissances, Transporteurs T4, Influence Galactique
+	N3 (Annuel/Orbital), N4 (Ères), N5 (Campagne)
+	Descendante : cours mondiaux, directives Super-Alliance, accès Slots. Ascendante : ressources exotiques, scores Humankind.
+	S-3 — Système Solaire & Espace Orbital
+	Slots 1–3 (Terre/Principale, Lune, Mars/Tellurique), Flottes Orbitales, Constellations Satellites, Transporteurs T1–T3, Miroirs Solaires & Comètes
+	N1 (Combats/Fret), N3 (Fenêtres orbitales), N4 (Mégaprojets)
+	Descendante : bombardement orbital, modification T_glob/H_eau, érosion satellites (R-48). Ascendante : Boost, Hélium-3, Isotopes.
+	S-2 — Planète / Globe (72 Tuiles Géodésiques)
+	4 Paliers Atmosphériques (P1→P4), Climat global, Niveau marin, 9 Biomes Universim, Fronts territoriaux AtWar, Découvertes scientifiques
+	N1 (Combats/Dossiers), N2 (Saisons/Biomes R-40), N4 (Paliers P1→P4)
+	Descendante : météo, radiations, coût kits respiratoires, modificateur vitesse PNJ. Ascendante : balance alimentaire & industrielle planétaire.
+	S-1 — Ville & Quartiers Ouverts (Anno 2205 / Humankind)
+	Quartiers contigus (zéro dôme), Bâtiments L1–L5 + 3 modules greffés, 4 Paliers Sociaux, Maintenance C3, Datacenters T1–T5, Fiscalité locale
+	N0 (Flux/Usure), N1 (Build/Maintenance/Cyber), N2 (Fiscalité/Croissance)
+	Descendante : emplois, moral urbain, Compute, défense locale. Ascendante : PIB, trésorerie État, PA bonus.
+	S-0 — Individu, Escouade & Actif Unitaire (RimWorld / Terra Invicta)
+	4 Conseillers Présidentiels (Sous-PA), 12–30 Colons nommés, Drones (4 classes), Unités Militaires (L1–L5)
+	N0 (Exposition 4h/j R-39), N1 (Missions, Fatigue, Rounds combat, XP)
+	Descendante : traits/compétences appliqués aux Dossiers et combats. Ascendante : régénération Sous-PA, ruptures mentales (P0), exploits.
+	5.5.3 Classification Exhaustive des 10 Familles de Cycles Métier
+      * 1. Cycle Chronologique & Calendrier (CYC-01) : Tick (1j) → Cycle Exécutif (15j) → Mois (30j) → Saison (60j) → An (360j, à partir de 2050) → 6 Ères → Mode Infini (R-51, R-52).
+      * 2. Cycle des Points d'Action & Décisions (CYC-02) : Régénération chaque N1 (15 ticks) du PA Général + 4 Sous-PA Conseillers (PA-GES, PA-MNT, PA-BIO, PA-POL), plafond d'accumulation 150 % (R-29), fongibilité asymétrique (R-26), coût d'affinage échelonné (R-34).
+      * 3. Cycle des Événements, Triggers & Mémoire IA (CYC-03) : Watchdogs continus (N0) sur TRIGGER_BUS → Dossiers P0 (timer 1–2 cycles) & C1..C5 (N1) → DAG New Vegas majeurs espacés (N2/N3) modulés par ΔP_adapt → 4 horizons (IMMEDIATE, SUSTAINED_MODIFIER, DELAYED_ECHO, MEMORY_FLAG en pgvector).
+      * 4. Cycle Économique, Financier & Marché (CYC-04) : Flux opérationnels (N0) → Consolidation Villes ↔ État, intérêts des prêts & révision des cours du Marché (N2 mensuel) → Réévaluation de la cote de solvabilité (R-37) et subventions Super-Alliance (N3 annuel).
+      * 5. Cycle des Ressources & Logistique Inter-Slots (CYC-05) : Extraction/transformation par chaînes Anno (N0), contrôle des plafonds de stockage (N1), routage par Transporteurs T1–T4 selon tonnage (R-46) et fenêtres orbitales (N3), déblocage progressif des 18 ressources par Ère (N4).
+      * 6. Cycle Météo, Climatique & Biosphérique (CYC-06) : Événements météo locaux (tempêtes solaires/poussière, pluies, vagues de froid) sur N1/N2 saisonnier ; évolution des 9 biomes après 3 cycles stables (R-40) ; transitions des 4 Paliers Atmosphériques P1→P4 sur N4 (3–6 cycles) impactant directement flore/faune, rendement alimentaire (+35 %), kits respiratoires (100 %→0 %) et vitesse PNJ (-40 %→+40 %).
+      * 7. Cycle de Supervision & Maintenance (CYC-07) : Usure continue (N0), plans préventifs C3 niveaux 1–3 (N1), arrêt forcé & Trigger P0 sous 25 % d'intégrité (R-38), érosion atmosphérique des satellites orbitaux (R-48).
+      * 8. Cycle Démographique, Colons & Civique (CYC-08) : Consommation kits respiratoires/vivres & fatigue/XP Conseillers (N1), croissance démographique & progression des 4 paliers sociaux Anno (N2 mensuel), référendums civiques Aven Colony annuels (N3) ou d'urgence sous 35 % d'approbation (R-31).
+      * 9. Cycle Militaire, Drones & Cyberguerre (CYC-09) : Réaffectation drones (1 cycle, R-41), cyberattaques & paralysies (2 cycles, R-44, surplus Compute 2×), envoi d'unités militaires L1–L5 et résolution du Moteur de Combats 4 phases (N1), entretien de garnison et lignes de ravitaillement (R-47).
+      * 10. Cycle Géopolitique, Ères & Super-Alliance (CYC-10) : Décisions utilitaires des 5 Superpuissances IA rivales & alliés pairs (N1), évaluation des aides mutuelles et déblocages collectifs de la Super-Alliance (N2/N3), course aux Étoiles d'Ère Humankind, déblocage des Slots 1→6 et passage d'Ères I→VI (N4→N5).
+5.5.4 Matrice Maîtresse de Coordination Globale
+Code & Famille
+	Échelles
+	Fréquences
+	Nœud SADT
+	Déclencheurs Entrants
+	Effets Sortants vers Autres Cycles
+	CYC-01 Calendrier
+	S-0 à S-4
+	N0 → N5
+	A0
+	Horloge système, Ticks 15/30/360
+	Cadence universelle pour tous les 9 autres cycles.
+	CYC-02 PA & Décisions
+	S-0, S-1
+	N1
+	A2
+	Niveau XP, Traits Conseillers, Fatigue
+	Autorise l'exécution des Dossiers Exécutifs P0/C1..C5.
+	CYC-03 Triggers & IA
+	S-0 à S-4
+	N0, N1, N3
+	A1
+	Seuils usure <25%, CO₂, ΔP_adapt
+	Génère les Dossiers P0/C1..C5 et pose des échos DELAYED_ECHO.
+	CYC-04 Économie/Prêts
+	S-1, S-4
+	N0, N2, N3
+	A3.3
+	Taxes Villes, Emprunts, Ventes Marché
+	Alimente la Trésorerie d'État, révalue la solvabilité (R-37).
+	CYC-05 Logistique Slots
+	S-1 à S-4
+	N0, N1, N3
+	A3.4, A3.6
+	Chaînes Anno, Fenêtres orbitales T1–T4
+	Approvisionne les chantiers, évite les pénuries de vivres/H2O.
+	CYC-06 Météo & Atmo
+	S-2, S-3
+	N1, N2, N4
+	A3.2
+	Pression CO₂, Miroirs solaires, Biomes
+	Modifie V_chantier (-40%→+40%), le moral et la flore/faune.
+	CYC-07 Maintenance C3
+	S-1, S-3
+	N0, N1
+	A3.1
+	Usure temps/météo, Plans préventifs
+	Règlement sous 25% provoque panne forcé & Crise P0 (R-38).
+	CYC-08 Colons & Civique
+	S-0, S-1
+	N1, N2, N3
+	A3.2, A4.4
+	Moral, Kits P1, Votations Aven Colony
+	Déclenche le risque de référendum révocatoire / coup d'État.
+	CYC-09 Cyber & Milit.
+	S-0 à S-3
+	N1, N2
+	A3.5, A3.6
+	Surplus Compute, Ordres d'envoi L1–L5
+	Paralyse des datacenters/villes, résout la conquête de zones.
+	CYC-10 Super-Alliance
+	S-3, S-4
+	N2 à N5
+	A4.1..A4.3
+	Actions des 5 IA, Étoiles Humankind
+	Débloque les Slots 1→6, accorde la Victoire et bascule en Mode Infini.
+	5.5.5 Protocole de Synchronisation Déterministe & Anti-Oscillation (R-51, R-66)
+      * 1. Ordonnancement Hiérarchique Strict sur Frontière de Cycle : Lorsqu'un tick franchit simultanément plusieurs frontières (ex. tick % 360 === 0 déclenchant N0 + N1 + N2 + N3), le cycle-orchestrator.ts résout toujours du plus fin au plus large dans un ordre immuable (N0 → N1 [A3.1..A3.6] → N2 → N3 → N4 → A5 SHA-256).
+      * 2. Double Tamponnage d'État (Snapshot Barrier) : Les cycles de même niveau lisent l'état gelé du début de phase et écrivent dans un tampon transitoire committé atomiquement en fin de phase, empêchant qu'un changement météo ou une cyberattaque ne provoque un effet circulaire infini dans le même tick.
+      * 3. Amortisseur TRIGGER_BUS (Anti-Tempête de Crises) : Plafond strict de 2 nouveaux dossiers P0 simultanés par Cycle N1 ; au-delà, les incidents mineurs sont agrégés en modificateurs consolidés afin de préserver la lisibilité mobile et la jouabilité de l'économie des PA.
+---
+PARTITION IV — ARCHITECTURE SRC/ & SYSTÈME DE MATRICES RELATIONNELLES ICOM
+6. ARCHITECTURE TECHNIQUE DU CODE SOURCE (SRC/) & CORRESPONDANCEMODULES
+6.1 Arborescence Globale src/ — Dossiers Niveau 0 (Monorepo Google AI Studio + Unity 6)
+exo-world-monorepo/
+├── packages/
+│   ├── shared-contracts/            # Types & Zod partagés client/serveur
+│   └── sim-core-cpp/                # Miroir C++17 / WebAssembly Noyau Pur
+├── apps/
+│   ├── unity-client/                # Projet Unity 6 URP (C# + Shader Graph)
+│   └── exo-world/                   # Application Web/Mobile Next.js 15
+│       └── src/
+│           ├── [L0] contracts/      # Schémas Zod & Contrats d'exécution
+│           ├── [L1] config/         # Constantes métier gelées (Object.freeze)
+│           ├── [L1] data/           # Catalogues statiques data-driven
+│           ├── [L2] core/           # Noyau pur déterministe (PCG32, SHA-256, TRIGGER_BUS)
+│           ├── [L3] systems/        # Logique métier pure des 8 noyaux (A3.1..A3.6, A4)
+│           ├── [L4] engine3d/       # Moteur 3D Three.js / R3F (Maps 3D multi-échelles)
+│           ├── [L4] adapters/       # Pont Dual-Adapter Three.js ↔ Unity 6 URP
+│           ├── [L5] stores/         # État Zustand (WorldState) & Atomes Jotai (UI)
+│           ├── [L5] services/       # Connecteurs Cloud (Firebase, SQL, Gemini, Audio)
+│           ├── [L5] pipelines/      # Orchestrateurs serveur (RAG -> Gemini -> Zod)
+│           ├── [L6] hooks/          # Hooks React réutilisables (<= 200 lignes)
+│           ├── [L7] components/     # Composants UI atomiques Bento & Télémétrie
+│           ├── [L7] interfaces/     # Les 8 Écrans EXO-SHELL & 8 Sous-Écrans Overlay
+│           └── [L8] app/            # Next.js 15 App Router & Route Handlers JWT
+6.2 Développement Détaillé de Chaque Dossier Niveau 0 & Correspondance Modules Conceptuels
+6.2.1 src/contracts/ [Couche L0] — Source de Vérité Exécutable (R-01, R-09, R-12)
+      * Fichiers clés :exo-shell.schema.ts, world-state.schema.ts, pa-dossiers.schema.ts (PA Général + 4 Sous-PA + 5 Classes C1..C5 + P0), trigger-bus.schema.ts (Voie 3), maps-biomes.schema.ts (Slots 1→6, 72 tuiles, 4 paliers atmosphère), narrative-dag.schema.ts (DAG New Vegas, ΔP_adapt), render-bridge.schema.ts (SceneDiffPacket ↔ DTO C# Unity 6), economy-cyber.schema.ts (Villes/État, Prêts, Marché, Drones, Compute), combat-units.schema.ts (Moteur 4 phases, Unités L1–L5).
+      * Responsabilité & Correspondance : Governe 100 % des frontières client/serveur/3D. Zéro type TypeScript dérivé manuellement.
+6.2.2 src/config/ [Couche L1] — Constantes Métier Préfixées (R-23)
+      * Fichiers clés :pa.constants.ts (PA_), atmosphere.constants.ts (ATM_), economy.constants.ts (ECO_, MKT_), maintenance.constants.ts (MNT_), cyber-drones.constants.ts (CYB_, DRN_), narrative-freetier.constants.ts (EVT_, FTG_), engine3d.constants.ts (ENG3D_), audio-fip.constants.ts (AUD_).
+6.2.3 src/data/ [Couche L1] — Catalogues Statiques Data-Driven (R-04, R-50)
+      * Fichiers clés :eras-humankind.catalog.ts (6 Ères, Étoiles, Doctrines), superpowers-alliances.catalog.ts (Superpuissances & Super-Alliances), buildings-modules.catalog.ts (Bâtiments Anno + 3 modules greffés), resources-by-era.catalog.ts, scientific-discoveries.catalog.ts (Nomenclature sans « anomalie »), fallback-dossiers.catalog.ts (Repli déterministe R-68).
+6.2.4 src/core/ [Couche L2] — Noyau Pur Déterministe (R-13, R-17, R-66, R-67)
+      * Fichiers clés :prng/pcg32.ts, hashing/state-hasher.ts (SHA-256), bus/trigger-bus.ts (Voie 3 Watchdogs + Triggers IA), loop/cycle-orchestrator.ts (Actigramme A0 / 15 ticks), loop/intent-queue.ts, probability/adaptive-delta.ts (ΔP_adapt).
+      * Responsabilité : Orchestration centrale SADT A0, A1.1, A1.2, A5.1. Zéro I/O.
+6.2.5 src/systems/ [Couche L3] — Logique Métier Pure des Modules de Jeu (R-13, R-51)
+      * Sous-dossiers & Correspondance :
+• systems/dossiers-pa/ → Moteur d'Événements & PA (A2.1..A2.3, PA Général + 4 Sous-PA, Atelier 3 Étages, application atomique des hooks DAG).
+• systems/maintenance/ → Module Supervision & Maintenance C3 (A3.1, usure, préventif niveaux 1–3, triggers < 25 %).
+• systems/biosphere/ → Module Biomes, Atmosphère & PNJ C4 (A3.2, 4 paliers P1..P4, météo, 9 biomes, kits respiratoires, vitesse PNJ).
+• systems/economy-urban/ → Module Gestion & Build C2 (A3.3, A3.4, Villes ↔ État Cities II, prêts, marché, modules Anno, quartiers Humankind).
+• systems/colons-cabinet/ → Module Cabinet & Colons RimWorld (traits, passions, fatigue, loyauté, XP, référendums Aven Colony).
+• systems/cyber-drones-fleet/ → Module Drones, Datacenters, Cyber & Flottes (A3.5, 4 classes drones, Compute, Transporteurs T1–T4).
+• systems/combat-conquest/ → Moteur de Combats Déterministe 4 Phases & Unités Militaires Multi-Niveaux (L1–L5, A3.6, conquête par zones AtWar).
+• systems/geopolitics-ai/ → Module Super-Alliance, Slots Planétaires & IA Humankind (A4.1..A4.4, 5 IA déterministes, déblocage Slots 1→6, XP/Succès).
+6.2.6 src/engine3d/ [Couche L4] — Moteur des Maps 3D Three.js / R3F (FEAT-43, FEAT-44)
+         * Fichiers clés :pipeline/renderer-context.ts (WebGL2/WebGPU + WebKit Memory Shield), scenes/space-slots-scene.ts (Échelle 1 : Carte Spatiale & Slots 1→6), scenes/planet-globe-scene.ts (Échelle 2 : Globe 72 tuiles géodésiques), scenes/city-quarters-scene.ts (Échelle 3 : Quartiers Ouverts Anno 2205), camera/multiscale-rig.ts (650 ms), instancing/instance-pool.ts, shaders/atmosphere-biomes.glsl.ts, shaders/telemetry-overlays.glsl.ts, picking/deterministic-raycaster.ts (COL_*) & pins/hologram-preview.ts (Balises Dossiers & Prévisualisation fantôme).
+         * Correspondance : Maps 3D, Onglet Monde 3D & Preuves Télémétriques 3D.
+6.2.7 src/adapters/ [Couche L4] — Pont Dual-Adapter Three.js ↔ Unity 6 URP (AR-12, FEAT-45)
+         * Fichiers clés :render-adapter.interface.ts, threejs-render.adapter.ts, unity6-webgl.adapter.ts, scene-diff-projector.ts (calcul dirty flags lecture seule).
+6.2.8 src/stores/ [Couche L5] — État Applicatif Réactif (R-18)
+         * Fichiers clés :world.store.ts (Zustand : WorldState + dispatch intents), exo-shell.store.ts (navigation 8 écrans + paramètres), dossiers.store.ts (File P0, C1..C5, état Atelier 3 Étages), selection.atoms.ts (Jotai : entité 3D sélectionnée, overlay actif, hologramme).
+6.2.9 src/services/ [Couche L5] — Connecteurs Cloud, IA & Audio (AR-01, AR-02, AR-14)
+         * Fichiers clés :firebase/firebase-client.ts, firebase/firebase-admin.ts, sql/postgres-client.ts, sql/chronicle-pgvector.repo.ts, sql/snapshot.repo.ts, gemini/gemini-dossier.service.ts, gemini/free-tier-governor.ts, audio/fip-radio.service.ts.
+6.2.10 src/pipelines/ [Couche L5] — Orchestration IA & Campagne (A1.3, A5.2)
+         * Fichiers clés :dossier-generation.pipeline.ts (RAG pgvector + Manifeste → Gemini Dual-Pass → Zod + Kahn/BFS → TRIGGER_BUS), campaign-bootstrap.pipeline.ts, cycle-sync.pipeline.ts.
+6.2.11 src/hooks/ [Couche L6] — Hooks React (<= 200 lignes)
+         * Fichiers clés :use-auth-guard.ts, use-cycle-clock.ts, use-scale-camera.ts, use-pa-allocator.ts, use-svg-backdrop.ts, use-fip-audio.ts.
+6.2.12 src/components/ [Couche L7] — Composants Atomiques Bento & Télémétrie (<= 200 lignes)
+         * Sous-dossiers :bento/ (cartes biseautées 135deg, badges PA/Sous-PA), svg-backdrop/ (fond SVG dynamique à fondus enchaînés), hud/ (Top Bar, Fil d'Ariane 3 Échelles, Dock 5 Classes), audio/ (Mini-lecteur Radio FIP), charts/ (Courbes comparatives Humankind).
+6.2.13 src/interfaces/ [Couche L7] — Les 8 Écrans EXO-SHELL & Modules Onglets (<= 200 lignes)
+         * Correspondance Joueur :
+• interfaces/boot/, auth/, main-menu/, new-simulation/, system-settings/, briefing-lobby/ (Solo), game-screen/.
+• interfaces/subscreens/dossier-workshop/ → Moteur d'Événements & Atelier 3 Étages / Modale DAG New Vegas.
+• interfaces/subscreens/world-tab/ → Onglet Monde (Slots Planétaires 1→6, Globe, Quartiers Anno, Bâtiments Modulaires).
+• interfaces/subscreens/journal-chronicle/ → Onglet Journal & Chronique (Historique paginé SQL chronicle_turns, preuves 3D collectées, échos différés, audit SHA-256).
+• interfaces/subscreens/maintenance-tab/, biosphere-colons-tab/, geopolitics-alliance-tab/, military-cyber-tab/ (Unités L1–L5 & Combats 4 phases), pause-saves-tab/.
+6.2.14 src/app/ [Couche L8] — Next.js 15 App Router & Route Handlers JWT (R-07, R-11)
+            * Pages & Routes API :app/page.tsx, app/api/dossiers/generate/route.ts, app/api/saves/sync/route.ts, app/api/chronicle/query/route.ts, app/api/lobby/init/route.ts.
+6.3 Matrice des Dépendances Autorisées & Interdites par Couche (R-02, R-13)
+Couche Source
+	Dépendances Autorisées
+	Dépendances Strictement Interdites
+	Justification Normative
+	L0 contracts/
+	zod
+	Toutes autres couches L1..L8
+	Source de vérité absolue indépendante.
+	L2 core/
+	L0 contracts/, L1 config/data/
+	L4 engine3d/, L5 services/, React, DOM
+	Noyau pur sans I/O déterministe (R-13).
+	L3 systems/
+	L0, L1, L2 core/
+	L4 engine3d/, L5 services/, React, DOM
+	Logique métier pure sans I/O (R-13).
+	L4 engine3d/
+	L0, L1, three, @react-three/fiber
+	L3 systems/ (écriture direct State)
+	Le rendu lit l'état, n'exécute pas de simulation.
+	L5 stores/services/
+	L0 à L4, Firebase, SDK Gemini, Zustand
+	L6..L8 (Composants React UI)
+	Les services ne doivent pas dépendre du composant UI.
+	L7 components/interfaces/
+	L0 à L6, React, Framer Motion, Tailwind
+	Appels direct DB / SDK Gemini (doit passer par L5)
+	Séparation stricte UI / Services.
+	7. SYSTÈME DE MATRICES RELATIONNELLES, MATRICE DE CORRESPONDANCE CENTRALE & SOUS-MATRICES ICOM
+7.1 Architecture du Graphe Matriciel (Modèle en Étoile 3NF Documentaire)
+Afin d'éviter toute redondance et garantir une mise à jour optimale, la structure documentaire adopte une architecture matricielle en étoile à 3e forme normale (3NF). La Matrice de Correspondance Centrale (MC-00) sert de table de jointure unifiée reliant les 7 référentiels du projet (SADT, CYC, FEAT, AR, OPT, R, SRC) et pointe directement vers 5 Sous-Matrices Relationnelles ICOM (SM-01 à SM-05).
+            *                       [SM-01 : DECISION / PA / BUS]
+                                    │
+[SM-02 : PHYSIQUE / ATMO] ──► [MC-00 : JOINTURE] ◄── [SM-03 : MACRO-ÉCO / SLOTS]
+                                  ▲   ▲
+           ┌──────────────────────┘   └──────────────────────┐
+[SM-04 : MILITAIRE / CYBER / L1-L5]            [SM-05 : TECHNIQUE / RAG / 3D]
+7.2 Matrice de Correspondance Centrale (MC-00 — Jointure Globale des 7 Référentiels)
+Clé Domaine
+	Sous-Matrice
+	Nœuds SADT
+	Cycles CYC
+	Features FEAT
+	Arbitrages AR & OPT
+	Règles R-XX
+	Dossiers src/
+	DOM-PA
+	SM-01
+	A1, A2
+	CYC-02, 03
+	FEAT-03, 09..12, 16
+	AR-03, 07, 08 · OPT-03
+	R-24..35, R-53
+	systems/dossiers-pa/, core/bus/
+	DOM-BIO
+	SM-02
+	A3.1, A3.2
+	CYC-06, 07, 08
+	FEAT-25..31
+	AR-11, 14 · OPT-01, 05
+	R-38..40, R-49
+	systems/biosphere/, maintenance/
+	DOM-ECO
+	SM-03
+	A3.3, A3.4, A4.2
+	CYC-04, 05, 10
+	FEAT-17..24, 33, 34, 37
+	AR-04..06, 15 · OPT-04, 08, 10
+	R-04, R-27, R-36..37, R-46
+	systems/economy-urban/, geopolitics-ai/
+	DOM-MIL
+	SM-04
+	A3.5, A3.6, A4.1
+	CYC-09, 10
+	FEAT-35, 36, 38..40
+	AR-10, 16 · OPT-07, 12
+	R-41..48, R-50
+	systems/combat-conquest/, cyber-drones-fleet/
+	DOM-IA3D
+	SM-05
+	A1.2, A1.3, A5
+	CYC-01, 03
+	FEAT-01..08, 13..15, 41..48
+	AR-01..02, 09, 12..13 · OPT-02, 06, 09, 11
+	R-01..23, R-51..69
+	core/, engine3d/, adapters/, services/, pipelines/
+	7.3 Sous-Matrices Relationnelles avec Flux ICOM (SM-01 à SM-05)
+7.3.1 SM-01 — Sous-Matrice Décisionnelle : PA, Cabinet, Dossiers & TRIGGER_BUS
+Relation ID
+	Entité Source → Cible
+	Input (I)
+	Control (C)
+	Output (O)
+	Mechanism (M)
+	REL-PA-01
+	Conseillers → Sous-PA
+	Roster Colons/Cabinet
+	Attributs, XP, Fatigue
+	Regen Sous-PA (A2.1)
+	Formule Regen_SousPA
+	REL-PA-02
+	Watchdogs → Crises P0
+	Télémétrie, Usure < 25%
+	TRIGGER_BUS, Plafond P0
+	File Crises P0 (A1.1)
+	Watchdogs Déterministes
+	REL-PA-03
+	Atelier 3 Étages → Intents
+	Dossiers C1..C5, PA/Sous-PA
+	Axe New Vegas, Preview 3D
+	DecisionIntent[] (A2.3)
+	Engine Affinage Zod
+	REL-PA-04
+	Gemini → Triggers Différés
+	DecisionIntent validé
+	Rules R-53, R-69
+	DELAYED_ECHO (A1.3)
+	TRIGGER_BUS + pgvector
+	7.3.2 SM-02 — Sous-Matrice Physique : Atmosphère P1..P4, Biomes, Maintenance C3 & PNJ
+Relation ID
+	Entité Source → Cible
+	Input (I)
+	Control (C)
+	Output (O)
+	Mechanism (M)
+	REL-BIO-01
+	Terraformation → Palier Atmo
+	Miroirs, Gaz, CO₂
+	Seuils P1..P4 (AR-11)
+	Transition Palier (A3.2)
+	Atmosphere System
+	REL-BIO-02
+	Palier Atmo → Kits / Vitesse PNJ
+	Palier Actuel P_k
+	Rules R-39, R-49
+	V_chantier (-40%..+40%)
+	Formule V_chantier
+	REL-BIO-03
+	Usure / Météo → Maintenance C3
+	Âge Bâtiment, Tempêtes
+	Niveaux Préventifs 1-3
+	Niveau Intégrité (A3.1)
+	Maintenance System C3
+	REL-BIO-04
+	Biomes / Moral → Référendums
+	Qualité de vie, Abri
+	Seuil Approbation < 35%
+	Votation Aven Colony
+	Civic Evaluator
+	7.3.3 SM-03 — Sous-Matrice Macro-Économique : Villes-État, Prêts, Marché, Super-Alliance & Slots 1-6
+Relation ID
+	Entité Source → Cible
+	Input (I)
+	Control (C)
+	Output (O)
+	Mechanism (M)
+	REL-ECO-01
+	Villes → Budget État
+	Taxes Villes Anno
+	Modèle Cities II, Solvabilité
+	Trésorerie État (A3.3)
+	Consolidateur Fisc/Prêts
+	REL-ECO-02
+	Dette → Taux Prêts
+	Ratio Dette / Revenus
+	Rule R-37, Cote AAA-D
+	Taux d'Emprunt Fixé
+	Bank Rating Engine
+	REL-ECO-03
+	Entraide IA → Alliance → Slots
+	Aides aux Alliés Pairs
+	Rang Super-Alliance (A4.2)
+	Déblocage Slots 1-6
+	Alliance Evaluator
+	REL-ECO-04
+	Transporteurs T1–T4 → Fret
+	Stocks Inter-Slots
+	Tonnage Max T1-T4 (R-46)
+	Flux Ressources Réparti
+	Inter-Slot Router
+	7.3.4 SM-04 — Sous-Matrice Militaire & Cyber : Datacenters, Drones, Unités L1–L5 & Combats 4 Phases
+Relation ID
+	Entité Source → Cible
+	Input (I)
+	Control (C)
+	Output (O)
+	Mechanism (M)
+	REL-MIL-01
+	Datacenters → Cyber-Paralysie
+	Compute T1-T5, Énergie
+	Surplus Compute 2x (R-43)
+	Paralysie 2 cycles (A3.5)
+	Cyber Attack Module
+	REL-MIL-02
+	Drones → Chantier / Reco / Combat
+	Flotte Drones 4 Classes
+	Délai réaffectation 1 cycle
+	Bonus Chantier / Reco
+	Drone Fleet Dispatcher
+	REL-MIL-03
+	Ordre L1–L5 → Moteur Combats 4P
+	Unités Militaires L1-L5
+	Rule R-47, Biome, Atmo
+	DegatsRound (A3.6)
+	Deterministic Combat Core
+	REL-MIL-04
+	Victoire Zone → Capture & Score
+	Résolution Combats 4P
+	Zones AtWar adjacentes
+	Garnison & Humankind XP
+	Territorial Conquester
+	7.3.5 SM-05 — Sous-Matrice Technique : RAG pgvector, Oracle Gemini, Noyau PCG32 & Dual-Adapter 3D
+Relation ID
+	Entité Source → Cible
+	Input (I)
+	Control (C)
+	Output (O)
+	Mechanism (M)
+	REL-TEC-01
+	WorldState + pgvector → Context
+	15 Derniers Tours, Embeddings
+	Similarité Cosinus ≤ 0.82
+	StateBrief + ΔP_adapt
+	Chronicle RAG Repository
+	REL-TEC-02
+	Gemini Dual-Pass → Sas Zod
+	Prompt Structuré StateBrief
+	Free Tier Governor (R-68)
+	JSON Validé / Tri Kahn
+	Gemini Intelligence Service
+	REL-TEC-03
+	Noyau Pur → StateHash
+	Intents Validés + WorldState
+	PCG32 Seed, R-66, R-67
+	StateHash SHA-256 (A5.1)
+	StateHasher Bit-à-Bit
+	REL-TEC-04
+	SceneDiffPacket → Rendu 3D/SVG
+	WorldState(T+15) Muté
+	Memory Shield < 250 Mo
+	Frame 3D + Fond SVG
+	Three.js / Unity 6 Adapter
+	7.4 Sélecteurs d'Options Verrouillés (OPT-01 à OPT-12) & Synthèse Décisionnelle
+7.2 Tableau Maître des 12 Sélecteurs d'Options (OPT-01 à OPT-12)
+ID & Axe
+	Options Sélectionnables [x] / [ ]
+	Priorité
+	Statut
+	Impact Architecture & Vague
+	OPT-01
+Scope Planétaire
+	[x] A. 1 Planète (Slot 1) ultra-soignée puis déblocage Slots 2→6 en V3
+[ ] B. 2 Mondes (Terre + Lune) dès V1
+[ ] C. 4 Mondes complets dès V1
+	P1
+	VERROUILLÉ
+	Focus V1 sur stabilité 72 tuiles géodésiques de Slot 1.
+	OPT-02
+Moteur 3D
+	[x] A. Dual-Adapter (Three.js V1–V4 -> Unity 6 URP V5)
+[ ] B. 100 % Three.js WebGPU/WebGL2 (zéro Unity)
+	P1
+	VERROUILLÉ
+	Protocole SceneDiffPacket unique (voir 7.3).
+	OPT-03
+Architecture PA
+	[x] A. PA Général + 4 Sous-PA Conseillers (fongibilité asymétrique)
+[ ] B. PA Général unique + réductions passives Conseillers
+[ ] C. PA par Planète (Slot)
+	P1
+	VERROUILLÉ
+	Invariant Souverain R-24 / R-26.
+	OPT-04
+Build & Économie
+	[x] A. Bâtiments Modulaires Anno (3 extensions) + Prêts/Marché Cities II via Dossiers
+[ ] B. Placement libre direct sur grille + Dossiers pour lois/crises
+[ ] C. Macro-zones abstraites sans grille
+	P1
+	VERROUILLÉ
+	Intégration Anno / Cities II dans Atelier 3 Étages.
+	OPT-05
+Profondeur Colons
+	[x] A. 12–30 Cadres/Colons nommés individuels + masse démographique statistique
+[ ] B. Conseillers Présidentiels seuls (4–8 personnages)
+[ ] C. Simulation individuelle 100+ colons
+	P2
+	VERROUILLÉ
+	Optimisation RAM mobile (< 250 Mo WebKit Shield).
+	OPT-06
+Régime IA Gemini
+	[x] A. Hybride Free Tier Strict (0 IA sur C2/C3 courants, Flash brèves, Pro High Thinking DAG majeurs + Fallback)
+[ ] B. Gemini Pro High Thinking sur 100 % des dossiers
+[ ] C. 100 % Déterministe catalogue local (mode test CI)
+	P1
+	VERROUILLÉ
+	Garantie quota gratuit (R-68 / FEAT-47).
+	OPT-07
+Modèle Conflit
+	[x] A+. Zones AtWar + Drones 4 classes + Cyber Datacenters + Envoi d'Unités Militaires Multi-Niveaux (L1–L5) & Moteur de Combats Déterministe 4 Phases
+[ ] B. Diplomatie/Cyber uniquement
+	P2
+	VERROUILLÉ
+	Modèle AtWar sans micro-RTS (voir 7.3).
+	OPT-08
+Format Campagne
+	[x] A → C. Campagne rythmée 2h30–4h (6 Ères, 40–60 cycles) suivie du Mode Continuation Bac à Sable Infini (15h+ Post-Victoire)
+[ ] B. Runs Roguelite courts 45 min
+	P2
+	VERROUILLÉ
+	Équilibrage Étoiles d'Ère Humankind (voir 7.3).
+	OPT-09
+Thème UI Défaut
+	[x] A. Tactical Dark Bento Biseauté + bascule Light Anno
+[ ] B. Solarpunk Light Anno par défaut
+[ ] C. Thème adaptatif automatique selon l'Ère
+	P2
+	VERROUILLÉ
+	Bords biseautés 135deg (R-57 / R-58).
+	OPT-10
+Super-Alliance
+	[x] A. IA Autonome au-dessus du joueur + déblocages par entraide alliés IA
+[ ] B. Assemblée votante où le joueur peut prendre la présidence en Ère V
+[ ] C. Indépendance totale (zéro tutelle)
+	P1
+	VERROUILLÉ
+	Arbitrage géopolitique AR-04 / R-27.
+	OPT-11
+Noyau C++17
+	[x] A. Optionnel Vague 5 si besoin perf Unity/Mobile
+[ ] B. 100 % TypeScript strict suffisant (Web Workers)
+[ ] C. C++17 WASM dès Vague 2
+	P3
+	DIFFÉRÉ
+	Miroir optionnel FEAT-48 en Vague 5.
+	OPT-12
+Multijoueur
+	[x] B. 100 % Solo exclusif contre 5 Superpuissances IA rivales en v1.0 (Multijoueur différé v1.1+)
+[ ] A. Multijoueur synchrone v1.0
+	P3
+	VERROUILLÉ
+	Lobby Firestore FEAT-40 prêt V1, activé V4.
+	7.3 Matrice Décisionnelle Pondérée — Résolution des 3 Arbitrages Ouverts (EN-ARBITRAGE)
+Axe & Option Evaluée
+	Détail des Scores par Critère (/10)
+	Score Pondéré
+	Recommandation & Décision
+	OPT-02 (Moteur 3D)
+Option A : Dual-Adapter
+	Plaisir: 9/10 | AI Studio: 8/10 | Mobile: 8/10 | Diff: 10/10
+	8.6 / 10
+	RECOMMANDÉE (Option A) — Three.js garantit la livraison rapide sur AI Studio, Unity 6 apporte la fidélité native.
+	OPT-02 (Moteur 3D)
+Option B : 100 % Three.js
+	Plaisir: 7.5/10 | AI Studio: 10/10 | Mobile: 9/10 | Diff: 6.5/10
+	8.2 / 10
+	Excellente alternative de repli si Unity 6 prend du retard.
+	OPT-07 (Conflit & Cyber)
+Option A : Zones AtWar + Cyber
+	Plaisir: 9/10 | AI Studio: 9/10 | Mobile: 8.5/10 | Diff: 8.5/10
+	8.8 / 10
+	RECOMMANDÉE (Option A) — Évite la micro-gestion tout en gardant une vraie tension stratégique.
+	OPT-07 (Conflit & Cyber)
+Option C : RTS Manuel 3D
+	Plaisir: 7/10 | AI Studio: 3/10 | Mobile: 4/10 | Diff: 7/10
+	5.1 / 10
+	REJETÉE — Trop lourd sur mobile, incompatible avec le gameplay par Dossiers PA.
+	OPT-08 (Format Campagne)
+Option A : 2h30–4h / 6 Ères
+	Plaisir: 9.5/10 | AI Studio: 8.5/10 | Mobile: 8.5/10 | Diff: 9/10
+	8.9 / 10
+	RECOMMANDÉE (Option A) — Équilibre parfait pour mobile et sessions de jeu répétables.
+	OPT-08 (Format Campagne)
+Option C : Bac à Sable 15h+
+	Plaisir: 8/10 | AI Studio: 6/10 | Mobile: 5/10 | Diff: 8/10
+	6.8 / 10
+	Trop lourd en rétention de données vectorielles sur mobile.
+	---
+PARTITION V — RÉFÉRENTIELS CATALOGUES & ROADMAPS DE PRODUCTION
+8. CATALOGUE CLASSIFIÉ DES 48 FEATURES (FEAT-01 À FEAT-48)
+8.1 Domaine 1 : App Shell, UI Bento Biseauté, SVG & Audio (FEAT-01..FEAT-08)
+ID Feature
+	Nom & Description Technique
+	Priorité
+	Règles & AR Liées
+	Vague
+	FEAT-01
+	App Shell EXO-SHELL 8 Écrans — Machine à états rigide de navigation avec transition < 150 ms.
+	P1 · [x] OPT-SHELL-01
+	R-10, R-54, AR-03
+	Vague 1
+	FEAT-02
+	Ergonomie Responsive & Touch Mobile — Layout bento adaptatif multi-résolutions (Mobile < 768 px).
+	P1 · [x] OPT-SHELL-01
+	R-55, R-56
+	Vague 1
+	FEAT-03
+	Bus Tri-Voies TRIGGER_BUS — Architecture cybernétique Artérielle/Veineuse avec validation Zod.
+	P1 · [x] OPT-03
+	R-53, AR-03
+	Vague 1
+	FEAT-04
+	Archives & Renseignement L1..L4 — Console de consultation contextuelle des historiques et télémesures.
+	P2 · [x] OPT-08
+	R-07, R-08
+	Vague 2
+	FEAT-05
+	UI Bento Bords Lumière Biseautés — Panels glassmorphismes à arêtes biseautées 135deg colorées par classe.
+	P1 · [x] OPT-09
+	R-57, R-58
+	Vague 1
+	FEAT-06
+	Fond SVG Dynamique Réactif — Arrière-plan vectoriel évoluant selon le palier atmosphérique (1 200 ms).
+	P1 · [x] OPT-09
+	R-59, R-60
+	Vague 1
+	FEAT-07
+	Overlays 3D Instantanés (< 50 ms) — Affichage superposé sans démontage du canvas 3D WebGL/WebGPU.
+	P2 · [x] OPT-02
+	R-15, AR-12
+	Vague 2
+	FEAT-08
+	Audio DSP & Web Radio FIP 5 Flux — Synthèse Web Audio API + streaming FIP avec filtre passe-bas 3D.
+	P1 · [x] OPT-SHELL-02
+	R-61..65
+	Vague 1
+	8.2 Domaine 2 : Dossiers Exécutifs, PA & Oracle Gemini (FEAT-09..FEAT-16)
+ID Feature
+	Nom & Description Technique
+	Priorité
+	Règles & AR Liées
+	Vague
+	FEAT-09
+	5 Classes C1..C5 + File Crises P0 — Triage des Dossiers Exécutifs et mode Initiative Directe.
+	P1 · [x] OPT-03
+	R-24, R-26, AR-07
+	Vague 1
+	FEAT-10
+	Système PA Général + 4 Sous-PA — Économie de points d'action par Conseiller Présidentiel.
+	P1 · [x] OPT-03
+	R-26, AR-07
+	Vague 1
+	FEAT-11
+	Atelier d'Affinage 3 Étages — Module d'ajustement des options (Axe New Vegas, Colon/Module, Preview 3D).
+	P1 · [x] OPT-03
+	R-28, AR-07
+	Vague 1
+	FEAT-12
+	Balises Holographiques 3D — Projection d'empreintes fantômes 3D sur le terrain avant validation.
+	P2 · [x] OPT-02
+	R-15, FEAT-11
+	Vague 2
+	FEAT-13
+	Engine DAG New Vegas & Skill-Checks — Modale de résolution à preuves 3D et tests de compétences.
+	P2 · [x] OPT-06
+	R-28, AR-08
+	Vague 4
+	FEAT-14
+	RAG Hybride SQL pgvector — Mémoire épisodique et vectorielle (remplaçant Google Chat).
+	P2 · [x] OPT-06
+	R-11, AR-01, AR-13
+	Vague 4
+	FEAT-15
+	Calculateur ΔP_adapt — Modulateur dynamique des probabilités d'événements selon la performance.
+	P2 · [x] OPT-06
+	R-69, AR-09
+	Vague 4
+	FEAT-16
+	Triggers Autonomes & Commandés — Gestionnaire des 4 horizons temporels d'échos différés (DELAYED_ECHO).
+	P2 · [x] OPT-06
+	R-53, AR-09
+	Vague 2
+	8.3 Domaine 3 : Gestion, Build Modulaire, Villes, Prêts & Marché (FEAT-17..FEAT-24)
+ID Feature
+	Nom & Description Technique
+	Priorité
+	Règles & AR Liées
+	Vague
+	FEAT-17
+	Villes Ouvertes & 4 Paliers Sociaux — Métropoles Anno 2205 contiguës sans dômes avec stratification sociale.
+	P1 · [x] OPT-04
+	R-16, R-36
+	Vague 1
+	FEAT-18
+	Bâtiments Modulaires (3 Extensions) — Greffe de modules spécialisés (énergie, stockage, production).
+	P2 · [x] OPT-04
+	R-36, AR-06
+	Vague 2
+	FEAT-19
+	Économie Villes ↔ État Cities II — Consolidation de la fiscalité locale vers le budget galactique.
+	P2 · [x] OPT-04
+	R-37, AR-06
+	Vague 2
+	FEAT-20
+	Système de Prêts & Crédits — Emprunts bancaires avec cote de solvabilité et intérêts ajustés.
+	P2 · [x] OPT-04
+	R-37, AR-06
+	Vague 2
+	FEAT-21
+	Marché d'Échange de Ressources — Bourse d'échange inter-colonies à cours réactifs.
+	P2 · [x] OPT-04
+	R-37, AR-06
+	Vague 2
+	FEAT-22
+	Ressources Évolutives Ères I→VI — Arbre de 18 ressources débloquées au fil de la progression.
+	P2 · [x] OPT-08
+	R-04, AR-15
+	Vague 2
+	FEAT-23
+	Système d'Ères & Doctrines Humankind — Progression par Étoiles d'Ère et choix de doctrines nationales.
+	P2 · [x] OPT-08
+	R-04, AR-15
+	Vague 3
+	FEAT-24
+	Progression XP & Succès à Bonus — Tri-jauge d'expérience (Civilisation, Cabinet, Alliance) et perks.
+	P2 · [x] OPT-08
+	R-05, AR-15
+	Vague 3
+	8.4 Domaine 4 : Supervision, Maintenance, Biomes, Atmosphère & Colons (FEAT-25..FEAT-32)
+ID Feature
+	Nom & Description Technique
+	Priorité
+	Règles & AR Liées
+	Vague
+	FEAT-25
+	Supervision & Maintenance C3 — Gestion de l'usure des infrastructures sur 3 niveaux préventifs.
+	P2 · [x] OPT-04
+	R-38, AR-14
+	Vague 2
+	FEAT-26
+	4 Paliers Atmosphériques P1→P4 — Système de terraformation progressive et cycles de transition.
+	P2 · [x] OPT-01
+	R-39, AR-11
+	Vague 2
+	FEAT-27
+	Météo & Stabilité Climatique — Simulation des saisons hostiles et tempêtes radiatives/ abrasives.
+	P2 · [x] OPT-01
+	R-39, AR-11
+	Vague 2
+	FEAT-28
+	Automate 9 Biomes Universim — Shaders de terrain procéduraux avec évolution flore/faune.
+	P2 · [x] OPT-01
+	R-40, AR-11
+	Vague 2
+	FEAT-29
+	Kits Respiratoires & Vitesse PNJ — Coût d'équipement et malus de vitesse de construction en palier P1.
+	P2 · [x] OPT-01
+	R-39, AR-11
+	Vague 2
+	FEAT-30
+	Roster Colons & Cabinet RimWorld — Gestion individuelle des traits, passions, fatigue et moral.
+	P2 · [x] OPT-05
+	R-30, AR-07
+	Vague 2
+	FEAT-31
+	Référendums Civiques Aven Colony — Évaluations périodiques du mandat et risque de coup d'État.
+	P2 · [x] OPT-05
+	R-31, FEAT-30
+	Vague 3
+	FEAT-32
+	Nomenclature Scientifique — Générateur de découvertes utilisant une terminologie Sci-Fi rigoureuse.
+	P2 · [x] OPT-06
+	R-50, AR-16
+	Vague 3
+	8.5 Domaine 5 : Super-Alliance, Slots Planétaires, Drones, Cyber & Flottes (FEAT-33..FEAT-40)
+
+
+ID Feature
+	Nom & Description Technique
+	Priorité & Sélecteur
+	Règles & AR Liées
+	Vague
+	FEAT-33
+	Super-Alliance Autonome — Fédération IA supra-nationale imposant des directives et débloquant des brevets.
+	P2 · [x] OPT-10
+	R-27, AR-04
+	Vague 3
+	FEAT-34
+	Slots Planétaires Débloquables (1→6) — Expansion multi-mondes sur lunes et exoplanètes.
+	P2 · [x] OPT-01
+	R-15, AR-05
+	Vague 3
+	FEAT-35
+	Centre de Drones (4 Classes) — Unités autonomes de Chantier, Défense, Attaque et Espionnage.
+	P2 · [x] OPT-07
+	R-41..44, AR-10
+	Vague 3
+	FEAT-36
+	Datacenters T1–T5 & Cyberguerre — Génération de Compute pour pare-feu défensifs et attaques paralyseuses.
+	P2 · [x] OPT-07
+	R-45..47, AR-10
+	Vague 3
+	FEAT-37
+	Transporteurs Inter-Slots T1–T4 — Logistique spatiale assurant le transfert de fret et de colons.
+	P2 · [x] OPT-01
+	R-48, AR-10
+	Vague 3
+	FEAT-38
+	Moteur de Combats Déterministe 4 Phases, Envoi d'Unités Militaires Multi-Niveaux (L1–L5), Flotte Orbitale & Conquête Territoriale — Système d'envoi et de résolution déterministe de combats par zones (OPT-07 A+).
+	P2 · [x] OPT-07
+	R-49, AR-10
+	Vague 3
+	FEAT-39
+	Comparateur Statistique Humankind — Écran de comparaison en temps réel des performances contre les 5 IA rivales.
+	P2 · [x] OPT-08
+	R-04, AR-15
+	Vague 3
+	FEAT-40
+	Moteur IA Déterministe (5 Superpuissances) — Comportement déterministe des concurrents basé sur des arbres d'utilité.
+	P2 · [x] OPT-12
+	R-66, AR-04
+	Vague 3
+	8.6 Domaine 6 : Noyau Pur, Cloud SQL/Firebase, Dual-Adapter 3D & FinOps (FEAT-41..FEAT-48)
+
+
+ID Feature
+	Nom & Description Technique
+	Priorité & Sélecteur
+	Règles & AR Liées
+	Vague
+	FEAT-41
+	Noyau Pur PCG32 + SHA-256 — Moteur de simulation sans I/O garantissant un rejeu bit-à-bit strict.
+	P1 · [x] OPT-03
+	R-13, R-66, R-67
+	Vague 1
+	FEAT-42
+	Persistance Firebase + Cloud SQL — Sync Firestore temps réel et persistance PostgreSQL pgvector.
+	P1 · [x] OPT-06
+	R-11, AR-01
+	Vague 1
+	FEAT-43
+	Adaptateur 3D Three.js r170+ — Moteur de rendu WebGL2/WebGPU principal pour Web & Mobile.
+	P1 · [x] OPT-02
+	R-15, AR-12
+	Vague 1
+	FEAT-44
+	Pack Shaders Universim/Anno — Shaders URP/WebGL optimisés pour terrains, biomes et bâtiments.
+	P2 · [x] OPT-02
+	R-16, FEAT-43
+	Vague 2
+	FEAT-45
+	Adaptateur 3D Unity 6 URP — Pont C# / .jslib natif pour rendus haute-fidélité desktop/mobile.
+	P3 · [x] OPT-02
+	R-15, AR-12
+	Vague 5
+	FEAT-46
+	WebKit Memory Shield (< 250 Mo) — Nettoyeur automatique de mémoire vive pour navigateurs Safari iOS.
+	P1 · [x] OPT-02
+	R-14, AR-12
+	Vague 1
+	FEAT-47
+	Gemini Free Tier Strict Governor — Borne d'exécution API Gemini garantissant le respect des quotas gratuits.
+	P1 · [x] OPT-06
+	R-68, R-69
+	Vague 1
+	FEAT-48
+	Accélérateur C++17 Miroir — Compilation WebAssembly / plugin natif Unity du noyau pur.
+	P3 · [x] OPT-11
+	R-13, FEAT-41
+	Vague 5
+	9. REGISTRE INTÉGRÉ DES 16 ARBITRAGES (AR-01 À AR-16)
+ID Arbitrage
+	Intitulé Exécutif
+	Décision Verrouillée & Impact Architectural
+	Règles, Options & Features Liées
+	AR-01
+	Suppression de Google Chat
+	Remplacement complet de Google Chat par Cloud SQL PostgreSQL (pgvector).
+	R-11, FEAT-14, FEAT-42
+	AR-02
+	Rejet du skill Chatbot Libre
+	Utilisation exclusive d'Add Gemini Intelligence + Add High Thinking en JSON validé.
+	R-68, R-69, OPT-06, FEAT-47
+	AR-03
+	Bus Tri-Voies EXO-SHELL
+	Séparation stricte de la circulation en 3 canaux : Artériel, Veineux et TRIGGER_BUS.
+	R-53, FEAT-01, FEAT-03
+	AR-04
+	Géopolitique & Super-Alliance
+	Intégration d'une IA supranationale dominante et de 5 Superpuissances IA rivales.
+	R-27, OPT-10, FEAT-33, FEAT-40
+	AR-05
+	Slots Planétaires (1→6)
+	Progression multi-mondes limitée à 6 emplacements stratégiques débloquables.
+	R-15, OPT-01, FEAT-34
+	AR-06
+	Économie Villes ↔ État
+	Modèle Cities II avec gestion des prêts, taxes, et marché boursier de ressources.
+	R-37, OPT-04, FEAT-19..22
+	AR-07
+	Système PA & Sous-PA
+	Structure à 5 jauges (1 PA Général + 4 Sous-PA Conseillers) pour l'arbitrage.
+	R-26, OPT-03, FEAT-09..11
+	AR-08
+	Engine DAG New Vegas
+	Dialogue & événements résolus par arbres orientés acycliques et skill-checks.
+	R-28, FEAT-13
+	AR-09
+	Calculateur ΔP_adapt
+	Ajustement dynamique des probabilités de tirage d'événements selon la performance.
+	R-69, FEAT-15, FEAT-16
+	AR-10
+	Systèmes Drones & Cyber
+	Unités autonomes à 4 rôles + datacenters de production de Compute pour la guerre cyber.
+	R-41..49, OPT-07, FEAT-35..38
+	AR-11
+	Atmosphère & 4 Paliers P1→P4
+	Impact physique direct du climat sur la vitesse des PNJ et les coûts d'infrastructures.
+	R-39, R-40, FEAT-26..29
+	AR-12
+	Dual-Adapter 3D & Legal
+	Double support Three.js / Unity 6 URP. Exclusion stricte de mods Cities II et SketchUp.
+	R-15, OPT-02, FEAT-43..45
+	AR-13
+	RAG SQL Vectoriel
+	Recherche par similarité cosinus (768d) pour la persistance narrative long terme.
+	R-11, FEAT-14
+	AR-14
+	Supervision C3
+	Dégradation continue des bâtiments nécessitant 3 niveaux de maintenance préventive.
+	R-38, FEAT-25
+	AR-15
+	Progression Humankind
+	Système à 6 Ères chronologiques, Étoiles d'Ère et arbre d'expérience à 3 jauges.
+	R-04, R-05, OPT-08, FEAT-23..24
+	AR-16
+	Nomenclature Scientifique
+	Interdiction formelle du terme flou « anomalie » au profit de termes techniques précis.
+	R-50, FEAT-32
+	10. REGISTRE SOUVERAIN DES RÈGLES (R-01 À R-69)
+10.1 R-01..R-08 Discipline PO & ICOM
+            * R-01 Primauté des Schémas Zod : Aucun type ou structure de données ne peut exister sans un contrat Zod explicite validé au build-time.
+            * R-02 Routage Single Source of Truth (SoT) : L'état global du monde réside exclusivement dans le store Noyau Pur (src/core/state).
+            * R-03 Non-Duplication du Code : Interdiction d'implémenter deux fois la même logique d'affaires dans des modules distincts.
+            * R-04 Anti-Anachronisme d'Ère : Aucune technologie, bâtiment ou ressource d'une Ère supérieure ne peut être débloquée prématurément.
+            * R-05Persistance Doctrinale : Les choix de doctrines effectués dans l'Ère N appliquent des modificateurs permanents cumulatifs.
+            * R-06 Traçabilité SADT / ICOM : Toute fonction de simulation doit faire référence à un noeud précis de la hiérarchie SADT (A0 à A5).
+            * R-07 Post-Sécurité & Zero-Trust : Les requêtes entrantes sont ré-authentifiées et validées par token JWT Firebase avant traitement.
+            * R-08 Traçabilité Numérique des Événements : Chaque Dossier Exécutif résolu génère un log cryptographique immuable.
+10.2 R-09..R-23 Structure & Pureté
+            * R-09 Hiérarchie Absolue des Sources : En cas de conflit, Contrats Zod > Formules > Actigrammes > UI/3D > Prose.
+            * R-10 Typage Strict sans any : L'utilisation du type any ou de casts sauvages est un motif de rejet immédiat en CI.
+            * R-11 Auth Firebase Obligatoire : Aucune session de jeu ne peut démarrer en mode anonyme ou hors-ligne sans jeton validé.
+            * R-12 Zod aux Frontières Système : Tout échange réseau, payload API Gemini ou I/O disque doit traverser un sas de validation Zod.
+            * R-13 Noyau Pur sans I/O : Le dossier src/core/ ne doit contenir aucun appel réseau, accès DOM, ou dépendance à des API navigateurs.
+            * R-14 Plafonds de Complexité Code : Fichiers limités à 300 lignes max, fonctions limitées à 200 lignes max.
+            * R-15 Rendu Multi-Échelles Fluide : La transition entre les 3 échelles de vue 3D doit s'effectuer en moins de 650 ms.
+            * R-16 Zéro Dôme & Esthétique Open-Sky : Interdiction visuelle de dômes fermés ; les villes doivent employer des boucliers énergétiques invisibles.
+            * R-17 Purity Pure PRNG : Utilisation exclusive du générateur déterministe PCG32 initialisé avec la worldSeed.
+            * R-18 Isolation des Stores React : Zustand est utilisé pour l'état de jeu ; Jotai pour l'état éphémère de l'interface utilisateur.
+            * R-19 Nommage Normalisé des Fichiers : Utilisation du kebab-case pour les fichiers et du PascalCase pour les composants React.
+            * R-20 Gestion des Erreurs par Result Pattern : Interdiction d'utiliser throw dans le noyau pur ; utiliser des tuples [Error, Data].
+            * R-21 Nettoyage automatique du Canvas : Libération explicite de la mémoire géométrique et des textures lors du démontage 3D.
+            * R-22 Séparation Rendu / Simulation : La boucle de simulation tourne à 15 ticks par cycle, indépendamment du FPS du rendu.
+            * R-23 Immuabilité des Modificateurs Statiques : Les constantes d'équilibrage du jeu doivent être gelées avec Object.freeze().
+10.3 R-24..R-35 Souveraineté & PA
+            * R-24 Invariant Souverain par Dossiers : Toute mutation de l'état de jeu passe obligatoirement par la validation d'un Dossier Exécutif.
+            * R-25 Protocole 0.3 d'Amendement : Seul Baptiste Lecoustre est habilité à approuver une modification du Blueprint.
+            * R-26 Fongibilité Asymétrique des PA : Le PA Général peut financer toute action ; les Sous-PA sont strictement limités à leur domaine.
+            * R-27 Subordination à la Super-Alliance : Ignorer les directives fédérales de la Super-Alliance entraîne des pénalités économiques.
+            * R-28 Résolution Déterministe DAG : Les événements narratifs doivent suivre un graphe orienté acyclique aux issues calculables.
+            * R-29 Plafond d'Accumulation des PA : Les points d'action non consommés sont plafonnés à 150 % de leur taux de régénération.
+            * R-30 Influence du Cabinet : Les attributs des Conseillers appliquent un bonus direct à la régénération des Sous-PA associés.
+            * R-31 Échéance des Référendums Civiques : Un score d'approbation populaire inférieur à 35 % déclenche un référendum révocatoire.
+            * R-32 Priorité Absolue des Crises P0 : La présence d'un dossier P0 bloque l'exécution des dossiers C4 et C5.
+            * R-33 Initiative Directe du Commandant : Dépenser du PA Général permet d'émettre un dossier hors du tirage de l'Oracle.
+            * R-34 Coût d'Affinage Échelonné : Chaque niveau d'affinage supplémentaire dans l'Atelier augmente le coût en Sous-PA de 50 %.
+            * R-35 Irrévocabilité des Décisions : Une fois signé et soumis au cycle, un Dossier Exécutif ne peut plus être annulé.
+10.4 R-36..R-50 Systèmes Physiques & Cyber
+            * R-36 Modularité des Bâtiments : Chaque structure urbaine accepte un maximum de 3 extensions de modules greffés.
+            * R-37 Cote de Solvabilité Dynamique : Le taux d'intérêt des emprunts fluctue selon le ratio Dette / Revenus mensuels.
+            * R-38 Maintenance Obligatoire C3 : Un bâtiment dont le niveau de maintenance descend sous 25 % subit un arrêt d'activité.
+            * R-39 Contrainte Physique du Palier P1 : L'exposition directe non abritée en palier P1 est limitée à 4 heures par jour par colon.
+            * R-40 Seuils d'Évolution des Biomes : La transition d'un biome vers le niveau supérieur exige 3 cycles consécutifs de stabilité.
+            * R-41 Polyvalence des Drones : Un drone réaffecté à un nouveau rôle est indisponible pendant 1 cycle complet.
+            * R-42 Plafond de Flotte de Drones : Le nombre maximal de drones actifs dépend directement de la capacité des datacenters.
+            * R-43 Portée de Projection Cyber : Les attaques cyber nécessitent un surplus de Compute 2x supérieur à la défense cible.
+            * R-44 Conséquence d'Intrusion Réussie : Une cyberattaque adverse réussie paralyse la structure ciblée pendant 2 cycles.
+            * R-45 Besoins en Énergie des Datacenters : Les datacenters de niveau T4 et T5 requièrent une alimentation dédiée par fusion.
+            * R-46 Capacité Fret des Transporteurs : Le commerce inter-slots ne peut dépasser le tonnage cumulé des transporteurs T1–T4.
+            * R-47Moteur de Combats Déterministe & Envoi d'Unités Multi-Niveaux (L1–L5) : La conquête territoriale s'effectue par l'envoi d'unités militaires de 5 classes et 5 niveaux (L1 à L5) résolu de manière 100 % déterministe (PCG32) en 4 phases (Cyber/Drones → Bombardement → Rounds combinés pondérés par biome, atmosphère P1..P4 et ravitaillement → Capture & garnison).
+            * R-48 Dégradation des Satellites Orbitaux : Les constellations orbitales subissent l'usure de l'érosion atmosphérique haute.
+            * R-49 Consommation des Kits Respiratoires : En palier P1, chaque colon consomme 1 unité de Kit Respiratoire par cycle.
+            * R-50 Nomenclature Scientifique Stricte : Banning du mot « anomalie ». Utilisation obligatoire du lexique scientifique validé.
+10.5 R-51..R-65 Boucle, UI & Audio
+            * R-51 Vitesse Temporelle Fixe : Les cadences de simulation 0x, 1x, 2x et 4x appliquent des facteurs stricts sur le tick rate.
+            * R-52 Régularité des Cycles Exécutifs : Un Cycle Exécutif regroupe exactement 15 ticks de simulation.
+            * R-53 Émission d'Échos Différés : Les décisions ayant un impact long terme doivent enregistrer un trigger dans le TRIGGER_BUS.
+            * R-54 Temps de Réponse Interface : Tout clic utilisateur doit produire un retour visuel en moins de 16 ms.
+            * R-55 Contraste Minimum WCAG 2.1 AA : Le rapport de contraste du texte sur fond bento doit être au minimum de 4.5:1.
+            * R-56 Zone Tactile Minimale Mobile : Les éléments interactifs sur écran mobile doivent mesurer au moins 44x44 pixels.
+            * R-57 Intensité du Biseau Bento : L'angle du dégradé de biseau UI est fixe à 135deg avec une opacité maximale de 45 %.
+            * R-58 Code Couleur des Classes : Respect strict de la palette attribuée aux classes P0 (Rouge) à C5 (Violet).
+            * R-59 Durée de Fondu Fond SVG : La transition entre deux états du fond vectoriel s'effectue sur une durée exacte de 1 200 ms.
+            * R-60 Bruitage Vectoriel Adaptatif : La complexité du fond SVG se réduit automatiquement si le taux de rafraîchissement chute.
+            * R-61 Filtre Audio par Échelle : Le filtre passe-bas du son environnemental s'active proportionnellement au niveau de zoom.
+            * R-62 Bascule Flux Radio FIP : En cas d'interruption du flux FIP, la bascule vers le son de secours se fait en < 500 ms.
+            * R-63 Normalisation Audio LUFS : Tous les effets sonores UI et musiques doivent être normalisés à -14 LUFS.
+            * R-64 Priorité des Alertes Sonores : Les alertes de crise P0 interrompent la musique d'ambiance avec un ducking de -6 dB.
+            * R-65 Atténuation Audio en Arrière-plan : Le son de l'application se coupe automatiquement si l'onglet perd le focus.
+10.6 R-66..R-69 Déterminisme & Oracle Gemini
+            * R-66 Déterminisme Absolu PCG32 : Deux parties lancées avec la même worldSeed et exécutant les mêmes intents doivent produire un StateHash identique.
+            * R-67 Validation du StateHash SHA-256 : Un hash d'état est généré à chaque fin de cycle et comparé pour détecter les désynchronisations.
+            * R-68 Governor Gemini Free Tier : Borne strictement l'usage des API LLM à des seuils compatibles avec l'offre gratuite.
+            * R-69 Monopole de l'Oracle Gemini : Gemini propose des événements via JSON structuré, mais n'a aucun pouvoir d'exécution directe dans le moteur.
+11. ROADMAP DE PRODUCTION GLOBALE DU JEU (VAGUE 0 → VAGUE 5)
+Vague & Version
+	Objectif Majeur & Livrables Moteurs
+	Agents & Options Liées
+	Release Gate (Critère Bloquant)
+	Vague 0  v0.1.0
+	Socle Technique & Noyau Pur : Architecture TS 5.7 strict, PCG32, hashing SHA-256, pipeline CI/CD et contrat Zod.
+	Gemini-ArgonGemini-Hydrogène
+[x] OPT-01, OPT-03, OPT-06
+	compilation zero erreur tsc, tests unitaires PCG32 100 % déterministes.
+	Vague 1  v0.3.0
+	Vertical Slice App Shell & Rendu : EXO-SHELL 8 écrans, 3D Three.js r170+, HUD Bento Biseauté, Auth Firebase & SQL.
+	Gemini-SiliciumGemini-NéonGemini-Titane
+[x] OPT-02, OPT-09, OPT-SHELL-01
+	Navigation complète inter-écrans, FPS ≥ 30 sur mobile, Auth JWT fonctionnelle.
+	Vague 2  v0.5.0
+	Systèmes Économiques & Physiques : Villes Anno, 4 paliers atmosphériques P1→P4, maintenance C3, 9 biomes.
+	Gemini-KryptonGemini-Xénon
+[x] OPT-04, OPT-05
+	Boucle de simulation 15 ticks stable sur 100 cycles, transition P1→P2 validée.
+	Vague 3  v0.7.0
+	Super-Alliance, Slots & Cyber : Slots planétaires 1→6, 5 IA rivales Humankind, Drones 4 classes, Cyberguerre.
+	Gemini-HydrogèneGemini-Krypton
+[x] OPT-07, OPT-10
+	Exécution simultanée des 5 IA sans chute de frame, sync Firestore multi-slots.
+	Vague 4  v0.8.5
+	Intelligence Gemini & DAG : Intégration Gemini High Thinking, engine DAG New Vegas, RAG pgvector et ΔP_adapt.
+	Gemini-MercureGemini-Titane
+[x] OPT-08, OPT-12
+	Temps de réponse Gemini High Thinking < 6s, rappel vectoriel pgvector < 100ms.
+	Vague 5  v1.0.0
+	Release Native & Dual-Adapter : Adaptateur Unity 6 URP, accélérateur C++17 WASM, finalisation Mobile-First.
+	Gemini-BoreGemini-NéonBaptiste Lecoustre
+[x] OPT-11
+	Zéro régression mémoire (< 250 Mo WebKit), approbation finale Baptiste Lecoustre.
+	12. SOUS-ROADMAP DES FEATURES EN COURS DE MISE À JOUR (FUP-PATTERN v1.0)
+12.1 Cycle de Vie Normé en 7 Portes (P1_BACKLOG → P7_MERGED)
+
+
+[P1_BACKLOG] ──► [P2_SPEC_LOCK] ──► [P3_CORE_DEV] ──► [P4_UI_3D_BIND]
+│                  │                  │                  │
+│ (Zod & Rules)    │ (Pure TS/C++)    │ (Bento/SVG/3D)   │ (Triggers Gemini)
+▼                  ▼                  ▼                  ▼
+[P7_MERGED]  ◄── [P6_QA_GATE]   ◄── [P5_AI_RAG_HOOK] ◄──────┘
+(Approbation)     (CI & Benchmarks)
+12.2 Gabarit Réutilisable FUP-PATTERN v1.0
+fup_id: "FUP-XXX"
+target_feature: "FEAT-XX"
+version_delta: "vX.Y.Z-delta"
+status: "P1_BACKLOG | P2_SPEC_LOCK | P3_CORE_DEV | P4_UI_3D_BIND | P5_AI_RAG_HOOK | P6_QA_GATE | P7_MERGED"
+owner_agent: "Gemini-AgentName"
+impacted_rules: ["R-XX", "R-YY"]
+linked_options: ["OPT-XX"]
+src_folders: ["src/contracts/", "src/core/"]
+sadt_nodes: ["A.X.Y"]
+breaking_change: true | false
+exit_test: "Description du test automatique ou du critère de validation de la porte P6"
+12.3 File Active des Features en Cours de Mise à Jour (FUP-001 à FUP-012)
+ID FUP
+	Feature Cible
+	Statut Actuel
+	Owner Agent
+	SADT & Règles Liées
+	Critère de Passage Porte P6_QA_GATE
+	FUP-001
+	FEAT-03 Bus Tri-Voies
+	P2_SPEC_LOCK
+	Gemini-Argon
+	A1.1, R-53, AR-03
+	Schema Zod du TRIGGER_BUS validé sans perte de message.
+	FUP-002
+	FEAT-10 Économie PA/Sous-PA
+	P2_SPEC_LOCK
+	Gemini-Krypton
+	A2.1, R-26, AR-07
+	Formule de régénération vérifiée sur 1000 tirages aleatoires.
+	FUP-003
+	FEAT-14 RAG SQL pgvector
+	P2_SPEC_LOCK
+	Gemini-Titane
+	A5.2, R-11, AR-01
+	Requêtes cosinus 768d s'exécutant sous le seuil des 80 ms.
+	FUP-004
+	FEAT-26 Atmosphère P1→P4
+	P2_SPEC_LOCK
+	Gemini-Krypton
+	A3.2, R-39, AR-11
+	Application correcte des malus de vitesse PNJ en palier P1.
+	FUP-005
+	FEAT-15 Calculateur ΔP_adapt
+	P2_SPEC_LOCK
+	Gemini-Xénon
+	A1.2, R-69, AR-09
+	Clamping strict de la valeur dans l'intervalle [-0.20, +0.25].
+	FUP-006
+	FEAT-01 App Shell EXO-SHELL
+	P2_SPEC_LOCK
+	Gemini-Silicium
+	A5.3, R-10, AR-03
+	Transition inter-écrans garantie < 150 ms sans fuite WebGL.
+	FUP-007
+	FEAT-34 Slots Planétaires 1→6
+	P2_SPEC_LOCK
+	Gemini-Hydrogène
+	A4.2, R-15, AR-05
+	Chargement d'un slot secondaire en moins de 650 ms.
+	FUP-008
+	FEAT-36 Cyberguerre & Compute
+	P2_SPEC_LOCK
+	Gemini-Argon
+	A3.5, R-43..45, AR-10
+	FUP-009
+FEAT-01 App Shell EXO-SHELL (Solo)Statut : P2_SPEC_LOCK | Owner : Gemini-Silicium | SADT : A5.3 | Rules : R-10, OPT-SHELL-01..03
+Critère P6 : Implémentation des 8 Écrans & Sous-Écrans Overlay < 150 ms en mode Solo Exclusif.
+FUP-010 — FEAT-41 Structuration src/
+Statut : P2_SPEC_LOCK | Owner : Gemini-Argon | SADT : A0 | Rules : R-13, R-19
+Critère P6 : Amorçage des 14 dossiers Niveau 0 de src/ et validation ESLint des couches L0..L8.
+FUP-011 — FEAT-38 Moteur de Combats Déterministe 4 Phases & Unités Militaires Multi-Niveaux (L1–L5)
+Statut : P2_SPEC_LOCK | Owner : Gemini-Hydrogène | SADT : A3.6 | Rules : R-47, OPT-07 A+
+Critère P6 : Validation du Moteur de Combats Déterministe 4 phases et des contrats Zod Unités L1–L5.
+FUP-012 — FEAT-41 / CYC-01..10 Ordonnanceur Multi-Cycles N0→N5 & Matrice S-0→S-4
+Statut : P2_SPEC_LOCK | Owner : Gemini-Argon | SADT : A0 / 5.5 | Rules : R-51, R-52
+Critère P6 : Test Vitest de frontière simultanée tick 360 avec StateHash identique et amortisseur P0 vérifié.
+---
+PARTITION VI — ANNEXES OPÉRATIONNELLES (NOUVELLE PARTITION AI STUDIO & DÉLÉGATION)
+A. ANNEXE A — SYSTEM INSTRUCTION MAÎTRE POUR GOOGLE AI STUDIO BUILD (NOUVELLE PARTITION VIERGE)
+A.1 Identité & Rôle d'Exécution
+Vous êtes l'Agent Lead Full-Stack de développement pour EXO WORLD : 2050 (DOC-EXW-ARCH-001 v2.7.0-PARTITIONED). Votre authority unique est Baptiste Lecoustre (Game Director & Lead Architect, R-25). Vous devez exécuter strictement le présent Master Blueprint sans jamais en dévier.
+A.2 Isolation Stricte de Partition (Zéro Contamination Astralis)
+Cette partition de code sur Google AI Studio Build est strictement vierge et indépendante d'Astralis. Il est formellement interdit d'importer ou de faire référence à de vieux modules Astralis, Supabase, Google Chat ou à du multijoueur synchrone v1.0. Tous les identifiants et composants portent le préfixe EXO_ ou DOC-EXW-.
+A.3 Stack Verrouillée & Frontières de Couches (L0→L8)
+Next.js 15, React 19, TypeScript 5.7 strict (noUncheckedIndexedAccess, zéro any), Tailwind CSS v4, Zustand/Jotai, Three.js r170+ via RenderAdapterInterface, Firebase Auth, Cloud SQL PostgreSQL 16 pgvector, Google Gemini API Dual-Pass (Add Gemini Intelligence + Add High Thinking). Respectez scrupuleusement la matrice des dépendances L0 à L8 (R-02, R-13).
+A.4 Invariants Bloquants de Code (R-01 à R-69)
+1. Contrats Zod d'abord dans src/contracts/ (R-01). 2. Logic pure sans I/O dans src/core/ et src/systems/ avec PCG32 déterministe (R-13, R-66). 3. Fichiers <= 300 lignes, fonctions <= 200 lignes (R-14). 4. Result Pattern [Error, Data] (R-20). 5. WebKit Memory Shield < 250 Mo (R-14). 6. Bannissement strict du mot « anomalie » (R-50).
+A.5 Protocole de Réponse & Livraison Incrémentale
+Avant chaque écriture de code, annoncez le FUP-XXX, la couche L0..L8, le nœud SADT et la sous-matrice SM-XX concernés. Livrez un code complet, compilable sans avertissements TypeScript (tsc --strict vert).
+B. ANNEXE B — PROTOCOLE D'ISOLATION & CRÉATION DE LA NOUVELLE PARTITION (VS ASTRALIS)
+Checklist Opérationnelle de Démarrage en 6 Étapes :
+1. Créer un nouveau Workspace Google AI Studio Build nommé "exo-world-2050".
+2. Configurer un projet Firebase Auth & Firestore dédié ("exo-world-2050-prod").
+3. Instancier une base Cloud SQL PostgreSQL 16 dédiée et exécuter "CREATE EXTENSION vector;".
+4. Injecter les variables d'environnement (GEMINI_API_KEY, SQL_URL, FIREBASE_ADMIN_KEY).
+5. Initialiser l'arborescence monorepo vierge avec les 14 dossiers src/ (FUP-010).
+6. Importer la documentation maître dans le dossier Drive "EXO_WORLD_2050 — Partition Souveraine".
+C. ANNEXE C — PROTOCOLE DE DÉLÉGATION & SUPERVISION MULTI-IA (GEMINI LEAD → GOOGLE AI STUDIO / CLAUDE)
+Standard de paquet de délégation (TASK-DELEGATION-PACKET) :
+• Target_FUP : Identifiant du FUP délégué (ex. FUP-011)
+• Assigned_Agent : Agent d'exécution (AI Studio Build ou Claude 3.5 Sonnet)
+• Target_Layer : Couche src/ (ex. L0 contracts/ & L3 systems/combat-conquest/)
+• Validation_Gate : Grille de réception en 5 points (Zod strict, plafonds 300/200, pureté PCG32, alignement SM-XX, tsc --strict vert).
+D. ANNEXE D — PROMPT D'AMORÇAGE VAGUE 0 (BOOTSTRAPPING SRC/ VIERGE DANS GOOGLE AI STUDIO)
+Act en tant que Lead Architect Full-Stack pour EXO WORLD : 2050 (DOC-EXW-ARCH-001 v2.7.0-PARTITIONED).
+Initialise immédiatement le socle de la Vague 0 sur cette nouvelle partition vierge :
+1. Crée la structure des 14 dossiers src/ (FUP-010) dans apps/exo-world/src/.
+2. Génère src/contracts/world-state.schema.ts et trigger-bus.schema.ts avec Zod strict (FUP-001).
+3. Implémente le moteur PRNG déterministe src/core/prng/pcg32.ts sans aucune dépendance I/O.
+4. Valide le tout avec tsc --strict et confirme l'alignement sur la Sous-Matrice SM-05.
+

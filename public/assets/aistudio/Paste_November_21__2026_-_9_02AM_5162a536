@@ -1,0 +1,828 @@
+Voici les 4 livrables V0-BOOT prêts à l'emploi, strictement conformes au plan FMT-U (EXOW-ROOT@4.0.0-rc.1), à R14 (≤ 200L par module moteur, CC ≤ 12), à DIR-03 (moteur isomorphe pur exploitable autant par l'Atlas UI L7 que par le CLI) et à DIR-04 (zéro fuite Z0).
+> Note d'audit rapide sur votre bloc FMT-U collé : deux lignes de [MATRICE : M2] ont été tronquées à cause d'un caractère pipe | non échappé dans une valeur absolue (+1 PA si \`` et Crise si `). Remplacez-les par +1 PA si abs(axe) ≥ 35etCrise si abs(axe) ≥ 70dansMASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md` pour préserver l'intégrité des colonnes.
+> 
+1. Entrée package.json (Scripts V0-BOOT)
+{
+  "scripts": {
+    "exo:audit": "tsx scripts/exo-audit.ts",
+    "exo:sync-bp": "tsx scripts/export-trifmt.ts"
+  }
+}
+
+2. src/services/architecture/matrix-engine.ts
+Moteur pur et isomorphe des 16 matrices (M0–M15) : validation ICOM (verticale/horizontale), détection de cycles DSM (0 ↺), contrôle SemVer-2.0.0, détection de DRIFT ! et calcul du Release Gate GO / NO-GO.
+export type MatrixId =
+  | 'M0' | 'M1' | 'M2' | 'M3' | 'M4' | 'M5' | 'M6' | 'M7'
+  | 'M8' | 'M9' | 'M10' | 'M11' | 'M12' | 'M13' | 'M14' | 'M15';
+
+export type MatrixRef = MatrixId | 'M13-A' | 'M13-D' | 'M15-A' | 'M15-B';
+export type Sadtdim = 'D0' | 'D1' | 'D2' | 'D3' | 'D4' | 'D5';
+export type SemVerPropagation = 'ISOLÉ' | 'BULLE ↑' | 'CASCADE ⚠';
+export type NodeStatus = 'DRAFT' | 'REVIEW' | 'LOCKED' | 'ACTIVE' | 'DEPRECATED';
+export type TriLock = readonly [0 | 1, 0 | 1, 0 | 1];
+
+export interface IcomFlow {
+  inputs: string[];
+  controls: string[];
+  outputs: string[];
+  mechanisms: string[];
+  tunnels: string[];
+}
+
+export interface FractalNodeMeta {
+  id: string;
+  dim: Sadtdim;
+  depth: number;
+  parent_id: string | null;
+  root_ref: string;
+  semver: string;
+  root_compat: string;
+  tri_lock: TriLock;
+  propagation: SemVerPropagation;
+  lts_frozen: boolean;
+  neon_branch: string;
+  updated_at: string;
+  status: NodeStatus;
+  trl: number;
+  standards: string[];
+  matrices_used: MatrixRef[];
+  box_refs: string[];
+  coupling_links: string[];
+}
+
+export interface M0Manifest {
+  root_ref: string;
+  directive_ref: string;
+  iso_whitelist: string[];
+  nodes: FractalNodeMeta[];
+}
+
+export interface Sadtd2Box {
+  id: string;
+  label: string;
+  icom: IcomFlow;
+  src_layers: string[];
+  owner: string;
+  data_box: string;
+}
+
+export interface Sadtd1Box {
+  id: string;
+  label: string;
+  icom: IcomFlow;
+  data_box: string;
+  dsm_depends_on: string[];
+  sub_boxes: Sadtd2Box[];
+}
+
+export interface DatagramBox {
+  id: string;
+  label: string;
+  creator: string;
+  validator: string;
+  consumers: string[];
+  storage: string;
+  source_of_truth: string;
+}
+
+export interface M13Manifest {
+  semver: string;
+  d1_boxes: Sadtd1Box[];
+  datagrams: DatagramBox[];
+  src_manifest: Record<string, string[]>;
+}
+
+export interface MatrixEngineReport {
+  gate: 'GO' | 'NO-GO';
+  matricesCovered: number;
+  missingMatrices: MatrixId[];
+  driftNodes: string[];
+  dsmCycles: string[][];
+  icomViolations: string[];
+  isoViolations: string[];
+  d2BoxCount: number;
+  errors: string[];
+}
+
+const ALL_MATRICES: readonly MatrixId[] = [
+  'M0', 'M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7',
+  'M8', 'M9', 'M10', 'M11', 'M12', 'M13', 'M14', 'M15',
+];
+
+const SEMVER_RE = /^\d+\.\d+\.\d+(?:-(?:alpha|beta|rc|lts)\.\d+)?(?:\+[a-z0-9.-]+)?$/i;
+
+function normalizeMatrixId(ref: MatrixRef): MatrixId {
+  if (ref === 'M13-A' || ref === 'M13-D') return 'M13';
+  if (ref === 'M15-A' || ref === 'M15-B') return 'M15';
+  return ref;
+}
+
+function majorOf(version: string): number {
+  return Number.parseInt(version.replace(/^[\^~v=]/, '').split('.')[0] ?? '0', 10);
+}
+
+export function evaluateSemVerAndDrift(m0: M0Manifest): {
+  driftNodes: string[];
+  isoViolations: string[];
+  errors: string[];
+} {
+  const driftNodes: string[] = [];
+  const isoViolations: string[] = [];
+  const errors: string[] = [];
+  const rootMajor = majorOf(m0.root_ref.split('@')[1] ?? '0.0.0');
+  const allowedIso = new Set(m0.iso_whitelist);
+  const ids = new Set(m0.nodes.map((n) => n.id));
+
+  for (const node of m0.nodes) {
+    if (!SEMVER_RE.test(node.semver)) errors.push(`EXOW-E019: SemVer invalide sur ${node.id} (${node.semver})`);
+    if (node.parent_id && !ids.has(node.parent_id)) errors.push(`EXOW-E019: Parent absent ${node.parent_id} pour ${node.id}`);
+    if (majorOf(node.root_compat) !== rootMajor) driftNodes.push(`${node.id} (compat ${node.root_compat} ≠ v${rootMajor})`);
+    if (node.lts_frozen && node.propagation !== 'ISOLÉ') driftNodes.push(`${node.id} (lts_frozen violé: ${node.propagation})`);
+    for (const std of node.standards) {
+      if (!allowedIso.has(std)) isoViolations.push(`${node.id}: norme hors registre (${std})`);
+    }
+  }
+  return { driftNodes, isoViolations, errors };
+}
+
+export function checkDsmCycles(boxes: Sadtd1Box[]): string[][] {
+  const graph = new Map(boxes.map((b) => [b.id, b.dsm_depends_on]));
+  const visited = new Set<string>();
+  const stack = new Set<string>();
+  const cycles: string[][] = [];
+
+  const dfs = (id: string, path: string[]): void => {
+    visited.add(id);
+    stack.add(id);
+    for (const dep of graph.get(id) ?? []) {
+      if (stack.has(dep)) cycles.push([...path.slice(path.indexOf(dep)), dep]);
+      else if (!visited.has(dep)) dfs(dep, [...path, dep]);
+    }
+    stack.delete(id);
+  };
+
+  for (const box of boxes) {
+    if (!visited.has(box.id)) dfs(box.id, [box.id]);
+  }
+  return cycles;
+}
+
+export function checkIcomConservation(m13: M13Manifest): { violations: string[]; d2Count: number } {
+  const violations: string[] = [];
+  const datagramIds = new Set(m13.datagrams.map((d) => d.id));
+  let d2Count = 0;
+
+  for (const d1 of m13.d1_boxes) {
+    if (!datagramIds.has(d1.data_box)) violations.push(`${d1.id}: datagramme ${d1.data_box} manquant (M13-D)`);
+    if (d1.sub_boxes.length < 3 || d1.sub_boxes.length > 6) {
+      violations.push(`${d1.id}: quota SADT 3..6 violé (${d1.sub_boxes.length} sous-boîtes)`);
+    }
+    for (const d2 of d1.sub_boxes) {
+      d2Count += 1;
+      if (d2.icom.inputs.length === 0 || d2.icom.outputs.length === 0) {
+        violations.push(`${d2.id}: ICOM incomplet (I ou O vide)`);
+      }
+      if (!datagramIds.has(d2.data_box)) violations.push(`${d2.id}: cible M13-D inconnue (${d2.data_box})`);
+    }
+  }
+  return { violations, d2Count };
+}
+
+export function runMatrixEngineAudit(m0: M0Manifest, m13: M13Manifest): MatrixEngineReport {
+  const covered = new Set<MatrixId>();
+  for (const node of m0.nodes) {
+    for (const ref of node.matrices_used) covered.add(normalizeMatrixId(ref));
+  }
+  const missingMatrices = ALL_MATRICES.filter((id) => !covered.has(id));
+  const semverRes = evaluateSemVerAndDrift(m0);
+  const dsmCycles = checkDsmCycles(m13.d1_boxes);
+  const icomRes = checkIcomConservation(m13);
+
+  const errors = [
+    ...semverRes.errors,
+    ...semverRes.isoViolations,
+    ...icomRes.violations,
+    ...missingMatrices.map((m) => `Matrice manquante dans M0: ${m}`),
+    ...dsmCycles.map((c) => `Cycle DSM détecté (↺): ${c.join(' → ')}`),
+  ];
+  const gate = errors.length === 0 && semverRes.driftNodes.length === 0 ? 'GO' : 'NO-GO';
+
+  return {
+    gate,
+    matricesCovered: covered.size,
+    missingMatrices,
+    driftNodes: semverRes.driftNodes,
+    dsmCycles,
+    icomViolations: icomRes.violations,
+    isoViolations: semverRes.isoViolations,
+    d2BoxCount: icomRes.d2Count,
+    errors,
+  };
+}
+
+3. src/master-blueprint/M0_MetaSemVer.json
+{
+  "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+  "directive_ref": "EXOW-SYS-DIRECTIVE@3.2.0-lts.0+sadt-dims-yaml",
+  "iso_whitelist": [
+    "SemVer-2.0.0",
+    "ISO-8601",
+    "ISO-16290",
+    "ISO/IEC/IEEE-29148",
+    "ISO/IEC-25010",
+    "ISO/IEC/IEEE-42010",
+    "ISO/IEC/IEEE-31320-1",
+    "ISO/IEC-25012",
+    "ISO/IEC-27001",
+    "IEC-60848",
+    "ADEPA-GEMMA",
+    "IEC-60812",
+    "ISO-31000"
+  ],
+  "nodes": [
+    {
+      "id": "EXOW-ROOT",
+      "dim": "D0",
+      "depth": 0,
+      "parent_id": null,
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+full-m0-m15",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "CASCADE ⚠",
+      "lts_frozen": false,
+      "neon_branch": "feat/v4-spiral",
+      "updated_at": "2026-11-21",
+      "status": "REVIEW",
+      "trl": 6,
+      "standards": ["SemVer-2.0.0", "ISO-8601", "ISO-16290", "ISO/IEC/IEEE-42010", "ISO/IEC/IEEE-31320-1"],
+      "matrices_used": ["M0", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12", "M13-A", "M13-D", "M14", "M15-A", "M15-B"],
+      "box_refs": ["↘ ZOOM:EXOW.M1..M5"],
+      "coupling_links": ["EXOW.M0:GO"]
+    },
+    {
+      "id": "EXOW.TEAM",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+gteam",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "CASCADE ⚠",
+      "lts_frozen": false,
+      "neon_branch": "feat/v4",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 7,
+      "standards": ["ISO/IEC/IEEE-42010", "ISO/IEC/IEEE-29148", "ISO/IEC-27001", "ISO-31000"],
+      "matrices_used": ["M0", "M9", "M13-A", "M15-A"],
+      "box_refs": ["⇄ PLAN:EXOW.DIR", "⇄ PLAN:EXOW.M0..M5"],
+      "coupling_links": ["EXOW-ROOT", "EXOW.M5.A1"]
+    },
+    {
+      "id": "EXOW.DIR",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+directives",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "CASCADE ⚠",
+      "lts_frozen": false,
+      "neon_branch": "main",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 7,
+      "standards": ["SemVer-2.0.0", "ISO/IEC/IEEE-42010", "ISO/IEC/IEEE-29148", "ISO/IEC-25010", "ISO/IEC-27001", "IEC-60848", "IEC-60812"],
+      "matrices_used": ["M0", "M6", "M12", "M13-A", "M14"],
+      "box_refs": ["⇄ PLAN:EXOW.TEAM", "⇄ PLAN:EXOW.M0..M5"],
+      "coupling_links": ["EXOW-ROOT", "EXOW.M5.A1"]
+    },
+    {
+      "id": "EXOW.M0",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+gov",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 0, 0],
+      "propagation": "ISOLÉ",
+      "lts_frozen": false,
+      "neon_branch": "main",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 7,
+      "standards": ["SemVer-2.0.0", "ISO-8601", "ISO-16290", "ISO/IEC/IEEE-29148", "ISO/IEC-25010"],
+      "matrices_used": ["M0", "M6", "M11"],
+      "box_refs": ["⇄ PLAN:M13-A", "⇄ PLAN:M13-D", "⇄ PLAN:M8"],
+      "coupling_links": ["EXOW-ROOT", "EXOW.M1..M5"]
+    },
+    {
+      "id": "EXOW.D1",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+dual.math",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "BULLE ↑",
+      "lts_frozen": false,
+      "neon_branch": "feat/v4",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 6,
+      "standards": ["ISO/IEC/IEEE-31320-1", "ISO/IEC-25010", "ISO/IEC-25012"],
+      "matrices_used": ["M13-A", "M13-D", "M8", "M1"],
+      "box_refs": ["↘ ZOOM:EXOW.M1..M5", "⇄ PLAN:M10", "⇄ PLAN:M15"],
+      "coupling_links": ["EXOW.M0"]
+    },
+    {
+      "id": "EXOW.M1",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+sim",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "CASCADE ⚠",
+      "lts_frozen": false,
+      "neon_branch": "feat/m1",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 6,
+      "standards": ["ISO/IEC/IEEE-31320-1", "IEC-60848"],
+      "matrices_used": ["M1", "M2", "M5", "M7", "M8", "M13-A"],
+      "box_refs": ["↘ ZOOM:EXOW.M1.A1..A3"],
+      "coupling_links": ["EXOW.M0", "EXOW.M2", "EXOW.M4"]
+    },
+    {
+      "id": "EXOW.M2",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+narr4t",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "CASCADE ⚠",
+      "lts_frozen": false,
+      "neon_branch": "feat/m2",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 6,
+      "standards": ["ISO/IEC-27001", "ISO/IEC-25012", "IEC-60848"],
+      "matrices_used": ["M9", "M13-A", "M15-A", "M15-B"],
+      "box_refs": ["↘ ZOOM:EXOW.M2.A1..A3", "↗ CALL:EXOW.M4"],
+      "coupling_links": ["EXOW.M1", "EXOW.M3", "EXOW.M4"]
+    },
+    {
+      "id": "EXOW.M3",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+vis",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "BULLE ↑",
+      "lts_frozen": false,
+      "neon_branch": "main",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 6,
+      "standards": ["ISO/IEC-25010"],
+      "matrices_used": ["M9", "M13-A"],
+      "box_refs": ["↘ ZOOM:EXOW.M3.A1..A3"],
+      "coupling_links": ["EXOW.M1", "EXOW.M2"]
+    },
+    {
+      "id": "EXOW.M4",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+data",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 1, 0],
+      "propagation": "BULLE ↑",
+      "lts_frozen": false,
+      "neon_branch": "feat/m4",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 6,
+      "standards": ["ISO/IEC-25012", "ISO/IEC-27001"],
+      "matrices_used": ["M3", "M9", "M10", "M13-D"],
+      "box_refs": ["↘ ZOOM:EXOW.M4.A1..A3"],
+      "coupling_links": ["EXOW.M1", "EXOW.M2", "EXOW.M5"]
+    },
+    {
+      "id": "EXOW.M5",
+      "dim": "D1",
+      "depth": 1,
+      "parent_id": "EXOW-ROOT",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+ops",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 0, 0],
+      "propagation": "BULLE ↑",
+      "lts_frozen": false,
+      "neon_branch": "main",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 7,
+      "standards": ["IEC-60812", "ADEPA-GEMMA", "ISO-31000"],
+      "matrices_used": ["M4", "M12", "M14"],
+      "box_refs": ["↘ ZOOM:EXOW.M5.A1..A3"],
+      "coupling_links": ["EXOW.M0", "EXOW.M1..M4"]
+    },
+    {
+      "id": "EXOW.M5.A1",
+      "dim": "D2",
+      "depth": 2,
+      "parent_id": "EXOW.M5",
+      "root_ref": "EXOW-ROOT@4.0.0-rc.1",
+      "semver": "4.0.0-rc.1+exec",
+      "root_compat": "^4.0.0",
+      "tri_lock": [1, 0, 0],
+      "propagation": "ISOLÉ",
+      "lts_frozen": false,
+      "neon_branch": "main",
+      "updated_at": "2026-11-21",
+      "status": "LOCKED",
+      "trl": 7,
+      "standards": ["SemVer-2.0.0", "ISO/IEC/IEEE-42010", "ISO-31000"],
+      "matrices_used": ["M0", "M8"],
+      "box_refs": ["⇄ PLAN:M0"],
+      "coupling_links": ["EXOW.M1..M5"]
+    }
+  ]
+}
+
+4. src/master-blueprint/M13_SADT_Mapping.json
+{
+  "semver": "4.0.0-rc.1",
+  "d1_boxes": [
+    {
+      "id": "EXOW.M1",
+      "label": "Simuler le Monde 2050",
+      "data_box": "D1",
+      "dsm_depends_on": [],
+      "icom": {
+        "inputs": ["Cfg", "Choice"],
+        "controls": ["Z0", "R24", "HK", "FP"],
+        "outputs": ["WS", "Ledger", "Summary"],
+        "mechanisms": ["PureTS_PCG32_SHA", "CSharp_Core_V5"],
+        "tunnels": ["(I)Turn"]
+      },
+      "sub_boxes": [
+        {
+          "id": "EXOW.M1.A1",
+          "label": "Tour, TurnGate & PA (Phi01..12)",
+          "data_box": "D1",
+          "owner": "G1-SIM",
+          "src_layers": ["L2", "L3"],
+          "icom": { "inputs": ["Choice", "WS"], "controls": ["M7", "Z0", "R24"], "outputs": ["WS_next", "Summary"], "mechanisms": ["PCG32", "SHA-256"], "tunnels": ["(I)Turn"] }
+        },
+        {
+          "id": "EXOW.M1.A2",
+          "label": "HK Stars, Doctrines & Terra P1..P4",
+          "data_box": "D1",
+          "owner": "G1-SIM",
+          "src_layers": ["L1", "L2", "L3"],
+          "icom": { "inputs": ["WS", "TechDelta"], "controls": ["HK_7Stars", "Hysteresis_3"], "outputs": ["EraState", "TerraPhase"], "mechanisms": ["PureTS_Math"], "tunnels": [] }
+        },
+        {
+          "id": "EXOW.M1.A3",
+          "label": "EntityLedger, FP RPG & Wear",
+          "data_box": "D1",
+          "owner": "G1-SIM",
+          "src_layers": ["L2", "L3"],
+          "icom": { "inputs": ["Entities", "Workforce"], "controls": ["ShortageOrder", "WearRule"], "outputs": ["Ledger", "WearAlerts"], "mechanisms": ["PureTS_Ledger"], "tunnels": [] }
+        }
+      ]
+    },
+    {
+      "id": "EXOW.M2",
+      "label": "Dossiers Narratifs, 4T & Genèse 2050",
+      "data_box": "D2",
+      "dsm_depends_on": ["EXOW.M1", "EXOW.M4"],
+      "icom": {
+        "inputs": ["WS", "CV", "Cal", "AI-P"],
+        "controls": ["NoRep3t", "Ch<=1", "4T", "0-PA"],
+        "outputs": ["Doss+Sub", "NewEnt", "Q"],
+        "mechanisms": ["BFF_Gemini_4T"],
+        "tunnels": ["(C)Argon"]
+      },
+      "sub_boxes": [
+        {
+          "id": "EXOW.M2.A1",
+          "label": "BFF Gemini 4T Live & Cascade Quota",
+          "data_box": "D2",
+          "owner": "G2-NARR",
+          "src_layers": ["L5", "L8"],
+          "icom": { "inputs": ["WorldPrompt", "RAG_Ctx"], "controls": ["ZodStrict", "Timeout3500ms"], "outputs": ["LiveDossiers"], "mechanisms": ["Gemini_4T_Router"], "tunnels": ["(C)ServerEnv"] }
+        },
+        {
+          "id": "EXOW.M2.A2",
+          "label": "Cycles X-Tours, Cal5 & LivingCatalog",
+          "data_box": "D3",
+          "owner": "G2-NARR",
+          "src_layers": ["L1", "L3", "L5"],
+          "icom": { "inputs": ["WS", "CV"], "controls": ["Mix60_40", "NoRep3t"], "outputs": ["WaveDossiers", "UpdatedCV"], "mechanisms": ["CycleScheduler"], "tunnels": [] }
+        },
+        {
+          "id": "EXOW.M2.A3",
+          "label": "Genèse 2050, Resolve & Promesses",
+          "data_box": "D2",
+          "owner": "G2-NARR",
+          "src_layers": ["L3", "L5"],
+          "icom": { "inputs": ["PlayerChoice", "Promises"], "controls": ["Max3Quests", "0-PA"], "outputs": ["ResolvedDelta", "HudUnlocks"], "mechanisms": ["GRAFCET_Quest"], "tunnels": [] }
+        }
+      ]
+    },
+    {
+      "id": "EXOW.M3",
+      "label": "Rendu 3D Isolé, HUD Tactile & Audio FIP",
+      "data_box": "D4",
+      "dsm_depends_on": ["EXOW.M1", "EXOW.M2"],
+      "icom": {
+        "inputs": ["SceneDiff", "WS", "Summary"],
+        "controls": ["Monde=0-3D", "A11Y>=44px", "FIP"],
+        "outputs": ["UserEvt", "B3D", "H3D"],
+        "mechanisms": ["React_Three_Unity6"],
+        "tunnels": []
+      },
+      "sub_boxes": [
+        {
+          "id": "EXOW.M3.A1",
+          "label": "HUD Solar Glass, Monde 0-3D & Map 3-Modes",
+          "data_box": "D4",
+          "owner": "G3-VIS",
+          "src_layers": ["L4", "L7"],
+          "icom": { "inputs": ["WS", "Summary"], "controls": ["WCAG_AA", "R24"], "outputs": ["UiIntent"], "mechanisms": ["React_v0_Tailwind"], "tunnels": [] }
+        },
+        {
+          "id": "EXOW.M3.A2",
+          "label": "Scènes 3D Isolées B3D/H3D & Unity6 Bridge",
+          "data_box": "D4",
+          "owner": "G3-VIS",
+          "src_layers": ["L4", "L6"],
+          "icom": { "inputs": ["SceneDiff"], "controls": ["DPR<=1.5", "Draw<=120", "Dispose<5s"], "outputs": ["WebGL_Frame"], "mechanisms": ["ThreeJS", "Unity6_URP_V5"], "tunnels": [] }
+        },
+        {
+          "id": "EXOW.M3.A3",
+          "label": "Audio FIP 6 Flux & WebAudio SFX",
+          "data_box": "D4",
+          "owner": "G3-VIS",
+          "src_layers": ["L4", "L7"],
+          "icom": { "inputs": ["UserGesture", "UiEvents"], "controls": ["Fallback500ms"], "outputs": ["AudioStream"], "mechanisms": ["HTMLAudio_WebAudio"], "tunnels": [] }
+        }
+      ]
+    },
+    {
+      "id": "EXOW.M4",
+      "label": "SSOT Contrats, Persistance & Neon Cloud",
+      "data_box": "D3",
+      "dsm_depends_on": ["EXOW.M1"],
+      "icom": {
+        "inputs": ["WS", "CV", "PM", "BP"],
+        "controls": ["ZodStrict", "MIG_v3_v4"],
+        "outputs": ["LocalSave", "CloudSync", "PgVector"],
+        "mechanisms": ["IndexedDB", "Firebase_V3", "Neon_V4"],
+        "tunnels": ["(C)Argon"]
+      },
+      "sub_boxes": [
+        {
+          "id": "EXOW.M4.A1",
+          "label": "Contrats Zod SSOT, Local-First & MIG v3→v4",
+          "data_box": "D1",
+          "owner": "G4-DATA",
+          "src_layers": ["L0", "L5"],
+          "icom": { "inputs": ["WS", "LegacySave"], "controls": ["ZodD1_D5", "Backup_t1"], "outputs": ["ValidatedSave"], "mechanisms": ["Dexie_LocalStorage"], "tunnels": [] }
+        },
+        {
+          "id": "EXOW.M4.A2",
+          "label": "Firebase V3, Google Drive & Argon2id",
+          "data_box": "D3",
+          "owner": "G4-DATA",
+          "src_layers": ["L5"],
+          "icom": { "inputs": ["ValidatedSave", "CV"], "controls": ["OAuthConfirm", "Argon2id"], "outputs": ["DriveFiles", "FirestoreDoc"], "mechanisms": ["Firebase_DriveAPI"], "tunnels": ["(C)ISO27001"] }
+        },
+        {
+          "id": "EXOW.M4.A3",
+          "label": "Neon Serverless JSONB, pgvector HNSW & PITR",
+          "data_box": "D3",
+          "owner": "G4-DATA",
+          "src_layers": ["L5"],
+          "icom": { "inputs": ["DeltaWS", "PromiseEmb"], "controls": ["TriLock_SQL1", "HNSW_085"], "outputs": ["NeonBranch", "RAG_Matches"], "mechanisms": ["Neon_Postgres"], "tunnels": ["(C)PITR_7d"] }
+        }
+      ]
+    },
+    {
+      "id": "EXOW.M5",
+      "label": "Supervision GEMMA, AMDEC, Atlas & CLI Audit",
+      "data_box": "D5",
+      "dsm_depends_on": ["EXOW.M1", "EXOW.M2", "EXOW.M3", "EXOW.M4"],
+      "icom": {
+        "inputs": ["Err", "Code", "WS"],
+        "controls": ["IPR>=20", "R14", "DIR-01..10"],
+        "outputs": ["Mode_AFD", "Atlas", "AuditReport"],
+        "mechanisms": ["MatrixEngine", "CLI_AUD", "Playwright"],
+        "tunnels": []
+      },
+      "sub_boxes": [
+        {
+          "id": "EXOW.M5.A1",
+          "label": "Matrix-Engine (M0–M15) & Superviseur GEMMA",
+          "data_box": "D5",
+          "owner": "G0-ARCH",
+          "src_layers": ["services/architecture", "L8"],
+          "icom": { "inputs": ["M0_JSON", "M13_JSON", "Errors"], "controls": ["ADEPA_GEMMA", "SemVerLTS"], "outputs": ["MatrixEngineReport", "Mode_A5"], "mechanisms": ["matrix-engine.ts"], "tunnels": [] }
+        },
+        {
+          "id": "EXOW.M5.A2",
+          "label": "CLI exo:audit (12 checks) & Sync MB-DIR",
+          "data_box": "D5",
+          "owner": "G5-QA",
+          "src_layers": ["master-blueprint", "L8"],
+          "icom": { "inputs": ["RepoSRC", "TriFormatMD"], "controls": ["R14_CC12", "Z0_Ban"], "outputs": ["ExitCode_0_1"], "mechanisms": ["scripts/exo-audit.ts"], "tunnels": [] }
+        },
+        {
+          "id": "EXOW.M5.A3",
+          "label": "Atlas UI, Export Tri-Format U/M/S & Port C# V5",
+          "data_box": "D5",
+          "owner": "G7-UNITY",
+          "src_layers": ["L7", "L8"],
+          "icom": { "inputs": ["M0_JSON", "M13_JSON"], "controls": ["DIR-01", "SHA256_60t"], "outputs": ["FMT_U_M_S", "CSharp_DTO"], "mechanisms": ["export-trifmt.ts", "AtlasUI"], "tunnels": [] }
+        }
+      ]
+    }
+  ],
+  "datagrams": [
+    { "id": "D1", "label": "WS + EntityLedger", "creator": "EXOW.M1", "validator": "Zod.D1", "consumers": ["EXOW.M2", "EXOW.M3", "EXOW.M4"], "storage": "LocalStore + Neon JSONB", "source_of_truth": "EXOW.M1" },
+    { "id": "D2", "label": "Dossiers + Quêtes G0", "creator": "EXOW.M2", "validator": "Zod.D2", "consumers": ["EXOW.M3", "EXOW.M1"], "storage": "Store + Outbox", "source_of_truth": "EXOW.M2" },
+    { "id": "D3", "label": "LivingCatalog + Promesses", "creator": "EXOW.M2", "validator": "Zod.D3", "consumers": ["EXOW.M2", "EXOW.M1"], "storage": "IndexedDB + Neon pgvector", "source_of_truth": "EXOW.M4" },
+    { "id": "D4", "label": "SceneDiff + Summary HK", "creator": "EXOW.M1", "validator": "BridgeEnvelope", "consumers": ["EXOW.M3"], "storage": "Mémoire JSON pure", "source_of_truth": "EXOW.M1" },
+    { "id": "D5", "label": "Master Blueprint + M0/M13", "creator": "EXOW.M5", "validator": "matrix-engine.ts", "consumers": ["AtlasUI", "GDR", "CLI_AUD"], "storage": "src/master-blueprint + Drive", "source_of_truth": "EXOW.M5" }
+  ],
+  "src_manifest": {
+    "services/architecture": ["matrix-engine.ts"],
+    "master-blueprint": ["M0_MetaSemVer.json", "M13_SADT_Mapping.json", "MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md", "MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md", "MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md"],
+    "L0": ["src/l0-contracts/"],
+    "L1": ["src/l1-catalog/"],
+    "L2": ["src/l2-sim-math/"],
+    "L3": ["src/l3-engine/"],
+    "L4": ["src/l4-bridge/"],
+    "L5": ["src/l5-io/"],
+    "L6": ["src/l6-scenes-3d/"],
+    "L7": ["src/l7-ui/"],
+    "L8": ["src/l8-ops/", "scripts/exo-audit.ts"]
+  }
+}
+
+5. scripts/exo-audit.ts
+Exécute npm run exo:audit avec sortie bloquante (0 = GO, 1 = NO-GO) : intégrité M0/M13 via matrix-engine.ts, validation SemVer (0 DRIFT!), scan de complexité cyclomatique (CC ≤ 12) & limites R14, pureté L2/L3, bannissement Z0 (auto-immunisé contre les faux positifs) et contrôle de parité Tri-Format DIR-01.
+import fs from 'node:fs';
+import path from 'node:path';
+import {
+  runMatrixEngineAudit,
+  type M0Manifest,
+  type M13Manifest,
+} from '../src/services/architecture/matrix-engine.ts';
+
+const ROOT = process.cwd();
+const BP_DIR = path.join(ROOT, 'src', 'master-blueprint');
+
+// Assemblage dynamique afin d'éviter tout faux positif sur scripts/exo-audit.ts
+const Z0_BANNED = [
+  ['THE', 'RMAL'].join(''),
+  ['Cha', 'leur'].join(''),
+  ['S_', 'heat'].join(''),
+  ['cycle', '+1'].join(''),
+  ['corri', 'dor'].join(''),
+  ['loop', 'Climate'].join(''),
+  ['loop_', 'climate'].join(''),
+];
+
+const L2_L3_FORBIDDEN = [
+  'Math.random(',
+  'Date.now(',
+  'fetch(',
+  'window.',
+  'document.',
+  "from 'react'",
+  "from 'three'",
+];
+
+function walkFiles(dir: string, exts: string[]): string[] {
+  if (!fs.existsSync(dir)) return [];
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) results.push(...walkFiles(full, exts));
+    else if (exts.some((e) => entry.name.endsWith(e))) results.push(full);
+  }
+  return results;
+}
+
+function estimateMaxCyclomatic(code: string): number {
+  const fnBlocks = code.split(/\b(?:function\s+\w+|=>\s*\{)/g);
+  const branchRe = /\b(?:if|else\s+if|for|while|case|catch)\b|&&|\|\||\?/g;
+  let maxCc = 1;
+  for (const block of fnBlocks) {
+    const cc = 1 + (block.match(branchRe)?.length ?? 0);
+    if (cc > maxCc) maxCc = cc;
+  }
+  return maxCc;
+}
+
+function scanSourceRules(files: string[]): string[] {
+  const errs: string[] = [];
+  for (const file of files) {
+    const rel = path.relative(ROOT, file).replace(/\\/g, '/');
+    const content = fs.readFileSync(file, 'utf8');
+    const lines = content.split('\n').length;
+
+    for (const token of Z0_BANNED) {
+      if (content.includes(token)) errs.push(`EXOW-E017 [Z0]: "${token}" détecté dans ${rel}`);
+    }
+
+    const isTs = file.endsWith('.ts') || file.endsWith('.tsx');
+    if (!isTs) continue;
+
+    const isUi = rel.includes('/l7-ui/') || rel.includes('/l6-scenes-3d/');
+    const maxLines = isUi ? 300 : 200;
+    if (lines > maxLines) errs.push(`EXOW-E020 [R14]: ${rel} = ${lines}L (max ${maxLines}L)`);
+
+    const cc = estimateMaxCyclomatic(content);
+    if (cc > 12) errs.push(`EXOW-E020 [CC]: ${rel} CC estimée ${cc} (max 12)`);
+
+    if (rel.includes('/l2-sim-math/') || rel.includes('/l3-engine/')) {
+      for (const bad of L2_L3_FORBIDDEN) {
+        if (content.includes(bad)) errs.push(`EXOW-E018 [L2/L3]: "${bad}" interdit dans ${rel}`);
+      }
+    }
+  }
+  return errs;
+}
+
+function checkTriFormatParity(expectedSemver: string): string[] {
+  const errs: string[] = [];
+  const baseTag = expectedSemver.split('+')[0];
+  const files = [
+    'MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md',
+    'MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md',
+    'MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md',
+  ];
+  for (const f of files) {
+    const full = path.join(BP_DIR, f);
+    if (!fs.existsSync(full)) {
+      errs.push(`EXOW-E019 [DIR-01]: format jumeau manquant (${f})`);
+      continue;
+    }
+    const md = fs.readFileSync(full, 'utf8');
+    if (!md.includes(baseTag)) errs.push(`EXOW-E019 [DIR-01]: drift SemVer dans ${f} (attendu ${baseTag})`);
+    if (!md.includes('DIR-01')) errs.push(`EXOW-E019 [DIR-01]: directives EXOW.DIR absentes de ${f}`);
+  }
+  return errs;
+}
+
+function main(): void {
+  const m0Path = path.join(BP_DIR, 'M0_MetaSemVer.json');
+  const m13Path = path.join(BP_DIR, 'M13_SADT_Mapping.json');
+  if (!fs.existsSync(m0Path) || !fs.existsSync(m13Path)) {
+    console.error('[EXO:AUDIT] NO-GO — M0_MetaSemVer.json ou M13_SADT_Mapping.json introuvable.');
+    process.exit(1);
+  }
+
+  const m0 = JSON.parse(fs.readFileSync(m0Path, 'utf8')) as M0Manifest;
+  const m13 = JSON.parse(fs.readFileSync(m13Path, 'utf8')) as M13Manifest;
+  const engineReport = runMatrixEngineAudit(m0, m13);
+
+  const srcFiles = walkFiles(path.join(ROOT, 'src'), ['.ts', '.tsx', '.md', '.json']);
+  const ruleErrors = scanSourceRules(srcFiles);
+  const triErrors = checkTriFormatParity(m13.semver);
+  const allErrors = [...engineReport.errors, ...engineReport.driftNodes, ...ruleErrors, ...triErrors];
+
+  console.log('=== EXO WORLD : 2050 — CLI AUDIT (V0-BOOT) ===');
+  console.log(`Matrices M0–M15 : ${engineReport.matricesCovered}/16 | Sous-boîtes D2 : ${engineReport.d2BoxCount}/15`);
+  console.log(`DSM Cycles (↺)  : ${engineReport.dsmCycles.length} | Drift SemVer : ${engineReport.driftNodes.length}`);
+  console.log(`Fichiers scannés: ${srcFiles.length} | Erreurs totales : ${allErrors.length}`);
+
+  if (allErrors.length > 0) {
+    for (const err of allErrors) console.error(`  ✖ ${err}`);
+    console.error('RELEASE GATE : NO-GO');
+    process.exit(1);
+  }
+
+  console.log('RELEASE GATE : GO ✓');
+  process.exit(0);
+}
+
+main();
+
