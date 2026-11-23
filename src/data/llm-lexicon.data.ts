@@ -336,7 +336,7 @@ export const PREFERRED_GAME_TERMS: readonly PreferredGameTerm[] = [
   { term: 'Flux (+Δ/tour)', category: 'CITYBUILDER', meaning: 'Bilan net des ressources produites et consommées chaque tour.' },
   { term: 'Colon RPG / Spécialiste', category: 'RPG', meaning: 'Personnage affectable à un poste avec traits, niveau et bonus.' },
   { term: 'Moral & Approbation', category: 'RPG', meaning: 'Confiance populaire de la colonie (0 à 100 %).' },
-  { term: 'Charte de Genèse', category: 'RPG', meaning: 'Doctrine fondatrice et promesses tenues par le Commandant.' },
+  { term: 'Charte de Genèse', category: 'RPG', meaning: 'Doctrine fondatrice et promesses tenues par le Dirigeant.' },
   { term: 'PA / Sous-PA', category: 'RPG', meaning: 'Points d’Action généraux et spécialisés dépensés à chaque tour.' },
   { term: 'Secteur (0–71)', category: 'STRATEGY_4X', meaning: 'Territoire géodésique de la planète à explorer, défendre ou conquérir.' },
   { term: 'Escadrille & Garnison', category: 'STRATEGY_4X', meaning: 'Unités de drones/vaisseaux et forces de défense planétaire.' },

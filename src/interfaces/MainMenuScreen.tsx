@@ -7,12 +7,14 @@ import {
   Play,
   RotateCcw,
   Settings,
+  ShieldCheck,
   SlidersHorizontal,
   Smartphone,
   UserCheck,
 } from 'lucide-react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ExoTitleEmblem } from '../components/ExoTitleEmblem.tsx';
+import { ProfileAvatarFrame } from '../components/bento/ProfileAvatarFrame.tsx';
 import { AVATAR_PRESETS } from '../data/honors.catalog.ts';
 import { resolveWallpaperImageSrc } from '../data/ui-wallpapers.assets.ts';
 import { useViewportLayout } from '../hooks/use-viewport-layout.ts';
@@ -102,29 +104,20 @@ export function MainMenuScreen() {
             onClick={() => setSubscreen('PROFILE')}
             className="exo-bento-card inline-flex min-h-[44px] items-center gap-2.5 px-3 py-1.5 text-left transition hover:border-[var(--exo-accent)]"
           >
-            {showcase.customAvatarDataUrl ? (
-              <img
-                src={showcase.customAvatarDataUrl}
-                alt={showcase.callsign}
-                className="h-8 w-8 rounded-lg object-cover"
-              />
-            ) : (
-              <span
-                className="flex h-8 w-8 items-center justify-center rounded-lg font-display text-xs font-black text-white"
-                style={{
-                  background: `linear-gradient(135deg, ${avatarPreset.gradientFrom}, ${avatarPreset.gradientTo})`,
-                }}
-              >
-                {avatarPreset.monogram}
-              </span>
-            )}
+            <ProfileAvatarFrame
+              preset={avatarPreset}
+              customDataUrl={showcase.customAvatarDataUrl}
+              alt={`Portrait de ${showcase.callsign}`}
+              className="h-10 w-10 rounded-xl border border-white/40 shadow-sm"
+              monogramClassName="text-xs"
+            />
             <div className="min-w-0">
               <div className="flex items-center gap-1 font-display text-xs font-bold">
                 <span>{showcase.callsign}</span>
                 <Award className="h-3.5 w-3.5 exo-accent-2-text" />
               </div>
-              <div className="font-mono text-[10px] exo-muted-text truncate">
-                {equippedTitle.label} · {showcase.medals.filter((m) => m.unlocked).length} médailles
+              <div className="font-mono text-[10px] tabular-nums exo-muted-text truncate">
+                {equippedTitle.label} · {showcase.medals.filter((m) => m.unlocked).length}/{showcase.medals.length} succès
               </div>
             </div>
           </button>
@@ -217,8 +210,17 @@ export function MainMenuScreen() {
             </button>
             <button
               type="button"
+              data-testid="main-menu-governance-btn"
+              onClick={() => setSubscreen('DOC_SYNC_STUDIO')}
+              className="exo-bento-card inline-flex min-h-[44px] items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium transition whitespace-nowrap"
+            >
+              <ShieldCheck className="h-3.5 w-3.5 exo-accent-text" />
+              <span>Gouvernance &amp; Docs</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setScreen('EXO_AUTH')}
-              className="exo-bento-card inline-flex min-h-[42px] items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium transition whitespace-nowrap"
+              className="exo-bento-card inline-flex min-h-[44px] items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium transition whitespace-nowrap"
             >
               <UserCheck className="h-3.5 w-3.5 exo-accent-2-text" />
               <span>Compte</span>

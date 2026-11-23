@@ -1,18 +1,48 @@
-# INDEX DOCUMENTAIRE SSoT — EXO WORLD : 2050 (`DOC-EXW-ARCH-001` v3.1.0-SYZYGIE-ASTRALIS)
+# INDEX DOCUMENTAIRE SSoT — EXO WORLD : 2050 (`v5.1.0`)
 
-> **Master Blueprint — Édition v3.1.0-SYZYGIE-ASTRALIS** (Synchronisé avec `share.gemini.google/axxA4Z4CCyvS`)
-> Thème Rose & Blanc Astralis · Protocole 100% Événementiel (`ACTION_GATEWAY`) · Bandeau Ressources (+Δ/cycle) & Thermique `S_heat` · Tutoriel Interactif 5 Étapes · Navigation 3 Onglets (`Mondes`, `Événements`, `Journal`) + Header (`Guide`, `Masquer/Ouvrir UI`, `Radio FIP`, `Profil`) · Rendu 3D PBR 3 Échelles + Enquête Télémétrique 3D.
+> **Architecture Documentaire Séparée** : la gestion des documents distingue strictement le **Pôle Application (`APP-*`)** (mises à jour, guides, architecture technique, compétences `skills`) du **Pôle Jeu (`JEU-*`)** (règles, scénarios, équilibrage, univers).
+> **Gouvernance & Accès (RBAC)** : toute création, modification, révision ou publication suit le processus défini dans `governance/DOC-APP-GOV-001_ROLES_PERMISSIONS_WORKFLOW.md`.
 
-## Cartographie Documentaire
+---
 
-- `SYSTEM_INSTRUCTION_LIVE.md` — Contraintes invariantes `R-01..R-69`, Protocole 100% Événementiel & standards UX/3D v3.1
-- `architecture/01.md` — Stratification SSoT `L0..L8`, Shell 3 Onglets, Bandeau Ressources, Header & Voyants `package.json` (`/api/system-status`)
-- `architecture/02.md` — Boucle Temporelle `N0→N5`, `TRIGGER_BUS`, Générateur d'Événements (`ACTION_GATEWAY`) & Journal Exportable
-- `architecture/03.md` — Dual-Adapter 3D (`Three.js r170+` ↔ `Unity 6 URP V5`), Modes `STANDARD`/`THERMAL S_heat`/`LOGISTICS` & Enquête 3D
-- `architecture/04.md` — Guardrails (`R-10`, `R-28`, `R-50`, `R-60`), Ergonomie Mobile/Desktop, Tutoriel & Feuille de Route Produit
-- `gameplay/01.md`..`04.md` — PA & Dossiers, Biosphère `P1→P4`, Économie Anno 3-Modules, Combat 4 Phases & Cyber
-- `api-and-db/01.md`..`03.md` — Endpoints Express `/api/*` (dont `/api/system-status`), Firestore Cloud Saves, Google Drive/Docs Sync
-- `matrices/MC-00_CORRESPONDANCE.md` — Matrice de correspondance FUP / Couches `L0..L8` / Fichiers
-- `matrices/SM-01_A_SM-06_ICOM.md` — Sous-matrices ICOM SADT `A0..A5`
-- `inter-ia/BUS_MESSAGES.md` & `inter-ia/outbox/` — Bus de synchronisation inter-IA (`DEL-001-AG` / `MSG-003`)
-- `changelogs/FUP_TRACKER.md` — Suivi des incréments `FUP-001..FUP-014`
+## Pôle A — Documentation de l'Application (`APP`)
+
+### `APP-GUI` · Guides Utilisateur & Gouvernance
+- `governance/DOC-APP-GOV-001_ROLES_PERMISSIONS_WORKFLOW.md` — Rôles utilisateurs (RBAC), permissions Lecture/Modification/Validation, VCS documentaire séparé (Drive/Docs), workflows distincts (Drive/Docs vs Code) & pont Swarm `/api/swarm-bus`
+- `00_INDEX_DOCS.md` — Index maître de navigation documentaire du Hub scindé (Pôle Application Drive/Docs vs Pôle Jeu/Assets vs Workflows & Essaim)
+
+### `APP-UPD` · Mises à jour & Notes de Version
+- `changelogs/FUP_TRACKER.md` — Suivi des livraisons et jalons produit
+- `../CHANGELOG.txt` — Journal historique des versions SemVer
+
+### `APP-TEC` · Architecture & Spécifications Techniques
+- `DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md` — Master Blueprint d'architecture système
+- `architecture/01.md` — Stratification `L0..L8`, Shell & contrats système
+- `architecture/02.md` — Boucle temporelle déterministe, `TRIGGER_BUS` & journal exportable
+- `architecture/03.md` — Dual-Adapter 3D (`Three.js` ↔ `Unity 6 URP`) & rendu ciel ouvert
+- `architecture/04.md` — Garde-fous techniques, ergonomie bureau/mobile & feuille de route
+- `api-and-db/01.md`..`03.md` — Routes Express `/api/*`, sauvegardes Firestore & synchronisation isolée
+
+### `APP-SKL` · Compétences (`Skills`) & Procédures d'Exécution
+- `SYSTEM_INSTRUCTION_LIVE.md` — Contraintes invariantes `R-01..R-69`, garde-fous IA & standards d'exécution
+- `inter-ia/BUS_MESSAGES.md` & `inter-ia/outbox/` — Protocole de coordination multi-agents
+
+---
+
+## Pôle B — Documentation du Jeu (`GAME`)
+
+### `JEU-REG` · Règles & Mécaniques de Jeu
+- `gameplay/01.md` — Points d'Action (PA), 4 Sous-PA, fongibilité asymétrique & dossiers exécutifs
+- `gameplay/02.md` — Biosphère, terraformation `P1→P4` & adaptation planétaire
+- `gameplay/03.md` — Économie modulaire, logistique & banque fédérale
+- `gameplay/04.md` — Combat déterministe 4 phases, unités `L1..L5` & cyber-opérations
+
+### `JEU-SCE` · Scénarios, Campagne & Lore
+- Campagne 6 Ères, 5 superpuissances IA rivales & dossiers narratifs (gérés dans le registre `JEU-SCE-*` du Studio Documentaire)
+
+### `JEU-BAL` · Équilibrage, Matrices & Playtest
+- `matrices/MC-00_CORRESPONDANCE.md` — Matrice de correspondance couches / modules
+- `matrices/SM-01_A_SM-06_ICOM.md` — Sous-matrices ICOM SADT `A0..A5` & playtests déterministes
+
+### `JEU-VIS` · Direction Artistique & Univers 3D
+- `design/` — Direction esthétique `Astralis Snapshot V7`, cités à ciel ouvert sans dôme & maquettes UX

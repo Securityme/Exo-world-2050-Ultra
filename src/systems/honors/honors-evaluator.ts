@@ -19,7 +19,7 @@ import {
  */
 export function createDefaultMetaShowcase(updatedAtIso = '2050-01-01T00:00:00.000Z'): MetaPlayerShowcase {
   return {
-    callsign: 'Commandant Baptiste',
+    callsign: 'Baptiste',
     avatarPresetId: 'cmd-solaris',
     customAvatarDataUrl: null,
     bannerStyleId: 'ASTRAL_ROSE',
@@ -41,46 +41,138 @@ export function createDefaultMetaShowcase(updatedAtIso = '2050-01-01T00:00:00.00
   };
 }
 
+/**
+ * Merges newly added catalog medals, badges, and titles into an existing persisted showcase
+ * so returning players automatically receive catalog expansions without losing progress.
+ */
+export function mergeCatalogHonors(saved: MetaPlayerShowcase): MetaPlayerShowcase {
+  const savedMedalMap = new Map(saved.medals.map((m) => [m.id, m]));
+  const medals = INITIAL_META_MEDALS.map((catalogMedal) => {
+    const existing = savedMedalMap.get(catalogMedal.id);
+    if (!existing) return { ...catalogMedal };
+    return {
+      ...catalogMedal,
+      unlocked: existing.unlocked || catalogMedal.unlocked,
+      progressCurrent: Math.max(existing.progressCurrent, catalogMedal.progressCurrent),
+      unlockedAtIso: existing.unlockedAtIso ?? catalogMedal.unlockedAtIso,
+    };
+  });
+
+  const savedBadgeMap = new Map(saved.badges.map((b) => [b.id, b]));
+  const badges = INITIAL_META_BADGES.map((catalogBadge) => {
+    const existing = savedBadgeMap.get(catalogBadge.id);
+    if (!existing) return { ...catalogBadge };
+    return {
+      ...catalogBadge,
+      unlocked: existing.unlocked || catalogBadge.unlocked,
+    };
+  });
+
+  const savedTitleMap = new Map(saved.titles.map((t) => [t.id, t]));
+  const titles = INITIAL_META_TITLES.map((catalogTitle) => {
+    const existing = savedTitleMap.get(catalogTitle.id);
+    if (!existing) return { ...catalogTitle };
+    return {
+      ...catalogTitle,
+      unlocked: existing.unlocked || catalogTitle.unlocked,
+    };
+  });
+
+  return {
+    ...saved,
+    medals,
+    badges,
+    titles,
+  };
+}
+
 export function evaluateMetaShowcaseFromWorld(
   showcase: MetaPlayerShowcase,
   world: WorldState,
   updatedAtIso = showcase.updatedAtIso,
 ): MetaPlayerShowcase {
+  const merged = mergeCatalogHonors(showcase);
   const edenUnlocked = world.atmosphereTier === 'P4' || world.atmosphereProgress >= 90;
+  const p2Unlocked = world.atmosphereTier !== 'P1' || world.atmosphereProgress >= 40;
   const diploUnlocked = world.superAllianceTrust >= 85;
-  const philosophyDecisions = Math.max(showcase.totalDecisionsSigned, world.chronicle.length);
+  const allianceTop2 = world.superAllianceRank <= 2;
+  const philosophyDecisions = Math.max(merged.totalDecisionsSigned, world.chronicle.length);
+  const approvalPct = Math.round(world.approval);
+  const districtsCount = world.districts.length;
+  const creditsCount = Math.round(world.resources.credits);
+  const techCount = world.hk?.unlockedTechIds.length ?? 0;
+  const fleetCount = world.fleetShips?.length ?? 0;
+  const activeTheaters = new Set(
+    world.militaryRoster
+      .filter((u) => u.count > 0)
+      .map((u) => {
+        if (u.unitClass === 'ORBITAL_CORVETTE') return 'SPACE';
+        if (u.unitClass === 'DRONE_SWARM') return 'AIR';
+        if (u.unitClass === 'ARMOR_MECH' || u.unitClass === 'INFANTRY_EXO') return 'GROUND';
+        return 'CYBER';
+      }),
+  ).size;
 
-  const medals = showcase.medals.map((m) => {
-    if (m.id === 'medal-eden-architect') {
-      const progressCurrent = Math.max(m.progressCurrent, Math.round(world.atmosphereProgress));
-      const unlocked = m.unlocked || edenUnlocked;
-      return { ...m, progressCurrent, unlocked, unlockedAtIso: unlocked ? m.unlockedAtIso ?? updatedAtIso : null };
-    }
-    if (m.id === 'medal-civic-philosopher') {
-      const progressCurrent = Math.max(m.progressCurrent, philosophyDecisions);
-      const unlocked = m.unlocked || progressCurrent >= m.progressTarget;
-      return { ...m, progressCurrent, unlocked, unlockedAtIso: unlocked ? m.unlockedAtIso ?? updatedAtIso : null };
-    }
-    if (m.id === 'medal-stellar-diplomat') {
-      const progressCurrent = Math.max(m.progressCurrent, Math.round(world.superAllianceTrust));
-      const unlocked = m.unlocked || diploUnlocked;
-      return { ...m, progressCurrent, unlocked, unlockedAtIso: unlocked ? m.unlockedAtIso ?? updatedAtIso : null };
-    }
-    return m;
+  const progressByMedalId: Readonly<Record<string, { current: number; forceUnlock?: boolean }>> = {
+    'medal-exo-cartographer': { current: world.capturedTiles.length },
+    'medal-multiworld-pioneer': { current: world.unlockedSlots },
+    'medal-atmosphere-p2': { current: Math.round(world.atmosphereProgress), forceUnlock: p2Unlocked },
+    'medal-eden-architect': { current: Math.round(world.atmosphereProgress), forceUnlock: edenUnlocked },
+    'medal-civic-philosopher': { current: philosophyDecisions },
+    'medal-ethical-beacon': { current: approvalPct, forceUnlock: approvalPct >= 80 },
+    'medal-stellar-diplomat': { current: Math.round(world.superAllianceTrust), forceUnlock: diploUnlocked },
+    'medal-alliance-primacy': { current: allianceTop2 ? 1 : 0, forceUnlock: allianceTop2 },
+    'medal-fleet-vanguard': { current: fleetCount },
+    'medal-four-theaters': { current: activeTheaters, forceUnlock: activeTheaters >= 4 },
+    'medal-urban-architect': { current: districtsCount },
+    'medal-solar-treasury': { current: creditsCount },
+    'medal-quantum-compute': { current: world.datacenterTier },
+    'medal-era-vanguard': { current: techCount },
+  };
+
+  const medals = merged.medals.map((m) => {
+    const evalEntry = progressByMedalId[m.id];
+    if (!evalEntry) return m;
+    const progressCurrent = Math.max(m.progressCurrent, Math.max(0, evalEntry.current));
+    const unlocked = m.unlocked || Boolean(evalEntry.forceUnlock) || progressCurrent >= m.progressTarget;
+    return {
+      ...m,
+      progressCurrent,
+      unlocked,
+      unlockedAtIso: unlocked ? m.unlockedAtIso ?? updatedAtIso : null,
+    };
   });
 
-  const titles = showcase.titles.map((t) => {
-    if (t.id === 'title-eden-shepherd' && edenUnlocked) {
+  const badges = merged.badges.map((b) => {
+    if (b.unlocked) return b;
+    if (b.id === 'badge-quantum-grid' && world.datacenterTier >= 2) return { ...b, unlocked: true };
+    if (b.id === 'badge-eden-breath' && edenUnlocked) return { ...b, unlocked: true };
+    if (b.id === 'badge-solar-treasurer' && creditsCount >= 2500) return { ...b, unlocked: true };
+    if (b.id === 'badge-fleet-admiral' && activeTheaters >= 4) return { ...b, unlocked: true };
+    return b;
+  });
+
+  const titles = merged.titles.map((t) => {
+    if (t.unlocked) return t;
+    if (t.id === 'title-open-sky-architect' && districtsCount >= 6) return { ...t, unlocked: true };
+    if (t.id === 'title-quantum-savant' && (techCount >= 4 || world.datacenterTier >= 2)) {
+      return { ...t, unlocked: true };
+    }
+    if (t.id === 'title-eden-shepherd' && edenUnlocked) return { ...t, unlocked: true };
+    if (t.id === 'title-civic-luminary' && approvalPct >= 80) return { ...t, unlocked: true };
+    if (t.id === 'title-federal-envoy' && diploUnlocked) return { ...t, unlocked: true };
+    if (t.id === 'title-grand-strategist' && (activeTheaters >= 4 || merged.campaignsPlayed >= 3)) {
       return { ...t, unlocked: true };
     }
     return t;
   });
 
   return {
-    ...showcase,
-    totalTurnsSimulated: Math.max(showcase.totalTurnsSimulated, world.cycle),
+    ...merged,
+    totalTurnsSimulated: Math.max(merged.totalTurnsSimulated, world.cycle),
     totalDecisionsSigned: philosophyDecisions,
     medals,
+    badges,
     titles,
     updatedAtIso,
   };
@@ -128,7 +220,7 @@ export function evaluateCampaignCommanderProfile(world: WorldState): CampaignCom
   if (traits.length === 0) {
     traits.push({
       id: 'trait-founding-commander',
-      label: 'Commandant Fondateur',
+      label: 'Architecte Fondateur',
       category: 'GOVERNANCE',
       bonusSummary: '+1 à tous les attributs souverains',
       attributeModifiers: { diplomacy: 1, martial: 1, stewardship: 1, intrigue: 1, learning: 1 },

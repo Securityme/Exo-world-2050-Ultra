@@ -1,3 +1,8 @@
+import type {
+  ContentTrack,
+  DocCategoryCode,
+  DocDomainScope,
+} from '../contracts/doc-governance.schema.ts';
 import {
   ERAS_CATALOG,
   PLANETARY_SLOTS_CATALOG,
@@ -10,12 +15,16 @@ import {
 
 /**
  * [L5 — ISOLATED DOCUMENTARY CATALOG LOADER]
- * Reads project reference documents from server-side /api/project-docs and merges
- * them with frozen L1 catalogs for read-only inspection inside the Governance Studio.
+ * Reads project reference documents from server-side /api/project-docs (separated into
+ * Application vs Game domains with normalized filing codes) and merges frozen L1 catalogs.
  */
 export interface ProjectDocEntry {
   readonly id: string;
   readonly code: string;
+  readonly filingCode: string;
+  readonly domain: DocDomainScope;
+  readonly track: ContentTrack;
+  readonly categoryCode: DocCategoryCode;
   readonly title: string;
   readonly category: string;
   readonly fileName: string;

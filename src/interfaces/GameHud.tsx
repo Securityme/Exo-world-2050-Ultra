@@ -514,7 +514,7 @@ export function GameHud() {
             type="button"
             onClick={() => setSubscreen('PROFILE')}
             aria-label="Ouvrir le Profil"
-            title="Profil Commandant"
+            title="Profil Joueur"
             className={`inline-flex h-8 w-8 items-center justify-center gap-1 text-xs font-semibold transition sm:h-9 sm:w-9 2xl:w-auto 2xl:px-2 whitespace-nowrap ${
               subscreen === 'PROFILE' ? 'exo-accent-chip-active' : 'exo-accent-chip'
             }`}

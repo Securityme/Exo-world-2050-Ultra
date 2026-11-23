@@ -178,7 +178,7 @@ async function ensurePlayerProfile(user: User): Promise<void> {
     if (!snap.exists()) {
       await setDoc(ref, {
         uid: user.uid,
-        displayName: (user.displayName ?? user.email ?? 'Commandant').slice(0, 80),
+        displayName: (user.displayName ?? user.email ?? 'Joueur').slice(0, 80),
         xpTotal: 0,
         campaignsCompleted: 0,
         createdAt: serverTimestamp(),

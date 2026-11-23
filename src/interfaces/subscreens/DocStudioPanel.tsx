@@ -1,189 +1,400 @@
-import { useState } from 'react';
-import { BookMarked, BookOpen, Cloud, Compass, Database } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  AppWindow,
+  BookMarked,
+  BookOpen,
+  ClipboardCheck,
+  Cloud,
+  Compass,
+  Database,
+  Gamepad2,
+  GitBranch,
+  GitCommitHorizontal,
+  Network,
+  Radio,
+  Search,
+  ShieldCheck,
+  Workflow,
+} from 'lucide-react';
+import type { DocCategoryCode, DocDomainScope } from '../../contracts/doc-governance.schema.ts';
+import { DOC_CATEGORIES_CATALOG } from '../../data/doc-governance.catalog.ts';
 import { useProjectDocsQuery } from '../../hooks/use-oracle-query.ts';
+import { AgentPyramidPanel } from './AgentPyramidPanel.tsx';
+import { BetaP13HubPanel } from './BetaP13HubPanel.tsx';
 import { BlueprintAtlasView } from './BlueprintAtlasView.tsx';
+import { DocGovernancePanel } from './DocGovernancePanel.tsx';
+import { DocVcsPanel } from './DocVcsPanel.tsx';
 import { DriveSyncPanel } from './DriveSyncPanel.tsx';
+import { ExternalSyncPanel } from './ExternalSyncPanel.tsx';
 import { LlmLexiconPanel } from './LlmLexiconPanel.tsx';
+import { SwarmRelayPanel } from './SwarmRelayPanel.tsx';
+import { WorkflowComparisonPanel } from './WorkflowComparisonPanel.tsx';
 
-export type DocStudioTabId = 'PROJECT_DOCS' | 'CATALOGS' | 'LLM_LEXICON' | 'ATLAS' | 'DRIVE_SYNC';
+export type DocStudioTabId =
+  | 'GOVERNANCE'
+  | 'DOC_VCS'
+  | 'DRIVE_SYNC'
+  | 'EXTERNAL_SYNC'
+  | 'PROJECT_DOCS'
+  | 'CATALOGS'
+  | 'LLM_LEXICON'
+  | 'ATLAS'
+  | 'BETA_P13'
+  | 'WORKFLOWS'
+  | 'AGENTS_PYRAMID'
+  | 'SWARM_BRIDGE';
+
+export type HubWingId = 'APP_CORE' | 'GAME_ASSETS' | 'WORKFLOWS_SWARM';
 
 interface DocStudioPanelProps {
   readonly initialTab?: DocStudioTabId;
 }
 
+const TAB_TO_WING: Readonly<Record<DocStudioTabId, HubWingId>> = {
+  GOVERNANCE: 'APP_CORE',
+  DOC_VCS: 'APP_CORE',
+  DRIVE_SYNC: 'APP_CORE',
+  EXTERNAL_SYNC: 'APP_CORE',
+  PROJECT_DOCS: 'GAME_ASSETS',
+  CATALOGS: 'GAME_ASSETS',
+  LLM_LEXICON: 'GAME_ASSETS',
+  ATLAS: 'GAME_ASSETS',
+  BETA_P13: 'GAME_ASSETS',
+  WORKFLOWS: 'WORKFLOWS_SWARM',
+  AGENTS_PYRAMID: 'WORKFLOWS_SWARM',
+  SWARM_BRIDGE: 'WORKFLOWS_SWARM',
+};
+
+const HUB_WINGS = [
+  {
+    id: 'APP_CORE' as const,
+    title: 'Pôle 1 · Application Core (Drive / Docs & VCS)',
+    subtitle: 'Architecture, Skills, RBAC, Drive Picker & contrôle de version documentaire séparé du code',
+    defaultTab: 'GOVERNANCE' as const,
+    icon: AppWindow,
+  },
+  {
+    id: 'GAME_ASSETS' as const,
+    title: 'Pôle 2 · Jeu, Règles & Assets 3D',
+    subtitle: 'Règles PA, scénarios 6 Ères, catalogues gameplay, Dico LLM, plans 3D/Unity & Bêta P13',
+    defaultTab: 'PROJECT_DOCS' as const,
+    icon: Gamepad2,
+  },
+  {
+    id: 'WORKFLOWS_SWARM' as const,
+    title: 'Pôle 3 · Workflows, Essaim & Communication',
+    subtitle: 'Flux Drive/Doc vs Code, pyramide 15 agents & pont Preview ↔ AI Studio ↔ Antigravity',
+    defaultTab: 'WORKFLOWS' as const,
+    icon: Workflow,
+  },
+] as const;
+
+const TABS_BY_WING: Readonly<
+  Record<
+    HubWingId,
+    readonly { readonly id: DocStudioTabId; readonly label: string; readonly icon: typeof ShieldCheck }[]
+  >
+> = {
+  APP_CORE: [
+    { id: 'GOVERNANCE', label: 'Gouvernance, Rôles & Validation', icon: ShieldCheck },
+    { id: 'DOC_VCS', label: 'Git Docs (VCS Séparé)', icon: GitCommitHorizontal },
+    { id: 'DRIVE_SYNC', label: 'Google Drive & Docs (Isolé)', icon: Cloud },
+    { id: 'EXTERNAL_SYNC', label: 'GitHub & Notebook', icon: GitBranch },
+  ],
+  GAME_ASSETS: [
+    { id: 'PROJECT_DOCS', label: 'Archives Séparées (Jeu / App)', icon: BookOpen },
+    { id: 'CATALOGS', label: 'Catalogues Gameplay', icon: Database },
+    { id: 'LLM_LEXICON', label: 'Dico LLM', icon: BookMarked },
+    { id: 'ATLAS', label: 'Plans 3D & Unity', icon: Compass },
+    { id: 'BETA_P13', label: 'Bêta P13', icon: ClipboardCheck },
+  ],
+  WORKFLOWS_SWARM: [
+    { id: 'WORKFLOWS', label: 'Workflows Drive/Doc vs Code', icon: Workflow },
+    { id: 'AGENTS_PYRAMID', label: 'Organigramme Agents (Triangle)', icon: Network },
+    { id: 'SWARM_BRIDGE', label: 'Pont Preview ↔ Antigravity / Swarm', icon: Radio },
+  ],
+};
+
 /**
- * [L7 — ISOLATED GOVERNANCE & PROJECT DOCS PANEL]
- * Reusable inside Paramètres and DocSyncStudioModal:
- * 1. Read-only Project Folder Documents & Structured Game Catalogs
- * 2. Interactive Maps, Plans, Flowcharts & Orbital Diagrams
- * 3. Strictly isolated Google Drive & Google Docs documentary sync
+ * [L7 — SEPARATED DOCUMENTATION HUB, DOC VCS & MULTI-SURFACE SWARM STUDIO]
+ * Clearly isolates:
+ * 1. Application Core Documentation (Drive / Google Docs + dedicated Doc VCS)
+ * 2. Game, Rules & 3D/Asset Documentation
+ * 3. Explicit Dual Workflows & Preview ↔ AI Studio ↔ Antigravity Swarm Bridge
  */
-export function DocStudioPanel({ initialTab = 'PROJECT_DOCS' }: DocStudioPanelProps) {
+export function DocStudioPanel({ initialTab = 'GOVERNANCE' }: DocStudioPanelProps) {
   const [tab, setTab] = useState<DocStudioTabId>(initialTab);
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
-  const [docCategoryFilter, setDocCategoryFilter] = useState<string>('ALL');
+  const [domainFilter, setDomainFilter] = useState<'ALL' | DocDomainScope>(
+    initialTab === 'PROJECT_DOCS' ? 'GAME' : 'ALL',
+  );
+  const [categoryFilter, setCategoryFilter] = useState<'ALL' | DocCategoryCode>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading } = useProjectDocsQuery();
 
+  const activeWing = TAB_TO_WING[tab];
   const docs = data?.documents ?? [];
-  const filteredDocs = docs.filter((d) => {
-    if (docCategoryFilter === 'ALL') return true;
-    const low = `${d.code} ${d.title} ${d.category}`.toLowerCase();
-    if (docCategoryFilter === 'USER_GUIDES') return low.includes('guide') || low.includes('readme');
-    if (docCategoryFilter === 'DESIGN') return low.includes('design') || low.includes('pax') || low.includes('ui');
-    if (docCategoryFilter === 'LORE_PLAYTEST') return low.includes('playtest') || low.includes('beta') || low.includes('changelog') || low.includes('lore');
-    return !low.includes('guide') && !low.includes('pax') && !low.includes('playtest') && !low.includes('beta');
-  });
+  const appDocsCount = useMemo(() => docs.filter((d) => d.domain === 'APP').length, [docs]);
+  const gameDocsCount = useMemo(() => docs.filter((d) => d.domain === 'GAME').length, [docs]);
+
+  const selectWing = (wingId: HubWingId) => {
+    const wing = HUB_WINGS.find((w) => w.id === wingId);
+    if (!wing) return;
+    if (wingId === 'GAME_ASSETS') {
+      setDomainFilter('GAME');
+      setCategoryFilter('ALL');
+    }
+    setTab(wing.defaultTab);
+  };
+
+  const visibleCategories = useMemo(
+    () =>
+      domainFilter === 'ALL'
+        ? DOC_CATEGORIES_CATALOG
+        : DOC_CATEGORIES_CATALOG.filter((c) => c.domain === domainFilter),
+    [domainFilter],
+  );
+
+  const filteredDocs = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return docs.filter((d) => {
+      if (domainFilter !== 'ALL' && d.domain !== domainFilter) return false;
+      if (categoryFilter !== 'ALL' && d.categoryCode !== categoryFilter) return false;
+      if (!q) return true;
+      return `${d.filingCode} ${d.code} ${d.title} ${d.category}`.toLowerCase().includes(q);
+    });
+  }, [docs, domainFilter, categoryFilter, searchQuery]);
+
   const activeDoc = filteredDocs.find((d) => d.id === selectedDocId) ?? filteredDocs[0] ?? null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        {[
-          { id: 'PROJECT_DOCS' as const, label: 'Dossier Projet (4 Catégories)', icon: BookOpen },
-          { id: 'CATALOGS' as const, label: 'Catalogues', icon: Database },
-          { id: 'LLM_LEXICON' as const, label: 'Dico LLM', icon: BookMarked },
-          { id: 'ATLAS' as const, label: 'Plans 3D', icon: Compass },
-          { id: 'DRIVE_SYNC' as const, label: 'Google Drive (Isolé)', icon: Cloud },
-        ].map((item) => {
+    <div className="space-y-4" data-testid="doc-hub-root">
+      {/* Top Level Hub Wing Selector: Strictly separates App Core (Drive/Doc) vs Game & Assets vs Workflows/Swarm */}
+      <div className="grid gap-2.5 md:grid-cols-3">
+        {HUB_WINGS.map((wing) => {
+          const Icon = wing.icon;
+          const isCurrent = activeWing === wing.id;
+          return (
+            <button
+              key={wing.id}
+              type="button"
+              data-testid={`doc-hub-wing-${wing.id.toLowerCase()}`}
+              onClick={() => selectWing(wing.id)}
+              className={`flex min-h-[56px] flex-col items-start justify-between rounded-xl border p-3 text-left transition ${
+                isCurrent
+                  ? 'exo-accent-chip-active border-[var(--exo-accent)]'
+                  : 'exo-accent-border bg-[var(--exo-surface)] hover:border-[var(--exo-accent)]'
+              }`}
+            >
+              <div className="flex items-center gap-2 text-xs font-bold text-[var(--exo-text)]">
+                <Icon className="h-4 w-4 shrink-0 exo-accent-text" />
+                <span>{wing.title}</span>
+              </div>
+              <p className="mt-1 text-[11px] leading-snug exo-muted-text">{wing.subtitle}</p>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Sub-navigation within the active Hub Wing */}
+      <div className="flex flex-wrap gap-2 border-b exo-accent-border pb-3">
+        {TABS_BY_WING[activeWing].map((item) => {
           const Icon = item.icon;
           const active = tab === item.id;
           return (
             <button
               key={item.id}
               type="button"
+              data-testid={`doc-studio-tab-${item.id.toLowerCase()}`}
               onClick={() => setTab(item.id)}
-              className={`inline-flex min-h-[38px] items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition whitespace-nowrap ${
-                active
-                  ? 'border-rose-500 bg-rose-500/15 text-rose-800 dark:border-rose-400 dark:bg-rose-500/25 dark:text-rose-100'
-                  : 'border-rose-200 bg-white/80 text-rose-950/75 hover:border-rose-400 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200'
+              className={`inline-flex min-h-[44px] items-center gap-2 px-3 py-1.5 text-xs font-semibold transition whitespace-nowrap ${
+                active ? 'exo-accent-chip-active' : 'exo-accent-chip'
               }`}
             >
-              <Icon className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+              <Icon className="h-3.5 w-3.5 exo-accent-text" />
               <span>{item.label}</span>
             </button>
           );
         })}
       </div>
 
+      {tab === 'GOVERNANCE' && <DocGovernancePanel />}
+      {tab === 'DOC_VCS' && <DocVcsPanel />}
+      {tab === 'DRIVE_SYNC' && <DriveSyncPanel />}
+      {tab === 'EXTERNAL_SYNC' && <ExternalSyncPanel />}
+
       {tab === 'PROJECT_DOCS' && (
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-1.5 font-mono text-[10.5px]">
-            {[
-              { id: 'ALL', label: `Toutes (${docs.length})` },
-              { id: 'TECH_SPECS', label: '1. Spécifications Techniques' },
-              { id: 'USER_GUIDES', label: '2. Guides Utilisateur (Drive)' },
-              { id: 'DESIGN', label: '3. Maquettes Design' },
-              { id: 'LORE_PLAYTEST', label: '4. Lore, Règles, Playtest' },
-            ].map((cat) => (
+        <div className="space-y-3" data-testid="separated-project-docs-view">
+          {/* Separated Domain Selector: Application vs Game */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { id: 'GAME' as const, label: `Pôle Jeu & Assets (${gameDocsCount})` },
+                { id: 'APP' as const, label: `Pôle Application (${appDocsCount})` },
+                { id: 'ALL' as const, label: `Toutes archives (${docs.length})` },
+              ].map((pole) => (
+                <button
+                  key={pole.id}
+                  type="button"
+                  data-testid={`archive-domain-${pole.id.toLowerCase()}`}
+                  onClick={() => {
+                    setDomainFilter(pole.id);
+                    setCategoryFilter('ALL');
+                  }}
+                  className={`min-h-[44px] px-3 text-xs font-semibold transition whitespace-nowrap ${
+                    domainFilter === pole.id ? 'exo-accent-chip-active' : 'exo-accent-chip'
+                  }`}
+                >
+                  {pole.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 exo-muted-text" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filtrer par code ou mot-clé..."
+                aria-label="Rechercher dans les archives documentaires"
+                className="min-h-[44px] w-56 rounded-lg border exo-accent-border bg-[var(--exo-surface)] pl-8 pr-3 text-xs text-[var(--exo-text)]"
+              />
+            </div>
+          </div>
+
+          {/* Sub-categories for the selected pole */}
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('ALL')}
+              className={`min-h-[38px] px-2.5 font-mono-num text-[11px] font-semibold transition whitespace-nowrap ${
+                categoryFilter === 'ALL' ? 'exo-accent-chip-active' : 'exo-accent-chip'
+              }`}
+            >
+              Toutes sous-catégories
+            </button>
+            {visibleCategories.map((cat) => (
               <button
-                key={cat.id}
+                key={cat.code}
                 type="button"
-                onClick={() => setDocCategoryFilter(cat.id)}
-                className={`min-h-[30px] rounded-lg px-2.5 font-semibold transition ${
-                  docCategoryFilter === cat.id ? 'exo-accent-chip-active' : 'exo-accent-chip'
+                onClick={() => setCategoryFilter(cat.code)}
+                className={`min-h-[38px] px-2.5 font-mono-num text-[11px] font-semibold transition whitespace-nowrap ${
+                  categoryFilter === cat.code ? 'exo-accent-chip-active' : 'exo-accent-chip'
                 }`}
               >
-                {cat.label}
+                {cat.code} · {cat.shortLabel}
               </button>
             ))}
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[260px_1fr]">
-            <div className="max-h-[48vh] space-y-2 overflow-y-auto pr-1">
-              {isLoading && <p className="text-xs text-rose-700/70 dark:text-rose-200/70">Chargement du dossier projet…</p>}
+          <div className="grid gap-4 lg:grid-cols-[290px_1fr]">
+            <div className="max-h-[50vh] space-y-2 overflow-y-auto pr-1">
+              {isLoading && <p className="text-xs exo-muted-text">Chargement des archives séparées…</p>}
               {filteredDocs.map((d) => (
                 <button
                   key={d.id}
                   type="button"
                   onClick={() => setSelectedDocId(d.id)}
-                  className={`w-full rounded-lg border p-3 text-left transition ${
+                  className={`w-full rounded-xl border p-3 text-left transition ${
                     activeDoc?.id === d.id
-                      ? 'border-rose-500 bg-rose-50 dark:border-rose-400 dark:bg-rose-500/20'
-                      : 'border-rose-200/80 bg-white/85 hover:border-rose-400 dark:border-rose-900/60 dark:bg-rose-950/25'
+                      ? 'exo-accent-chip-active border-[var(--exo-accent)]'
+                      : 'exo-accent-border bg-[var(--exo-surface)] hover:border-[var(--exo-accent)]'
                   }`}
                 >
-                  <div className="font-mono text-[11px] font-semibold text-rose-600 dark:text-rose-300">{d.code}</div>
-                  <div className="mt-0.5 text-xs font-semibold text-[#1f1224] dark:text-rose-50">{d.title}</div>
-                  <div className="mt-1 font-mono text-[10px] text-rose-900/60 dark:text-rose-200/60">
-                    {Math.round(d.sizeBytes / 1024)} Ko · {d.category}
+                  <div className="flex items-center justify-between gap-2 font-mono-num text-[11px]">
+                    <span className="font-bold exo-accent-text">{d.filingCode}</span>
+                    <span className="exo-muted-text">{d.domain === 'APP' ? 'Application' : 'Jeu'}</span>
+                  </div>
+                  <div className="mt-1 text-xs font-semibold text-[var(--exo-text)]">{d.title}</div>
+                  <div className="mt-1 font-mono-num text-[10px] exo-muted-text">
+                    {d.category} · {Math.max(1, Math.round(d.sizeBytes / 1024))} Ko
                   </div>
                 </button>
               ))}
             </div>
-          <div className="rounded-xl border border-rose-200 bg-white/90 p-4 dark:border-rose-900/60 dark:bg-[#190d1f]">
-            {activeDoc ? (
-              <>
-                <div className="mb-2 flex items-center justify-between border-b border-rose-200 pb-2 dark:border-rose-900/60">
-                  <span className="font-display text-sm font-bold text-[#1f1224] dark:text-rose-50">{activeDoc.title}</span>
-                  <span className="font-mono text-[11px] text-rose-600 dark:text-rose-300">{activeDoc.code}</span>
-                </div>
-                <pre className="max-h-[44vh] overflow-y-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-rose-950/85 dark:text-rose-100/85">
-                  {activeDoc.fullText}
-                </pre>
-              </>
-            ) : (
-              <p className="text-xs text-rose-900/65 dark:text-rose-200/65">Aucun document trouvé dans cette catégorie.</p>
-            )}
-          </div>
+
+            <div className="rounded-xl border exo-accent-border bg-[var(--exo-surface)] p-4">
+              {activeDoc ? (
+                <>
+                  <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-2 border-b exo-accent-border pb-2">
+                    <div>
+                      <div className="font-mono-num text-[11px] exo-accent-text">
+                        {activeDoc.filingCode} · {activeDoc.domain === 'APP' ? 'Pôle Application' : 'Pôle Jeu'} · {activeDoc.category}
+                      </div>
+                      <span className="font-display text-sm font-bold text-[var(--exo-text)]">
+                        {activeDoc.title}
+                      </span>
+                    </div>
+                    <span className="font-mono-num text-[11px] exo-muted-text">{activeDoc.code}</span>
+                  </div>
+                  <pre className="max-h-[46vh] overflow-y-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-[var(--exo-text)] opacity-90">
+                    {activeDoc.fullText}
+                  </pre>
+                </>
+              ) : (
+                <p className="text-xs exo-muted-text">Aucun document trouvé dans cette catégorie.</p>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       {tab === 'CATALOGS' && data && (
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-rose-200 bg-white/85 p-4 dark:border-rose-900/60 dark:bg-rose-950/25">
-            <h3 className="font-display text-sm font-bold text-rose-700 dark:text-rose-300">
+          <div className="rounded-xl border exo-accent-border bg-[var(--exo-surface)] p-4">
+            <h3 className="font-display text-sm font-bold exo-accent-text">
               Contrat Générateur d’Événements Contextuels
             </h3>
-            <dl className="mt-2 space-y-1.5 text-xs text-rose-950/85 dark:text-rose-100/85">
+            <dl className="mt-2 space-y-1.5 text-xs text-[var(--exo-text)]">
               <div>
-                <dt className="font-mono text-[11px] text-rose-600 dark:text-rose-300">Format d’Échange</dt>
+                <dt className="font-mono-num text-[11px] exo-muted-text">Format d’Échange</dt>
                 <dd>{data.catalogs.eventGeneratorContractSummary.schemaName}</dd>
               </div>
               <div>
-                <dt className="font-mono text-[11px] text-rose-600 dark:text-rose-300">Cohérence Narrative</dt>
+                <dt className="font-mono-num text-[11px] exo-muted-text">Cohérence Narrative</dt>
                 <dd>Graphe orienté acyclique contrôlé avant publication</dd>
               </div>
               <div>
-                <dt className="font-mono text-[11px] text-rose-600 dark:text-rose-300">Équilibrage d’Impact</dt>
+                <dt className="font-mono-num text-[11px] exo-muted-text">Équilibrage d’Impact</dt>
                 <dd>Modulateurs bornés entre -15 % et +15 %</dd>
               </div>
               <div>
-                <dt className="font-mono text-[11px] text-rose-600 dark:text-rose-300">Nomenclature Éditoriale</dt>
+                <dt className="font-mono-num text-[11px] exo-muted-text">Nomenclature Éditoriale</dt>
                 <dd>Découvertes scientifiques et diplomatiques vérifiées</dd>
               </div>
             </dl>
           </div>
 
-          <div className="rounded-xl border border-rose-200 bg-white/85 p-4 dark:border-rose-900/60 dark:bg-rose-950/25">
-            <h3 className="font-display text-sm font-bold text-emerald-700 dark:text-emerald-300">
+          <div className="rounded-xl border exo-accent-border bg-[var(--exo-surface)] p-4">
+            <h3 className="font-display text-sm font-bold text-emerald-600 dark:text-emerald-400">
               Catalogue des Découvertes ({data.catalogs.scientificDiscoveries.length} entrées)
             </h3>
-            <ul className="mt-2 space-y-1.5 text-xs text-rose-950/85 dark:text-rose-100/85">
+            <ul className="mt-2 space-y-1.5 text-xs text-[var(--exo-text)]">
               {data.catalogs.scientificDiscoveries.map((label, idx) => (
                 <li
                   key={label}
-                  className="flex justify-between gap-2 border-b border-rose-100 pb-1 dark:border-rose-900/40"
+                  className="flex justify-between gap-2 border-b border-[rgba(var(--exo-accent-rgb),0.15)] pb-1"
                 >
                   <span className="font-medium">{label}</span>
-                  <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-300">SCI-0{idx + 1}</span>
+                  <span className="font-mono-num text-[10px] text-emerald-600 dark:text-emerald-400">SCI-0{idx + 1}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="rounded-xl border border-rose-200 bg-white/85 p-4 dark:border-rose-900/60 dark:bg-rose-950/25">
-            <h3 className="font-display text-sm font-bold text-amber-700 dark:text-amber-300">
+          <div className="rounded-xl border exo-accent-border bg-[var(--exo-surface)] p-4">
+            <h3 className="font-display text-sm font-bold exo-accent-2-text">
               6 Ères de Campagne &amp; Plafonds Technologiques
             </h3>
-            <ul className="mt-2 space-y-1 text-xs text-rose-950/85 dark:text-rose-100/85">
+            <ul className="mt-2 space-y-1 text-xs text-[var(--exo-text)]">
               {data.catalogs.eras.map((e) => (
                 <li
                   key={e.era}
-                  className="flex justify-between border-b border-rose-100 py-1 dark:border-rose-900/40"
+                  className="flex justify-between border-b border-[rgba(var(--exo-accent-rgb),0.15)] py-1"
                 >
                   <span>{e.name}</span>
-                  <span className="font-mono text-amber-700 dark:text-amber-300">
+                  <span className="font-mono-num exo-accent-2-text">
                     Rang {e.maxUnitLevel} · {e.starsRequired}★
                   </span>
                 </li>
@@ -191,18 +402,18 @@ export function DocStudioPanel({ initialTab = 'PROJECT_DOCS' }: DocStudioPanelPr
             </ul>
           </div>
 
-          <div className="rounded-xl border border-rose-200 bg-white/85 p-4 dark:border-rose-900/60 dark:bg-rose-950/25">
-            <h3 className="font-display text-sm font-bold text-rose-700 dark:text-rose-300">
+          <div className="rounded-xl border exo-accent-border bg-[var(--exo-surface)] p-4">
+            <h3 className="font-display text-sm font-bold exo-accent-text">
               6 Destinations Orbitales &amp; Corps Célestes
             </h3>
-            <ul className="mt-2 space-y-1 text-xs text-rose-950/85 dark:text-rose-100/85">
+            <ul className="mt-2 space-y-1 text-xs text-[var(--exo-text)]">
               {data.catalogs.planetarySlots.map((slot) => (
                 <li
                   key={slot.slotIndex}
-                  className="flex justify-between border-b border-rose-100 py-1 dark:border-rose-900/40"
+                  className="flex justify-between border-b border-[rgba(var(--exo-accent-rgb),0.15)] py-1"
                 >
                   <span>{slot.name}</span>
-                  <span className="font-mono text-rose-600 dark:text-rose-300">
+                  <span className="font-mono-num exo-muted-text">
                     {slot.bodyType} (Ère {slot.unlockEra})
                   </span>
                 </li>
@@ -214,7 +425,17 @@ export function DocStudioPanel({ initialTab = 'PROJECT_DOCS' }: DocStudioPanelPr
 
       {tab === 'LLM_LEXICON' && <LlmLexiconPanel />}
       {tab === 'ATLAS' && <BlueprintAtlasView />}
-      {tab === 'DRIVE_SYNC' && <DriveSyncPanel />}
+      {tab === 'BETA_P13' && <BetaP13HubPanel />}
+      {tab === 'WORKFLOWS' && (
+        <WorkflowComparisonPanel
+          onOpenDocVcs={() => setTab('DOC_VCS')}
+          onOpenDriveSync={() => setTab('DRIVE_SYNC')}
+          onOpenGovernance={() => setTab('GOVERNANCE')}
+          onOpenSwarmBridge={() => setTab('SWARM_BRIDGE')}
+        />
+      )}
+      {tab === 'AGENTS_PYRAMID' && <AgentPyramidPanel />}
+      {tab === 'SWARM_BRIDGE' && <SwarmRelayPanel />}
     </div>
   );
 }

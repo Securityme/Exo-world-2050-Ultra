@@ -16,6 +16,7 @@ import {
 import {
   createDefaultMetaShowcase,
   evaluateMetaShowcaseFromWorld,
+  mergeCatalogHonors,
 } from '../systems/honors/honors-evaluator.ts';
 import {
   createInitialGeminiCostLedger,
@@ -30,13 +31,24 @@ import {
 export const META_HONORS_STORAGE_KEY = 'exo_meta_honors_v5';
 export const GEMINI_LEDGER_STORAGE_KEY = 'exo_gemini_ledger_v5';
 
+function normalizeCallsign(raw: string): string {
+  const stripped = raw.replace(/^commandant\s+/i, '').trim();
+  if (!stripped || /^commandant$/i.test(stripped)) return 'Baptiste';
+  return stripped.slice(0, 40);
+}
+
 function loadShowcaseLocal(): MetaPlayerShowcase {
   if (typeof window === 'undefined') return createDefaultMetaShowcase();
   try {
     const raw = window.localStorage.getItem(META_HONORS_STORAGE_KEY);
     if (!raw) return createDefaultMetaShowcase();
     const parsed = MetaPlayerShowcaseSchema.safeParse(JSON.parse(raw));
-    return parsed.success ? parsed.data : createDefaultMetaShowcase();
+    if (!parsed.success) return createDefaultMetaShowcase();
+    const merged = mergeCatalogHonors(parsed.data);
+    const cleanedCallsign = normalizeCallsign(merged.callsign);
+    return cleanedCallsign === merged.callsign
+      ? merged
+      : { ...merged, callsign: cleanedCallsign };
   } catch {
     return createDefaultMetaShowcase();
   }
@@ -87,7 +99,7 @@ export const useMetaHonorsStore = create<MetaHonorsStoreState>((set, get) => ({
     set((s) => {
       const next: MetaPlayerShowcase = {
         ...s.showcase,
-        callsign: callsign.trim().slice(0, 40) || 'Commandant',
+        callsign: normalizeCallsign(callsign),
         updatedAtIso: new Date().toISOString(),
       };
       saveShowcaseLocal(next);
@@ -178,8 +190,9 @@ export const useMetaHonorsStore = create<MetaHonorsStoreState>((set, get) => ({
     if (err || !payload) return;
     const parsed = MetaPlayerShowcaseSchema.safeParse(payload);
     if (parsed.success) {
-      saveShowcaseLocal(parsed.data);
-      set({ showcase: parsed.data });
+      const merged = mergeCatalogHonors(parsed.data);
+      saveShowcaseLocal(merged);
+      set({ showcase: merged });
     }
   },
 

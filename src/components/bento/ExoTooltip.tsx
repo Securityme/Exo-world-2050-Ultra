@@ -53,7 +53,7 @@ export function ExoTooltip({
     const el = triggerRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const width = 280;
+    const width = Math.min(280, Math.max(200, window.innerWidth - 24));
     let left =
       align === 'left'
         ? rect.left

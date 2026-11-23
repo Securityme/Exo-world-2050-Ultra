@@ -2,8 +2,10 @@ import { useMemo, useState } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   Award,
+  Box,
   Crown,
   Monitor,
+  Network,
   Settings,
   Shield,
   Smartphone,
@@ -17,9 +19,11 @@ import { useExoStore } from '../../stores/game.store.ts';
 import { activeSubscreenAtom } from '../../stores/selection.atoms.ts';
 import { evaluateCampaignCommanderProfile } from '../../systems/honors/honors-evaluator.ts';
 import { formatAtmosphereStageName } from '../../utils/atmosphere-labels.ts';
+import { AgentPyramidPanel } from './AgentPyramidPanel.tsx';
+import { Asset3DGalleryPanel } from './Asset3DGalleryPanel.tsx';
 import { TrophyShowcasePanel } from './TrophyShowcasePanel.tsx';
 
-type ProfileTab = 'SHOWCASE' | 'COMMANDER' | 'PROGRESS';
+type ProfileTab = 'SHOWCASE' | 'ASSETS_3D' | 'AGENTS_PYRAMID' | 'COMMANDER' | 'PROGRESS';
 
 /**
  * [L7] EXW.L7.PROFILE_HUB | v5.0.0 | SADT A5.1
@@ -59,8 +63,10 @@ export function ProfileHubTab() {
       <div className="exo-bento-card flex flex-wrap items-center justify-between gap-3 p-3.5">
         <div className="flex flex-wrap gap-1.5">
           {[
-            { id: 'SHOWCASE' as const, label: 'Étendard Multi-Parties', icon: Award },
-            { id: 'COMMANDER' as const, label: 'Commandant (Campagne)', icon: Crown },
+            { id: 'SHOWCASE' as const, label: 'Étendard & Succès', icon: Award },
+            { id: 'ASSETS_3D' as const, label: 'Galerie 3D', icon: Box },
+            { id: 'AGENTS_PYRAMID' as const, label: 'Agents (Triangle)', icon: Network },
+            { id: 'COMMANDER' as const, label: 'Dirigeant (Campagne)', icon: Crown },
             { id: 'PROGRESS' as const, label: 'Progression', icon: Shield },
           ].map((item) => {
             const Icon = item.icon;
@@ -116,6 +122,8 @@ export function ProfileHubTab() {
       </div>
 
       {tab === 'SHOWCASE' && <TrophyShowcasePanel />}
+      {tab === 'ASSETS_3D' && <Asset3DGalleryPanel />}
+      {tab === 'AGENTS_PYRAMID' && <AgentPyramidPanel />}
 
       {tab === 'COMMANDER' && (
         <div className="space-y-4">

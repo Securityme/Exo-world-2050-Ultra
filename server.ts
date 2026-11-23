@@ -1,12 +1,29 @@
 import express from 'express';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import { checkZ0AndR50Compliance, sanitizeZ0Text } from './src/contracts/guards/z0-legacy.guard.ts';
 import { ExecutiveDossierSchema } from './src/contracts/pa-dossiers.schema.ts';
 import { TurnEvents4TResponseSchema } from './src/contracts/v4-systems.schema.ts';
+import {
+  evaluateGithubParity,
+  type ExternalSyncSnapshot,
+} from './src/doc-sync/external-sync.service.ts';
+import {
+  GEMINI_NOTEBOOK_ID,
+  GEMINI_NOTEBOOK_URL,
+  GITHUB_REPO_BRANCH,
+  GITHUB_REPO_NAME,
+  GITHUB_REPO_OWNER,
+  GITHUB_REPO_URL,
+  GITHUB_SYNC_BASELINE_SHA,
+} from './src/doc-sync/sot-manifest.ts';
+import { createDocGovernanceRouter } from './src/app/api/doc-governance.route.ts';
+import { createSwarmBusRouter } from './src/app/api/swarm-bus.route.ts';
+import { classifyProjectDocument } from './src/systems/governance/doc-governance.engine.ts';
 import { applyLlmLexicon, buildLlmLexiconPromptBlock } from './src/utils/llm-lexicon.ts';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -172,7 +189,140 @@ async function startServer() {
   app.use(express.json({ limit: '512kb' }));
 
   app.get('/api/health', (_req, res) => {
-    res.json({ ok: true, service: 'exo-world-2050-bff', version: '4.0.0-rc.1' });
+    res.json({ ok: true, service: 'exo-world-2050-bff', version: '5.1.0' });
+  });
+
+  app.use('/api/governance', createDocGovernanceRouter());
+  app.use('/api/swarm-bus', createSwarmBusRouter());
+
+  app.get('/api/project-docs', (_req, res) => {
+    try {
+      const rootDir = path.resolve(__dirname);
+      const docsRoot = path.resolve(rootDir, 'docs');
+      const candidates: string[] = [];
+      for (const topFile of ['INDEX.md', 'CHANGELOG.txt']) {
+        const abs = path.resolve(rootDir, topFile);
+        if (fs.existsSync(abs)) candidates.push(abs);
+      }
+      const walk = (dir: string) => {
+        if (!fs.existsSync(dir)) return;
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+          const full = path.resolve(dir, entry.name);
+          if (!full.startsWith(docsRoot + path.sep)) continue;
+          if (entry.isDirectory()) {
+            walk(full);
+          } else if (entry.name.endsWith('.md') || entry.name.endsWith('.txt') || entry.name.endsWith('.yaml')) {
+            candidates.push(full);
+          }
+        }
+      };
+      walk(docsRoot);
+
+      const categoryCounters = new Map<string, number>();
+      const documents = candidates
+        .sort((a, b) => a.localeCompare(b))
+        .slice(0, 80)
+        .map((abs, idx) => {
+          const rel = path.relative(rootDir, abs).replace(/\\/g, '/');
+          const stat = fs.statSync(abs);
+          const raw = fs.readFileSync(abs, 'utf8');
+          const firstHeading = raw.split('\n').find((line) => line.trim().startsWith('#'));
+          const title = firstHeading ? firstHeading.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim() : path.basename(rel);
+          const previewClass = classifyProjectDocument(rel, title, 0);
+          const seq = categoryCounters.get(previewClass.categoryCode) ?? 0;
+          categoryCounters.set(previewClass.categoryCode, seq + 1);
+          const classified = classifyProjectDocument(rel, title, seq);
+          return {
+            id: `doc-${idx}-${rel.replace(/[^a-zA-Z0-9_-]/g, '-')}`,
+            code: rel,
+            filingCode: classified.filingCode,
+            domain: classified.domain,
+            track: classified.track,
+            categoryCode: classified.categoryCode,
+            title: title.slice(0, 120),
+            category: classified.categoryLabel,
+            fileName: path.basename(rel),
+            sizeBytes: stat.size,
+            fullText: raw.slice(0, 24_000),
+          };
+        });
+
+      res.json({ documents });
+    } catch (err) {
+      res.status(500).json({
+        documents: [],
+        error: err instanceof Error ? err.message : 'Lecture des documents projet impossible.',
+      });
+    }
+  });
+
+  app.get('/api/sync/external-sources', async (_req, res) => {
+    const checkedAtIso = new Date().toISOString();
+    const repoApiUrl = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`;
+    const commitApiUrl = `${repoApiUrl}/commits/${GITHUB_REPO_BRANCH}`;
+    const headers = {
+      Accept: 'application/vnd.github+json',
+      'User-Agent': 'exo-world-2050-sync',
+    };
+
+    let remoteSha: string | null = null;
+    let remoteCommitDate: string | null = null;
+    let remoteCommitMessage: string | null = null;
+    let description: string | null = null;
+    let errorDetail: string | undefined;
+
+    try {
+      const [repoResp, commitResp] = await withTimeout(
+        Promise.all([
+          fetch(repoApiUrl, { headers }),
+          fetch(commitApiUrl, { headers }),
+        ]),
+        4000,
+        'github-api',
+      );
+      if (repoResp.ok) {
+        const repoJson = (await repoResp.json()) as { description?: string | null };
+        description = typeof repoJson.description === 'string' ? repoJson.description : null;
+      }
+      if (commitResp.ok) {
+        const commitJson = (await commitResp.json()) as {
+          sha?: string;
+          commit?: { message?: string; committer?: { date?: string } };
+        };
+        remoteSha = typeof commitJson.sha === 'string' ? commitJson.sha : null;
+        remoteCommitDate = commitJson.commit?.committer?.date ?? null;
+        remoteCommitMessage = commitJson.commit?.message?.split('\n')[0] ?? null;
+      } else {
+        errorDetail = `GitHub API HTTP ${commitResp.status}`;
+      }
+    } catch (err) {
+      errorDetail = err instanceof Error ? err.message : 'GitHub inaccessible';
+    }
+
+    const payload: ExternalSyncSnapshot = {
+      github: {
+        repoFullName: `${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`,
+        repoUrl: GITHUB_REPO_URL,
+        branch: GITHUB_REPO_BRANCH,
+        baselineSha: GITHUB_SYNC_BASELINE_SHA,
+        remoteSha,
+        remoteCommitDate,
+        remoteCommitMessage,
+        parity: evaluateGithubParity(GITHUB_SYNC_BASELINE_SHA, remoteSha),
+        description,
+        checkedAtIso,
+        errorDetail,
+      },
+      geminiNotebook: {
+        notebookId: GEMINI_NOTEBOOK_ID,
+        notebookUrl: GEMINI_NOTEBOOK_URL,
+        status: 'AUTH_REQUIRED',
+        reason:
+          'Le Notebook Gemini est privé et redirige les requêtes serveur anonymes vers la connexion Google. Ouvrez-le dans votre navigateur authentifié ou importez un extrait ci-dessous.',
+      },
+    };
+
+    res.json(payload);
   });
 
   // V4 BFF Route: 4-Tier Cascade (T1 gemini-4-hydrogen -> T2 retry -> T3 gemini-3.1-flash-lite -> T4 transparent offline/CV)

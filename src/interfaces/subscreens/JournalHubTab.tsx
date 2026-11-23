@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useSetAtom } from 'jotai';
-import { BarChart3, Download, FileJson, GitCompare, History, PlayCircle } from 'lucide-react';
+import { BarChart3, ClipboardCheck, Download, FileJson, GitCompare, History, PlayCircle } from 'lucide-react';
 import { RoadmapPlaceholderCard } from '../../components/RoadmapPlaceholderCard.tsx';
 import { SUPERPOWERS_CATALOG } from '../../data/world.catalog.ts';
 import { useExoStore } from '../../stores/game.store.ts';
 import { toastNoticeAtom } from '../../stores/selection.atoms.ts';
 import { formatAtmosphereStageName } from '../../utils/atmosphere-labels.ts';
+import { BetaP13HubPanel } from './BetaP13HubPanel.tsx';
 import { ChronicleSavesTab } from './ChronicleSavesTab.tsx';
 import { JournalChroniclePanel } from './JournalChroniclePanel.tsx';
 
-type JournalSubTab = 'CHRONICLE' | 'PLAYTEST_6T' | 'DIGEST';
+type JournalSubTab = 'CHRONICLE' | 'PLAYTEST_6T' | 'BETA_P13' | 'DIGEST';
 
 /**
  * [L7] Primary Game Tab 3 — Journal
@@ -57,6 +58,7 @@ export function JournalHubTab() {
   const tabs: readonly { id: JournalSubTab; label: string; icon: typeof History }[] = [
     { id: 'CHRONICLE', label: 'Chronique', icon: History },
     { id: 'PLAYTEST_6T', label: 'Playtest 6 Tours', icon: PlayCircle },
+    { id: 'BETA_P13', label: 'Bêta P13', icon: ClipboardCheck },
     { id: 'DIGEST', label: 'Archives', icon: BarChart3 },
   ];
 
@@ -97,6 +99,7 @@ export function JournalHubTab() {
 
       {subTab === 'CHRONICLE' && <ChronicleSavesTab />}
       {subTab === 'PLAYTEST_6T' && <JournalChroniclePanel />}
+      {subTab === 'BETA_P13' && <BetaP13HubPanel />}
 
       {subTab === 'DIGEST' && (
         <div className="space-y-4">

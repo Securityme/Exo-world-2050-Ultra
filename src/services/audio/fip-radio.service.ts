@@ -1,9 +1,10 @@
 /**
- * [L5] EXW.L5.FIP_AUDIO | v4.0.0-rc.1 | SADT A4.2
- * Radio France FIP 6-Stream Web Radio + <500ms WebAudio Ambient Synth Fallback + <25ms UI SFX:
+ * [L5] EXW.L5.FIP_AUDIO | v5.0.0 | SADT A4.2
+ * Radio France FIP 6-Stream Web Radio + Clickless Fade-In/Fade-Out + Clean Ambient Fallback + UI SFX:
  * - Auto-activates ON by default upon the first user gesture (pointerdown / keydown)
  * - 6 FIP stations: Direct, Jazz, Électro, Groove, Monde, Rock
- * - Seamless WebAudio ambient harmonic fallback if remote audio stream is blocked/offline
+ * - Zero startup thud: gentle volume ramp on stream start, 4.5s buffer grace before fallback,
+ *   automatic synth stop on stream start, and high-passed smooth-ramped ambient pad if offline.
  */
 
 export type FipStationId = 'DIRECT' | 'JAZZ' | 'ELECTRO' | 'GROOVE' | 'MONDE' | 'ROCK';
@@ -26,11 +27,18 @@ export const FIP_STATIONS: readonly FipStationSpec[] = Object.freeze([
 
 export type UiCueKind = 'CLICK' | 'SIGNATURE' | 'CHIME' | 'PULSE' | 'FANFARE' | 'ALERT_P0';
 
+const STREAM_FALLBACK_GRACE_MS = 4500;
+const STREAM_FADE_IN_MS = 360;
+const SYNTH_GAIN_SCALE = 0.045;
+
 class FipRadioService {
   private audioEl: HTMLAudioElement | null = null;
   private ctx: AudioContext | null = null;
   private synthGain: GainNode | null = null;
   private synthOscs: OscillatorNode[] = [];
+  private fadeTimer: number | null = null;
+  private fallbackTimer: number | null = null;
+  private playSeq = 0;
   private station: FipStationId = 'DIRECT';
   private enabled = true;
   private sfxEnabled = true;
@@ -75,10 +83,51 @@ class FipRadioService {
     };
   }
 
+  private clearTimers(): void {
+    if (typeof window === 'undefined') return;
+    if (this.fadeTimer !== null) {
+      window.clearInterval(this.fadeTimer);
+      this.fadeTimer = null;
+    }
+    if (this.fallbackTimer !== null) {
+      window.clearTimeout(this.fallbackTimer);
+      this.fallbackTimer = null;
+    }
+  }
+
+  private fadeInAudioElement(targetVolume: number): void {
+    if (typeof window === 'undefined' || !this.audioEl) return;
+    if (this.fadeTimer !== null) {
+      window.clearInterval(this.fadeTimer);
+      this.fadeTimer = null;
+    }
+    const el = this.audioEl;
+    el.volume = 0;
+    const steps = 12;
+    const stepMs = Math.max(16, Math.round(STREAM_FADE_IN_MS / steps));
+    let currentStep = 0;
+    this.fadeTimer = window.setInterval(() => {
+      currentStep += 1;
+      const ratio = Math.min(1, currentStep / steps);
+      // Smooth ease-out curve prevents any sudden DC jump / thud at stream start
+      el.volume = Math.max(0, Math.min(1, targetVolume * ratio * ratio));
+      if (ratio >= 1 && this.fadeTimer !== null) {
+        window.clearInterval(this.fadeTimer);
+        this.fadeTimer = null;
+      }
+    }, stepMs);
+  }
+
   public setVolume(v: number): void {
     this.volume = Math.max(0, Math.min(1, v));
-    if (this.audioEl) this.audioEl.volume = this.volume;
-    if (this.synthGain) this.synthGain.gain.value = this.volume * 0.14;
+    if (this.audioEl && this.fadeTimer === null) {
+      this.audioEl.volume = this.volume;
+    }
+    if (this.synthGain && this.ctx) {
+      const now = this.ctx.currentTime;
+      this.synthGain.gain.cancelScheduledValues(now);
+      this.synthGain.gain.setTargetAtTime(Math.max(0.0001, this.volume * SYNTH_GAIN_SCALE), now, 0.08);
+    }
     this.emit();
   }
 
@@ -93,41 +142,63 @@ class FipRadioService {
     const spec = FIP_STATIONS.find((s) => s.id === this.station) ?? FIP_STATIONS[0]!;
 
     if (typeof window === 'undefined') return;
+    const seq = ++this.playSeq;
+    this.clearTimers();
     this.stopSynthFallback();
 
     if (!this.audioEl) {
       this.audioEl = new Audio();
       this.audioEl.crossOrigin = 'anonymous';
+      this.audioEl.preload = 'none';
     }
+    this.audioEl.volume = 0;
     this.audioEl.src = spec.streamUrl;
-    this.audioEl.volume = this.volume;
 
-    // <500ms fallback guard if stream is blocked in sandbox/headless
+    // Wait generously for real Icecast buffering so we never fire a thud/drone while FIP loads
     let settled = false;
-    const fallbackTimer = window.setTimeout(() => {
-      if (!settled) {
+    this.fallbackTimer = window.setTimeout(() => {
+      if (!settled && seq === this.playSeq && this.enabled) {
         this.startSynthFallback();
       }
-    }, 480);
+    }, STREAM_FALLBACK_GRACE_MS);
 
     try {
       await this.audioEl.play();
       settled = true;
-      window.clearTimeout(fallbackTimer);
+      if (this.fallbackTimer !== null) {
+        window.clearTimeout(this.fallbackTimer);
+        this.fallbackTimer = null;
+      }
+      if (seq !== this.playSeq || !this.enabled) {
+        this.audioEl.pause();
+        return;
+      }
+      // Always stop fallback synth cleanly if it had started during a slow buffer
+      this.stopSynthFallback();
+      this.fadeInAudioElement(this.volume);
       this.playing = true;
       this.fallbackActive = false;
       this.emit();
     } catch {
       settled = true;
-      window.clearTimeout(fallbackTimer);
+      if (this.fallbackTimer !== null) {
+        window.clearTimeout(this.fallbackTimer);
+        this.fallbackTimer = null;
+      }
+      if (seq !== this.playSeq || !this.enabled) return;
       this.startSynthFallback();
     }
   }
 
   public pause(): void {
+    this.playSeq += 1;
     this.enabled = false;
     this.playing = false;
-    this.audioEl?.pause();
+    this.clearTimers();
+    if (this.audioEl) {
+      this.audioEl.pause();
+      this.audioEl.volume = 0;
+    }
     this.stopSynthFallback();
     this.emit();
   }
@@ -143,7 +214,9 @@ class FipRadioService {
   private ensureAudioContext(): AudioContext | null {
     if (typeof window === 'undefined') return null;
     if (!this.ctx) {
-      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!Ctx) return null;
       this.ctx = new Ctx();
     }
@@ -158,22 +231,33 @@ class FipRadioService {
     if (!ctx) return;
     this.stopSynthFallback();
 
+    const now = ctx.currentTime;
     const gain = ctx.createGain();
-    gain.gain.value = this.volume * 0.12;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 520;
-    gain.connect(filter);
-    filter.connect(ctx.destination);
+    // Smooth fade-in from near-silence eliminates any DC click or low-frequency thud
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(Math.max(0.001, this.volume * SYNTH_GAIN_SCALE), now + 0.65);
 
-    // Warm solarpunk major-7th ambient pad chord
-    const freqs = [174.61, 220.0, 261.63, 329.63];
+    // High-pass removes muddy bass rumble; gentle low-pass keeps the pad airy and calm
+    const highpass = ctx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.setValueAtTime(220, now);
+
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.setValueAtTime(1400, now);
+
+    gain.connect(highpass);
+    highpass.connect(lowpass);
+    lowpass.connect(ctx.destination);
+
+    // Light, airy Cmaj7 ambient pad (no sub-200Hz rumble)
+    const freqs = [261.63, 329.63, 392.0, 493.88];
     this.synthOscs = freqs.map((f) => {
       const osc = ctx.createOscillator();
       osc.type = 'sine';
-      osc.frequency.value = f;
+      osc.frequency.setValueAtTime(f, now);
       osc.connect(gain);
-      osc.start();
+      osc.start(now);
       return osc;
     });
     this.synthGain = gain;
@@ -183,7 +267,34 @@ class FipRadioService {
   }
 
   private stopSynthFallback(): void {
-    for (const osc of this.synthOscs) {
+    const oscs = this.synthOscs;
+    const gain = this.synthGain;
+    this.synthOscs = [];
+    this.synthGain = null;
+    this.fallbackActive = false;
+
+    if (oscs.length === 0) return;
+
+    if (gain && this.ctx) {
+      const now = this.ctx.currentTime;
+      try {
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(Math.max(0.0001, gain.gain.value), now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+      } catch {
+        // ignore ramp edge cases
+      }
+      for (const osc of oscs) {
+        try {
+          osc.stop(now + 0.14);
+        } catch {
+          // already stopped
+        }
+      }
+      return;
+    }
+
+    for (const osc of oscs) {
       try {
         osc.stop();
         osc.disconnect();
@@ -191,10 +302,7 @@ class FipRadioService {
         // already stopped
       }
     }
-    this.synthOscs = [];
-    this.synthGain?.disconnect();
-    this.synthGain = null;
-    this.fallbackActive = false;
+    gain?.disconnect();
   }
 
   public playUiCue(cue: UiCueKind): void {
@@ -222,7 +330,7 @@ class FipRadioService {
     osc.frequency.exponentialRampToValueAtTime(cfg.f2, now + cfg.dur);
 
     gain.gain.setValueAtTime(0.001, now);
-    gain.gain.linearRampToValueAtTime(Math.max(0.03, this.volume * 0.16), now + 0.01);
+    gain.gain.linearRampToValueAtTime(Math.max(0.025, this.volume * 0.14), now + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, now + cfg.dur);
 
     osc.start(now);

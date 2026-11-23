@@ -66,7 +66,7 @@ export function SubscreensOverlay() {
   if (subscreen === 'DOC_SYNC_STUDIO' || subscreen === 'BLUEPRINT_ATLAS') {
     return (
       <DocSyncStudioModal
-        initialTab={subscreen === 'BLUEPRINT_ATLAS' ? 'ATLAS' : 'PROJECT_DOCS'}
+        initialTab={subscreen === 'BLUEPRINT_ATLAS' ? 'ATLAS' : 'GOVERNANCE'}
         onClose={() => setSubscreen('NONE')}
       />
     );

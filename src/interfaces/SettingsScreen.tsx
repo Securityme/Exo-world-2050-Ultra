@@ -363,15 +363,15 @@ export function SettingsScreen() {
 
           {tab === 'DOCS_ATLAS' && (
             <div className="space-y-3">
-              <div className="border-b border-rose-200 pb-2.5 dark:border-rose-900/60">
-                <h2 className="font-display text-base font-bold text-[#1f1224] dark:text-rose-50">
-                  Studio Documentaire (4 Catégories)
+              <div className="border-b exo-accent-border pb-2.5">
+                <h2 className="font-display text-base font-bold text-[var(--exo-text)]">
+                  Gouvernance RBAC, Validation &amp; Documentation Séparée (Application / Jeu)
                 </h2>
-                <p className="text-xs text-rose-900/70 dark:text-rose-200/70">
-                  Spécifications Techniques, Guides Utilisateur, Maquettes Design, Lore/Règles/Équilibrage, et passerelle Google Drive isolée.
+                <p className="text-xs exo-muted-text">
+                  Rôles utilisateurs, flux de validation (Documentation technique, Skills, Jeu) et archives classées par pôle.
                 </p>
               </div>
-              <DocStudioPanel initialTab="PROJECT_DOCS" />
+              <DocStudioPanel initialTab="GOVERNANCE" />
             </div>
           )}
         </div>

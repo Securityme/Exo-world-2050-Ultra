@@ -49,7 +49,7 @@ export function AppPathAtlasPanel() {
     { path: 'Monde ▸ Technologies ▸ Arbre 30 Techs', category: 'Gestionnaire', summary: 'Recherche scientifique dédiée (indépendante du Militaire)', action: () => openMonde('TECHNOLOGIES', 'TECH_TREE') },
     { path: 'Événements ▸ Dossiers Exécutifs', category: 'Commandement', summary: 'Badges 3 niveaux, classement IA non-restrictif, module Monde', action: () => openSubscreen('EVENTS_HUB') },
     { path: 'Journal ▸ Chronique · Playtest 6T', category: 'Archives', summary: 'Sauvegardes locales/Cloud, simulateur 6 tours & empreintes SHA-256', action: () => openSubscreen('JOURNAL_HUB') },
-    { path: 'Profil ▸ Étendard · Commandant', category: 'Honneurs', summary: 'Vitrine multi-parties (Avatar, Médailles) & Hiérarchie CK3', action: () => openSubscreen('PROFILE') },
+    { path: 'Profil ▸ Étendard · Dirigeant', category: 'Honneurs', summary: 'Vitrine multi-parties (Avatar, Médailles) & Hiérarchie CK3', action: () => openSubscreen('PROFILE') },
   ];
 
   return (

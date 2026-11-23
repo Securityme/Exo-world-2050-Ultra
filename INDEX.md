@@ -19,10 +19,10 @@
 - [`docs/gameplay/02.md`](docs/gameplay/02.md) (1 Ko)
 - [`docs/gameplay/03.md`](docs/gameplay/03.md) (1 Ko)
 - [`docs/gameplay/04.md`](docs/gameplay/04.md) (1 Ko)
-- [`docs/inter-ia/BUS_MESSAGES.md`](docs/inter-ia/BUS_MESSAGES.md) (1 Ko)
+- [`docs/inter-ia/BUS_MESSAGES.md`](docs/inter-ia/BUS_MESSAGES.md) (2 Ko)
 - [`docs/matrices/MC-00_CORRESPONDANCE.md`](docs/matrices/MC-00_CORRESPONDANCE.md) (2 Ko)
 - [`docs/matrices/SM-01_A_SM-06_ICOM.md`](docs/matrices/SM-01_A_SM-06_ICOM.md) (1 Ko)
-- [`docs/SYSTEM_INSTRUCTION_LIVE.md`](docs/SYSTEM_INSTRUCTION_LIVE.md) (25 Ko)
+- [`docs/SYSTEM_INSTRUCTION_LIVE.md`](docs/SYSTEM_INSTRUCTION_LIVE.md) (26 Ko)
 
 ## 2. Guides Utilisateur (User Guides — Seule catégorie synchronisable Drive) (0)
 

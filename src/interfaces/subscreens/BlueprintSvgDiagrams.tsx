@@ -114,7 +114,7 @@ export function BlueprintSvgDiagram({ activeId }: { readonly activeId: Blueprint
 
         <rect x="355" y="230" width="270" height="95" rx="8" fill="#FFFFFF" stroke="#059669" strokeWidth="2" />
         <text x="371" y="257" fill="#047857" fontSize="12" fontWeight="bold" fontFamily="monospace">Sauvegarde Cloud</text>
-        <text x="371" y="279" fill="#1F1224" fontSize="11">Compte Commandant · Campagnes</text>
+        <text x="371" y="279" fill="#1F1224" fontSize="11">Compte Joueur · Campagnes</text>
         <text x="371" y="299" fill="#9F1239" fillOpacity="0.7" fontSize="10" fontFamily="monospace">Archives locales + Cloud privé</text>
 
         <rect x="670" y="230" width="270" height="95" rx="8" fill="#FFF1F2" stroke="#E11D48" strokeWidth="2" strokeDasharray="6 4" />

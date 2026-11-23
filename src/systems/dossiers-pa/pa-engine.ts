@@ -460,7 +460,7 @@ export function createDirectInitiativeDossier(
     code,
     dossierClass,
     title: titles[dossierClass],
-    briefing: 'Dossier émis par Initiative Directe du Commandant (R-33) hors tirage de l’Oracle.',
+    briefing: 'Dossier émis par Initiative Directe (R-33) hors tirage de l’Oracle.',
     source: 'DIRECT_INITIATIVE',
     slotIndex: state.activeSlotIndex,
     tileIndex: (state.tick + 17) % 72,

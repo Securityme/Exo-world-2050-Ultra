@@ -37,7 +37,7 @@ export function AuthScreen() {
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-rose-950/35 p-4 dark:bg-[#0d0611]/85">
       <div className="exo-bento-card w-full max-w-md rounded-2xl p-6">
         <div className="flex items-center justify-between border-b border-rose-200 pb-3 dark:border-rose-900/60">
-          <h1 className="font-display text-lg font-bold text-[#1f1224] dark:text-rose-50">Compte Commandant</h1>
+          <h1 className="font-display text-lg font-bold text-[#1f1224] dark:text-rose-50">Compte Joueur</h1>
           <button
             type="button"
             onClick={closeScreen}

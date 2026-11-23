@@ -8,10 +8,21 @@ import { z } from 'zod';
  */
 export const MedalTierSchema = z.enum(['BRONZE', 'SILVER', 'GOLD', 'PLATINUM']);
 
+export const MedalCategorySchema = z.enum([
+  'CONCEPTION',
+  'EXPLORATION',
+  'BIOSPHERE',
+  'DIPLOMACY',
+  'MILITARY',
+  'PHILOSOPHY',
+  'ECONOMY',
+  'SCIENCE',
+]);
+
 export const MetaMedalRecordSchema = z.object({
   id: z.string(),
   title: z.string(),
-  category: z.enum(['CONCEPTION', 'EXPLORATION', 'BIOSPHERE', 'DIPLOMACY', 'MILITARY', 'PHILOSOPHY']),
+  category: MedalCategorySchema,
   tier: MedalTierSchema,
   description: z.string(),
   unlocked: z.boolean(),
@@ -39,11 +50,20 @@ export const MetaTitleRecordSchema = z.object({
   isSymbolicDistinction: z.boolean().default(false),
 });
 
+export const BannerStyleIdSchema = z.enum([
+  'ASTRAL_ROSE',
+  'SOLAR_GOLD',
+  'EDEN_EMERALD',
+  'OBSIDIAN_PLATINUM',
+  'CYBER_CYAN',
+  'SOLARPUNK_AMBER',
+]);
+
 export const MetaPlayerShowcaseSchema = z.object({
   callsign: z.string().min(2).max(40),
   avatarPresetId: z.string(),
   customAvatarDataUrl: z.string().max(180000).nullable(),
-  bannerStyleId: z.enum(['ASTRAL_ROSE', 'SOLAR_GOLD', 'EDEN_EMERALD', 'OBSIDIAN_PLATINUM']),
+  bannerStyleId: BannerStyleIdSchema,
   emblemId: z.enum(['STAR_COMPASS', 'ORBIT_CROWN', 'BIO_LEAF', 'AEGIS_SHIELD', 'FOUNDER_PRISM']),
   equippedTitleId: z.string(),
   pinnedBadgeIds: z.array(z.string()).max(4),
