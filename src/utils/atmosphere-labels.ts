@@ -1,4 +1,8 @@
-import { ATMOSPHERE_CONSTANTS } from '../config/atmosphere.constants.ts';
+import {
+  ATMOSPHERE_CONSTANTS,
+  resolveScientificAtmosphereDivision,
+  type ScientificAtmosphereDivisionSpec,
+} from '../config/atmosphere.constants.ts';
 import type { AtmosphereTier } from '../contracts/render-bridge.schema.ts';
 import type { WorldState } from '../contracts/world-state.schema.ts';
 
@@ -15,6 +19,7 @@ export interface AtmosphereStatusBadge {
   readonly desktopLabel: string;
   readonly mobileLabel: string;
   readonly weatherLabel: string;
+  readonly scientificDivision: ScientificAtmosphereDivisionSpec;
   readonly tone: AtmosphereStatusTone;
   readonly tooltipTitle: string;
   readonly tooltipFormula: string;
@@ -78,6 +83,7 @@ export function formatAtmosphereStatusBadge(
   const weatherLabel = formatWeatherLabel(input.weatherState);
   const qualityLabel = QUALITY_BY_TIER[tier];
   const stageName = formatAtmosphereStageName(tier);
+  const scientificDivision = resolveScientificAtmosphereDivision(tier, input.atmosphereProgress);
 
   const isSevereWeather =
     input.weatherState === 'DUST_STORM' ||
@@ -135,10 +141,11 @@ export function formatAtmosphereStatusBadge(
     desktopLabel: `${qualityLabel} · ${climateStateLabel}`,
     mobileLabel: `${qualityLabel} · ${climateShortLabel}`,
     weatherLabel,
+    scientificDivision,
     tone,
     tooltipTitle: `${qualityLabel} — ${climateStateLabel}`,
-    tooltipFormula: `${stageName} (${pct}%) · Météo : ${weatherLabel} · PNJ ${speedStr} (${tierConst.maxExposureHours}h/j)`,
+    tooltipFormula: `${stageName} [${scientificDivision.id}] (${pct}%) · Météo : ${weatherLabel} · PNJ ${speedStr} (${tierConst.maxExposureHours}h/j)`,
     tooltipBody:
-      'Indice global combinant la qualité de l’air à ciel ouvert (Hostile → Stabilisée → Respirable → Éden) et la stabilité climatique actuelle (météo, cycles stables et alertes P0).',
+      'Indice global combinant les 5 divisions scientifiques (Exosphère → Troposphère) et la qualité d’air à ciel ouvert (Hostile → Éden).',
   };
 }

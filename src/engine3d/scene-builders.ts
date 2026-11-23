@@ -20,9 +20,13 @@ import {
   createCityGroundTexture,
   createCityHorizonBumpTexture,
   createCityHorizonTexture,
+  createHexPadPbrTextures,
+  createMaglevRailEmissiveTexture,
   createOpenSkyDomeMaterial,
+  createParticleGlowTexture,
   createPlanetCloudTexture,
   createPlanetSurfaceTextures,
+  createWaterRippleNormalMap,
 } from './procedural-textures.ts';
 
 /**
@@ -65,10 +69,14 @@ export function createStarfield(): THREE.Points {
   geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   const mat = new THREE.PointsMaterial({
-    size: 0.28,
+    map: createParticleGlowTexture(),
+    size: 0.36,
     vertexColors: true,
     transparent: true,
-    opacity: 0.84,
+    opacity: 0.9,
+    alphaTest: 0.03,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
     sizeAttenuation: true,
   });
   return new THREE.Points(geo, mat);
@@ -207,24 +215,51 @@ export function buildPlanetScaleGroup(initialTier: AtmosphereTier): PlanetScaleN
   const group = new THREE.Group();
   const radius = 3.2;
 
-  // High-detail PBR Exo-Planet surface (96x64 smooth silhouette, albedo + bump + ocean specular + city lights)
-  const { map, bumpMap, roughnessMap, emissiveMap } = createPlanetSurfaceTextures(initialTier);
+  // High-detail PBR Exo-Planet surface (96x64 smooth silhouette, albedo + normal + bump + ocean specular + night-terminator city lights)
+  const { map, normalMap, bumpMap, roughnessMap, emissiveMap } = createPlanetSurfaceTextures(initialTier);
+  const nightUniforms = {
+    uSunDir: { value: new THREE.Vector3(0.65, 0.55, 0.52).normalize() },
+  };
   const surfaceMat = new THREE.MeshStandardMaterial({
     map,
+    normalMap,
+    normalScale: new THREE.Vector2(0.75, 0.75),
     bumpMap,
-    bumpScale: 0.34,
+    bumpScale: 0.14,
     roughnessMap,
     roughness: 1.0,
-    metalness: 0.04,
-    envMapIntensity: 0.42,
+    metalness: 0.06,
+    envMapIntensity: 0.48,
     emissive: new THREE.Color('#ffd3a8'),
     emissiveMap,
-    emissiveIntensity: 0.68,
+    emissiveIntensity: 1.05,
   });
+  surfaceMat.userData.nightUniforms = nightUniforms;
+  surfaceMat.onBeforeCompile = (shader) => {
+    shader.uniforms.uSunDir = nightUniforms.uSunDir;
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        '#include <common>\nvarying vec3 vExoWorldNormal;',
+      )
+      .replace(
+        '#include <worldpos_vertex>',
+        '#include <worldpos_vertex>\nvExoWorldNormal = normalize(mat3(modelMatrix) * objectNormal);',
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        '#include <common>\nuniform vec3 uSunDir;\nvarying vec3 vExoWorldNormal;',
+      )
+      .replace(
+        '#include <emissivemap_fragment>',
+        '#include <emissivemap_fragment>\nfloat exoNightFactor = smoothstep(0.16, -0.26, dot(normalize(vExoWorldNormal), normalize(uSunDir)));\ntotalEmissiveRadiance *= exoNightFactor;',
+      );
+  };
   const surfaceMesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 96, 64), surfaceMat);
   group.add(surfaceMesh);
 
-  // Primary swirling procedural alpha cloud deck + subtle upper jetstream cirrus shell
+  // Primary swirling procedural alpha cloud deck + subtle upper jetstream cirrus shell (zero z-fighting)
   const cloudTex = createPlanetCloudTexture(initialTier);
   const cloudsMat = new THREE.MeshStandardMaterial({
     map: cloudTex,
@@ -233,8 +268,11 @@ export function buildPlanetScaleGroup(initialTier: AtmosphereTier): PlanetScaleN
     roughness: 0.9,
     metalness: 0.0,
     depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
   });
-  const cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.022, 64, 48), cloudsMat);
+  const cloudsMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.024, 64, 48), cloudsMat);
   group.add(cloudsMesh);
 
   const cirrusMat = new THREE.MeshBasicMaterial({
@@ -243,6 +281,9 @@ export function buildPlanetScaleGroup(initialTier: AtmosphereTier): PlanetScaleN
     opacity: initialTier === 'P1' ? 0.16 : 0.24,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
   });
   const cirrusMesh = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.036, 48, 36), cirrusMat);
   cirrusMesh.rotation.y = 1.4;
@@ -397,6 +438,9 @@ export interface CityScaleNodes {
   readonly pedestriansGroup: THREE.Group;
   readonly wildlifeGroup: THREE.Group;
   readonly windRotors: readonly THREE.Group[];
+  readonly civilRailTex: THREE.CanvasTexture;
+  readonly freightRailTex: THREE.CanvasTexture;
+  readonly atmoMotes: THREE.Points;
 }
 
 function sampleTerrainHeight(x: number, z: number): number {
@@ -463,18 +507,20 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   groundMesh.receiveShadow = true;
   group.add(groundMesh);
 
-  // 4. Refined Architectural Transit Ring & Subtle Light Piers
+  // 4. Refined Architectural Transit Ring & Animated Emissive Maglev Rails
   const curbMat = new THREE.MeshStandardMaterial({
     color: 0xf8eef3,
-    roughness: 0.38,
-    metalness: 0.35,
+    roughness: 0.34,
+    metalness: 0.42,
   });
+  const civilRailTex = createMaglevRailEmissiveTexture('#00f0ff');
   const accentMat = new THREE.MeshStandardMaterial({
     color: 0xfb7185,
-    emissive: 0xe11d48,
-    emissiveIntensity: 0.38,
-    roughness: 0.4,
-    metalness: 0.25,
+    emissive: 0xffffff,
+    emissiveMap: civilRailTex,
+    emissiveIntensity: 0.92,
+    roughness: 0.32,
+    metalness: 0.35,
   });
 
   const viaductRadius = 6.2;
@@ -487,11 +533,11 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   group.add(viaductTrack);
 
   const viaductGlow = new THREE.Mesh(
-    new THREE.TorusGeometry(viaductRadius, 0.022, 6, 64),
+    new THREE.TorusGeometry(viaductRadius, 0.025, 6, 64),
     accentMat,
   );
   viaductGlow.rotation.x = Math.PI / 2;
-  viaductGlow.position.y = 0.75;
+  viaductGlow.position.y = 0.755;
   group.add(viaductGlow);
 
   const pierGeo = new THREE.CylinderGeometry(0.055, 0.085, 0.68, 6);
@@ -502,14 +548,16 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     group.add(pier);
   }
 
-  // 4b. Dual Maglev — Outer Military & Industrial Freight Line (Amber/Gold, r = 8.4, y = 1.05)
+  // 4b. Dual Maglev — Outer Military & Industrial Freight Line (Amber/Gold animated pulse, r = 8.4, y = 1.05)
   const freightRadius = 8.4;
+  const freightRailTex = createMaglevRailEmissiveTexture('#ffb800');
   const freightAccentMat = new THREE.MeshStandardMaterial({
     color: 0xf59e0b,
-    emissive: 0xd97706,
-    emissiveIntensity: 0.45,
-    roughness: 0.38,
-    metalness: 0.42,
+    emissive: 0xffffff,
+    emissiveMap: freightRailTex,
+    emissiveIntensity: 0.95,
+    roughness: 0.3,
+    metalness: 0.45,
   });
   const freightTrack = new THREE.Mesh(
     new THREE.TorusGeometry(freightRadius, 0.068, 8, 72),
@@ -520,21 +568,28 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   group.add(freightTrack);
 
   const freightGlow = new THREE.Mesh(
-    new THREE.TorusGeometry(freightRadius, 0.022, 6, 72),
+    new THREE.TorusGeometry(freightRadius, 0.025, 6, 72),
     freightAccentMat,
   );
   freightGlow.rotation.x = Math.PI / 2;
-  freightGlow.position.y = 1.12;
+  freightGlow.position.y = 1.125;
   group.add(freightGlow);
 
-  // 4c. 24-Hex Expandable City Footprint Pads (8 inner + 16 outer hex slots)
-  const hexPadGeo = new THREE.CylinderGeometry(0.82, 0.86, 0.04, 6);
+  // 4c. 24-Hex Expandable City Footprint Pads with PBR normal/roughness/emissive telemetry maps
+  const hexPadGeo = new THREE.CylinderGeometry(0.82, 0.86, 0.045, 6);
+  const hexPadTex = createHexPadPbrTextures('#00f0ff');
   const hexPadMat = new THREE.MeshStandardMaterial({
-    color: 0xfce7f3,
-    roughness: 0.65,
-    metalness: 0.15,
+    map: hexPadTex.map,
+    normalMap: hexPadTex.normalMap,
+    normalScale: new THREE.Vector2(0.7, 0.7),
+    roughnessMap: hexPadTex.roughnessMap,
+    roughness: 1.0,
+    metalness: 0.42,
+    emissive: 0xffffff,
+    emissiveMap: hexPadTex.emissiveMap,
+    emissiveIntensity: 0.45,
     transparent: true,
-    opacity: 0.42,
+    opacity: 0.78,
   });
   for (let i = 0; i < 24; i++) {
     const isInner = i < 8;
@@ -543,8 +598,9 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     const rad = isInner ? 3.55 : 7.25;
     const ang = (idx / count) * Math.PI * 2 + (isInner ? 0.2 : 0.1);
     const pad = new THREE.Mesh(hexPadGeo, hexPadMat);
-    pad.position.set(Math.cos(ang) * rad, 0.01, Math.sin(ang) * rad);
+    pad.position.set(Math.cos(ang) * rad, 0.014, Math.sin(ang) * rad);
     pad.rotation.y = ang;
+    pad.receiveShadow = true;
     group.add(pad);
   }
 
@@ -656,13 +712,19 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     group.add(rock);
   }
 
-  // Natural reflective park ponds in outer gardens
-  const pondMat = new THREE.MeshStandardMaterial({
-    color: 0x14b8a6,
+  // Natural reflective park ponds in outer gardens (MeshPhysicalMaterial + clearcoat + ripple normalMap)
+  const pondMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0ea5a0,
     emissive: 0x0f766e,
     emissiveIntensity: 0.16,
-    roughness: 0.15,
-    metalness: 0.38,
+    roughness: 0.07,
+    metalness: 0.1,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+    ior: 1.333,
+    normalMap: createWaterRippleNormalMap(),
+    normalScale: new THREE.Vector2(0.5, 0.5),
+    envMapIntensity: 1.45,
   });
   const pondGeo = new THREE.CircleGeometry(1.15, 20);
   for (let i = 0; i < 3; i++) {
@@ -822,6 +884,34 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   }
   group.add(pedestriansGroup);
 
+  // 11. Environmental Solarpunk Floating Motes
+  const moteCount = 120;
+  const motePos = new Float32Array(moteCount * 3);
+  for (let i = 0; i < moteCount; i++) {
+    const angle = ((i * 137.5) * Math.PI) / 180;
+    const radiusM = 2.0 + ((i * 29) % 100) * 0.12;
+    motePos[i * 3] = Math.cos(angle) * radiusM;
+    motePos[i * 3 + 1] = 0.65 + (i % 7) * 0.48;
+    motePos[i * 3 + 2] = Math.sin(angle) * radiusM;
+  }
+  const moteGeo = new THREE.BufferGeometry();
+  moteGeo.setAttribute('position', new THREE.BufferAttribute(motePos, 3));
+  const atmoMotes = new THREE.Points(
+    moteGeo,
+    new THREE.PointsMaterial({
+      color: 0xa7f3d0,
+      map: createParticleGlowTexture(),
+      size: 0.14,
+      transparent: true,
+      opacity: 0.52,
+      alphaTest: 0.02,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true,
+    }),
+  );
+  group.add(atmoMotes);
+
   const districtsGroup = new THREE.Group();
   const dronesGroup = new THREE.Group();
   group.add(districtsGroup, dronesGroup);
@@ -837,5 +927,8 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     pedestriansGroup,
     wildlifeGroup,
     windRotors,
+    civilRailTex,
+    freightRailTex,
+    atmoMotes,
   };
 }

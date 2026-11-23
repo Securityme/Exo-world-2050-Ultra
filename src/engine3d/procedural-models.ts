@@ -3,6 +3,7 @@ import type { CityDistrictPacket } from '../contracts/render-bridge.schema.ts';
 import {
   createContactShadowTexture,
   createFacadeTextures,
+  createWaterRippleNormalMap,
 } from './procedural-textures.ts';
 
 /**
@@ -260,7 +261,12 @@ export function buildDistrictMesh(district: CityDistrictPacket): THREE.Group {
   group.userData = { interactable: 'DISTRICT', districtId: district.id };
 
   const pal = KIND_PALETTES[district.kind];
-  const { map: facadeMap, emissiveMap: facadeEmissive } = createFacadeTextures(
+  const {
+    map: facadeMap,
+    normalMap: facadeNormal,
+    roughnessMap: facadeRoughness,
+    emissiveMap: facadeEmissive,
+  } = createFacadeTextures(
     pal.wallHex,
     pal.glassHex,
     pal.accentHex,
@@ -278,16 +284,24 @@ export function buildDistrictMesh(district: CityDistrictPacket): THREE.Group {
   });
   const facadeMat = new THREE.MeshStandardMaterial({
     map: facadeMap,
+    normalMap: facadeNormal,
+    normalScale: new THREE.Vector2(0.85, 0.85),
+    roughnessMap: facadeRoughness,
     emissive: 0xffffff,
     emissiveMap: facadeEmissive,
     emissiveIntensity: district.integrity < 30 ? 0.22 : 0.72,
-    roughness: 0.32,
-    metalness: 0.38,
+    roughness: 1.0,
+    metalness: 0.42,
+    envMapIntensity: 1.15,
   });
-  const glassMat = new THREE.MeshStandardMaterial({
+  const glassMat = new THREE.MeshPhysicalMaterial({
     color: pal.glassHex,
-    roughness: 0.16,
-    metalness: 0.82,
+    roughness: 0.12,
+    metalness: 0.65,
+    clearcoat: 0.9,
+    clearcoatRoughness: 0.08,
+    reflectivity: 0.95,
+    envMapIntensity: 1.25,
   });
   const accentMat = new THREE.MeshStandardMaterial({
     color: pal.accentNum,
@@ -525,12 +539,18 @@ export function buildDistrictMesh(district: CityDistrictPacket): THREE.Group {
     lawn.position.y = 0.28;
     group.add(lawn);
 
-    const pondMat = new THREE.MeshStandardMaterial({
-      color: 0x14b8a6,
+    const pondMat = new THREE.MeshPhysicalMaterial({
+      color: 0x0ea5a0,
       emissive: 0x0f766e,
-      emissiveIntensity: 0.28,
-      roughness: 0.14,
-      metalness: 0.42,
+      emissiveIntensity: 0.2,
+      roughness: 0.08,
+      metalness: 0.12,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.06,
+      ior: 1.333,
+      normalMap: createWaterRippleNormalMap(),
+      normalScale: new THREE.Vector2(0.42, 0.42),
+      envMapIntensity: 1.35,
     });
     const pond = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.05, 16), pondMat);
     pond.position.y = 0.32;

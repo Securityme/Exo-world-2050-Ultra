@@ -467,7 +467,7 @@ export function transitionDocumentWorkflow(
     ) {
       return {
         ok: false,
-        error: 'Séparation des tâches : l’auteur de la dernière modification ne peut pas auto-réviser son propre dossier.',
+        error: 'Séparation des tâches : l’auteur de la dernière modification ne peut pas auto-réviser ses propres dossiers.',
       };
     }
     if (!quality.allStandardsPassed) {

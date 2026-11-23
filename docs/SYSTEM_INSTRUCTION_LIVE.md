@@ -1,6 +1,6 @@
-# **SYS-INST-EXW-001 — SYSTEM INSTRUCTION UNIVERSEL MULTI-IA (CLAUDE · GEMINI · ANTIGRAVITY · GOOGLE AI STUDIO) (v1.6.0)**
+# **SYS-INST-EXW-001 — SYSTEM INSTRUCTION UNIVERSEL MULTI-IA (CLAUDE · GEMINI · ANTIGRAVITY · GOOGLE AI STUDIO) (v2.0.0)**
 
-Projet : **EXO WORLD : 2050** \| Version : `1.6.0` \| Date : `2026-11-20` \| Statut : **Référentiel Prêt à Copier-Coller (Nouvelle Partition Vierge Cloud Unifiée)**  
+Projet : **EXO WORLD : 2050** \| Version Code : `5.1.0-alpha.1` \| SYS-INST : `v2.0.0` \| Date : `2026-11-23` \| Statut : **Référentiel SSoT Tri-Surface Actif**  
 Liens officiels de la Partition Maître :
 
 * Projet Google AI Studio Build (Runtime & App) : [EXO WORLD : 2050 — Google AI Studio App](https://aistudio.google.com/apps/a21d5e66-3b0e-4b54-9e77-3a272b3c94d1?showAssistant=true)  
@@ -160,3 +160,18 @@ Exécute les tâches attribuées dans EXO WORLD : 2050 sur la cible officielle G
 * **Monde Purifié (5 Domaines sans « et » / « & »)** : Territoires (Fiche État Souverain, Quartiers, Planètes), Population (Citoyens ordinaires Frostpunk, Affectations, Colons Zoom+3D), Biosphère (Qualité Air, Spectres, Studio Vidéo 12 Catégories), Militaire (4 Théâtres Spatial/Ciel/Terrestre/Maritime, Taskforces 72 secteurs, Pression Civile 0★–5★, Cités Extérieures & Respect Faction, Polities, Chat & Générateur de Scénario Matriciel Pax Historia), Technologies (30 Techs).
 * **Cité 3D Vivante 24-Hex** : 24 socles hexagonaux, Dual Maglev (Ligne Civile Rose/Émeraude + Fret Militaire Ambre), piétons citoyens sur boucles waypoints et cycle solaire directionnel.
 * **Gouvernance Documentaire 4 Catégories & Sync Externe** : script `npm run exo:doc-mesh` générant `INDEX.md`, `CHANGELOG.txt` (*Actuel / Demandes / Projeté*) et `docs/design/PAX_HISTORIA_UX_BRIEF.md` ; vérification live GitHub (`Securityme/Exo-world-2050-Ultra`) et import d'extraits Gemini Notebook (`d937d03d-d9c0-4f71-b89e-45506488e5fb`) via `/api/sync/external-sources`.
+
+---
+
+# **7. Addendum SYS-INST-EXW-001 v2.0.0 — Upgrade `5.1.0-alpha.1` & Refonte Graphique AAA Three.js 0.187.0**
+
+* **SSoT Tri-Surface Synchronisée (`5.1.0-alpha.1`)** :
+  1. **Google Drive Maître** (`EXO WORLD : 2050` — Partition `19MuQPs6wNfh4jAU1EaEhAq1ZZHSTk93k`).
+  2. **GitHub Officiel** (`Securityme/Exo-world-2050-Ultra`, branche `main`).
+  3. **Google AI Studio Build** (Instance active `ce901013-7b3c-429a-819e-6d97f5469587` synchronisée 1:1 avec `master-blueprint/M0..M15`, parité `17/17 PASS GO`, 0 module non mappé).
+* **5 Divisions Atmosphériques Scientifiques Rétro-Compatibles (`P1..P4`)** : progression orbitale descendante `EXOSPHERE` (> 500 km) → `THERMOSPHERE` (85–500 km) → `MESOSPHERE` (50–85 km) → `STRATOSPHERE` (15–50 km) → `TROPOSPHERE` (0–15 km), pilotant directement la densité optique Rayleigh/Mie, la colorimétrie d'horizon et les bonus de simulation, tout en conservant `P1..P4` dans les contrats Zod (`R-39`, `R-16`).
+* **Refonte Graphique AAA Three.js `0.187.0` (`src/engine3d/`)** :
+  * **Pipeline Renderer** : `ACESFilmicToneMapping` (~1.08), `SRGBColorSpace`, IBL procédurale `PMREMGenerator` + `RoomEnvironment`, ombres `PCFSoftShadowMap` 2048 px sur la lumière solaire directionnelle (garde `!isSoftwareGl`), et `.dispose()` récursif complet de chaque texture, matériau et géométrie.
+  * **Ciel Open-Sky Rayleigh + Mie & Globe PBR** : shader atmosphérique physique synchronisé à `EXOSPHERE..TROPOSPHERE` sans aucun dôme fermé au-dessus des colonies (`R-16`), halo Fresnel directionnel, couche nuageuse dual-profondeur (`polygonOffset`) et lumières urbaines côté terminateur nocturne (`onBeforeCompile` + `uSunDir`) sans artefact z-fighting.
+  * **Matériaux PBR & Inspecteur Isolé 135°** : génération tangent-space `normalMap`, `roughnessMap` et `emissiveMap` (`MeshStandardMaterial` / `MeshPhysicalMaterial`) pour le globe, les 24 dalles hexagonales, les façades architecturales, les rails Maglev émissifs animés, les étendues d'eau réfléchissantes (`clearcoat: 1.0`) et les sprites particulaires ; socle holographique gradué 135° à double anneau télémétrique et éclairage studio 3 points dans `IsolatedInspectorScene`.
+* **Qualité UI/UX & Lexique Strict** : glassmorphism spatial haute lisibilité sans `backdrop-filter` sur WebGL, micro-bordures cyan/émeraude, infobulles `ExoTooltip.tsx` et responsive garanti sans débordement horizontal jusqu'à `360 px` mobile, 0 lexique interdit (`Z0`, `R-50`), 0 troncature.

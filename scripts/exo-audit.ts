@@ -126,11 +126,12 @@ function runAudit(): void {
   for (const o of report.orphanMappings) errors.push(`[M13-SRC] Référence orpheline dans Blueprint: ${o}`);
 
   // 5. Tri-Format parity files check
+  const cleanSemver = m0.rootSemver.split('+')[0] ?? m0.rootSemver;
   const expectedFiles = [
-    'MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md',
-    'MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md',
-    'MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md',
-    'MASTER_BLUEPRINT_v4.0.0-rc.1.yaml',
+    `MASTER_BLUEPRINT_FMT-U_v${cleanSemver}.md`,
+    `MASTER_BLUEPRINT_FMT-M_v${cleanSemver}.md`,
+    `MASTER_BLUEPRINT_FMT-S_AISTUDIO_v${cleanSemver}.md`,
+    `MASTER_BLUEPRINT_v${cleanSemver}.yaml`,
   ];
   for (const f of expectedFiles) {
     const full = path.join(BP_DIR, f);

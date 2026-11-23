@@ -1,11 +1,14 @@
 import * as THREE from 'three';
+import { resolveScientificAtmosphereDivision } from '../config/atmosphere.constants.ts';
 import type { AtmosphereTier } from '../contracts/render-bridge.schema.ts';
 
 /**
- * [L4] FUP-007 | SM-05 | SADT A5.3
- * High-Detail Procedural CanvasTextures for:
- * - Scale 2 Exo-Planet PBR maps (albedo, bump, roughness, night city lights emissive, swirling clouds)
- * - Scale 3 Open-Sky Solarpunk Metropolis (radial master plaza, horizon terrain, architectural glass facades)
+ * [L4] FUP-007 | SM-05 | SADT A5.3 | Three.js 0.187.0 PBR Upgrade
+ * High-Detail Procedural CanvasTextures & Shaders for:
+ * - Scale 2 Exo-Planet PBR maps (albedo, tangent normalMap, bumpMap, roughnessMap, night city lights emissiveMap, swirling clouds)
+ * - Scale 2 Rayleigh/Mie Fresnel & Limb Atmospheric Shaders synced to EXOSPHERE..TROPOSPHERE
+ * - Scale 3 Open-Sky Solarpunk Metropolis (Rayleigh+Mie Open-Sky Shader, hex pad PBR, Maglev pulse, water ripple normals, particle sprites)
+ * - Isolated 3D Inspector 135-degree holographic turntable plinth texture
  * 100% deterministic seeded noise (zero Math.random).
  */
 
@@ -92,6 +95,74 @@ function fbm(x: number, y: number, seed: number, octaves = 5): number {
   return value;
 }
 
+/**
+ * Deterministic Sobel height-to-tangent-space NormalMap builder (linear space!).
+ */
+function createNormalMapFromHeight(
+  heightBuf: Float32Array,
+  width: number,
+  height: number,
+  strength: number,
+  wrapS = true,
+  wrapT = false,
+): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    const img = ctx.createImageData(width, height);
+    const sample = (sx: number, sy: number): number => {
+      const wx = wrapS
+        ? ((sx % width) + width) % width
+        : Math.max(0, Math.min(width - 1, sx));
+      const wy = wrapT
+        ? ((sy % height) + height) % height
+        : Math.max(0, Math.min(height - 1, sy));
+      return heightBuf[wy * width + wx] ?? 0;
+    };
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const tl = sample(x - 1, y - 1);
+        const t = sample(x, y - 1);
+        const tr = sample(x + 1, y - 1);
+        const l = sample(x - 1, y);
+        const r = sample(x + 1, y);
+        const bl = sample(x - 1, y + 1);
+        const b = sample(x, y + 1);
+        const br = sample(x + 1, y + 1);
+
+        const dX = tr + 2 * r + br - (tl + 2 * l + bl);
+        const dY = bl + 2 * b + br - (tl + 2 * t + tr);
+
+        let nx = -dX * strength;
+        let ny = -dY * strength;
+        let nz = 1.0;
+        const invLen = 1 / Math.hypot(nx, ny, nz);
+        nx *= invLen;
+        ny *= invLen;
+        nz *= invLen;
+
+        const idx = (y * width + x) * 4;
+        img.data[idx] = Math.round((nx * 0.5 + 0.5) * 255);
+        img.data[idx + 1] = Math.round((ny * 0.5 + 0.5) * 255);
+        img.data[idx + 2] = Math.round((nz * 0.5 + 0.5) * 255);
+        img.data[idx + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  const normalMap = new THREE.CanvasTexture(canvas);
+  normalMap.colorSpace = THREE.NoColorSpace;
+  normalMap.wrapS = wrapS ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
+  normalMap.wrapT = wrapT ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
+  normalMap.anisotropy = 4;
+  normalMap.needsUpdate = true;
+  return normalMap;
+}
+
 type Rgb = [number, number, number];
 
 export interface PlanetTextureOptions {
@@ -133,7 +204,7 @@ const TIER_PALETTES: Record<AtmosphereTier, PlanetPalette> = {
     high: [192, 118, 78],
     peak: [232, 196, 174],
     seaLevel: 0.34,
-    cityTint: [255, 178, 128],
+    cityTint: [255, 190, 128],
   },
   P2: {
     deep: [14, 44, 82],
@@ -143,7 +214,7 @@ const TIER_PALETTES: Record<AtmosphereTier, PlanetPalette> = {
     high: [168, 148, 118],
     peak: [236, 236, 238],
     seaLevel: 0.44,
-    cityTint: [255, 194, 156],
+    cityTint: [255, 206, 148],
   },
   P3: {
     deep: [8, 56, 118],
@@ -153,7 +224,7 @@ const TIER_PALETTES: Record<AtmosphereTier, PlanetPalette> = {
     high: [96, 158, 98],
     peak: [242, 248, 252],
     seaLevel: 0.48,
-    cityTint: [255, 212, 174],
+    cityTint: [175, 240, 255],
   },
   P4: {
     deep: [6, 68, 144],
@@ -163,7 +234,7 @@ const TIER_PALETTES: Record<AtmosphereTier, PlanetPalette> = {
     high: [70, 182, 112],
     peak: [248, 250, 255],
     seaLevel: 0.5,
-    cityTint: [255, 224, 196],
+    cityTint: [167, 243, 208],
   },
 };
 
@@ -199,6 +270,7 @@ function getSeasonOffsets(season: Required<PlanetTextureOptions>['season']): {
 
 export interface PlanetPbrTextures {
   readonly map: THREE.CanvasTexture;
+  readonly normalMap: THREE.CanvasTexture;
   readonly bumpMap: THREE.CanvasTexture;
   readonly roughnessMap: THREE.CanvasTexture;
   readonly emissiveMap: THREE.CanvasTexture;
@@ -231,6 +303,8 @@ export function createPlanetSurfaceTextures(
   emissiveCanvas.height = height;
   const eCtx = emissiveCanvas.getContext('2d');
 
+  const heightBuf = new Float32Array(width * height);
+
   if (aCtx && bCtx && rCtx && eCtx) {
     const aImg = aCtx.createImageData(width, height);
     const bImg = bCtx.createImageData(width, height);
@@ -241,7 +315,6 @@ export function createPlanetSurfaceTextures(
     const seedShift = getSlotSeedOffset(slotIndex);
     const seasonCfg = getSeasonOffsets(season);
 
-    // Distinct world morphology palettes per planetary slot (1..6)
     const pal: PlanetPalette =
       slotIndex === 2
         ? {
@@ -289,7 +362,6 @@ export function createPlanetSurfaceTextures(
                 }
               : { ...basePal };
 
-    // Apply seasonal shifts to temperate & coastal vegetation on living biosphere worlds
     if (slotIndex === 1 || slotIndex === 3) {
       if (season === 'AUTOMNE' && (tier === 'P3' || tier === 'P4')) {
         pal.mid = lerpRgb(pal.mid, [184, 118, 54], 0.48);
@@ -329,7 +401,6 @@ export function createPlanetSurfaceTextures(
             ? Math.max(0, 0.54 - Math.abs(fbm3D(nx * 4.6, ny * 4.6, nz * 4.6, 881 + seedShift, 2) - 0.5)) * 0.22
             : 0;
 
-        // Equatorial canyon rift for Mars (slot 3) & Abyssal (slot 6)
         const riftPenalty =
           (slotIndex === 3 || slotIndex === 6) && lat < 0.22
             ? Math.max(0, 0.24 - Math.abs(fbm3D(nx * 2.0, ny * 5.0, nz * 2.0, 1213, 2) - 0.5)) * 0.28
@@ -340,12 +411,14 @@ export function createPlanetSurfaceTextures(
           Math.min(1, baseH * 0.68 + ridges * 0.28 + microStrata * 0.11 - 0.06 - craterRing - riftPenalty),
         );
 
-        const idx = (y * width + x) * 4;
+        const pixIdx = y * width + x;
+        const idx = pixIdx * 4;
         const isWater = !dryBasinWorld && h < pal.seaLevel;
 
         let rgb: Rgb;
         let roughVal = 208;
         let bumpVal = Math.round(h * 255);
+        let reliefNorm = h;
 
         if (isWater) {
           const depthT = Math.max(0, Math.min(1, (h - (pal.seaLevel - 0.24)) / 0.24));
@@ -354,8 +427,10 @@ export function createPlanetSurfaceTextures(
             const shelfT = (depthT - 0.82) / 0.18;
             rgb = lerpRgb(rgb, pal.coast, shelfT * 0.3);
           }
-          roughVal = season === 'HIVER' && lat > 0.58 ? 110 : 34;
+          roughVal = season === 'HIVER' && lat > 0.58 ? 96 : 26;
           bumpVal = Math.round(pal.seaLevel * 185);
+          // Flat ocean floor normal with ultra-subtle swell micro-modulation
+          reliefNorm = pal.seaLevel * 0.72 + microStrata * 0.015;
         } else {
           const landT = (h - pal.seaLevel) / Math.max(0.05, 1 - pal.seaLevel);
           if (dryBasinWorld && h < pal.seaLevel) {
@@ -372,11 +447,13 @@ export function createPlanetSurfaceTextures(
           } else {
             rgb = lerpRgb(pal.high, pal.peak, Math.min(1, (landT - 0.56) / 0.34));
           }
-          roughVal = Math.round(184 + landT * 60);
+          roughVal = Math.round(188 + landT * 58);
           bumpVal = Math.min(255, Math.round(98 + landT * 138 + ridges * 52));
+          reliefNorm = Math.min(1, pal.seaLevel * 0.72 + landT * 0.42 + ridges * 0.22 + microStrata * 0.08);
         }
 
-        // Latitude arid/desert belt modulation on living planets for crisp multi-biome realism
+        heightBuf[pixIdx] = reliefNorm;
+
         if (!isWater && !dryBasinWorld && (slotIndex === 1 || slotIndex === 3)) {
           const aridBelt = Math.max(0, 1 - Math.abs(lat - 0.32) / 0.16);
           if (aridBelt > 0.25 && microStrata > 0.45) {
@@ -384,15 +461,13 @@ export function createPlanetSurfaceTextures(
           }
         }
 
-        // Seasonal polar ice caps
         const polarEdge = 0.8 + seasonCfg.polarShift - h * 0.1 + (wx - 0.35) * 0.06;
         const polarBlend = Math.max(0, Math.min(1, (lat - polarEdge) / 0.085));
         if (polarBlend > 0) {
           rgb = lerpRgb(rgb, pal.peak, polarBlend);
-          roughVal = Math.round(roughVal * (1 - polarBlend) + 116 * polarBlend);
+          roughVal = Math.round(roughVal * (1 - polarBlend) + 108 * polarBlend);
         }
 
-        // Weather surface tinting
         if (weatherState === 'DUST_STORM' && !isWater) {
           rgb = lerpRgb(rgb, [212, 142, 82], 0.24);
         } else if (weatherState === 'CRYO_FRONT' && seasonCfg.frostLift >= 0) {
@@ -419,14 +494,14 @@ export function createPlanetSurfaceTextures(
         rImg.data[idx + 2] = roughVal;
         rImg.data[idx + 3] = 255;
 
-        // Clustered coastal & canyon settlement webs
+        // Clustered coastal & canyon settlement webs (revealed crisply on night hemisphere via shader)
         let em = 0;
-        if (!isWater && lat < 0.65 && h > pal.seaLevel + 0.01 && h < pal.seaLevel + 0.26) {
+        if (!isWater && lat < 0.65 && h > pal.seaLevel + 0.01 && h < pal.seaLevel + 0.28) {
           const cluster = fbm3D(nx * 4.8, ny * 4.8, nz * 4.8, 991 + seedShift, 3);
-          const coastBand = ridge3D(nx * 7.2, ny * 7.2, nz * 7.2, 997 + seedShift);
+          const coastBand = ridge3D(nx * 7.4, ny * 7.4, nz * 7.4, 997 + seedShift);
           const spark = hash2D(x * 0.7, y * 0.7, 77);
-          if (cluster > 0.59 && coastBand > 0.42 && spark > 0.6) {
-            em = Math.min(1, (cluster - 0.59) * 4.6 * (tier === 'P1' ? 0.64 : 0.96));
+          if (cluster > 0.57 && coastBand > 0.39 && spark > 0.55) {
+            em = Math.min(1, (cluster - 0.57) * 5.2 * (tier === 'P1' ? 0.68 : 1.0));
           }
         }
         eImg.data[idx] = Math.round(pal.cityTint[0] * em);
@@ -448,12 +523,16 @@ export function createPlanetSurfaceTextures(
   map.anisotropy = 4;
   map.needsUpdate = true;
 
+  const normalMap = createNormalMapFromHeight(heightBuf, width, height, 4.2, true, false);
+
   const bumpMap = new THREE.CanvasTexture(bumpCanvas);
+  bumpMap.colorSpace = THREE.NoColorSpace;
   bumpMap.wrapS = THREE.RepeatWrapping;
   bumpMap.anisotropy = 4;
   bumpMap.needsUpdate = true;
 
   const roughnessMap = new THREE.CanvasTexture(roughCanvas);
+  roughnessMap.colorSpace = THREE.NoColorSpace;
   roughnessMap.wrapS = THREE.RepeatWrapping;
   roughnessMap.anisotropy = 4;
   roughnessMap.needsUpdate = true;
@@ -464,7 +543,7 @@ export function createPlanetSurfaceTextures(
   emissiveMap.anisotropy = 4;
   emissiveMap.needsUpdate = true;
 
-  return { map, bumpMap, roughnessMap, emissiveMap };
+  return { map, normalMap, bumpMap, roughnessMap, emissiveMap };
 }
 
 export function createPlanetCloudTexture(
@@ -541,36 +620,48 @@ export function createPlanetCloudTexture(
   return tex;
 }
 
-export function createAtmosphereHaloMaterial(tier: AtmosphereTier): THREE.ShaderMaterial {
-  const colorMap: Record<AtmosphereTier, THREE.Color> = {
-    P1: new THREE.Color('#fb923c'),
-    P2: new THREE.Color('#60a5fa'),
-    P3: new THREE.Color('#38bdf8'),
-    P4: new THREE.Color('#34d399'),
-  };
+/**
+ * Inner Fresnel Atmospheric Halo Shader synced to the 5 scientific divisions (EXOSPHERE..TROPOSPHERE).
+ */
+export function createAtmosphereHaloMaterial(
+  tier: AtmosphereTier,
+  atmosphereProgress?: number,
+): THREE.ShaderMaterial {
+  const div = resolveScientificAtmosphereDivision(tier, atmosphereProgress);
   return new THREE.ShaderMaterial({
     uniforms: {
-      uColor: { value: colorMap[tier] },
-      uIntensity: { value: tier === 'P1' ? 0.54 : tier === 'P4' ? 0.98 : 0.78 },
+      uColor: { value: new THREE.Color(div.haloHex) },
+      uMieColor: { value: new THREE.Color(div.mieHex) },
+      uSunDir: { value: new THREE.Vector3(0.65, 0.55, 0.52).normalize() },
+      uIntensity: { value: 0.45 + div.scatteringDensity * 0.62 },
     },
     vertexShader: `
       varying vec3 vNormal;
       varying vec3 vViewDir;
+      varying vec3 vWorldNormal;
       void main() {
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
         vNormal = normalize(normalMatrix * normal);
+        vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
         vViewDir = normalize(-mvPosition.xyz);
         gl_Position = projectionMatrix * mvPosition;
       }
     `,
     fragmentShader: `
       uniform vec3 uColor;
+      uniform vec3 uMieColor;
+      uniform vec3 uSunDir;
       uniform float uIntensity;
       varying vec3 vNormal;
       varying vec3 vViewDir;
+      varying vec3 vWorldNormal;
       void main() {
-        float fresnel = pow(1.0 - max(dot(vNormal, vViewDir), 0.0), 3.1);
-        gl_FragColor = vec4(uColor, fresnel * uIntensity);
+        float fresnel = pow(1.0 - max(dot(vNormal, vViewDir), 0.0), 3.0);
+        float sunLit = smoothstep(-0.25, 0.72, dot(vWorldNormal, normalize(uSunDir)));
+        float terminator = pow(clamp(1.0 - abs(dot(vWorldNormal, normalize(uSunDir))), 0.0, 1.0), 2.5);
+        vec3 col = mix(uColor, uMieColor, terminator * 0.45);
+        float alpha = fresnel * uIntensity * (0.28 + 0.72 * sunLit);
+        gl_FragColor = vec4(col, alpha);
       }
     `,
     transparent: true,
@@ -580,39 +671,45 @@ export function createAtmosphereHaloMaterial(tier: AtmosphereTier): THREE.Shader
   });
 }
 
-export function createAtmosphereLimbMaterial(tier: AtmosphereTier): THREE.ShaderMaterial {
-  const colorMap: Record<AtmosphereTier, THREE.Color> = {
-    P1: new THREE.Color('#fb7185'),
-    P2: new THREE.Color('#93c5fd'),
-    P3: new THREE.Color('#67e8f9'),
-    P4: new THREE.Color('#6ee7b7'),
-  };
+/**
+ * Outer Rayleigh/Mie Atmospheric Limb Halo Shader (BackSide scattering shell).
+ */
+export function createAtmosphereLimbMaterial(
+  tier: AtmosphereTier,
+  atmosphereProgress?: number,
+): THREE.ShaderMaterial {
+  const div = resolveScientificAtmosphereDivision(tier, atmosphereProgress);
   return new THREE.ShaderMaterial({
     uniforms: {
-      uColor: { value: colorMap[tier] },
-      uOpacity: { value: tier === 'P1' ? 0.42 : 0.58 },
+      uColor: { value: new THREE.Color(div.haloHex) },
+      uSunDir: { value: new THREE.Vector3(0.65, 0.55, 0.52).normalize() },
+      uOpacity: { value: 0.34 + div.scatteringDensity * 0.36 },
     },
     vertexShader: `
       varying vec3 vNormal;
       varying vec3 vViewDir;
+      varying vec3 vWorldNormal;
       void main() {
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
         vNormal = normalize(normalMatrix * normal);
+        vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
         vViewDir = normalize(-mvPosition.xyz);
         gl_Position = projectionMatrix * mvPosition;
       }
     `,
     fragmentShader: `
       uniform vec3 uColor;
+      uniform vec3 uSunDir;
       uniform float uOpacity;
       varying vec3 vNormal;
       varying vec3 vViewDir;
+      varying vec3 vWorldNormal;
       void main() {
-        // BackSide normal points away from camera: 0.0 at outer limb edge -> ~0.55 near planet surface
         float ndv = clamp(dot(-vNormal, vViewDir), 0.0, 1.0);
         float outerFeather = smoothstep(0.0, 0.36, ndv);
-        float rim = pow(ndv, 2.4) * outerFeather;
-        gl_FragColor = vec4(uColor, rim * uOpacity);
+        float rim = pow(ndv, 2.35) * outerFeather;
+        float daySide = smoothstep(-0.35, 0.65, dot(vWorldNormal, normalize(uSunDir)));
+        gl_FragColor = vec4(uColor, rim * uOpacity * (0.22 + 0.78 * daySide));
       }
     `,
     transparent: true,
@@ -624,7 +721,6 @@ export function createAtmosphereLimbMaterial(tier: AtmosphereTier): THREE.Shader
 
 /**
  * Scale 3 Open-Sky Metropolis Master Plaza Texture (1024x1024)
- * Radial pearl avenues, concentric gardens/canals, luminous rose-gold transit tracks.
  */
 export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTexture {
   const size = 1024;
@@ -663,7 +759,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
     const canalColor =
       tier === 'P1' ? 'rgba(96, 165, 200, 0.34)' : 'rgba(56, 189, 248, 0.44)';
 
-    // Radial stone-to-natural-earth transition base (eliminates sharp plateau border)
     const grad = ctx.createRadialGradient(cx, cy, 40, cx, cy, size * 0.5);
     grad.addColorStop(0, '#fcf6f8');
     grad.addColorStop(0.45, stoneBase);
@@ -672,7 +767,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, size, size);
 
-    // Subtle organic surface grain across plaza stone
     for (let i = 0; i < 900; i++) {
       const rx = hash2D(i * 1.7, 3.1, 41) * size;
       const ry = hash2D(5.3, i * 2.1, 97) * size;
@@ -683,7 +777,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
       ctx.fill();
     }
 
-    // Fine architectural paving lines inside the urban core
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, 380, 0, Math.PI * 2);
@@ -702,7 +795,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
     }
     ctx.restore();
 
-    // Lush concentric park & terrace quadrants
     ctx.fillStyle = gardenColor;
     for (let i = 0; i < 8; i++) {
       const a0 = (i / 8) * Math.PI * 2 + 0.12;
@@ -714,7 +806,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
       ctx.fill();
     }
 
-    // Soft outer botanical park belt
     ctx.fillStyle = gardenColor;
     ctx.globalAlpha = 0.6;
     ctx.beginPath();
@@ -723,14 +814,12 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
     ctx.fill();
     ctx.globalAlpha = 1;
 
-    // Gentle reflective water canal ring
     ctx.strokeStyle = canalColor;
     ctx.lineWidth = 18;
     ctx.beginPath();
     ctx.arc(cx, cy, 212, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Inner & outer pedestrian boulevard rings
     for (const r of [110, 212, 366]) {
       ctx.strokeStyle = 'rgba(225, 29, 72, 0.2)';
       ctx.lineWidth = r === 212 ? 2.5 : 1.75;
@@ -739,7 +828,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
       ctx.stroke();
     }
 
-    // 8 radial grand avenues tapering organically into rural paths
     for (let i = 0; i < 8; i++) {
       const angle = (i / 8) * Math.PI * 2;
       ctx.save();
@@ -773,7 +861,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
       ctx.restore();
     }
 
-    // Central plaza medallion
     ctx.fillStyle = '#fff5f7';
     ctx.beginPath();
     ctx.arc(cx, cy, 96, 0, Math.PI * 2);
@@ -788,7 +875,6 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
     ctx.arc(cx, cy, 72, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Feathered radial alpha mask so plaza dissolves seamlessly into surrounding landscape
     ctx.globalCompositeOperation = 'destination-in';
     const mask = ctx.createRadialGradient(cx, cy, size * 0.35, cx, cy, size * 0.495);
     mask.addColorStop(0, 'rgba(0,0,0,1)');
@@ -808,7 +894,7 @@ export function createCityGroundTexture(tier: AtmosphereTier): THREE.CanvasTextu
 }
 
 /**
- * Scale 3 Surrounding Planetary Horizon Terrain Texture (layered soil, flora meadows, basalt ridges & streams)
+ * Scale 3 Surrounding Planetary Horizon Terrain Texture
  */
 export function createCityHorizonTexture(tier: AtmosphereTier): THREE.CanvasTexture {
   const size = 512;
@@ -868,7 +954,6 @@ export function createCityHorizonTexture(tier: AtmosphereTier): THREE.CanvasText
         const strata = Math.sin((macro * 14 + detail * 2.5) * Math.PI) * 0.08;
         const h = Math.max(0, Math.min(1, macro * 0.78 + detail * 0.22 + strata));
 
-        // Winding natural stream ribbon on lower valley floor
         const creekWave = Math.sin(nx * 5.2 + macro * 2.1) * 0.22 + 0.34;
         const creekDist = Math.abs(ny - creekWave);
         const isCreek = dist > 0.17 && dist < 0.78 && creekDist < 0.022 && h < 0.56;
@@ -881,14 +966,13 @@ export function createCityHorizonTexture(tier: AtmosphereTier): THREE.CanvasText
         } else if (h < 0.62) {
           const meadowMix = fbm((x / size) * 11, (y / size) * 11, 515, 3);
           const base = lerpRgb(pal.soil, pal.meadow, meadowMix);
-          rgb = lerpRgb(base, pal.highlight, (h - 0.35) / 0.27 * 0.35);
+          rgb = lerpRgb(base, pal.highlight, ((h - 0.35) / 0.27) * 0.35);
         } else if (h < 0.82) {
           rgb = lerpRgb(pal.meadow, pal.rock, (h - 0.62) / 0.2);
         } else {
           rgb = lerpRgb(pal.rock, pal.highlight, (h - 0.82) / 0.18);
         }
 
-        // Soft warm basin harmony near city perimeter so plaza edge vanishes cleanly
         if (dist < 0.24) {
           const innerFade = 1 - dist / 0.24;
           rgb = lerpRgb(rgb, pal.soil, innerFade * 0.45);
@@ -935,6 +1019,7 @@ export function createCityHorizonBumpTexture(): THREE.CanvasTexture {
     ctx.putImageData(img, 0, 0);
   }
   const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.NoColorSpace;
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(3, 3);
@@ -942,14 +1027,21 @@ export function createCityHorizonBumpTexture(): THREE.CanvasTexture {
   return tex;
 }
 
+export interface FacadePbrTextures {
+  readonly map: THREE.CanvasTexture;
+  readonly normalMap: THREE.CanvasTexture;
+  readonly roughnessMap: THREE.CanvasTexture;
+  readonly emissiveMap: THREE.CanvasTexture;
+}
+
 /**
- * Procedural Architectural Curtain-Wall Facade (Albedo + Emissive Windows)
+ * Procedural Architectural Curtain-Wall Facade PBR Set (Albedo + Tangent NormalMap + RoughnessMap + Emissive Windows)
  */
 export function createFacadeTextures(
   wallHex: string,
   glassHex: string,
   accentHex: string,
-): { map: THREE.CanvasTexture; emissiveMap: THREE.CanvasTexture } {
+): FacadePbrTextures {
   const w = 256;
   const h = 512;
 
@@ -958,14 +1050,26 @@ export function createFacadeTextures(
   albedoCanvas.height = h;
   const aCtx = albedoCanvas.getContext('2d');
 
+  const roughCanvas = document.createElement('canvas');
+  roughCanvas.width = w;
+  roughCanvas.height = h;
+  const rCtx = roughCanvas.getContext('2d');
+
   const emissiveCanvas = document.createElement('canvas');
   emissiveCanvas.width = w;
   emissiveCanvas.height = h;
   const eCtx = emissiveCanvas.getContext('2d');
 
-  if (aCtx && eCtx) {
+  const heightBuf = new Float32Array(w * h);
+  heightBuf.fill(0.68);
+
+  if (aCtx && rCtx && eCtx) {
     aCtx.fillStyle = wallHex;
     aCtx.fillRect(0, 0, w, h);
+
+    // Matte composite architectural cladding base roughness (~0.62)
+    rCtx.fillStyle = 'rgb(158, 158, 158)';
+    rCtx.fillRect(0, 0, w, h);
 
     eCtx.fillStyle = '#000000';
     eCtx.fillRect(0, 0, w, h);
@@ -976,24 +1080,40 @@ export function createFacadeTextures(
     const colW = w / cols;
 
     for (let r = 0; r < rows; r++) {
-      // Floor cornice band
+      const corniceY = Math.floor(r * rowH);
       aCtx.fillStyle = 'rgba(255,255,255,0.45)';
-      aCtx.fillRect(0, r * rowH, w, 4);
+      aCtx.fillRect(0, corniceY, w, 4);
+      rCtx.fillStyle = 'rgb(120, 120, 120)';
+      rCtx.fillRect(0, corniceY, w, 4);
+
+      for (let yy = corniceY; yy < Math.min(h, corniceY + 4); yy++) {
+        for (let xx = 0; xx < w; xx++) {
+          heightBuf[yy * w + xx] = 0.94;
+        }
+      }
 
       for (let c = 0; c < cols; c++) {
-        const px = c * colW + 5;
-        const py = r * rowH + 8;
-        const pw = colW - 10;
-        const ph = rowH - 13;
+        const px = Math.floor(c * colW + 5);
+        const py = Math.floor(r * rowH + 8);
+        const pw = Math.floor(colW - 10);
+        const ph = Math.floor(rowH - 13);
 
         aCtx.fillStyle = glassHex;
         aCtx.fillRect(px, py, pw, ph);
 
-        // Glass specular reflection highlight
         aCtx.fillStyle = 'rgba(255,255,255,0.18)';
         aCtx.fillRect(px, py, pw * 0.35, ph);
 
-        // Deterministic lit interior windows
+        // Smooth recessed specular glass pane roughness (~0.16)
+        rCtx.fillStyle = 'rgb(42, 42, 42)';
+        rCtx.fillRect(px, py, pw, ph);
+
+        for (let yy = py; yy < Math.min(h, py + ph); yy++) {
+          for (let xx = px; xx < Math.min(w, px + pw); xx++) {
+            heightBuf[yy * w + xx] = 0.18;
+          }
+        }
+
         const lit = hash2D(c * 3.1, r * 5.7, 2050);
         if (lit > 0.42) {
           const isAccent = lit > 0.84;
@@ -1005,7 +1125,6 @@ export function createFacadeTextures(
       }
     }
 
-    // Subtle accent horizontal trim bands near top & middle
     aCtx.fillStyle = accentHex;
     aCtx.fillRect(0, 10, w, 6);
     aCtx.fillRect(0, h * 0.5, w, 4);
@@ -1020,6 +1139,15 @@ export function createFacadeTextures(
   map.anisotropy = 4;
   map.needsUpdate = true;
 
+  const normalMap = createNormalMapFromHeight(heightBuf, w, h, 3.0, true, true);
+
+  const roughnessMap = new THREE.CanvasTexture(roughCanvas);
+  roughnessMap.colorSpace = THREE.NoColorSpace;
+  roughnessMap.wrapS = THREE.RepeatWrapping;
+  roughnessMap.wrapT = THREE.RepeatWrapping;
+  roughnessMap.anisotropy = 4;
+  roughnessMap.needsUpdate = true;
+
   const emissiveMap = new THREE.CanvasTexture(emissiveCanvas);
   emissiveMap.colorSpace = THREE.SRGBColorSpace;
   emissiveMap.wrapS = THREE.RepeatWrapping;
@@ -1027,37 +1155,330 @@ export function createFacadeTextures(
   emissiveMap.anisotropy = 4;
   emissiveMap.needsUpdate = true;
 
-  return { map, emissiveMap };
+  return { map, normalMap, roughnessMap, emissiveMap };
 }
 
 /**
- * Scale 3 Open-Sky Hemisphere Gradient Shader (Dawn Pearl-Rose in Light Mode, Twilight Indigo-Rose in Dark Mode)
+ * Procedural PBR Textures for the 24 Expandable City Footprint Hex Pads
+ */
+export function createHexPadPbrTextures(accentHex = '#00f0ff'): FacadePbrTextures {
+  const size = 256;
+  const cx = size / 2;
+  const cy = size / 2;
+
+  const albedoCanvas = document.createElement('canvas');
+  albedoCanvas.width = size;
+  albedoCanvas.height = size;
+  const aCtx = albedoCanvas.getContext('2d');
+
+  const roughCanvas = document.createElement('canvas');
+  roughCanvas.width = size;
+  roughCanvas.height = size;
+  const rCtx = roughCanvas.getContext('2d');
+
+  const emissiveCanvas = document.createElement('canvas');
+  emissiveCanvas.width = size;
+  emissiveCanvas.height = size;
+  const eCtx = emissiveCanvas.getContext('2d');
+
+  const heightBuf = new Float32Array(size * size);
+  heightBuf.fill(0.5);
+
+  if (aCtx && rCtx && eCtx) {
+    aCtx.fillStyle = '#e7edf4';
+    aCtx.fillRect(0, 0, size, size);
+
+    rCtx.fillStyle = 'rgb(142, 142, 142)';
+    rCtx.fillRect(0, 0, size, size);
+
+    eCtx.fillStyle = '#000000';
+    eCtx.fillRect(0, 0, size, size);
+
+    // Metallic concentric hex bevel channels
+    aCtx.strokeStyle = '#94a3b8';
+    aCtx.lineWidth = 4;
+    aCtx.beginPath();
+    aCtx.arc(cx, cy, 98, 0, Math.PI * 2);
+    aCtx.stroke();
+
+    aCtx.strokeStyle = 'rgba(15, 23, 42, 0.24)';
+    aCtx.lineWidth = 2;
+    aCtx.beginPath();
+    aCtx.arc(cx, cy, 62, 0, Math.PI * 2);
+    aCtx.stroke();
+
+    // Specular metallic groove in roughness map
+    rCtx.strokeStyle = 'rgb(64, 64, 64)';
+    rCtx.lineWidth = 6;
+    rCtx.beginPath();
+    rCtx.arc(cx, cy, 98, 0, Math.PI * 2);
+    rCtx.stroke();
+
+    // Emissive telemetry ticks
+    eCtx.strokeStyle = accentHex;
+    eCtx.lineWidth = 3;
+    eCtx.setLineDash([14, 10]);
+    eCtx.beginPath();
+    eCtx.arc(cx, cy, 92, 0, Math.PI * 2);
+    eCtx.stroke();
+    eCtx.setLineDash([]);
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const d = Math.hypot(x - cx, y - cy);
+        const groove = Math.abs(d - 98) < 4 || Math.abs(d - 62) < 2.5 ? -0.32 : 0;
+        const micro = (hash2D(x * 0.5, y * 0.5, 44) - 0.5) * 0.04;
+        heightBuf[y * size + x] = 0.62 + groove + micro;
+      }
+    }
+  }
+
+  const map = new THREE.CanvasTexture(albedoCanvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.anisotropy = 4;
+  map.needsUpdate = true;
+
+  const normalMap = createNormalMapFromHeight(heightBuf, size, size, 2.8, false, false);
+
+  const roughnessMap = new THREE.CanvasTexture(roughCanvas);
+  roughnessMap.colorSpace = THREE.NoColorSpace;
+  roughnessMap.anisotropy = 4;
+  roughnessMap.needsUpdate = true;
+
+  const emissiveMap = new THREE.CanvasTexture(emissiveCanvas);
+  emissiveMap.colorSpace = THREE.SRGBColorSpace;
+  emissiveMap.anisotropy = 4;
+  emissiveMap.needsUpdate = true;
+
+  return { map, normalMap, roughnessMap, emissiveMap };
+}
+
+/**
+ * Horizontally repeating Maglev Rail Energy Pulse Texture (animated via .offset.x).
+ */
+export function createMaglevRailEmissiveTexture(accentHex: string): THREE.CanvasTexture {
+  const w = 256;
+  const h = 32;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+
+  if (ctx) {
+    ctx.fillStyle = '#140b18';
+    ctx.fillRect(0, 0, w, h);
+
+    for (let i = 0; i < 4; i++) {
+      const startX = i * 64;
+      const grad = ctx.createLinearGradient(startX, 0, startX + 54, 0);
+      grad.addColorStop(0, 'rgba(0,0,0,0)');
+      grad.addColorStop(0.55, accentHex);
+      grad.addColorStop(0.85, '#ffffff');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(startX, 4, 54, h - 8);
+    }
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(14, 1);
+  tex.anisotropy = 4;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/**
+ * Tileable Tangent-Space Water Ripple NormalMap (Linear ColorSpace).
+ */
+export function createWaterRippleNormalMap(): THREE.CanvasTexture {
+  const size = 256;
+  const buf = new Float32Array(size * size);
+  for (let y = 0; y < size; y++) {
+    const ny = (y / size) * Math.PI * 2;
+    for (let x = 0; x < size; x++) {
+      const nx = (x / size) * Math.PI * 2;
+      const w1 = Math.sin(nx * 4 + Math.cos(ny * 3) * 0.6) * 0.35;
+      const w2 = Math.cos(ny * 5 - Math.sin(nx * 2) * 0.7) * 0.3;
+      const fine = fbm((x / size) * 12, (y / size) * 12, 601, 3) * 0.35;
+      buf[y * size + x] = 0.5 + (w1 + w2) * 0.28 + fine;
+    }
+  }
+  const tex = createNormalMapFromHeight(buf, size, size, 2.2, true, true);
+  tex.repeat.set(3, 3);
+  return tex;
+}
+
+/**
+ * Soft Radial Glowing Sprite Texture for Environmental Weather & Atmospheric Motes
+ */
+export function createParticleGlowTexture(): THREE.CanvasTexture {
+  const size = 64;
+  const cx = size / 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    const grad = ctx.createRadialGradient(cx, cx, 1, cx, cx, cx);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.35, 'rgba(255,255,255,0.72)');
+    grad.addColorStop(0.75, 'rgba(255,255,255,0.16)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/**
+ * 135-Degree Graduated Holographic Turntable Dial for the Isolated 3D Inspector
+ */
+export function createHolographic135PlinthTexture(lightTheme: boolean): THREE.CanvasTexture {
+  const size = 1024;
+  const cx = size / 2;
+  const cy = size / 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  if (ctx) {
+    const bgGrad = ctx.createRadialGradient(cx, cy, 24, cx, cy, size * 0.49);
+    if (lightTheme) {
+      bgGrad.addColorStop(0, '#f8fafc');
+      bgGrad.addColorStop(0.55, '#e2e8f0');
+      bgGrad.addColorStop(0.92, '#cbd5e1');
+      bgGrad.addColorStop(1, '#94a3b8');
+    } else {
+      bgGrad.addColorStop(0, '#0c162b');
+      bgGrad.addColorStop(0.55, '#0a1222');
+      bgGrad.addColorStop(0.92, '#070c18');
+      bgGrad.addColorStop(1, '#04070f');
+    }
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, size, size);
+
+    const primaryStroke = lightTheme ? 'rgba(2, 132, 199, 0.58)' : 'rgba(0, 240, 255, 0.72)';
+    const secondaryStroke = lightTheme ? 'rgba(5, 150, 105, 0.5)' : 'rgba(16, 185, 129, 0.58)';
+    const subtleStroke = lightTheme ? 'rgba(15, 23, 42, 0.14)' : 'rgba(56, 189, 248, 0.16)';
+
+    // Concentric calibration rings
+    for (const r of [140, 260, 380, 462]) {
+      ctx.strokeStyle = r === 462 ? primaryStroke : subtleStroke;
+      ctx.lineWidth = r === 462 ? 3 : 1.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Highlighted 135-degree measurement sector arc (-112.5deg to +22.5deg -> exact 135deg sweep)
+    const startRad = -Math.PI * 0.625;
+    const endRad = startRad + (135 * Math.PI) / 180;
+    ctx.strokeStyle = primaryStroke;
+    ctx.lineWidth = 9;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 434, startRad, endRad);
+    ctx.stroke();
+
+    ctx.strokeStyle = secondaryStroke;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 412, startRad, endRad);
+    ctx.stroke();
+
+    // 72 circumference degree ticks (every 5 degrees), bold every 45 degrees
+    for (let deg = 0; deg < 360; deg += 5) {
+      const a = (deg * Math.PI) / 180;
+      const isMajor = deg % 45 === 0;
+      const isMid = deg % 15 === 0;
+      const rIn = isMajor ? 430 : isMid ? 444 : 452;
+      const rOut = 462;
+      ctx.strokeStyle = isMajor ? secondaryStroke : primaryStroke;
+      ctx.lineWidth = isMajor ? 3 : isMid ? 2 : 1;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * rIn, cy + Math.sin(a) * rIn);
+      ctx.lineTo(cx + Math.cos(a) * rOut, cy + Math.sin(a) * rOut);
+      ctx.stroke();
+    }
+
+    // 135deg radial boundary guides
+    for (const boundaryAngle of [startRad, endRad]) {
+      ctx.strokeStyle = secondaryStroke;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 8]);
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(boundaryAngle) * 140, cy + Math.sin(boundaryAngle) * 140);
+      ctx.lineTo(cx + Math.cos(boundaryAngle) * 436, cy + Math.sin(boundaryAngle) * 436);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Center reticle crosshair & 135deg telemetry caption
+    ctx.strokeStyle = primaryStroke;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - 48, cy);
+    ctx.lineTo(cx + 48, cy);
+    ctx.moveTo(cx, cy - 48);
+    ctx.lineTo(cx, cy + 48);
+    ctx.stroke();
+
+    ctx.fillStyle = primaryStroke;
+    ctx.font = 'bold 20px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('135° TELEMETRY STAGE', cx, cy + 320);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/**
+ * Scale 3 Open-Sky Rayleigh + Mie Atmospheric Scattering Shader
+ * Synchronized to the 5 scientific divisions (EXOSPHERE -> THERMOSPHERE -> MESOSPHERE -> STRATOSPHERE -> TROPOSPHERE).
+ * Never encloses settlements in a closed shell (sky sphere radius = 72).
  */
 export function createOpenSkyDomeMaterial(
   isLightTheme: boolean,
   tier: AtmosphereTier,
+  atmosphereProgress?: number,
 ): THREE.ShaderMaterial {
+  const div = resolveScientificAtmosphereDivision(tier, atmosphereProgress);
   const zenith = isLightTheme
-    ? new THREE.Color(tier === 'P1' ? '#fda4af' : tier === 'P4' ? '#93c5fd' : '#fbcfe8')
-    : new THREE.Color(tier === 'P1' ? '#1f1024' : '#0f172a');
+    ? new THREE.Color(div.rayleighHex).lerp(new THREE.Color('#93c5fd'), 0.42)
+    : new THREE.Color(div.rayleighHex);
   const horizon = isLightTheme
-    ? new THREE.Color(tier === 'P1' ? '#ffedd5' : '#fff1f5')
-    : new THREE.Color(tier === 'P1' ? '#4c1d32' : '#311538');
-  const groundBounce = isLightTheme
-    ? new THREE.Color('#f5d0dc')
-    : new THREE.Color('#190b21');
+    ? new THREE.Color(div.horizonHex).lerp(new THREE.Color('#fff5f7'), 0.56)
+    : new THREE.Color(div.horizonHex).lerp(new THREE.Color('#1a1026'), 0.48);
+  const groundBounce = isLightTheme ? new THREE.Color('#ead5dd') : new THREE.Color('#130b1c');
+  const rayleighColor = new THREE.Color(div.haloHex);
+  const mieColor = new THREE.Color(div.mieHex);
 
   return new THREE.ShaderMaterial({
     uniforms: {
       uZenith: { value: zenith },
       uHorizon: { value: horizon },
       uGround: { value: groundBounce },
+      uRayleighColor: { value: rayleighColor },
+      uMieColor: { value: mieColor },
+      uSunDir: { value: new THREE.Vector3(0.58, 0.46, 0.52).normalize() },
+      uScatteringDensity: { value: div.scatteringDensity },
+      uTime: { value: 0 },
     },
     vertexShader: `
-      varying vec3 vWorldPos;
+      varying vec3 vWorldDir;
       void main() {
         vec4 wp = modelMatrix * vec4(position, 1.0);
-        vWorldPos = wp.xyz;
+        vWorldDir = normalize(wp.xyz);
         gl_Position = projectionMatrix * viewMatrix * wp;
       }
     `,
@@ -1065,12 +1486,39 @@ export function createOpenSkyDomeMaterial(
       uniform vec3 uZenith;
       uniform vec3 uHorizon;
       uniform vec3 uGround;
-      varying vec3 vWorldPos;
+      uniform vec3 uRayleighColor;
+      uniform vec3 uMieColor;
+      uniform vec3 uSunDir;
+      uniform float uScatteringDensity;
+      uniform float uTime;
+      varying vec3 vWorldDir;
+
       void main() {
-        float h = normalize(vWorldPos).y;
-        vec3 col = h >= 0.0
-          ? mix(uHorizon, uZenith, pow(clamp(h, 0.0, 1.0), 0.65))
-          : mix(uHorizon, uGround, clamp(-h * 3.0, 0.0, 1.0));
+        vec3 dir = normalize(vWorldDir);
+        vec3 sunDir = normalize(uSunDir);
+        float h = dir.y;
+
+        // Rayleigh vertical optical thickness gradient
+        float upT = pow(clamp(h, 0.0, 1.0), 0.58);
+        vec3 baseSky = mix(uHorizon, uZenith, upT);
+        vec3 rayleighShift = uRayleighColor * (1.0 - upT) * 0.28 * uScatteringDensity;
+
+        // Henyey-Greenstein Mie forward solar scattering & crisp solar corona
+        float cosTheta = max(dot(dir, sunDir), 0.0);
+        float g = 0.78;
+        float g2 = g * g;
+        float miePhase = (1.0 - g2) / max(0.08, pow(1.0 + g2 - 2.0 * g * cosTheta, 1.5));
+        float horizonBoost = 1.0 - clamp(abs(h) * 2.2, 0.0, 1.0);
+        vec3 mieGlow = uMieColor * clamp(miePhase * 0.042 * (0.45 + uScatteringDensity * 0.75), 0.0, 0.95);
+        float sunDisk = smoothstep(0.9965, 0.9994, cosTheta);
+
+        // Subtle high-altitude cirrus iridescence waves
+        float wave = sin(dir.x * 9.0 + uTime * 0.06) * cos(dir.z * 7.5 - uTime * 0.04);
+        float mistBand = smoothstep(0.02, 0.34, h) * (1.0 - smoothstep(0.34, 0.85, h));
+        vec3 cirrusTint = mix(uHorizon, uRayleighColor, 0.35) * max(0.0, wave) * 0.055 * mistBand * uScatteringDensity;
+
+        vec3 skyCol = baseSky + rayleighShift + mieGlow + uMieColor * horizonBoost * 0.14 * uScatteringDensity + cirrusTint + vec3(1.0, 0.97, 0.9) * sunDisk;
+        vec3 col = h >= 0.0 ? skyCol : mix(uHorizon, uGround, clamp(-h * 3.2, 0.0, 1.0));
         gl_FragColor = vec4(col, 1.0);
       }
     `,
@@ -1098,7 +1546,7 @@ export function createContactShadowTexture(): THREE.CanvasTexture {
     ctx.fillRect(0, 0, size, size);
   }
   const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
   tex.needsUpdate = true;
   return tex;
 }
-

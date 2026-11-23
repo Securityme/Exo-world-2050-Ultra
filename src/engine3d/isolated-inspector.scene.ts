@@ -5,6 +5,7 @@ import type { FleetShip } from '../contracts/v4-systems.schema.ts';
 import type { MilitaryUnitStack } from '../contracts/combat-units.schema.ts';
 import type { DroneAllocation } from '../contracts/world-state.schema.ts';
 import { buildDistrictMesh, buildDroneUnit } from './procedural-models.ts';
+import { createHolographic135PlinthTexture } from './procedural-textures.ts';
 import {
   buildShowcaseAssetById,
   countGroupGeometryStats,
@@ -96,6 +97,7 @@ export class IsolatedInspectorScene {
   private rimLight: THREE.DirectionalLight | null = null;
   private fillLight: THREE.DirectionalLight | null = null;
   private hemiLight: THREE.HemisphereLight | null = null;
+  private holoArcGroup: THREE.Group | null = null;
 
   private isSoftwareGl = false;
   private isDisposed = false;
@@ -139,7 +141,7 @@ export class IsolatedInspectorScene {
       renderer.setSize(width, height);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 0.96;
+      renderer.toneMappingExposure = 1.08;
       renderer.shadowMap.enabled = false;
       renderer.domElement.style.display = 'block';
       renderer.domElement.style.width = '100%';
@@ -187,30 +189,69 @@ export class IsolatedInspectorScene {
         this.applyLightingPreset(input.lightingPreset, input.lightTheme);
       }
 
-      // Pedestal disc + beveled halo ring
+      // Graduated 135-degree Holographic Turntable Pedestal + Telemetry Arcs
       const padRadius = input.kind === 'HANGAR' ? 4.4 : 2.15;
       const padMat = new THREE.MeshStandardMaterial({
-        color: input.lightTheme ? 0xe2e8f0 : 0x131c31,
-        roughness: 0.48,
-        metalness: 0.36,
+        color: input.lightTheme ? 0xcbd5e1 : 0x0f172a,
+        roughness: 0.36,
+        metalness: 0.62,
       });
-      const pad = new THREE.Mesh(new THREE.CylinderGeometry(padRadius, padRadius * 1.06, 0.16, 40), padMat);
+      const pad = new THREE.Mesh(
+        new THREE.CylinderGeometry(padRadius, padRadius * 1.06, 0.16, 48),
+        padMat,
+      );
       pad.position.y = -0.09;
       scene.add(pad);
 
-      const trimRing = new THREE.Mesh(
-        new THREE.TorusGeometry(padRadius * 0.96, 0.025, 8, 48),
+      const plinthDialTex = createHolographic135PlinthTexture(input.lightTheme);
+      const dialMat = new THREE.MeshStandardMaterial({
+        map: plinthDialTex,
+        emissiveMap: plinthDialTex,
+        emissive: new THREE.Color(input.lightTheme ? '#0284c7' : '#00f0ff'),
+        emissiveIntensity: input.lightTheme ? 0.16 : 0.38,
+        roughness: 0.42,
+        metalness: 0.28,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+      });
+      const dialDisc = new THREE.Mesh(new THREE.CircleGeometry(padRadius * 0.985, 48), dialMat);
+      dialDisc.rotation.x = -Math.PI / 2;
+      dialDisc.position.y = -0.008;
+      scene.add(dialDisc);
+
+      const holoArcGroup = new THREE.Group();
+      const arcSweep135 = (135 * Math.PI) / 180;
+      const cyanArc = new THREE.Mesh(
+        new THREE.TorusGeometry(padRadius * 0.99, 0.026, 8, 48, arcSweep135),
         new THREE.MeshStandardMaterial({
           color: 0x00f0ff,
           emissive: 0x00f0ff,
-          emissiveIntensity: input.lightTheme ? 0.35 : 0.7,
-          roughness: 0.25,
+          emissiveIntensity: input.lightTheme ? 0.45 : 0.9,
+          roughness: 0.2,
+          metalness: 0.55,
+        }),
+      );
+      cyanArc.rotation.x = Math.PI / 2;
+      cyanArc.position.y = 0.006;
+      holoArcGroup.add(cyanArc);
+
+      const emeraldArc = new THREE.Mesh(
+        new THREE.TorusGeometry(padRadius * 1.035, 0.018, 8, 48, arcSweep135),
+        new THREE.MeshStandardMaterial({
+          color: 0x10b981,
+          emissive: 0x10b981,
+          emissiveIntensity: input.lightTheme ? 0.4 : 0.85,
+          roughness: 0.22,
           metalness: 0.5,
         }),
       );
-      trimRing.rotation.x = Math.PI / 2;
-      trimRing.position.y = -0.01;
-      scene.add(trimRing);
+      emeraldArc.rotation.x = Math.PI / 2;
+      emeraldArc.rotation.z = Math.PI;
+      emeraldArc.position.y = 0.004;
+      holoArcGroup.add(emeraldArc);
+      scene.add(holoArcGroup);
+      this.holoArcGroup = holoArcGroup;
 
       const grid = new THREE.GridHelper(
         padRadius * 1.85,
@@ -218,7 +259,7 @@ export class IsolatedInspectorScene {
         input.lightTheme ? 0x0284c7 : 0x00f0ff,
         input.lightTheme ? 0xcbd5e1 : 0x1e293b,
       );
-      grid.position.y = 0.004;
+      grid.position.y = -0.012;
       scene.add(grid);
 
       this.subjectGroup = new THREE.Group();
@@ -316,6 +357,9 @@ export class IsolatedInspectorScene {
     this.autoRotateTimer = window.setInterval(() => {
       if (this.isDisposed || !this.autoRotate || this.isDragging) return;
       this.yaw += step;
+      if (this.holoArcGroup) {
+        this.holoArcGroup.rotation.y -= step * 0.45;
+      }
       this.requestRender();
     }, intervalMs);
   }
@@ -461,6 +505,23 @@ export class IsolatedInspectorScene {
     }
   }
 
+  private disposeMaterial(mat: THREE.Material): void {
+    if (mat instanceof THREE.MeshStandardMaterial || mat instanceof THREE.MeshPhysicalMaterial) {
+      mat.map?.dispose();
+      mat.normalMap?.dispose();
+      mat.bumpMap?.dispose();
+      mat.roughnessMap?.dispose();
+      mat.metalnessMap?.dispose();
+      mat.aoMap?.dispose();
+      mat.emissiveMap?.dispose();
+      mat.alphaMap?.dispose();
+    } else if (mat instanceof THREE.MeshBasicMaterial || mat instanceof THREE.PointsMaterial) {
+      mat.map?.dispose();
+      mat.alphaMap?.dispose();
+    }
+    mat.dispose();
+  }
+
   public dispose(): void {
     this.isDisposed = true;
     this.autoRotate = false;
@@ -480,10 +541,10 @@ export class IsolatedInspectorScene {
     this.resizeObserver = null;
     if (this.scene) {
       this.scene.traverse((obj) => {
-        if (obj instanceof THREE.Mesh) {
+        if (obj instanceof THREE.Mesh || obj instanceof THREE.Line || obj instanceof THREE.Points) {
           obj.geometry.dispose();
           const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-          for (const m of mats) m.dispose();
+          for (const m of mats) this.disposeMaterial(m);
         }
       });
     }
@@ -493,5 +554,7 @@ export class IsolatedInspectorScene {
     this.renderer = null;
     this.scene = null;
     this.camera = null;
+    this.subjectGroup = null;
+    this.holoArcGroup = null;
   }
 }

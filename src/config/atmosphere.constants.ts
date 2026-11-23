@@ -53,3 +53,122 @@ export const ATMOSPHERE_CONSTANTS = Object.freeze({
   }),
   BIOME_STABILITY_CYCLES_REQUIRED: 3,
 });
+
+export type ScientificAtmosphereDivisionId =
+  | 'EXOSPHERE'
+  | 'THERMOSPHERE'
+  | 'MESOSPHERE'
+  | 'STRATOSPHERE'
+  | 'TROPOSPHERE';
+
+export interface ScientificAtmosphereDivisionSpec {
+  readonly id: ScientificAtmosphereDivisionId;
+  readonly index: 1 | 2 | 3 | 4 | 5;
+  readonly label: string;
+  readonly altitudeKmLabel: string;
+  readonly compatibleTier: 'P1' | 'P2' | 'P3' | 'P4';
+  readonly minProgress: number;
+  readonly rayleighHex: string;
+  readonly mieHex: string;
+  readonly horizonHex: string;
+  readonly haloHex: string;
+  readonly scatteringDensity: number;
+}
+
+/**
+ * [L1] 5 Divisions Atmosphériques Scientifiques (SYS-INST-EXW-001 v2.0.0)
+ * Progression descendante orbitale vers sol habitable, rétro-compatible avec P1..P4.
+ */
+export const SCIENTIFIC_ATMOSPHERE_DIVISIONS: readonly ScientificAtmosphereDivisionSpec[] = Object.freeze([
+  {
+    id: 'EXOSPHERE',
+    index: 1,
+    label: 'Exosphère (> 500 km)',
+    altitudeKmLabel: '500–1 200 km',
+    compatibleTier: 'P1',
+    minProgress: 0,
+    rayleighHex: '#181024',
+    mieHex: '#f97316',
+    horizonHex: '#c26d3a',
+    haloHex: '#fb923c',
+    scatteringDensity: 0.28,
+  },
+  {
+    id: 'THERMOSPHERE',
+    index: 2,
+    label: 'Thermosphère (85–500 km)',
+    altitudeKmLabel: '85–500 km',
+    compatibleTier: 'P1',
+    minProgress: 20,
+    rayleighHex: '#251a38',
+    mieHex: '#fb7185',
+    horizonHex: '#e17a54',
+    haloHex: '#fb7185',
+    scatteringDensity: 0.44,
+  },
+  {
+    id: 'MESOSPHERE',
+    index: 3,
+    label: 'Mésosphère (50–85 km)',
+    altitudeKmLabel: '50–85 km',
+    compatibleTier: 'P2',
+    minProgress: 40,
+    rayleighHex: '#1e3a5f',
+    mieHex: '#60a5fa',
+    horizonHex: '#7da8c9',
+    haloHex: '#60a5fa',
+    scatteringDensity: 0.62,
+  },
+  {
+    id: 'STRATOSPHERE',
+    index: 4,
+    label: 'Stratosphère (15–50 km)',
+    altitudeKmLabel: '15–50 km',
+    compatibleTier: 'P3',
+    minProgress: 65,
+    rayleighHex: '#0c4a6e',
+    mieHex: '#38bdf8',
+    horizonHex: '#7dd3fc',
+    haloHex: '#38bdf8',
+    scatteringDensity: 0.82,
+  },
+  {
+    id: 'TROPOSPHERE',
+    index: 5,
+    label: 'Troposphère (0–15 km)',
+    altitudeKmLabel: '0–15 km',
+    compatibleTier: 'P4',
+    minProgress: 85,
+    rayleighHex: '#065f46',
+    mieHex: '#34d399',
+    horizonHex: '#a7f3d0',
+    haloHex: '#34d399',
+    scatteringDensity: 1.0,
+  },
+]);
+
+export function resolveScientificAtmosphereDivision(
+  tier: 'P1' | 'P2' | 'P3' | 'P4',
+  progress?: number,
+): ScientificAtmosphereDivisionSpec {
+  if (typeof progress === 'number' && Number.isFinite(progress)) {
+    const pct = Math.max(0, Math.min(100, progress));
+    for (let i = SCIENTIFIC_ATMOSPHERE_DIVISIONS.length - 1; i >= 0; i--) {
+      const div = SCIENTIFIC_ATMOSPHERE_DIVISIONS[i]!;
+      if (pct >= div.minProgress) return div;
+    }
+  }
+  switch (tier) {
+    case 'P4':
+      return SCIENTIFIC_ATMOSPHERE_DIVISIONS[4]!;
+    case 'P3':
+      return SCIENTIFIC_ATMOSPHERE_DIVISIONS[3]!;
+    case 'P2':
+      return SCIENTIFIC_ATMOSPHERE_DIVISIONS[2]!;
+    default:
+      return typeof progress === 'number' && progress >= 20
+        ? SCIENTIFIC_ATMOSPHERE_DIVISIONS[1]!
+        : SCIENTIFIC_ATMOSPHERE_DIVISIONS[0]!;
+  }
+}
+

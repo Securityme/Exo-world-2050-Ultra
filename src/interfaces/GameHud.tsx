@@ -304,30 +304,33 @@ export function GameHud() {
       }`}
     >
       {/* Top Tactical Header — Era/Fame, Super-Widget Météo, Notifications, Scales, FIP Radio, Profile, Settings */}
-      <header className="pointer-events-auto exo-bento-card exo-astral-ticks exo-hud-panel flex items-center justify-between gap-1.5 px-2 py-1.5 sm:gap-2 sm:px-3.5 sm:py-2">
+      <header className="pointer-events-auto exo-bento-card exo-astral-ticks exo-hud-panel flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5 px-2.5 py-1.5 sm:flex-nowrap sm:gap-2 sm:px-3.5 sm:py-2">
         {isMobile ? (
-          <div className="flex min-w-0 flex-1 flex-col leading-tight font-mono-num">
-            <div className="flex items-center gap-1 text-[10px]">
-              <span className="font-display font-bold tracking-wide exo-accent-2-text whitespace-nowrap">
-                ÈRE {world.era}/6 · {world.eraStars}★
-              </span>
-              <span aria-hidden="true" className="exo-muted-text opacity-50">·</span>
-              <span className="font-medium whitespace-nowrap">
-                T{world.cycle}
-              </span>
-              <span aria-hidden="true" className="exo-muted-text opacity-50">·</span>
-              <span className="font-semibold exo-accent-text whitespace-nowrap">
-                PA {world.pa.general}/{world.pa.generalCap}
-              </span>
+          <div className="flex min-w-0 w-full items-center justify-between gap-2 leading-tight font-mono-num">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex items-center gap-1 text-[10px]">
+                <span className="font-display font-bold tracking-wide exo-accent-2-text whitespace-nowrap">
+                  ÈRE {world.era}/6 · {world.eraStars}★
+                </span>
+                <span aria-hidden="true" className="exo-muted-text opacity-50">·</span>
+                <span className="font-medium whitespace-nowrap">
+                  T{world.cycle}
+                </span>
+                <span aria-hidden="true" className="exo-muted-text opacity-50">·</span>
+                <span className="font-semibold exo-accent-text whitespace-nowrap">
+                  PA {world.pa.general}/{world.pa.generalCap}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px]">
+                <span
+                  data-testid="header-atmo-status-mobile"
+                  className={`truncate font-semibold ${atmoToneClass}`}
+                >
+                  {atmoStatus.mobileLabel}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 text-[10px]">
-              <span
-                data-testid="header-atmo-status-mobile"
-                className={`truncate font-semibold ${atmoToneClass}`}
-              >
-                {atmoStatus.mobileLabel}
-              </span>
-            </div>
+            <HeaderWeatherSuperWidget />
           </div>
         ) : (
           <div className="flex min-w-0 flex-1 items-center gap-x-1.5 overflow-hidden font-mono-num text-[11px]">
@@ -376,7 +379,7 @@ export function GameHud() {
           </div>
         )}
 
-        <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
+        <div className="flex w-full shrink-0 items-center justify-between gap-1 sm:w-auto sm:justify-end sm:gap-1.5">
           {!isMobile && (
             <>
               {([1, 2, 3] as const).map((sc) => (
@@ -439,8 +442,7 @@ export function GameHud() {
             </>
           )}
 
-          {/* Header: Super-widget météo sur mobile + Centre de notifications + Studio Contexte 3D + Tutoriel + Masquer 100% */}
-          {isMobile && <HeaderWeatherSuperWidget />}
+          {/* Header: Centre de notifications + Studio Contexte 3D + Tutoriel + Masquer 100% */}
           <HeaderNotificationCenter />
           <HeaderDevDrawer />
 

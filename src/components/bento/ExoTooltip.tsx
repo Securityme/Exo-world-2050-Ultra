@@ -16,17 +16,17 @@ export interface ExoTooltipProps {
 }
 
 const ACCENT_BORDER: Record<NonNullable<ExoTooltipProps['accent']>, string> = {
-  cyan: 'exo-accent-border',
-  amber: 'border-amber-500/65 dark:border-amber-400/65',
-  emerald: 'border-emerald-500/60 dark:border-emerald-400/60',
-  coral: 'border-rose-500/65 dark:border-rose-400/65',
+  cyan: 'border-cyan-500/65 dark:border-cyan-400/70 shadow-[0_14px_34px_rgba(2,10,24,0.85),inset_0_1px_0_rgba(0,240,255,0.22)]',
+  amber: 'border-amber-500/70 dark:border-amber-400/70 shadow-[0_14px_34px_rgba(24,14,2,0.82),inset_0_1px_0_rgba(255,184,0,0.2)]',
+  emerald: 'border-emerald-500/65 dark:border-emerald-400/70 shadow-[0_14px_34px_rgba(2,22,16,0.82),inset_0_1px_0_rgba(16,185,129,0.22)]',
+  coral: 'border-rose-500/70 dark:border-rose-400/70 shadow-[0_14px_34px_rgba(24,6,14,0.82),inset_0_1px_0_rgba(251,113,133,0.2)]',
 };
 
 const ACCENT_TITLE: Record<NonNullable<ExoTooltipProps['accent']>, string> = {
-  cyan: 'exo-accent-text',
-  amber: 'text-amber-600 dark:text-amber-300',
-  emerald: 'text-emerald-600 dark:text-emerald-300',
-  coral: 'text-rose-600 dark:text-rose-300',
+  cyan: 'text-cyan-700 dark:text-cyan-300',
+  amber: 'text-amber-700 dark:text-amber-300',
+  emerald: 'text-emerald-700 dark:text-emerald-300',
+  coral: 'text-rose-700 dark:text-rose-300',
 };
 
 interface FixedCoords {
@@ -106,17 +106,17 @@ export function ExoTooltip({
             left: coords.left,
             transform: coords.placeAbove ? 'translateY(-100%)' : undefined,
           }}
-          className={`pointer-events-none fixed z-[90] w-[280px] rounded-xl border bg-[var(--exo-surface)] p-3 text-left shadow-xl ${ACCENT_BORDER[accent]}`}
+          className={`pointer-events-none fixed z-[90] w-[min(280px,calc(100vw-24px))] rounded-xl border bg-[var(--exo-surface)] p-3 text-left text-[var(--exo-text)] ${ACCENT_BORDER[accent]}`}
         >
           <span className={`block font-display text-[11px] font-bold tracking-wide ${ACCENT_TITLE[accent]}`}>
             {title}
           </span>
           {formula && (
-            <span className="mt-1 block rounded-md border exo-accent-border bg-[var(--exo-surface-alt)] px-2 py-1 font-mono text-[10px] font-semibold exo-accent-2-text">
+            <span className="mt-1 block rounded-md border border-cyan-500/35 bg-[var(--exo-surface-alt)] px-2 py-1 font-mono text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
               {formula}
             </span>
           )}
-          <span className="mt-1.5 block text-[11px] leading-relaxed text-[var(--exo-text)] opacity-90">
+          <span className="mt-1.5 block text-[11px] leading-relaxed text-[var(--exo-text)]">
             {body}
           </span>
         </span>

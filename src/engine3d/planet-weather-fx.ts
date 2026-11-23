@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import type { AtmosphereTier, ViewportOverlayMode } from '../contracts/render-bridge.schema.ts';
 import type { WorldState } from '../contracts/world-state.schema.ts';
+import { createParticleGlowTexture } from './procedural-textures.ts';
 
 /**
- * [L4] EXW.L4.PLANET_WEATHER_FX | v4.1.0 | SADT A5.3
+ * [L4] EXW.L4.PLANET_WEATHER_FX | v5.1.0 | SADT A5.3
  * Scale 2 Dynamic Weather Particles, Polar Aurora Ribbons, Seasonal Frost Ring &
  * Geodesic Telemetry Overlays (Usure / Maintenance Stress & Flux Conduits).
  */
@@ -33,7 +34,7 @@ export function buildPlanetWeatherFx(radius: number): PlanetWeatherFxNodes {
   const group = new THREE.Group();
 
   // Weather particle cloud shell (re-colored & re-sized per weather state)
-  const count = 140;
+  const count = 160;
   const positions = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const latBand = (((i * 37) % 100) / 100) * 1.4 - 0.7;
@@ -48,9 +49,12 @@ export function buildPlanetWeatherFx(radius: number): PlanetWeatherFxNodes {
   stormGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   const stormMat = new THREE.PointsMaterial({
     color: 0xfbbf24,
-    size: 0.08,
+    map: createParticleGlowTexture(),
+    size: 0.11,
     transparent: true,
     opacity: 0,
+    alphaTest: 0.03,
+    blending: THREE.AdditiveBlending,
     depthWrite: false,
     sizeAttenuation: true,
   });

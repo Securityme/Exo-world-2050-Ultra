@@ -68,7 +68,8 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
   private onGameEvent: ((event: RenderToGameEvent) => void) | null = null;
   private currentScale: CameraScale = 2;
   private currentTier: AtmosphereTier = 'P1';
-  private planetVisualKey = 'P1::PRINTEMPS::1::CLEAR';
+  private currentAtmoProgress = 0;
+  private planetVisualKey = 'P1::PRINTEMPS::1::CLEAR::0';
   private currentLightTheme = true;
   private currentOverlayMode: ViewportOverlayMode = 'STANDARD';
   private currentThemeAccentNum = 0xfb7185;
@@ -131,7 +132,7 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     renderer.setSize(width, height);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.08;
     renderer.shadowMap.enabled = !this.isSoftwareGl;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.style.display = 'block';
@@ -158,7 +159,7 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     const camera = new THREE.PerspectiveCamera(46, width / height, 0.1, 180);
     this.camera = camera;
 
-    // 3-point atmospheric lighting: warm directional key (tight shadow frustum) + sky/ground hemisphere + rim
+    // 3-point atmospheric lighting: warm directional key (2048px PCFSoftShadowMap) + sky/ground hemisphere + rim
     const hemi = new THREE.HemisphereLight(0x93c5fd, 0x1e293b, 0.95);
     scene.add(hemi);
     this.hemiLight = hemi;
@@ -166,15 +167,16 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     const keyLight = new THREE.DirectionalLight(0xfff4e0, 2.15);
     keyLight.position.set(14, 16, 12);
     keyLight.castShadow = !this.isSoftwareGl;
-    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.mapSize.set(2048, 2048);
     keyLight.shadow.camera.near = 2;
     keyLight.shadow.camera.far = 48;
     keyLight.shadow.camera.left = -14;
     keyLight.shadow.camera.right = 14;
     keyLight.shadow.camera.top = 14;
     keyLight.shadow.camera.bottom = -14;
-    keyLight.shadow.bias = -0.0005;
+    keyLight.shadow.bias = -0.0004;
     keyLight.shadow.normalBias = 0.02;
+    keyLight.shadow.radius = 2.5;
     scene.add(keyLight);
     this.keyLight = keyLight;
 
@@ -270,13 +272,19 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       this.syncScaleLighting(packet.activeScale, isLight);
       const oldSky = this.cityNodes.skyDomeMesh.material;
       if (oldSky instanceof THREE.Material) oldSky.dispose();
-      this.cityNodes.skyDomeMesh.material = createOpenSkyDomeMaterial(isLight, packet.atmosphereTier);
+      this.cityNodes.skyDomeMesh.material = createOpenSkyDomeMaterial(
+        isLight,
+        packet.atmosphereTier,
+        packet.atmosphereProgress,
+      );
     }
 
     const season = packet.season ?? 'PRINTEMPS';
-    const nextVisualKey = `${packet.atmosphereTier}::${season}::${packet.activeSlotIndex}::${packet.weatherState}`;
+    const progressBucket = Math.floor((packet.atmosphereProgress ?? 0) / 10);
+    const nextVisualKey = `${packet.atmosphereTier}::${season}::${packet.activeSlotIndex}::${packet.weatherState}::${progressBucket}`;
     if (packet.atmosphereTier !== this.currentTier || nextVisualKey !== this.planetVisualKey) {
       this.currentTier = packet.atmosphereTier;
+      this.currentAtmoProgress = packet.atmosphereProgress ?? 0;
       this.planetVisualKey = nextVisualKey;
       this.updateAtmosphereVisuals(
         {
@@ -286,6 +294,7 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
           slotIndex: packet.activeSlotIndex,
         },
         isLight,
+        this.currentAtmoProgress,
       );
     }
 
@@ -414,11 +423,24 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
   }
 
   private disposeMaterialWithMaps(mat: THREE.Material): void {
-    if (mat instanceof THREE.MeshStandardMaterial) {
+    if (mat instanceof THREE.MeshStandardMaterial || mat instanceof THREE.MeshPhysicalMaterial) {
       mat.map?.dispose();
+      mat.normalMap?.dispose();
       mat.bumpMap?.dispose();
       mat.roughnessMap?.dispose();
+      mat.metalnessMap?.dispose();
+      mat.aoMap?.dispose();
       mat.emissiveMap?.dispose();
+      mat.alphaMap?.dispose();
+    } else if (mat instanceof THREE.MeshBasicMaterial || mat instanceof THREE.PointsMaterial) {
+      mat.map?.dispose();
+      mat.alphaMap?.dispose();
+    } else if (mat instanceof THREE.ShaderMaterial) {
+      for (const uniform of Object.values(mat.uniforms)) {
+        if (uniform && uniform.value instanceof THREE.Texture) {
+          uniform.value.dispose();
+        }
+      }
     }
     mat.dispose();
   }
@@ -468,17 +490,23 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     }
   }
 
-  private updateAtmosphereVisuals(opts: PlanetTextureOptions, isLight: boolean): void {
+  private updateAtmosphereVisuals(
+    opts: PlanetTextureOptions,
+    isLight: boolean,
+    atmosphereProgress?: number,
+  ): void {
     if (!this.planetNodes || !this.cityNodes) return;
     const { tier } = opts;
 
-    const { map, bumpMap, roughnessMap, emissiveMap } = createPlanetSurfaceTextures(opts);
+    const { map, normalMap, bumpMap, roughnessMap, emissiveMap } = createPlanetSurfaceTextures(opts);
     const sMat = this.planetNodes.surfaceMesh.material as THREE.MeshStandardMaterial;
     sMat.map?.dispose();
+    sMat.normalMap?.dispose();
     sMat.bumpMap?.dispose();
     sMat.roughnessMap?.dispose();
     sMat.emissiveMap?.dispose();
     sMat.map = map;
+    sMat.normalMap = normalMap;
     sMat.bumpMap = bumpMap;
     sMat.roughnessMap = roughnessMap;
     sMat.emissiveMap = emissiveMap;
@@ -499,12 +527,12 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     if (this.planetNodes.haloMesh.material instanceof THREE.Material) {
       this.planetNodes.haloMesh.material.dispose();
     }
-    this.planetNodes.haloMesh.material = createAtmosphereHaloMaterial(tier);
+    this.planetNodes.haloMesh.material = createAtmosphereHaloMaterial(tier, atmosphereProgress);
 
     if (this.planetNodes.limbMesh.material instanceof THREE.Material) {
       this.planetNodes.limbMesh.material.dispose();
     }
-    this.planetNodes.limbMesh.material = createAtmosphereLimbMaterial(tier);
+    this.planetNodes.limbMesh.material = createAtmosphereLimbMaterial(tier, atmosphereProgress);
 
     const gMat = this.cityNodes.groundMesh.material as THREE.MeshStandardMaterial;
     gMat.map?.dispose();
@@ -519,7 +547,7 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     if (this.cityNodes.skyDomeMesh.material instanceof THREE.Material) {
       this.cityNodes.skyDomeMesh.material.dispose();
     }
-    this.cityNodes.skyDomeMesh.material = createOpenSkyDomeMaterial(isLight, tier);
+    this.cityNodes.skyDomeMesh.material = createOpenSkyDomeMaterial(isLight, tier, atmosphereProgress);
   }
 
   private clearGroup(group: THREE.Group): void {
@@ -944,6 +972,22 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       if (this.planetNodes && this.planetNodes.group.visible) {
         this.planetNodes.cloudsMesh.rotation.y = t * 0.032;
         this.planetNodes.cirrusMesh.rotation.y = -t * 0.018 + 1.4;
+        if (this.keyLight) {
+          this.scratchVec3.copy(this.keyLight.position).normalize();
+          const sMat = this.planetNodes.surfaceMesh.material as THREE.MeshStandardMaterial;
+          const nightU = sMat.userData.nightUniforms as { uSunDir?: { value: THREE.Vector3 } } | undefined;
+          if (nightU?.uSunDir) {
+            nightU.uSunDir.value.copy(this.scratchVec3);
+          }
+          const haloMat = this.planetNodes.haloMesh.material;
+          if (haloMat instanceof THREE.ShaderMaterial && haloMat.uniforms.uSunDir?.value instanceof THREE.Vector3) {
+            haloMat.uniforms.uSunDir.value.copy(this.scratchVec3);
+          }
+          const limbMat = this.planetNodes.limbMesh.material;
+          if (limbMat instanceof THREE.ShaderMaterial && limbMat.uniforms.uSunDir?.value instanceof THREE.Vector3) {
+            limbMat.uniforms.uSunDir.value.copy(this.scratchVec3);
+          }
+        }
         animateSectorMarkers(this.planetNodes.tileMarkers, this.lastSelectedTileIndex, t);
         animatePlanetWeatherFx(this.planetNodes.weatherFx, t);
         const sat1 = this.planetNodes.satellites[0];
@@ -1010,7 +1054,7 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
           );
         });
 
-        // Subtle Solar Day/Night directional arc in Scale 3
+        // Subtle Solar Day/Night directional arc in Scale 3 + Rayleigh/Mie Open-Sky Shader Sync
         if (this.keyLight) {
           const sunAngle = t * 0.06 + 0.6;
           this.keyLight.position.set(
@@ -1018,7 +1062,22 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
             13 + Math.sin(sunAngle) * 8,
             Math.sin(sunAngle) * 14,
           );
+          const skyMat = this.cityNodes.skyDomeMesh.material;
+          if (skyMat instanceof THREE.ShaderMaterial) {
+            if (skyMat.uniforms.uSunDir?.value instanceof THREE.Vector3) {
+              skyMat.uniforms.uSunDir.value.copy(this.keyLight.position).normalize();
+            }
+            if (skyMat.uniforms.uTime) {
+              skyMat.uniforms.uTime.value = t;
+            }
+          }
         }
+
+        // Animated emissive Maglev rail pulses & Solarpunk pollen/atmospheric motes
+        this.cityNodes.civilRailTex.offset.x = -(t * 0.48) % 1;
+        this.cityNodes.freightRailTex.offset.x = (t * 0.32) % 1;
+        this.cityNodes.atmoMotes.rotation.y = t * 0.04;
+        this.cityNodes.atmoMotes.position.y = Math.sin(t * 0.9) * 0.08;
 
         this.cityNodes.wildlifeGroup.children.forEach((bird, idx) => {
           const phase = Number(bird.userData.orbitPhase ?? 0);

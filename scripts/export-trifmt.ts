@@ -68,6 +68,7 @@ export function syncMasterBlueprint(): { m0: M0Manifest; m13: M13Manifest; srcFi
 
   const m0 = JSON.parse(fs.readFileSync(m0Path, 'utf8')) as M0Manifest;
   const m13Raw = JSON.parse(fs.readFileSync(m13Path, 'utf8')) as M13Manifest;
+  const cleanSemver = m0.rootSemver.split('+')[0] ?? m0.rootSemver;
   const srcFiles = walkSrcFiles(SRC_DIR);
 
   const srcMappings: SrcModuleMapping[] = srcFiles.map((filePath) => {
@@ -76,7 +77,7 @@ export function syncMasterBlueprint(): { m0: M0Manifest; m13: M13Manifest; srcFi
       path: filePath,
       layer: meta.layer,
       sadtBox: meta.sadtBox,
-      semver: '4.0.0-rc.1',
+      semver: cleanSemver,
       status: 'VERIFIED',
       maxLinesBudget: meta.maxLinesBudget,
     };
@@ -84,7 +85,7 @@ export function syncMasterBlueprint(): { m0: M0Manifest; m13: M13Manifest; srcFi
 
   const updatedM13: M13Manifest = {
     ...m13Raw,
-    version: '4.0.0-rc.1',
+    version: cleanSemver,
     srcMappings,
   };
 
@@ -92,22 +93,22 @@ export function syncMasterBlueprint(): { m0: M0Manifest; m13: M13Manifest; srcFi
 
   const report = evaluateMatrixArchitecture(m0, updatedM13, srcFiles);
   fs.writeFileSync(
-    path.join(BP_DIR, 'MASTER_BLUEPRINT_FMT-U_v4.0.0-rc.1.md'),
+    path.join(BP_DIR, `MASTER_BLUEPRINT_FMT-U_v${cleanSemver}.md`),
     renderBlueprintMarkdown(m0, updatedM13, report, 'FMT-U'),
     'utf8',
   );
   fs.writeFileSync(
-    path.join(BP_DIR, 'MASTER_BLUEPRINT_FMT-M_v4.0.0-rc.1.md'),
+    path.join(BP_DIR, `MASTER_BLUEPRINT_FMT-M_v${cleanSemver}.md`),
     renderBlueprintMarkdown(m0, updatedM13, report, 'FMT-M'),
     'utf8',
   );
   fs.writeFileSync(
-    path.join(BP_DIR, 'MASTER_BLUEPRINT_FMT-S_AISTUDIO_v4.0.0-rc.1.md'),
+    path.join(BP_DIR, `MASTER_BLUEPRINT_FMT-S_AISTUDIO_v${cleanSemver}.md`),
     renderBlueprintMarkdown(m0, updatedM13, report, 'FMT-S'),
     'utf8',
   );
   fs.writeFileSync(
-    path.join(BP_DIR, 'MASTER_BLUEPRINT_v4.0.0-rc.1.yaml'),
+    path.join(BP_DIR, `MASTER_BLUEPRINT_v${cleanSemver}.yaml`),
     renderBlueprintYaml(m0, report),
     'utf8',
   );

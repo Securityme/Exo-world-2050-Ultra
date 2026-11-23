@@ -1,5 +1,5 @@
 /**
- * [L5] EXW.ARCH.MATRIX_ENGINE | v4.0.0-rc.1 | SADT A5.1
+ * [L5] EXW.ARCH.MATRIX_ENGINE | v5.1.0-alpha.1 | SADT A5.1
  * Isomorphic Pure 16-Matrix Architecture Engine (M0-M15):
  * - Zero Node.js or DOM dependencies (runs identically in CLI scripts/exo-audit.ts and Browser Atlas UI).
  * - Evaluates ICOM vertical/horizontal completeness, DSM acyclicity (Kahn's algorithm, 0 cycles),
@@ -306,12 +306,12 @@ function buildSixteenMatrixSummary(
     {
       id: 'M5',
       code: 'TERRA-BIO',
-      title: 'Biosphère & Terraformation P1..P4 (Hystérésis -3)',
+      title: 'Biosphère & Terraformation 5 Divisions (EXOSPHERE→TROPOSPHERE) / P1..P4',
       layers: ['L1', 'L3'],
       iso: 'ISO 25012',
-      metric: '0.35·Atmo + 0.30·Hydro + 0.25·Bio + 0.10·Rad',
+      metric: '5 Div Atmo · P1..P4 Hystérésis -3',
       status: 'PASS',
-      summary: 'Kits O₂ actifs en P1–P3, libération respiratoire en P4 Éden.',
+      summary: 'Kits O₂ actifs en P1–P3, Rayleigh/Mie 5 couches, libération en P4 Troposphère Éden.',
     },
     {
       id: 'M6',
@@ -356,12 +356,12 @@ function buildSixteenMatrixSummary(
     {
       id: 'M10',
       code: 'RENDER-3D',
-      title: 'Rendu Three.js Carte + B3D Isolé + Hangar H3D',
+      title: 'Rendu Three.js 0.187.0 PBR + Rayleigh/Mie + Inspecteur 135°',
       layers: ['L4', 'L7'],
       iso: 'ISO 25010',
-      metric: 'DPR≤1.5 · 0-3D dans Monde · Fallback 2D',
+      metric: 'ACESFilmic · PMREM · Shadow 2048 · DPR≤1.5',
       status: 'PASS',
-      summary: 'Mode Standard/Maintenance/Flux, inspecteur bâtiment et hangar flotte avec dispose().',
+      summary: 'Globe PBR normalMap/terminateur, Cité Open-Sky Rayleigh/Mie sans dôme, Maglev, Inspecteur 135° et .dispose().',
     },
     {
       id: 'M11',
@@ -406,12 +406,12 @@ function buildSixteenMatrixSummary(
     {
       id: 'M14',
       code: 'SAVE-MIG',
-      title: 'Persistance, Auto-Migration v3.1→v4.0 & Export',
+      title: 'Persistance, Auto-Migration v3.1→v5.1 & Export',
       layers: ['L0', 'L5', 'L6'],
       iso: 'ISO 25012',
-      metric: 'Backup exow_backup_v3 · Zod D1..D5',
+      metric: 'Backup exow_backup · Zod D1..D5',
       status: 'PASS',
-      summary: 'Purge automatique des champs hérités et vérification d’intégrité.',
+      summary: 'Purge automatique des champs hérités, P13 Bêta et vérification d’intégrité.',
     },
     {
       id: 'M15',
