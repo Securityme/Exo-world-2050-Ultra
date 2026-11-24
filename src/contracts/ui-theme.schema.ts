@@ -40,6 +40,14 @@ export type UiDensity = z.infer<typeof UiDensitySchema>;
 export const CornerStyleSchema = z.enum(['SHARP', 'BEVELED', 'ROUNDED']);
 export type CornerStyle = z.infer<typeof CornerStyleSchema>;
 
+export const SafariZoomAdaptModeSchema = z.enum([
+  'AUTO_SYSTEM',
+  'SAFARI_COMPACT',
+  'SAFARI_COMFORT',
+  'MANUAL_LOCK',
+]);
+export type SafariZoomAdaptMode = z.infer<typeof SafariZoomAdaptModeSchema>;
+
 export const UiThemeStudioConfigSchema = z.object({
   presetId: ThemePresetIdSchema,
   colorScheme: ColorSchemePreferenceSchema,
@@ -56,8 +64,9 @@ export const UiThemeStudioConfigSchema = z.object({
   highContrast: z.boolean(),
   reducedMotion: z.boolean(),
   saturationPct: z.number().min(50).max(150).default(100),
-  fontScalePct: z.number().min(85).max(135).default(100),
+  fontScalePct: z.number().min(70).max(150).default(100),
   safariTextSync: z.boolean().default(true),
+  safariZoomAdaptMode: SafariZoomAdaptModeSchema.default('AUTO_SYSTEM'),
   tactileTargetBoost: z.boolean().default(true),
   climateDynamicWallpaper: z.boolean().default(true),
 });

@@ -48,11 +48,111 @@ export interface AssetShowcaseSceneInput {
 
 export type IsolatedSceneInput = BuildingSceneInput | HangarSceneInput | AssetShowcaseSceneInput;
 
-function buildHangarShipMesh(shipClass: FleetShip['shipClass']): THREE.Group {
+function buildHangarShipMesh(ship: FleetShip): THREE.Group {
   const mappedId: ShowcaseAssetId =
-    shipClass === 'SHUTTLE_CARGO' ? 'FRIGATE_SOLAR' : shipClass;
+    ship.shipClass === 'SHUTTLE_CARGO' ? 'FRIGATE_SOLAR' : ship.shipClass;
   const grp = buildShowcaseAssetById(mappedId);
-  grp.scale.setScalar(shipClass === 'SHUTTLE_CARGO' ? 0.52 : 0.62);
+  grp.scale.setScalar(ship.shipClass === 'SHUTTLE_CARGO' ? 0.52 : 0.62);
+
+  const loadout = ship.loadout ?? [];
+  const weapons = loadout.filter((m) => m.slot === 'WEAPON');
+  const defenses = loadout.filter((m) => m.slot === 'DEFENSE');
+  const props = loadout.filter((m) => m.slot === 'PROPULSION');
+  const utils = loadout.filter((m) => m.slot === 'UTILITY');
+
+  // Mounted weapon turrets (dorsal & wing hardpoints)
+  weapons.forEach((wpn, idx) => {
+    const side = idx % 2 === 0 ? 1 : -1;
+    const zOff = 0.25 - Math.floor(idx / 2) * 0.45;
+    const turret = new THREE.Group();
+    const mount = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.11, 0.14, 0.14, 10),
+      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.28 }),
+    );
+    const barrel = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.036, 0.044, 0.56, 8),
+      new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.85, roughness: 0.22 }),
+    );
+    barrel.rotation.x = Math.PI / 2;
+    barrel.position.set(0, 0.05, 0.26);
+    const muzzleColor = wpn.tier >= 3 ? 0xf43f5e : wpn.tier === 2 ? 0x38bdf8 : 0xf59e0b;
+    const muzzle = new THREE.Mesh(
+      new THREE.SphereGeometry(0.052, 8, 8),
+      new THREE.MeshStandardMaterial({
+        color: muzzleColor,
+        emissive: muzzleColor,
+        emissiveIntensity: 1.25,
+        roughness: 0.15,
+      }),
+    );
+    muzzle.position.set(0, 0.05, 0.54);
+    turret.add(mount, barrel, muzzle);
+    turret.position.set(side * 0.52, 0.34, zOff);
+    grp.add(turret);
+  });
+
+  // Mounted shield / defense emitter halo
+  if (defenses.length > 0) {
+    const maxDefTier = Math.max(...defenses.map((d) => d.tier));
+    const shieldColor = maxDefTier >= 2 ? 0x00f0ff : 0x10b981;
+    const halo = new THREE.Mesh(
+      new THREE.TorusGeometry(1.18, 0.028, 10, 40),
+      new THREE.MeshStandardMaterial({
+        color: shieldColor,
+        emissive: shieldColor,
+        emissiveIntensity: 0.9,
+        transparent: true,
+        opacity: 0.72,
+        roughness: 0.2,
+      }),
+    );
+    halo.rotation.x = Math.PI / 2;
+    halo.position.y = 0.22;
+    grp.add(halo);
+  }
+
+  // Mounted propulsion thruster nacelles
+  if (props.length > 0) {
+    for (const side of [-1, 1]) {
+      const pod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.11, 0.14, 0.44, 10),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.75, roughness: 0.3 }),
+      );
+      pod.rotation.x = Math.PI / 2;
+      pod.position.set(side * 0.46, 0.12, -0.96);
+      const glow = new THREE.Mesh(
+        new THREE.ConeGeometry(0.1, 0.26, 10),
+        new THREE.MeshStandardMaterial({
+          color: 0x38bdf8,
+          emissive: 0x00f0ff,
+          emissiveIntensity: 1.35,
+          transparent: true,
+          opacity: 0.82,
+        }),
+      );
+      glow.rotation.x = -Math.PI / 2;
+      glow.position.set(side * 0.46, 0.12, -1.26);
+      grp.add(pod, glow);
+    }
+  }
+
+  // Mounted ventral utility / science pods
+  utils.forEach((u, idx) => {
+    const podColor = u.id.includes('bio') ? 0x10b981 : u.id.includes('quantum') ? 0xa855f7 : 0xf59e0b;
+    const pod = new THREE.Mesh(
+      new THREE.BoxGeometry(0.24, 0.16, 0.36),
+      new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        emissive: podColor,
+        emissiveIntensity: 0.35,
+        metalness: 0.65,
+        roughness: 0.35,
+      }),
+    );
+    pod.position.set((idx % 2 === 0 ? -1 : 1) * 0.24, -0.14, -0.18 + idx * 0.25);
+    grp.add(pod);
+  });
+
   return grp;
 }
 
@@ -409,10 +509,10 @@ export class IsolatedInspectorScene {
       return;
     }
 
-    // HANGAR 3D: Render every owned ship, drone squad & military unit with upgraded PBR models
+    // HANGAR 3D: Render every owned ship (with mounted weapons/modules), drone squad & military unit
     const items: THREE.Object3D[] = [];
     for (const ship of input.fleetShips) {
-      items.push(buildHangarShipMesh(ship.shipClass));
+      items.push(buildHangarShipMesh(ship));
     }
     const droneRoles: readonly [string, number][] = [
       ['construction', input.drones.construction],

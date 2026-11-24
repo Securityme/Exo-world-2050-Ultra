@@ -1,0 +1,534 @@
+{
+  "docs": [
+    {
+      "docId": "doc-master-blueprint-ssot",
+      "title": "DOC-EXW-ARCH-001 — Master Blueprint v2.12.0-MAITRE (NF/AFNOR & DMT-SW)",
+      "category": "BLUEPRINT",
+      "domain": "SYSTEM",
+      "linkedSkillId": null,
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "2.12.1",
+      "currentRevisionId": "rev-doc-master-blueprint-ssot-r2-d4ba8e",
+      "currentContentHash": "d4ba8e76f021390005f5fa4de1142f3a",
+      "tags": [
+        "SSoT",
+        "NF-AFNOR",
+        "DMT-SW",
+        "EXOW-ROOT"
+      ],
+      "updatedAtIso": "2026-11-24T22:07:17.389Z"
+    },
+    {
+      "docId": "doc-norms-nf-afnor-dmtsw",
+      "title": "Référentiel Conformité NF / AFNOR & DMT-SW",
+      "category": "NORMS_NF_AFNOR",
+      "domain": "SYSTEM",
+      "linkedSkillId": null,
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "1.3.0",
+      "currentRevisionId": "rev-doc-norms-nf-afnor-dmtsw-v1_3_0",
+      "currentContentHash": "92d6dd5453747be792d6dd5453747be7",
+      "tags": [
+        "AFNOR",
+        "ISO-42010",
+        "ISO-25010",
+        "DMT-SW"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-app-ssot",
+      "title": "Guide Skill · Audit SSoT MX16-ICOM & Couches L0–L8",
+      "category": "SKILL_GUIDE",
+      "domain": "APP",
+      "linkedSkillId": "skill-app-ssot-audit",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "2.1.0",
+      "currentRevisionId": "rev-doc-skill-app-ssot-v2_1_0",
+      "currentContentHash": "85e7ca49d5ef0a4c85e7ca49d5ef0a4c",
+      "tags": [
+        "Skill",
+        "Audit",
+        "MX16-ICOM",
+        "L0-L8"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-app-drive",
+      "title": "Guide Skill · Synchronisation Google Drive & Docs",
+      "category": "SKILL_GUIDE",
+      "domain": "APP",
+      "linkedSkillId": "skill-app-drive-sync",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "1.8.0",
+      "currentRevisionId": "rev-doc-skill-app-drive-v1_8_0",
+      "currentContentHash": "3de929fb71dfeb783de929fb71dfeb78",
+      "tags": [
+        "Skill",
+        "Google-Drive",
+        "Google-Docs",
+        "OAuth"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-app-vcs",
+      "title": "Guide Skill · VCS Documentaire SemVer & Diff/Revert",
+      "category": "SKILL_GUIDE",
+      "domain": "APP",
+      "linkedSkillId": "skill-app-vcs-docs",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "1.4.0",
+      "currentRevisionId": "rev-doc-skill-app-vcs-v1_4_0",
+      "currentContentHash": "2e44419a3d2557322e44419a3d255732",
+      "tags": [
+        "Skill",
+        "VCS",
+        "Diff",
+        "Revert",
+        "SHA-256"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-game-biohealth",
+      "title": "Guide Skill · 5 Divisions Scientifiques & BioHealth (FEAT-53/54)",
+      "category": "SKILL_GUIDE",
+      "domain": "GAME_WORLD",
+      "linkedSkillId": "skill-game-5div-biohealth",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "2.4.0",
+      "currentRevisionId": "rev-doc-skill-game-biohealth-v2_4_0",
+      "currentContentHash": "18e001fbe4572b9418e001fbe4572b94",
+      "tags": [
+        "Skill",
+        "5-Divisions",
+        "BioHealth",
+        "FEAT-53",
+        "FEAT-54"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-game-biomes",
+      "title": "Guide Skill · Biomes, Océans & Planètes 3D Procédurales",
+      "category": "SKILL_GUIDE",
+      "domain": "GAME_WORLD",
+      "linkedSkillId": "skill-game-biomes-oceans",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "2.0.0",
+      "currentRevisionId": "rev-doc-skill-game-biomes-v2_0_0",
+      "currentContentHash": "657fffe4c636b283657fffe4c636b283",
+      "tags": [
+        "Skill",
+        "Biomes",
+        "Océans",
+        "Three.js"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-game-diplomacy",
+      "title": "Guide Skill · Diplomatie Planétaire & Traités Bilatéraux",
+      "category": "SKILL_GUIDE",
+      "domain": "GAME_WORLD",
+      "linkedSkillId": "skill-game-planetary-diplomacy",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "1.6.0",
+      "currentRevisionId": "rev-doc-skill-game-diplomacy-v1_6_0",
+      "currentContentHash": "080a3b3f234a8d88080a3b3f234a8d88",
+      "tags": [
+        "Skill",
+        "Diplomatie",
+        "Traités",
+        "R-24"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-ethics-thomism",
+      "title": "Guide Skill · Éthique Thomiste, Maslow & Discernement (FEAT-55/56)",
+      "category": "SKILL_GUIDE",
+      "domain": "GAME_ETHICS",
+      "linkedSkillId": "skill-ethics-thomistic-discernment",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "1.5.0",
+      "currentRevisionId": "rev-doc-skill-ethics-thomism-v1_5_0",
+      "currentContentHash": "b55ebeb3a2ef1613b55ebeb3a2ef1613",
+      "tags": [
+        "Skill",
+        "Éthique",
+        "Maslow",
+        "FEAT-55",
+        "FEAT-56",
+        "AR-19"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-narr-lexicon",
+      "title": "Guide Skill · Lexique Narratif R-50 & Garde Zéro Z0",
+      "category": "SKILL_GUIDE",
+      "domain": "NARRATIVE",
+      "linkedSkillId": "skill-narr-lexicon",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "1.9.0",
+      "currentRevisionId": "rev-doc-skill-narr-lexicon-v1_9_0",
+      "currentContentHash": "dcdf398fa619112fdcdf398fa619112f",
+      "tags": [
+        "Skill",
+        "R-50",
+        "Lexique",
+        "Narratif"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "docId": "doc-skill-narr-cascade",
+      "title": "Guide Skill · Cascade BFF Gemini 4 Tiers (Free Tier Strict 0 USD)",
+      "category": "SKILL_GUIDE",
+      "domain": "NARRATIVE",
+      "linkedSkillId": "skill-narr-bff-cascade",
+      "driveFileId": null,
+      "driveUrl": null,
+      "currentSemver": "2.2.0",
+      "currentRevisionId": "rev-doc-skill-narr-cascade-v2_2_0",
+      "currentContentHash": "3b7e49c88a2f0f293b7e49c88a2f0f29",
+      "tags": [
+        "Skill",
+        "Gemini",
+        "Free-Tier",
+        "R-68"
+      ],
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    }
+  ],
+  "revisions": [
+    {
+      "revisionId": "rev-doc-master-blueprint-ssot-r2-d4ba8e",
+      "docId": "doc-master-blueprint-ssot",
+      "semver": "2.12.1",
+      "contentHash": "d4ba8e76f021390005f5fa4de1142f3a",
+      "author": "Lead Architecte EXW",
+      "summary": "Test audit commit",
+      "parentRevisionId": "rev-doc-master-blueprint-ssot-v2_12_0",
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T22:07:17.389Z",
+      "content": "# DOC-EXW-ARCH-001 — Master Blueprint Consolidé (v2.12.0-MAITRE)\n\n## 1. Cartouche Normative NF / AFNOR & DMT-SW\n- **DMT-SW** : Dossier Technique Logiciel & Traçabilité bidirectionnelle Exigences → Architecture → Tests.\n- **NF ISO/IEC/IEEE 42010** : Architecture 9 couches (L0 Contrats → L8 BFF Express) sans cycle DSM.\n- **NF ISO/IEC 25010** : Qualité produit, déterminisme PCG32 et accessibilité tactile ≥ 44×44 px.\n- **NF ISO/IEC/IEEE 29148** : Spécification des exigences FUP-001..014 et invariants R-01..R-69.\n- **NF Z67-100 / NF203 / NF552** : Empreinte SHA-256 par cycle et par révision documentaire VCS.\n\n## 2. Invariants Verrouillés\n- **R-16** : Ciel ouvert intégral en 3D (zéro dôme géométrique).\n- **R-24** : Toute décision joueur passe par Dossiers Exécutifs (P0 + C1..C5) avec option 0-PA garantie.\n- **R-50** : Lexique scientifique réaliste 2050 strict.\n- **R-68** : Budget 0 USD strict (modèles gratuits uniquement, rejet HTTP 403 sinon).\n\n## Test Verification Entry\nValidated isolated VCS."
+    },
+    {
+      "revisionId": "rev-doc-master-blueprint-ssot-v2_12_0",
+      "docId": "doc-master-blueprint-ssot",
+      "semver": "2.12.0",
+      "contentHash": "bbcbfcbdc543bcc9bbcbfcbdc543bcc9",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (2.12.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# DOC-EXW-ARCH-001 — Master Blueprint Consolidé (v2.12.0-MAITRE)\n\n## 1. Cartouche Normative NF / AFNOR & DMT-SW\n- **DMT-SW** : Dossier Technique Logiciel & Traçabilité bidirectionnelle Exigences → Architecture → Tests.\n- **NF ISO/IEC/IEEE 42010** : Architecture 9 couches (L0 Contrats → L8 BFF Express) sans cycle DSM.\n- **NF ISO/IEC 25010** : Qualité produit, déterminisme PCG32 et accessibilité tactile ≥ 44×44 px.\n- **NF ISO/IEC/IEEE 29148** : Spécification des exigences FUP-001..014 et invariants R-01..R-69.\n- **NF Z67-100 / NF203 / NF552** : Empreinte SHA-256 par cycle et par révision documentaire VCS.\n\n## 2. Invariants Verrouillés\n- **R-16** : Ciel ouvert intégral en 3D (zéro dôme géométrique).\n- **R-24** : Toute décision joueur passe par Dossiers Exécutifs (P0 + C1..C5) avec option 0-PA garantie.\n- **R-50** : Lexique scientifique réaliste 2050 strict.\n- **R-68** : Budget 0 USD strict (modèles gratuits uniquement, rejet HTTP 403 sinon)."
+    },
+    {
+      "revisionId": "rev-doc-norms-nf-afnor-dmtsw-v1_3_0",
+      "docId": "doc-norms-nf-afnor-dmtsw",
+      "semver": "1.3.0",
+      "contentHash": "92d6dd5453747be792d6dd5453747be7",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (1.3.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Référentiel Normatif NF / AFNOR & DMT-SW — EXO WORLD : 2050\n\n## Périmètre vérifié automatiquement\n1. **NF ISO/IEC/IEEE 42010** : Découpage strict L0..L8 vérifié par ESLint et `npm run exo:audit`.\n2. **DMT-SW** : Chaque module `src/` est mappé 1:1 dans `M13_SADT_Mapping.json`.\n3. **NF ISO/IEC/IEEE 29148** : Arbitrages `AR-01..AR-19`, `OPT-01..12` et `R-01..69` figés sauf validation R-25.\n4. **NF Z67-100 & NF203/NF552** : Historique documentaire VCS non destructif avec empreinte SHA-256."
+    },
+    {
+      "revisionId": "rev-doc-skill-app-ssot-v2_1_0",
+      "docId": "doc-skill-app-ssot",
+      "semver": "2.1.0",
+      "contentHash": "85e7ca49d5ef0a4c85e7ca49d5ef0a4c",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (2.1.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-APP-01 — Audit SSoT MX16-ICOM\n\n## Rôle fonctionnel\nVérifie la couverture 1:1 de tous les fichiers `src/` dans `M13_SADT_Mapping.json`, l’absence de cycle DSM (algorithme de Kahn) et la pureté déterministe des couches L2/L3.\n\n## Commandes associées\n- `npm run exo:sync-bp` : Synchronise les manifestes et projections Tri-Format.\n- `npm run exo:audit` : Exécute la porte de validation 17/17 PASS GO."
+    },
+    {
+      "revisionId": "rev-doc-skill-app-drive-v1_8_0",
+      "docId": "doc-skill-app-drive",
+      "semver": "1.8.0",
+      "contentHash": "3de929fb71dfeb783de929fb71dfeb78",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (1.8.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-APP-02 — Synchronisation Google Drive & Docs\n\n## Règles de sécurité OAuth\n- Les jetons d’accès OAuth restent exclusivement en mémoire vive client (`workspaceAccessTokenInMemory`).\n- Toute écriture ou création de Google Doc exige une modale de confirmation explicite avant envoi.\n- Chaque import Drive crée automatiquement une nouvelle révision VCS (`DRIVE_IMPORT`)."
+    },
+    {
+      "revisionId": "rev-doc-skill-app-vcs-v1_4_0",
+      "docId": "doc-skill-app-vcs",
+      "semver": "1.4.0",
+      "contentHash": "2e44419a3d2557322e44419a3d255732",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (1.4.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-APP-03 — VCS Documentaire Isolé\n\n## Principe d’isolation\nLa documentation évolue selon son propre cycle SemVer (`patch`, `minor`, `major`) indépendamment des mises à jour du moteur de simulation et des skills.\n\n## Opérations supportées\n- Création d’une révision signée par empreinte SHA-256.\n- Comparaison ligne à ligne (Diff) entre deux révisions.\n- Restauration (Revert) non destructive créant une nouvelle révision avec `source = REVERT`."
+    },
+    {
+      "revisionId": "rev-doc-skill-game-biohealth-v2_4_0",
+      "docId": "doc-skill-game-biohealth",
+      "semver": "2.4.0",
+      "contentHash": "18e001fbe4572b9418e001fbe4572b94",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (2.4.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-GAM-01 — 5 Divisions Scientifiques & Simulateur BioHealth\n\n## Architecture des 5 Divisions\nEXOSPHERE_0 · THERMOSPHERE_1 · MESOSPHERE_2 · STRATOSPHERE_3 · TROPOSPHERE_4.\n\n## Formule BioHealth (FEAT-53)\n`BioHealth = clamp(0, 0.25·Air + 0.20·Sols + 0.20·Hydro + 0.20·Flore + 0.15·Faune − MalusCatastrophe, 100)`.\n- Plafonnement strict des crises majeures P0 (FEAT-54) à 2 dossiers par cycle."
+    },
+    {
+      "revisionId": "rev-doc-skill-game-biomes-v2_0_0",
+      "docId": "doc-skill-game-biomes",
+      "semver": "2.0.0",
+      "contentHash": "657fffe4c636b283657fffe4c636b283",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (2.0.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-GAM-02 — Générateur Planètes, Biomes & Océans\n\n## Archétypes supportés (8 biomes)\nArchipel Émeraude · Monde Océanique · Pangée Tempérée · Cryo-Océan Boréal · Biosphère Fongique · Alpin & Fjords · Basalte & Caldeiras · Canyons Ocres.\n\n## Paramétrage 3D\nContrôle la couverture océanique (0%–92%), le relief (Doux/Équilibré/Escarpé) et les textures PBR spéculaires des océans en Échelle 2."
+    },
+    {
+      "revisionId": "rev-doc-skill-game-diplomacy-v1_6_0",
+      "docId": "doc-skill-game-diplomacy",
+      "semver": "1.6.0",
+      "contentHash": "080a3b3f234a8d88080a3b3f234a8d88",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (1.6.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-GAM-03 — Diplomatie Planétaire & Traités\n\n## 5 Traités Planétaires (R-24)\n1. Route Commerciale Maritime (`MARITIME_TRADE`)\n2. Pacte de Non-Agression (`NON_AGGRESSION`)\n3. Partage Scientifique (`SCIENCE_SHARE`)\n4. Embargo Orbital (`ORBITAL_EMBARGO`)\n5. Sommet Planétaire (`PLANETARY_SUMMIT`)\n\nLes accords actifs projettent des arcs logistiques et diplomatiques sur la sphère planétaire 3D."
+    },
+    {
+      "revisionId": "rev-doc-skill-ethics-thomism-v1_5_0",
+      "docId": "doc-skill-ethics-thomism",
+      "semver": "1.5.0",
+      "contentHash": "b55ebeb3a2ef1613b55ebeb3a2ef1613",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (1.5.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-ETH-01 — Éthique Thomiste, Maslow & Discernement\n\n## Invariants AR-17, AR-18 & AR-19\n- **Onglet 6 Lecture Seule (AR-17)** : Observation des 11 badges thomistes et des strates de Maslow sans micromanagement direct.\n- **Échelle Pédagogique 6 niveaux (AR-18)** : `+3 Grâce` jusqu’à `−2`.\n- **Église Catholique & Liberté de Conscience (FEAT-55/56, AR-19)** : Développement pastoral, caritatif et contemplatif dans le respect absolu de la liberté de conscience (score plancher 100%, aucune coercition)."
+    },
+    {
+      "revisionId": "rev-doc-skill-narr-lexicon-v1_9_0",
+      "docId": "doc-skill-narr-lexicon",
+      "semver": "1.9.0",
+      "contentHash": "dcdf398fa619112fdcdf398fa619112f",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (1.9.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-NAR-01 — Lexique Narratif R-50\n\nGarantit la précision terminologique 2050 en français pour toutes les sorties LLM et les dossiers générés, sans vocabulaire fantastique ni lexique obsolète."
+    },
+    {
+      "revisionId": "rev-doc-skill-narr-cascade-v2_2_0",
+      "docId": "doc-skill-narr-cascade",
+      "semver": "2.2.0",
+      "contentHash": "3b7e49c88a2f0f293b7e49c88a2f0f29",
+      "author": "Architecte SSoT EXW",
+      "summary": "Version initiale consolidée (2.2.0)",
+      "parentRevisionId": null,
+      "source": "LOCAL",
+      "createdAtIso": "2026-11-24T12:00:00.000Z",
+      "content": "# Skill SKL-NAR-02 — Cascade BFF Gemini 4T (0 USD Strict)\n\n## Chaîne d’exécution BFF (`server.ts`)\n- **T1 / T2** : `gemini-4-hydrogen` (Thinking LOW, 2.2s puis retry 1.3s)\n- **T3** : `gemini-3.1-flash-lite` (2.5s)\n- **Décisions calibrées** : `gemini-decision-1` (0 jeton de sortie)\n- **T4** : Repli déterministe transparent sur le Catalogue Vivant hors-ligne.\n- **R-68** : Toute requête spécifiant un modèle payant hors liste blanche est rejetée avec `HTTP 403`."
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-app-ssot-audit",
+      "code": "SKL-APP-01",
+      "name": "Audit SSoT MX16-ICOM & Couches L0–L8",
+      "domain": "APP",
+      "hookKind": "SSOT_AUDIT",
+      "semver": "2.1.0",
+      "enabled": true,
+      "entryModule": "src/services/architecture/matrix-engine.ts",
+      "docId": "doc-skill-app-ssot",
+      "dependencies": [],
+      "config": {
+        "strictLayerGuards": true,
+        "maxCyclomaticWarn": 85,
+        "enforceZ0Ban": true
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-app-drive-sync",
+      "code": "SKL-APP-02",
+      "name": "Synchronisation Google Drive & Docs (OAuth)",
+      "domain": "APP",
+      "hookKind": "DRIVE_SYNC",
+      "semver": "1.8.0",
+      "enabled": true,
+      "entryModule": "src/doc-sync/drive-docs.service.ts",
+      "docId": "doc-skill-app-drive",
+      "dependencies": [
+        "skill-app-vcs-docs"
+      ],
+      "config": {
+        "confirmBeforeWrite": true,
+        "keepTokenInMemoryOnly": true,
+        "autoImportPickerMetadata": true
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-app-vcs-docs",
+      "code": "SKL-APP-03",
+      "name": "VCS Documentaire SemVer & Diff/Revert",
+      "domain": "APP",
+      "hookKind": "DOCS_VCS",
+      "semver": "1.4.0",
+      "enabled": true,
+      "entryModule": "src/systems/governance/skills-vcs.engine.ts",
+      "docId": "doc-skill-app-vcs",
+      "dependencies": [],
+      "config": {
+        "hashAlgo": "SHA-256",
+        "nonDestructiveRevert": true,
+        "mirrorToFirestore": true
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-game-5div-biohealth",
+      "code": "SKL-GAM-01",
+      "name": "5 Divisions Scientifiques & BioHealth (FEAT-53/54)",
+      "domain": "GAME_WORLD",
+      "hookKind": "BIOCLIMATE_5DIV",
+      "semver": "2.4.0",
+      "enabled": true,
+      "entryModule": "src/systems/biosphere-cabinet/bioclimate-health.ts",
+      "docId": "doc-skill-game-biohealth",
+      "dependencies": [],
+      "config": {
+        "divisionsCount": 5,
+        "catastropheP0MaxPerCycle": 2,
+        "edenThresholdPct": 80
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-game-biomes-oceans",
+      "code": "SKL-GAM-02",
+      "name": "Générateur Planètes, Biomes & Océans 3D",
+      "domain": "GAME_WORLD",
+      "hookKind": "BIOME_OCEAN_GEN",
+      "semver": "2.0.0",
+      "enabled": true,
+      "entryModule": "src/data/world.catalog.ts",
+      "docId": "doc-skill-game-biomes",
+      "dependencies": [
+        "skill-game-5div-biohealth"
+      ],
+      "config": {
+        "archetypesCount": 8,
+        "maxOceanCoveragePct": 92,
+        "enableSpecularAtolls": true
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-game-planetary-diplomacy",
+      "code": "SKL-GAM-03",
+      "name": "Diplomatie Planétaire, Traités & Arcs Orbitaux",
+      "domain": "GAME_WORLD",
+      "hookKind": "PLANETARY_DIPLOMACY",
+      "semver": "1.6.0",
+      "enabled": true,
+      "entryModule": "src/systems/geopolitics/planetary-diplomacy.ts",
+      "docId": "doc-skill-game-diplomacy",
+      "dependencies": [],
+      "config": {
+        "treatyKinds": 5,
+        "defaultTreatyDurationCycles": 6,
+        "renderOrbitalArcs": true
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-ethics-thomistic-discernment",
+      "code": "SKL-ETH-01",
+      "name": "Éthique Thomiste, Maslow & Discernement (FEAT-55/56)",
+      "domain": "GAME_ETHICS",
+      "hookKind": "THOMISTIC_DISCERNMENT",
+      "semver": "1.5.0",
+      "enabled": true,
+      "entryModule": "src/systems/geopolitics/planetary-diplomacy.ts",
+      "docId": "doc-skill-ethics-thomism",
+      "dependencies": [
+        "skill-game-planetary-diplomacy"
+      ],
+      "config": {
+        "badgesCount": 11,
+        "freedomOfConscienceMin": 100,
+        "pedagogicalScale": "+3_TO_-2"
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-narr-lexicon",
+      "code": "SKL-NAR-01",
+      "name": "Lexique Narratif R-50 & Filtre Zéro Z0",
+      "domain": "NARRATIVE",
+      "hookKind": "LLM_LEXICON",
+      "semver": "1.9.0",
+      "enabled": true,
+      "entryModule": "src/utils/llm-lexicon.ts",
+      "docId": "doc-skill-narr-lexicon",
+      "dependencies": [],
+      "config": {
+        "strictR50Filter": true,
+        "frenchPrecision2050": true
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    },
+    {
+      "id": "skill-narr-bff-cascade",
+      "code": "SKL-NAR-02",
+      "name": "Cascade BFF Gemini 4T (Free Tier Strict 0 USD)",
+      "domain": "NARRATIVE",
+      "hookKind": "BFF_CASCADE_ZERO",
+      "semver": "2.2.0",
+      "enabled": true,
+      "entryModule": "server.ts",
+      "docId": "doc-skill-narr-cascade",
+      "dependencies": [
+        "skill-narr-lexicon"
+      ],
+      "config": {
+        "strictFreeTierUsd0": true,
+        "rejectPaidModelsHttp": 403,
+        "rateLimitPerMin": 12
+      },
+      "updatedAtIso": "2026-11-24T12:00:00.000Z"
+    }
+  ]
+}

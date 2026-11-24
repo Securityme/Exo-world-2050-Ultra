@@ -40,6 +40,8 @@ export const CombatDispatchOrderSchema = z.object({
   attackerComputeSurplus: z.number().min(0),
   defenderComputeDefense: z.number().min(1),
   orbitalSupportLevel: z.number().int().min(0).max(5),
+  fleetFirepowerBonus: z.number().min(0).optional(),
+  fleetDefenseBonus: z.number().min(0).optional(),
   attackers: z.array(MilitaryUnitStackSchema).min(1),
   defenders: z.array(MilitaryUnitStackSchema).min(1),
 });

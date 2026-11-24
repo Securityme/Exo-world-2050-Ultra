@@ -2,6 +2,7 @@ import express from 'express';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
@@ -22,9 +23,15 @@ import {
   GITHUB_SYNC_BASELINE_SHA,
 } from './src/doc-sync/sot-manifest.ts';
 import { createDocGovernanceRouter } from './src/app/api/doc-governance.route.ts';
-import { createSwarmBusRouter } from './src/app/api/swarm-bus.route.ts';
+import { createDocsVcsRouter } from './src/app/api/docs-vcs.route.ts';
 import { classifyProjectDocument } from './src/systems/governance/doc-governance.engine.ts';
 import { applyLlmLexicon, buildLlmLexiconPromptBlock } from './src/utils/llm-lexicon.ts';
+
+const FREE_TIER_ALLOWED_MODELS = new Set([
+  'gemini-4-hydrogen',
+  'gemini-3.1-flash-lite',
+  'gemini-decision-1',
+]);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -92,7 +99,7 @@ function buildGeminiPrompt(input: z.infer<typeof TurnEventsRequestSchema>): stri
   return [
     `Tu es le moteur narratif de EXO WORLD : 2050 (Tour ${input.cycle}, Année ${input.year}, Ère ${input.era}, Atmosphère ${input.atmosphereTier}).`,
     `Superpuissance: ${input.superpowerName}. Co-pilote IA: ${input.aiPersonaName} (Ton ${input.aiPersonality}). Approbation: ${input.approval}%. Crédits: ${input.credits}.`,
-    `Règles strictes: Français précis, réalisme scientifique 2050 (R-50). Interdiction absolue d'évoquer la chaleur, la gestion thermique, des corridors ou des mécaniques fantastiques.`,
+    `Règles strictes: Français précis, réalisme scientifique 2050 (R-50). Interdiction absolue d'évoquer des mécaniques fantastiques ou obsolètes.`,
     buildLlmLexiconPromptBlock(),
     `Génère UNIQUEMENT un objet JSON valide avec la structure exacte: { "aiCopilotComment": string (max 160 car), "dossiers": [ { "id": string, "code": string, "dossierClass": "C1"|"C2"|"C3"|"C4"|"C5", "title": string, "briefing": string, "source": "ORACLE_GEMINI", "slotIndex": 1, "tileIndex": integer 0..71, "expiresInCycles": 2, "options": [ 2 à 3 options dont AU MOINS UNE avec paGeneralCost=0 et subPaCost=0 ] } ] }.`,
     `Chaque option doit contenir: id, label, doctrineTag ("SOLARPUNK"|"CORPORATE"|"SECURITY"|"SCIENTIFIC"|"FEDERAL"), description, paGeneralCost (0..2), subPaDomain ("PA_GES"|"PA_MNT"|"PA_BIO"|"PA_POL"|null), subPaCost (0..2), effects { credits, energy, materials, water, food, electronics, compute, breathingKits, approvalDelta, atmosphereDelta, maintenanceDelta, allianceTrustDelta, eraStarsDelta, xpCiv, xpCabinet, xpAlliance, oracleImpactFactor }.`,
@@ -186,6 +193,7 @@ async function callGeminiModel(
 
 async function startServer() {
   const app = express();
+  const httpServer = http.createServer(app);
   app.use(express.json({ limit: '512kb' }));
 
   app.get('/api/health', (_req, res) => {
@@ -193,7 +201,24 @@ async function startServer() {
   });
 
   app.use('/api/governance', createDocGovernanceRouter());
-  app.use('/api/swarm-bus', createSwarmBusRouter());
+  app.use('/api/docs-vcs', createDocsVcsRouter());
+
+  // R-68 Strict $0 Free Tier Guard: reject any request explicitly asking for a paid/non-allowlisted model
+  app.use('/api/gemini', (req, res, next) => {
+    const body = (req.body ?? {}) as { model?: unknown; requestedModel?: unknown };
+    const candidate = typeof body.model === 'string'
+      ? body.model.trim()
+      : typeof body.requestedModel === 'string'
+        ? body.requestedModel.trim()
+        : '';
+    if (candidate && !FREE_TIER_ALLOWED_MODELS.has(candidate)) {
+      res.status(403).json({
+        error: `R-68 Budget 0 USD strict : le modèle « ${candidate} » est bloqué (seuls gemini-4-hydrogen, gemini-3.1-flash-lite et gemini-decision-1 sont autorisés).`,
+      });
+      return;
+    }
+    next();
+  });
 
   app.get('/api/project-docs', (_req, res) => {
     try {
@@ -628,6 +653,7 @@ async function startServer() {
       server: {
         middlewareMode: true,
         allowedHosts: true,
+        ws: { server: httpServer },
         hmr: !disableHmr,
         watch: disableHmr ? null : undefined,
       },
@@ -653,7 +679,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, HOST, () => {
+  httpServer.listen(PORT, HOST, () => {
     console.log(`[EXO WORLD 2050] Server running on http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`);
   });
 }

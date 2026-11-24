@@ -7,6 +7,7 @@ import {
   formatSeasonLabel,
   formatWeatherLabel,
 } from '../../utils/atmosphere-labels.ts';
+import { BioHealth5DivCard } from './BioHealthEcclesiaCards.tsx';
 
 interface WorldBiospherePanelProps {
   readonly subView: 'CLIMATE' | 'SPECTRA_HK';
@@ -49,30 +50,33 @@ export function WorldBiospherePanel({ subView }: WorldBiospherePanelProps) {
       </div>
 
       {subView === 'CLIMATE' ? (
-        <div className="exo-bento-card space-y-3 p-4 text-xs">
-          <div className="font-display text-sm font-bold text-[var(--exo-text)]">
-            4 Piliers de Terraformation (Vers Atmosphère Éden)
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            {[
-              ['Atmosphère (35%)', terra.atmo, 'bg-[var(--exo-accent)]'],
-              ['Hydrosphère (30%)', terra.hydro, 'bg-teal-500'],
-              ['Biosphère (25%)', terra.bio, 'bg-emerald-500'],
-              ['Bouclier Radiatif (10%)', terra.radShield, 'bg-amber-500'],
-            ].map(([label, val, barClass]) => (
-              <div key={String(label)} className="exo-surface-sub rounded-xl p-3">
-                <div className="flex justify-between font-mono text-[11px]">
-                  <span>{label}</span>
-                  <strong>{Math.round(Number(val))}%</strong>
+        <div className="space-y-4">
+          <BioHealth5DivCard />
+          <div className="exo-bento-card space-y-3 p-4 text-xs">
+            <div className="font-display text-sm font-bold text-[var(--exo-text)]">
+              4 Piliers de Terraformation (Vers Atmosphère Éden)
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              {[
+                ['Atmosphère (35%)', terra.atmo, 'bg-[var(--exo-accent)]'],
+                ['Hydrosphère (30%)', terra.hydro, 'bg-teal-500'],
+                ['Biosphère (25%)', terra.bio, 'bg-emerald-500'],
+                ['Bouclier Radiatif (10%)', terra.radShield, 'bg-amber-500'],
+              ].map(([label, val, barClass]) => (
+                <div key={String(label)} className="exo-surface-sub rounded-xl p-3">
+                  <div className="flex justify-between font-mono text-[11px]">
+                    <span>{label}</span>
+                    <strong>{Math.round(Number(val))}%</strong>
+                  </div>
+                  <div className="mt-1.5 h-2 rounded-full bg-black/20 dark:bg-white/10">
+                    <div
+                      className={`h-2 rounded-full ${barClass}`}
+                      style={{ width: `${Math.min(100, Math.max(0, Number(val)))}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="mt-1.5 h-2 rounded-full bg-black/20 dark:bg-white/10">
-                  <div
-                    className={`h-2 rounded-full ${barClass}`}
-                    style={{ width: `${Math.min(100, Math.max(0, Number(val)))}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       ) : (

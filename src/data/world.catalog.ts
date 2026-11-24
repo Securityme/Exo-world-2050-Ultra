@@ -209,3 +209,237 @@ export const SCIENTIFIC_DISCOVERIES_CATALOG: readonly string[] = Object.freeze([
   'Faille Magnétique Sub-Croûtale',
   'Signature Spectrale Artificielle',
 ]);
+
+export type PlanetBiomeId =
+  | 'ARCHIPEL_EMERAUDE'
+  | 'MONDE_OCEANIQUE'
+  | 'PANGEE_TEMPEREE'
+  | 'CANYONS_OCRES'
+  | 'CRYO_OCEAN'
+  | 'VOLCANIQUE_BASALTE'
+  | 'BIOSPHERE_FONGIQUE'
+  | 'ALPIN_SAUVAGE';
+
+export type PlanetReliefId = 'DOUX' | 'EQUILIBRE' | 'ESCARPE';
+export type PlanetClimateId = 'TEMPERE' | 'TROPICAL' | 'ARIDE' | 'POLAIRE';
+
+export interface PlanetBiomeProfileSpec {
+  readonly id: PlanetBiomeId;
+  readonly name: string;
+  readonly subtitle: string;
+  readonly hasOcean: boolean;
+  readonly defaultOceanPct: number;
+  readonly defaultRelief: PlanetReliefId;
+  readonly defaultClimate: PlanetClimateId;
+  readonly swatchOcean: string;
+  readonly swatchLand: string;
+  readonly swatchHighlight: string;
+  readonly bonusSummary: string;
+  readonly tags: readonly string[];
+  readonly startingDelta: {
+    readonly water?: number;
+    readonly energy?: number;
+    readonly materials?: number;
+    readonly food?: number;
+    readonly compute?: number;
+    readonly breathingKits?: number;
+    readonly atmosphereProgress?: number;
+  };
+}
+
+export const PLANET_BIOME_PROFILES_CATALOG: readonly PlanetBiomeProfileSpec[] = Object.freeze([
+  {
+    id: 'ARCHIPEL_EMERAUDE',
+    name: 'Archipel Émeraude',
+    subtitle: 'Îles volcaniques luxuriantes, lagons turquoise et forêts côtières.',
+    hasOcean: true,
+    defaultOceanPct: 72,
+    defaultRelief: 'EQUILIBRE',
+    defaultClimate: 'TROPICAL',
+    swatchOcean: '#0284c7',
+    swatchLand: '#10b981',
+    swatchHighlight: '#67e8f9',
+    bonusSummary: '+35 Eau · +15 Vivres · +8 % Biosphère initiale',
+    tags: ['Océan 72 %', 'Récifs', 'Forêts côtières'],
+    startingDelta: { water: 35, food: 15, atmosphereProgress: 8 },
+  },
+  {
+    id: 'MONDE_OCEANIQUE',
+    name: 'Monde Océanique',
+    subtitle: 'Immenses mers profondes parsemées d’atolls solarpunk et de récifs.',
+    hasOcean: true,
+    defaultOceanPct: 86,
+    defaultRelief: 'DOUX',
+    defaultClimate: 'TROPICAL',
+    swatchOcean: '#0369a1',
+    swatchLand: '#2dd4bf',
+    swatchHighlight: '#bae6fd',
+    bonusSummary: '+55 Eau · +25 Énergie marémotrice · +10 % Biosphère',
+    tags: ['Océan 86 %', 'Atolls', 'Marémoteur'],
+    startingDelta: { water: 55, energy: 25, atmosphereProgress: 10 },
+  },
+  {
+    id: 'PANGEE_TEMPEREE',
+    name: 'Pangée Tempérée',
+    subtitle: 'Grands continents fertiles, mers bleues équilibrées et vallées douces.',
+    hasOcean: true,
+    defaultOceanPct: 54,
+    defaultRelief: 'EQUILIBRE',
+    defaultClimate: 'TEMPERE',
+    swatchOcean: '#0ea5e9',
+    swatchLand: '#22c55e',
+    swatchHighlight: '#fde68a',
+    bonusSummary: '+25 Vivres · +20 Eau · +20 Matériaux',
+    tags: ['Océan 54 %', 'Plaines', 'Équilibré'],
+    startingDelta: { water: 20, food: 25, materials: 20, atmosphereProgress: 6 },
+  },
+  {
+    id: 'CRYO_OCEAN',
+    name: 'Cryo-Océan Boréal',
+    subtitle: 'Mers polaires navigables, banquises fracturées et fjords cristallins.',
+    hasOcean: true,
+    defaultOceanPct: 64,
+    defaultRelief: 'ESCARPE',
+    defaultClimate: 'POLAIRE',
+    swatchOcean: '#1d4ed8',
+    swatchLand: '#cbd5e1',
+    swatchHighlight: '#7dd3fc',
+    bonusSummary: '+30 Compute · +30 Eau pure · Refroidissement naturel',
+    tags: ['Océan 64 %', 'Banquise', 'Fjords'],
+    startingDelta: { water: 30, compute: 30, atmosphereProgress: 4 },
+  },
+  {
+    id: 'BIOSPHERE_FONGIQUE',
+    name: 'Biosphère Fongique',
+    subtitle: 'Estuaires bioluminescents, canopées améthyste et marais fertiles.',
+    hasOcean: true,
+    defaultOceanPct: 48,
+    defaultRelief: 'DOUX',
+    defaultClimate: 'TROPICAL',
+    swatchOcean: '#0f766e',
+    swatchLand: '#9333ea',
+    swatchHighlight: '#34d399',
+    bonusSummary: '+25 Kits Resp. · +20 Vivres · +12 % Biosphère',
+    tags: ['Mers 48 %', 'Bioluminescent', 'Exobiologie'],
+    startingDelta: { breathingKits: 25, food: 20, water: 15, atmosphereProgress: 12 },
+  },
+  {
+    id: 'ALPIN_SAUVAGE',
+    name: 'Alpin & Fjords',
+    subtitle: 'Chaînes montagneuses enneigées, lacs profonds et vallées encaissées.',
+    hasOcean: true,
+    defaultOceanPct: 42,
+    defaultRelief: 'ESCARPE',
+    defaultClimate: 'TEMPERE',
+    swatchOcean: '#0284c7',
+    swatchLand: '#64748b',
+    swatchHighlight: '#f8fafc',
+    bonusSummary: '+30 Matériaux · +20 Énergie hydro · Relief défensif',
+    tags: ['Lacs & Fjords 42 %', 'Hauts sommets', 'Hydro'],
+    startingDelta: { materials: 30, energy: 20, water: 15, atmosphereProgress: 5 },
+  },
+  {
+    id: 'VOLCANIQUE_BASALTE',
+    name: 'Basalte & Caldeiras',
+    subtitle: 'Côtes d’obsidienne, mers intérieures minérales et crêtes basaltiques.',
+    hasOcean: true,
+    defaultOceanPct: 30,
+    defaultRelief: 'ESCARPE',
+    defaultClimate: 'ARIDE',
+    swatchOcean: '#0e7490',
+    swatchLand: '#57534e',
+    swatchHighlight: '#f97316',
+    bonusSummary: '+45 Énergie · +35 Matériaux · Gisements lourds',
+    tags: ['Mers 30 %', 'Obsidienne', 'Haute énergie'],
+    startingDelta: { energy: 45, materials: 35 },
+  },
+  {
+    id: 'CANYONS_OCRES',
+    name: 'Canyons Ocres',
+    subtitle: 'Plateaux de grès rouge, oasis profondes et bassins sédimentaires.',
+    hasOcean: false,
+    defaultOceanPct: 16,
+    defaultRelief: 'ESCARPE',
+    defaultClimate: 'ARIDE',
+    swatchOcean: '#155e75',
+    swatchLand: '#c2410c',
+    swatchHighlight: '#fbbf24',
+    bonusSummary: '+50 Matériaux · +25 Énergie solaire · Exploration minière',
+    tags: ['Mers 16 %', 'Canyons', 'Solaire'],
+    startingDelta: { materials: 50, energy: 25 },
+  },
+]);
+
+export function resolvePlanetBiomeProfile(id?: string): PlanetBiomeProfileSpec {
+  return (
+    PLANET_BIOME_PROFILES_CATALOG.find((p) => p.id === id) ?? PLANET_BIOME_PROFILES_CATALOG[0]!
+  );
+}
+
+export interface ComputedBiomeShare {
+  readonly id: string;
+  readonly label: string;
+  readonly pct: number;
+  readonly colorHex: string;
+}
+
+/**
+ * Pure deterministic planetary surface breakdown (always sums to 100%).
+ */
+export function computePlanetBiomeDistribution(
+  biomeId: PlanetBiomeId,
+  oceanCoveragePct: number,
+  relief: PlanetReliefId,
+  climate: PlanetClimateId,
+  worldSeed: number,
+): readonly ComputedBiomeShare[] {
+  const clampedOcean = Math.max(0, Math.min(92, Math.round(oceanCoveragePct)));
+  const landPct = 100 - clampedOcean;
+  const seedJitter = ((worldSeed % 7) - 3);
+
+  const deepOceanPct = Math.round(clampedOcean * 0.68);
+  const shelfOceanPct = Math.max(0, clampedOcean - deepOceanPct);
+
+  const reliefMountainWeight = relief === 'ESCARPE' ? 0.34 : relief === 'DOUX' ? 0.14 : 0.24;
+  const polarWeight = climate === 'POLAIRE' ? 0.38 : climate === 'ARIDE' ? 0.08 : climate === 'TROPICAL' ? 0.06 : 0.16;
+
+  const peaksPct = Math.max(
+    0,
+    Math.min(landPct, Math.round(landPct * reliefMountainWeight) + (seedJitter > 0 ? 1 : 0)),
+  );
+  const polarPct = Math.max(
+    0,
+    Math.min(landPct - peaksPct, Math.round(landPct * polarWeight)),
+  );
+  const remainingLand = Math.max(0, landPct - peaksPct - polarPct);
+  const primaryLandPct = Math.round(remainingLand * 0.65);
+  const secondaryLandPct = Math.max(0, remainingLand - primaryLandPct);
+
+  const landLabels: Record<PlanetBiomeId, { primary: string; primaryColor: string; secondary: string; secondaryColor: string; peak: string; peakColor: string }> = {
+    ARCHIPEL_EMERAUDE: { primary: 'Forêts côtières', primaryColor: '#10b981', secondary: 'Plages & plaines', secondaryColor: '#84cc16', peak: 'Crêtes volcaniques', peakColor: '#64748b' },
+    MONDE_OCEANIQUE: { primary: 'Atolls verdoyants', primaryColor: '#14b8a6', secondary: 'Bancs coralliens', secondaryColor: '#2dd4bf', peak: 'Pitons marins', peakColor: '#94a3b8' },
+    PANGEE_TEMPEREE: { primary: 'Plaines tempérées', primaryColor: '#22c55e', secondary: 'Forêts boréales', secondaryColor: '#15803d', peak: 'Massifs alpins', peakColor: '#94a3b8' },
+    CRYO_OCEAN: { primary: 'Toundra côtière', primaryColor: '#64748b', secondary: 'Banquise & glaciers', secondaryColor: '#bae6fd', peak: 'Pics glacés', peakColor: '#e2e8f0' },
+    BIOSPHERE_FONGIQUE: { primary: 'Canopée fongique', primaryColor: '#a855f7', secondary: 'Estuaires bio', secondaryColor: '#34d399', peak: 'Plateaux cristallins', peakColor: '#c084fc' },
+    ALPIN_SAUVAGE: { primary: 'Vallées alpines', primaryColor: '#16a34a', secondary: 'Toundra d’altitude', secondaryColor: '#64748b', peak: 'Sommets enneigés', peakColor: '#f1f5f9' },
+    VOLCANIQUE_BASALTE: { primary: 'Steppes basaltiques', primaryColor: '#57534e', secondary: 'Plaines minérales', secondaryColor: '#a8a29e', peak: 'Caldeiras actives', peakColor: '#f97316' },
+    CANYONS_OCRES: { primary: 'Plateaux ocres', primaryColor: '#d97706', secondary: 'Oasis & bassins', secondaryColor: '#84cc16', peak: 'Canyons & mesas', peakColor: '#b45309' },
+  };
+  const cfg = landLabels[biomeId];
+
+  const raw: ComputedBiomeShare[] = [];
+  if (deepOceanPct > 0) raw.push({ id: 'deep_ocean', label: 'Océans profonds', pct: deepOceanPct, colorHex: '#0369a1' });
+  if (shelfOceanPct > 0) raw.push({ id: 'coastal_shelf', label: 'Mers côtières & récifs', pct: shelfOceanPct, colorHex: '#06b6d4' });
+  if (primaryLandPct > 0) raw.push({ id: 'primary_land', label: cfg.primary, pct: primaryLandPct, colorHex: cfg.primaryColor });
+  if (secondaryLandPct > 0) raw.push({ id: 'secondary_land', label: cfg.secondary, pct: secondaryLandPct, colorHex: cfg.secondaryColor });
+  if (peaksPct > 0) raw.push({ id: 'peaks', label: cfg.peak, pct: peaksPct, colorHex: cfg.peakColor });
+  if (polarPct > 0) raw.push({ id: 'polar', label: climate === 'ARIDE' ? 'Déserts d’altitude' : 'Calottes polaires', pct: polarPct, colorHex: climate === 'ARIDE' ? '#eab308' : '#e2e8f0' });
+
+  // Guarantee exact 100% total
+  const sum = raw.reduce((acc, item) => acc + item.pct, 0);
+  if (raw.length > 0 && sum !== 100) {
+    const first = raw[0]!;
+    raw[0] = { ...first, pct: Math.max(0, first.pct + (100 - sum)) };
+  }
+  return raw;
+}

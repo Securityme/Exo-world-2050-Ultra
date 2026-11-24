@@ -1,50 +1,25 @@
+import { ART_MANIFEST } from '../data/art-manifest.data.ts';
+
 /**
- * [L7] EXO WORLD : 2050 — Dynamic Theme-Driven Hexagonal Emblem.
- * Inherits --exo-accent, --exo-accent-2, --exo-void, and --exo-surface live from Theme Studio.
+ * [L7] EXO WORLD : 2050 — Iconic App Miniature & Title Lockup.
+ * Pairs the bespoke orbital-ring planet emblem with the theme-driven title typography.
  */
 export function ExoTitleEmblem() {
   return (
     <div className="flex items-center gap-4">
-      <svg
-        width="58"
-        height="58"
-        viewBox="0 0 64 64"
-        fill="none"
-        aria-hidden="true"
-        className="shrink-0"
-        style={{ filter: 'drop-shadow(0 6px 16px rgba(var(--exo-accent-rgb), 0.34))' }}
+      <div
+        className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border-2 border-[var(--exo-accent)] bg-[var(--exo-void)] sm:h-[72px] sm:w-[72px]"
+        style={{
+          boxShadow: '0 8px 24px rgba(var(--exo-accent-rgb), 0.38)',
+        }}
       >
-        <polygon
-          points="32,3 57,17.5 57,46.5 32,61 7,46.5 7,17.5"
-          stroke="var(--exo-accent)"
-          strokeWidth="2"
-          fill="var(--exo-void)"
+        <img
+          src={ART_MANIFEST.appIcon}
+          alt="Miniature officielle EXO WORLD : 2050"
+          referrerPolicy="no-referrer"
+          className="h-full w-full object-cover"
         />
-        <polygon
-          points="32,8 52,19.5 52,44.5 32,56 12,44.5 12,19.5"
-          stroke="var(--exo-accent-2)"
-          strokeOpacity="0.78"
-          strokeWidth="1.2"
-        />
-        <ellipse
-          cx="32"
-          cy="32"
-          rx="21"
-          ry="8.5"
-          transform="rotate(-24 32 32)"
-          stroke="var(--exo-accent)"
-          strokeWidth="1.8"
-        />
-        <circle
-          cx="32"
-          cy="32"
-          r="8"
-          fill="var(--exo-surface)"
-          stroke="var(--exo-accent)"
-          strokeWidth="1.8"
-        />
-        <circle cx="48" cy="24" r="2.6" fill="var(--exo-accent-2)" />
-      </svg>
+      </div>
       <div>
         <h1 className="font-display text-3xl font-bold tracking-[0.14em] text-[var(--exo-text)] sm:text-4xl">
           EXO WORLD <span className="exo-accent-2-text">:</span>{' '}

@@ -52,6 +52,9 @@ export function ThemeStudioPanel() {
         </div>
       </div>
 
+      {/* App Shell Zoom & Safari/OS Adaptation (Promoted for instant access) */}
+      <ThemeStudioEffectsSection mode="ZOOM_ONLY" />
+
       {/* 6 System Themes Grid */}
       <section className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -186,7 +189,7 @@ export function ThemeStudioPanel() {
         </div>
       </section>
 
-      <ThemeStudioEffectsSection />
+      <ThemeStudioEffectsSection mode="EFFECTS_ONLY" />
     </div>
   );
 }

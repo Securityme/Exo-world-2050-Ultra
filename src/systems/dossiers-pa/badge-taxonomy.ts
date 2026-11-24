@@ -1,15 +1,22 @@
 import type { StackedBadgeTriplet } from '../../contracts/nested-badges.schema.ts';
-import type { DossierOption, ExecutiveDossier } from '../../contracts/pa-dossiers.schema.ts';
+import type {
+  DossierClass,
+  DossierOption,
+  DossierSubChoice,
+  ExecutiveDossier,
+  SubChoiceBadgeMeta,
+} from '../../contracts/pa-dossiers.schema.ts';
 import {
   PHILOSOPHY_ETHICS_CATALOG,
   type PhilosophySchoolSpec,
 } from '../../data/philosophy-ethics.catalog.ts';
 
 /**
- * [L3] EXW.L3.BADGE_TAXONOMY | v5.0.0 | SADT A2.1
+ * [L3] EXW.L3.BADGE_TAXONOMY | v5.1.0 | SADT A2.1
  * Builds 3-Tier Stacked Badges (Master -> Level 1 -> Level 2) for:
  * 1) Provenance (Gemini Live / Catalogue Vivant / Action Monde)
  * 2) 3-Level Philosophy & Ethics (Pole I..V -> School -> Sub-Badge)
+ * 3) Sub-Choice Execution Modes (Modalité -> Axe d'impact -> Coût/Profil)
  */
 export function resolvePhilosophySchoolForOption(option: DossierOption): PhilosophySchoolSpec {
   const txt = `${option.label} ${option.description}`.toLowerCase();
@@ -180,5 +187,77 @@ export function buildPhilosophyBadgeTriplet(
     },
     cumulativeCount: cumulativeBySchool[school.id] ?? 0,
     punctualDelta: 1,
+  };
+}
+
+export function getSubChoiceBadgeMeta(subChoice: DossierSubChoice): SubChoiceBadgeMeta {
+  if (subChoice.badgeMeta) {
+    return subChoice.badgeMeta;
+  }
+  const bx = subChoice.bonusEffects;
+  const credits = bx?.credits ?? 0;
+  const atmo = bx?.atmosphereDelta ?? 0;
+  const maint = bx?.maintenanceDelta ?? 0;
+  const alliance = bx?.allianceTrustDelta ?? 0;
+  const hasCost = credits < 0 || subChoice.extraPaGeneralCost > 0 || subChoice.extraSubPaCost > 0;
+  const costTag =
+    credits < 0
+      ? `${credits} CR`
+      : credits > 0
+        ? `+${credits} CR`
+        : subChoice.extraPaGeneralCost > 0
+          ? `+${subChoice.extraPaGeneralCost} PA`
+          : '0 SURCOÛT';
+
+  if (atmo > 0 || (bx?.water ?? 0) > 0 || (bx?.breathingKits ?? 0) > 0) {
+    return { modeTag: 'BIOSPHÈRE', focusTag: 'AIR & EAU', costTag, tone: 'EMERALD' };
+  }
+  if (maint > 0 || (bx?.materials ?? 0) > 0) {
+    return {
+      modeTag: hasCost ? 'RENFORT TECH' : 'VEILLE TECH',
+      focusTag: maint > 0 ? 'MAINTENANCE' : 'MATÉRIAUX',
+      costTag,
+      tone: hasCost ? 'CORAL' : 'INDIGO',
+    };
+  }
+  if (alliance > 0 || (bx?.compute ?? 0) > 0) {
+    return { modeTag: 'DÉPLOIEMENT', focusTag: 'CALCUL & ALLIANCE', costTag, tone: 'VIOLET' };
+  }
+  if (credits > 0 || (bx?.energy ?? 0) > 0) {
+    return { modeTag: 'OPTIMISATION', focusTag: 'TRÉSORERIE', costTag, tone: 'AMBER' };
+  }
+  return { modeTag: 'STANDARD', focusTag: 'ÉQUILIBRE', costTag, tone: 'GOLD' };
+}
+
+export function buildSubChoiceBadgeTriplet(
+  subChoice: DossierSubChoice,
+  option: DossierOption,
+  dossierClass: DossierClass,
+): StackedBadgeTriplet {
+  const meta = getSubChoiceBadgeMeta(subChoice);
+  return {
+    id: `sub-${subChoice.id}`,
+    kind: 'SUBCHOICE',
+    master: {
+      id: `mode-${meta.modeTag}`,
+      label: `Modalité : ${meta.modeTag}`,
+      shortLabel: meta.modeTag,
+      tone: meta.tone,
+      description: `${subChoice.label} (${dossierClass} · ${option.label})`,
+    },
+    level1: {
+      id: `focus-${meta.focusTag}`,
+      label: `Axe : ${meta.focusTag}`,
+      shortLabel: meta.focusTag,
+      tone: meta.tone,
+      description: subChoice.description,
+    },
+    level2: {
+      id: `cost-${meta.costTag}`,
+      label: `Profil coût : ${meta.costTag}`,
+      shortLabel: meta.costTag,
+      tone: meta.costTag.startsWith('-') ? 'ROSE' : meta.costTag.startsWith('+') ? 'EMERALD' : 'SLATE',
+      description: 'Impact budgétaire net du sous-choix sélectionné.',
+    },
   };
 }

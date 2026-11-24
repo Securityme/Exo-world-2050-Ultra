@@ -10,7 +10,7 @@ import { z } from 'zod';
 export const ShellUxHabitsSchema = z.object({
   accordionStates: z.record(z.string(), z.boolean()),
   preferredHudTab: z.enum(['WORLDS_HUB', 'EVENTS_HUB', 'JOURNAL_HUB']),
-  preferredOverlayMode: z.enum(['STANDARD', 'MAINTENANCE', 'LOGISTICS']),
+  preferredOverlayMode: z.enum(['STANDARD', 'MAINTENANCE', 'LOGISTICS', 'TACTICAL', 'BIOSPHERE']),
   preferredScenarioComplexity: z.enum(['STANDARD', 'ADVANCED']),
   devDrawerPinned: z.boolean(),
 });
@@ -22,7 +22,7 @@ export const DisplaySettingsProfileSchema = z.object({
   saturationPct: z.number().min(50).max(150),
   glowIntensity: z.number().min(0).max(100),
   uiDensity: z.enum(['COMPACT', 'STANDARD', 'COMFORT']),
-  fontScalePct: z.number().min(85).max(135),
+  fontScalePct: z.number().min(70).max(150),
   safariTextSync: z.boolean(),
   tactileTargetBoost: z.boolean(),
 });

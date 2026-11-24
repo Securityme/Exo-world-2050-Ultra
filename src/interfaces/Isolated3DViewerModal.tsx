@@ -19,10 +19,16 @@ import {
 import { useExoStore } from '../stores/game.store.ts';
 import {
   activeDossierIdAtom,
+  activeSubscreenAtom,
   isolated3DModalAtom,
   toastNoticeAtom,
 } from '../stores/selection.atoms.ts';
+import {
+  SHIP_CLASS_LABELS,
+  SHIP_MODULES_CATALOG,
+} from '../data/ship-equipment.catalog.ts';
 import { computeBuildingFlowRow, evaluateEntityLedger } from '../systems/economy-urban/entity-ledger.ts';
+import { computeShipStats } from '../systems/fleet/ship-loadout.engine.ts';
 import { formatDistrictKind } from '../utils/ui-labels.ts';
 
 /**
@@ -35,6 +41,7 @@ import { formatDistrictKind } from '../utils/ui-labels.ts';
 export function Isolated3DViewerModal() {
   const [target, setTarget] = useAtom(isolated3DModalAtom);
   const setActiveDossierId = useSetAtom(activeDossierIdAtom);
+  const setSubscreen = useSetAtom(activeSubscreenAtom);
   const setToast = useSetAtom(toastNoticeAtom);
 
   const world = useExoStore((s) => s.world);
@@ -54,6 +61,13 @@ export function Isolated3DViewerModal() {
   );
 
   const ledger = useMemo(() => evaluateEntityLedger(world, 1.0), [world]);
+  const fleetLoadoutSignature = useMemo(
+    () =>
+      (world.fleetShips ?? [])
+        .map((s) => `${s.id}:${s.level}:${s.integrity}:${(s.loadout ?? []).map((m) => m.id).join(',')}`)
+        .join('|'),
+    [world.fleetShips],
+  );
   const buildingRow = useMemo(() => {
     if (!district) return null;
     const underPowered = ledger.delta.shedDistrictIds.includes(district.id);
@@ -112,7 +126,7 @@ export function Isolated3DViewerModal() {
     district?.integrity,
     buildingRow?.underPowered,
     lightTheme,
-    world.fleetShips?.length,
+    fleetLoadoutSignature,
     world.drones.construction,
     world.drones.defense,
     world.militaryRoster.length,
@@ -309,6 +323,7 @@ export function Isolated3DViewerModal() {
                       return;
                     }
                     setTarget(null);
+                    setSubscreen('EVENTS_HUB');
                     setActiveDossierId(dossier.id);
                   }}
                   className="inline-flex min-h-[42px] w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 text-xs font-bold text-white hover:bg-rose-500 disabled:opacity-45"
@@ -322,21 +337,113 @@ export function Isolated3DViewerModal() {
                 </button>
               </>
             ) : (
-              /* Hangar 3D Inventory Breakdown */
+              /* Hangar 3D Inventory Breakdown with R-24 Événements Armament Routing */
               <div className="space-y-3 text-xs">
                 <div className="rounded-xl border border-rose-200/80 bg-white/85 p-3 dark:border-rose-900/60 dark:bg-[#190d1f]">
-                  <div className="font-mono text-[10px] font-bold uppercase text-rose-700 dark:text-rose-300">
-                    Vaisseaux Orbitaux ({world.fleetShips?.length ?? 0})
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="font-mono text-[10px] font-bold uppercase text-rose-700 dark:text-rose-300">
+                      Vaisseaux Orbitaux ({world.fleetShips?.length ?? 0})
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const [err, dossier] = handleGenerateActionEvent({
+                          kind: 'COMMISSION_SHIP',
+                          shipClass: 'CORVETTE_ORBITAL',
+                        });
+                        if (err || !dossier) {
+                          setToast({ id: Date.now(), tone: 'error', text: err?.message ?? 'Action indisponible.' });
+                          return;
+                        }
+                        setTarget(null);
+                        setSubscreen('EVENTS_HUB');
+                        setActiveDossierId(dossier.id);
+                      }}
+                      className="rounded-lg bg-rose-600 px-2 py-1 font-mono text-[10px] font-bold text-white hover:bg-rose-500"
+                    >
+                      + Construire (Événements)
+                    </button>
                   </div>
-                  <div className="mt-2 space-y-1.5">
-                    {(world.fleetShips ?? []).map((ship) => (
-                      <div key={ship.id} className="flex items-center justify-between rounded-lg bg-rose-50/70 px-2.5 py-1.5 dark:bg-rose-950/35">
-                        <span className="font-semibold text-[#1f1224] dark:text-rose-50">{ship.name}</span>
-                        <span className="font-mono text-[10.5px] text-emerald-700 dark:text-emerald-300">
-                          {ship.shipClass} · {ship.integrity}%
-                        </span>
-                      </div>
-                    ))}
+                  <div className="mt-2 space-y-2">
+                    {(world.fleetShips ?? []).map((ship) => {
+                      const stats = computeShipStats(ship);
+                      const nextMod = SHIP_MODULES_CATALOG.find(
+                        (m) => m.minEra <= world.era && !(ship.loadout ?? []).some((inst) => inst.id === m.id),
+                      );
+                      return (
+                        <div key={ship.id} className="space-y-1.5 rounded-lg border border-rose-200/70 bg-rose-50/70 p-2.5 dark:border-rose-900/50 dark:bg-rose-950/35">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold text-[#1f1224] dark:text-rose-50">
+                              {ship.name} · Niv.{ship.level}
+                            </span>
+                            <span className="font-mono text-[10px] text-emerald-700 dark:text-emerald-300">
+                              {SHIP_CLASS_LABELS[ship.shipClass]} · {ship.integrity}%
+                            </span>
+                          </div>
+                          <div className="font-mono text-[10px] text-rose-900/75 dark:text-rose-200/75">
+                            Puiss {stats.firepower} · Déf {stats.defense} · Util {stats.utilityYield} · Baies {stats.slotsUsed}/{stats.maxSlots}
+                          </div>
+                          {(ship.loadout ?? []).length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {(ship.loadout ?? []).map((m) => (
+                                <span
+                                  key={m.id}
+                                  className="rounded border border-rose-300/80 bg-white/80 px-1.5 py-0.5 font-mono text-[9.5px] font-semibold text-rose-900 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-200"
+                                >
+                                  {m.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex flex-wrap gap-1.5 pt-0.5">
+                            {nextMod && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const [err, dossier] = handleGenerateActionEvent({
+                                    kind: 'EQUIP_SHIP_MODULE',
+                                    shipId: ship.id,
+                                    moduleId: nextMod.id,
+                                  });
+                                  if (err || !dossier) {
+                                    setToast({ id: Date.now(), tone: 'error', text: err?.message ?? 'Action indisponible.' });
+                                    return;
+                                  }
+                                  setTarget(null);
+                                  setSubscreen('EVENTS_HUB');
+                                  setActiveDossierId(dossier.id);
+                                }}
+                                className="rounded-md bg-rose-600 px-2 py-1 font-mono text-[10px] font-bold text-white hover:bg-rose-500"
+                              >
+                                Armer / Module (Événements)
+                              </button>
+                            )}
+                            {ship.level < 5 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const [err, dossier] = handleGenerateActionEvent({
+                                    kind: 'REFIT_SHIP',
+                                    shipId: ship.id,
+                                    mode: 'UPGRADE_LEVEL',
+                                  });
+                                  if (err || !dossier) {
+                                    setToast({ id: Date.now(), tone: 'error', text: err?.message ?? 'Action indisponible.' });
+                                    return;
+                                  }
+                                  setTarget(null);
+                                  setSubscreen('EVENTS_HUB');
+                                  setActiveDossierId(dossier.id);
+                                }}
+                                className="rounded-md border border-amber-400/80 bg-amber-500/15 px-2 py-1 font-mono text-[10px] font-bold text-amber-900 dark:text-amber-200"
+                              >
+                                Niv.{ship.level + 1} (Événements)
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -357,12 +464,20 @@ export function Isolated3DViewerModal() {
                     Unités Tactiques ({world.militaryRoster.reduce((a, u) => a + u.count, 0)})
                   </div>
                   <div className="mt-2 space-y-1">
-                    {world.militaryRoster.map((u) => (
-                      <div key={u.id} className="flex items-center justify-between font-mono text-[11px]">
-                        <span>{u.unitClass} (Niv.{u.level})</span>
-                        <strong>×{u.count}</strong>
-                      </div>
-                    ))}
+                    {world.militaryRoster.map((u) => {
+                      const unitLabels: Record<string, string> = {
+                        INFANTRY_EXO: 'Infanterie Exo-Armure',
+                        ARMOR_MECH: 'Blindés Mécha',
+                        DRONE_SWARM: 'Essaims de Drones',
+                        ORBITAL_CORVETTE: 'Corvettes Orbitales',
+                      };
+                      return (
+                        <div key={u.id} className="flex items-center justify-between font-mono text-[11px]">
+                          <span>{unitLabels[u.unitClass] ?? u.unitClass} (Niv.{u.level})</span>
+                          <strong>×{u.count}</strong>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

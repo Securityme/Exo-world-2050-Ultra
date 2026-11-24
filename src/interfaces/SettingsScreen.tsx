@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useSetAtom } from 'jotai';
 import {
   ArrowLeft,
+  BookMarked,
   BookOpen,
   Building2,
   Compass,
@@ -9,6 +11,8 @@ import {
   Globe,
   History,
   ListChecks,
+  Maximize2,
+  Minimize2,
   Monitor,
   Palette,
   Radio,
@@ -25,6 +29,7 @@ import { DocStudioPanel } from './subscreens/DocStudioPanel.tsx';
 import { useViewportLayout } from '../hooks/use-viewport-layout.ts';
 import { FIP_STATIONS } from '../services/audio/fip-radio.service.ts';
 import { useExoStore } from '../stores/game.store.ts';
+import { activeSubscreenAtom } from '../stores/selection.atoms.ts';
 
 type SettingsTabId = '3D' | 'AUDIO' | 'ORACLE' | 'THEME' | 'CONTROLS' | 'FEATURES' | 'ATLAS' | 'DOCS_ATLAS';
 
@@ -106,6 +111,7 @@ const APP_FEATURES = [
  */
 export function SettingsScreen() {
   const [tab, setTab] = useState<SettingsTabId>('THEME');
+  const [fullscreen, setFullscreen] = useState(false);
   const audio = useExoStore((s) => s.audio);
   const graphics = useExoStore((s) => s.graphics);
   const oracleEnabled = useExoStore((s) => s.oracleEnabled);
@@ -114,25 +120,71 @@ export function SettingsScreen() {
   const updateGraphics = useExoStore((s) => s.updateGraphics);
   const setOracleEnabled = useExoStore((s) => s.setOracleEnabled);
   const setScreen = useExoStore((s) => s.setScreen);
+  const setSubscreen = useSetAtom(activeSubscreenAtom);
   const { isMobile, layoutMode, setLayoutMode } = useViewportLayout();
 
   const isWideTab = tab === 'DOCS_ATLAS' || tab === 'ATLAS' || tab === 'FEATURES' || tab === 'THEME';
 
+  const settingsTabs: readonly {
+    readonly id: SettingsTabId;
+    readonly label: string;
+    readonly icon: typeof Palette;
+  }[] = [
+    { id: 'THEME', label: 'Thème & Zoom', icon: Palette },
+    { id: 'FEATURES', label: 'Fonctionnalités', icon: ListChecks },
+    { id: 'ATLAS', label: 'Atlas Chemins', icon: Compass },
+    { id: 'DOCS_ATLAS', label: 'Studio Docs', icon: BookOpen },
+    { id: 'AUDIO', label: 'Audio FIP', icon: Volume2 },
+    { id: '3D', label: 'Moteur 3D', icon: Monitor },
+    { id: 'ORACLE', label: 'Événements', icon: Cpu },
+    { id: 'CONTROLS', label: 'Contrôles', icon: Gamepad2 },
+  ];
+
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/55 p-0 sm:items-center sm:p-5">
+    <div
+      className={`fixed inset-0 z-40 flex justify-center bg-black/60 ${
+        fullscreen ? 'items-stretch p-0' : 'items-end p-0 sm:items-center sm:p-5'
+      }`}
+    >
       <div
-        className={`exo-bento-card exo-astral-ticks flex max-h-[94dvh] w-full flex-col rounded-t-2xl p-4 sm:max-h-[90vh] sm:rounded-2xl sm:p-6 transition-all ${
-          isWideTab ? 'max-w-5xl' : 'max-w-3xl'
+        className={`exo-bento-card exo-astral-ticks flex w-full flex-col transition-all ${
+          fullscreen
+            ? 'h-[100dvh] max-w-none rounded-none p-4 sm:p-6'
+            : `max-h-[94dvh] rounded-t-2xl p-4 sm:max-h-[90vh] sm:rounded-2xl sm:p-6 ${
+                isWideTab ? 'max-w-5xl' : 'max-w-3xl'
+              }`
         }`}
       >
         <div className="flex flex-wrap items-center justify-between gap-2 border-b exo-accent-border pb-3.5">
           <div className="min-w-0">
             <h1 className="font-display text-lg font-bold text-[var(--exo-text)] sm:text-xl">Paramètres</h1>
             <p className="text-xs exo-muted-text">
-              Ergonomie {isMobile ? 'Mobile' : 'Ordinateur'}, studio thèmes &amp; lumière, fonctionnalités et atlas
+              Ergonomie {isMobile ? 'Mobile' : 'Ordinateur'}, zoom App Shell Safari/Système, thèmes et atlas
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              data-testid="settings-docs-skills-btn"
+              onClick={() => setSubscreen('DOCS_SKILLS_HUB')}
+              className="exo-accent-btn inline-flex min-h-[44px] items-center gap-1.5 px-3 text-xs font-bold whitespace-nowrap"
+            >
+              <BookMarked className="h-4 w-4" />
+              <span>Docs, VCS &amp; Skills</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setFullscreen((f) => !f)}
+              aria-label={fullscreen ? 'Format fenêtre' : 'Passer en plein écran'}
+              className="exo-accent-chip inline-flex min-h-[44px] items-center gap-1.5 px-3 text-xs font-semibold whitespace-nowrap"
+            >
+              {fullscreen ? (
+                <Minimize2 className="h-4 w-4 exo-accent-text" />
+              ) : (
+                <Maximize2 className="h-4 w-4 exo-accent-text" />
+              )}
+              <span className="hidden md:inline">{fullscreen ? 'Fenêtre' : 'Plein écran'}</span>
+            </button>
             <button
               type="button"
               onClick={() => setLayoutMode(isMobile ? 'DESKTOP' : 'MOBILE')}
@@ -145,7 +197,7 @@ export function SettingsScreen() {
               type="button"
               data-testid="settings-close-btn"
               onClick={() => setScreen(previousScreen === 'EXO_GAME_SCREEN' ? 'EXO_GAME_SCREEN' : 'EXO_MAIN_MENU')}
-              className="exo-accent-chip inline-flex min-h-[44px] items-center gap-1.5 px-3 text-xs font-medium"
+              className="exo-accent-chip inline-flex min-h-[44px] items-center gap-1.5 px-3 text-xs font-semibold"
             >
               <ArrowLeft className="h-4 w-4 exo-accent-text" />
               Fermer
@@ -153,33 +205,33 @@ export function SettingsScreen() {
           </div>
         </div>
 
-        <div className="mt-3 flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
-          {[
-            { id: 'THEME' as const, label: 'Thème', icon: Palette },
-            { id: 'FEATURES' as const, label: 'Fonctionnalités', icon: ListChecks },
-            { id: 'ATLAS' as const, label: 'Atlas Chemins', icon: Compass },
-            { id: 'DOCS_ATLAS' as const, label: 'Studio Docs', icon: BookOpen },
-            { id: 'AUDIO' as const, label: 'Audio FIP', icon: Volume2 },
-            { id: '3D' as const, label: 'Moteur 3D', icon: Monitor },
-            { id: 'ORACLE' as const, label: 'Événements', icon: Cpu },
-            { id: 'CONTROLS' as const, label: 'Contrôles', icon: Gamepad2 },
-          ].map((item) => {
+        <nav
+          role="tablist"
+          aria-label="Sections des paramètres"
+          data-testid="settings-tabs-rail"
+          className="exo-window-tabs-rail mt-3 flex shrink-0 flex-nowrap gap-1.5 overflow-x-auto sm:grid sm:grid-cols-4 sm:overflow-visible"
+        >
+          {settingsTabs.map((item) => {
             const Icon = item.icon;
+            const active = tab === item.id;
             return (
               <button
                 key={item.id}
                 type="button"
+                role="tab"
+                aria-selected={active}
+                data-testid={`settings-tab-${item.id.toLowerCase()}`}
                 onClick={() => setTab(item.id)}
-                className={`inline-flex min-h-[44px] shrink-0 items-center gap-1.5 px-3 text-xs font-medium transition whitespace-nowrap ${
-                  tab === item.id ? 'exo-accent-chip-active' : 'exo-accent-chip'
+                className={`inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 px-3 text-[13px] font-bold tracking-tight whitespace-nowrap ${
+                  active ? 'exo-window-tab-active' : 'exo-window-tab'
                 }`}
               >
-                <Icon className="h-3.5 w-3.5 exo-accent-text" />
+                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-current' : 'exo-accent-text'}`} />
                 <span>{item.label}</span>
               </button>
             );
           })}
-        </div>
+        </nav>
 
         <div className="mt-3 flex-1 overflow-y-auto rounded-xl border exo-accent-border bg-[var(--exo-surface-alt)] p-3.5 text-sm text-[var(--exo-text)] sm:p-4">
           {tab === '3D' && (
@@ -363,13 +415,23 @@ export function SettingsScreen() {
 
           {tab === 'DOCS_ATLAS' && (
             <div className="space-y-3">
-              <div className="border-b exo-accent-border pb-2.5">
-                <h2 className="font-display text-base font-bold text-[var(--exo-text)]">
-                  Gouvernance RBAC, Validation &amp; Documentation Séparée (Application / Jeu)
-                </h2>
-                <p className="text-xs exo-muted-text">
-                  Rôles utilisateurs, flux de validation (Documentation technique, Skills, Jeu) et archives classées par pôle.
-                </p>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b exo-accent-border pb-2.5">
+                <div>
+                  <h2 className="font-display text-base font-bold text-[var(--exo-text)]">
+                    Gouvernance RBAC, Validation &amp; Documentation Séparée (Application / Jeu)
+                  </h2>
+                  <p className="text-xs exo-muted-text">
+                    Rôles utilisateurs, flux de validation (Documentation technique, Skills, Jeu) et archives classées par pôle.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSubscreen('DOCS_SKILLS_HUB')}
+                  className="exo-accent-btn inline-flex min-h-[38px] items-center gap-1.5 px-3 text-xs font-bold"
+                >
+                  <BookMarked className="h-3.5 w-3.5" />
+                  <span>Ouvrir Atelier VCS &amp; Skills</span>
+                </button>
               </div>
               <DocStudioPanel initialTab="GOVERNANCE" />
             </div>

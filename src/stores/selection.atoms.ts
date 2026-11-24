@@ -1,11 +1,14 @@
 import { atom } from 'jotai';
-import type { ViewportOverlayMode } from '../contracts/render-bridge.schema.ts';
+import type {
+  CameraFocusTarget,
+  ViewportOverlayMode,
+} from '../contracts/render-bridge.schema.ts';
 import type { TurnEvents4TResponse } from '../contracts/v4-systems.schema.ts';
 import type { QuestUiMilestones } from '../systems/quests/campaign-quests.ts';
 
 /**
- * [L6] EXW.L6.SELECTION_ATOMS | v4.1.0 | SADT A5.1
- * Fine-Grained UI Selection, Colonist RPG Sheet, Worlds 2-Level Navigation, Quests & Overlays.
+ * [L6] EXW.L6.SELECTION_ATOMS | v5.1.0 | SADT A5.1
+ * Fine-Grained UI Selection, Colonist RPG Sheet, Camera Focus Bridge, Worlds Navigation & Quests.
  */
 export type ExoSubscreenId =
   | 'NONE'
@@ -19,7 +22,8 @@ export type ExoSubscreenId =
   | 'GEOPOLITICS'
   | 'CHRONICLE_SAVES'
   | 'DOC_SYNC_STUDIO'
-  | 'BLUEPRINT_ATLAS';
+  | 'BLUEPRINT_ATLAS'
+  | 'DOCS_SKILLS_HUB';
 
 export type WorldsHubDomain =
   | 'TERRITORIES'
@@ -84,3 +88,16 @@ export const questTrackerCollapsedAtom = atom<boolean>(false);
 export const hudHiddenAtom = atom<boolean>(false);
 /** On-demand TanStack ReactQueryDevtools visibility toggled from the Palmtree Studio drawer */
 export const showQueryDevtoolsAtom = atom<boolean>(false);
+
+/** Monotonic camera focus nonce + target propagated to Three.js L4 render bridge */
+export const focusNonceAtom = atom<number>(0);
+export const cameraFocusTargetAtom = atom<CameraFocusTarget | null>(null);
+
+/** Stored Event/Dossier return context after jumping directly to a 3D entity */
+export interface ReturnEventContext {
+  readonly dossierId: string | null;
+  readonly title: string;
+  readonly entityLabel: string;
+  readonly returnSubscreen: ExoSubscreenId;
+}
+export const returnEventContextAtom = atom<ReturnEventContext | null>(null);

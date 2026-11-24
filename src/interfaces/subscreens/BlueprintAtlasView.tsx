@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { M0_MANIFEST, M13_MANIFEST } from '../../data/blueprint-manifests.data.ts';
+import { NF_AFNOR_DMTSW_NORMS_CATALOG } from '../../data/skills-vcs.catalog.ts';
 import {
   evaluateMatrixArchitecture,
   renderBlueprintMarkdown,
@@ -18,7 +19,7 @@ import {
   type LayerCode,
 } from '../../services/architecture/matrix-engine.ts';
 
-type AtlasTab = 'MATRICES' | 'SADT_DUAL' | 'SRC_MAP' | 'EXPORT_PROMPT';
+type AtlasTab = 'MATRICES' | 'SADT_DUAL' | 'SRC_MAP' | 'NF_AFNOR' | 'EXPORT_PROMPT';
 
 const LAYERS: readonly ('ALL' | LayerCode)[] = ['ALL', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8'];
 
@@ -117,6 +118,7 @@ export function BlueprintAtlasView() {
                 ['MATRICES', 'Matrices M0–M15', Layers],
                 ['SADT_DUAL', 'Dualité M13-A / D1–D2', GitBranch],
                 ['SRC_MAP', 'Cartographie SRC L0–L8', FileCode2],
+                ['NF_AFNOR', 'Conformité NF / AFNOR & DMT-SW', ShieldCheck],
                 ['EXPORT_PROMPT', 'Prompt @Google Drive & Exports', Sparkles],
               ] as const
             ).map(([id, label, Icon]) => (
@@ -269,7 +271,40 @@ export function BlueprintAtlasView() {
         </div>
       )}
 
-      {/* TAB 4: Tri-Format @Google Drive Prompt & Exports */}
+      {/* TAB 4: NF / AFNOR & DMT-SW Compliance Matrix */}
+      {tab === 'NF_AFNOR' && (
+        <div className="space-y-3" data-testid="atlas-nf-afnor-panel">
+          <div className="exo-bento-card p-4 text-xs">
+            <div className="font-mono text-[10px] font-bold uppercase tracking-wider exo-accent-text">
+              DMT-SW · Référentiel Normatif NF / AFNOR &amp; SSoT
+            </div>
+            <p className="mt-1 exo-muted-text">
+              Traçabilité bidirectionnelle entre exigences (FUP / R-01..69), architecture en 9 couches L0..L8, tests SHA-256 et Master Blueprint v2.12.0-MAITRE.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {NF_AFNOR_DMTSW_NORMS_CATALOG.map((row) => (
+              <div key={row.code} className="exo-bento-card p-3.5 text-xs">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-mono text-[10.5px] font-bold exo-accent-text">{row.code}</div>
+                    <h3 className="font-display text-sm font-bold text-[var(--exo-text)]">{row.normTitle}</h3>
+                  </div>
+                  <span className="rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                    {row.status}
+                  </span>
+                </div>
+                <p className="mt-1.5 exo-muted-text">{row.scope}</p>
+                <div className="mt-2 border-t exo-accent-border pt-2 font-mono text-[10.5px] text-[var(--exo-text)]">
+                  Preuve : {row.evidence}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: Tri-Format @Google Drive Prompt & Exports */}
       {tab === 'EXPORT_PROMPT' && (
         <div className="exo-bento-card space-y-3 p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">

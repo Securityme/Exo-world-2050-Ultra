@@ -169,19 +169,35 @@ export function HeaderDevDrawer() {
                   </label>
                   <label className="block">
                     <div className="flex justify-between text-[11px]">
-                      <span>Échelle Texte</span>
+                      <span>Zoom App Shell</span>
                       <span className="font-mono-num exo-accent-text">{uiTheme.fontScalePct ?? 100}%</span>
                     </div>
                     <input
                       type="range"
-                      min={85}
-                      max={135}
+                      min={70}
+                      max={150}
                       step={5}
                       value={uiTheme.fontScalePct ?? 100}
                       onChange={(e) => updateUiTheme({ fontScalePct: Number(e.target.value) })}
                       className="exo-range w-full"
                     />
                   </label>
+                  <div className="grid grid-cols-4 gap-1">
+                    {[85, 100, 115, 130].map((pct) => (
+                      <button
+                        key={pct}
+                        type="button"
+                        onClick={() => updateUiTheme({ fontScalePct: pct })}
+                        className={`py-1 font-mono text-[10px] font-bold tabular-nums ${
+                          (uiTheme.fontScalePct ?? 100) === pct
+                            ? 'exo-window-tab-active'
+                            : 'exo-window-tab'
+                        }`}
+                      >
+                        {pct}%
+                      </button>
+                    ))}
+                  </div>
                   <button
                     type="button"
                     onClick={() => {

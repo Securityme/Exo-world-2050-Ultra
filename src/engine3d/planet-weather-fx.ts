@@ -1,12 +1,16 @@
 import * as THREE from 'three';
-import type { AtmosphereTier, ViewportOverlayMode } from '../contracts/render-bridge.schema.ts';
+import type {
+  AtmosphereTier,
+  DiplomaticArcPacket,
+  ViewportOverlayMode,
+} from '../contracts/render-bridge.schema.ts';
 import type { WorldState } from '../contracts/world-state.schema.ts';
 import { createParticleGlowTexture } from './procedural-textures.ts';
 
 /**
  * [L4] EXW.L4.PLANET_WEATHER_FX | v5.1.0 | SADT A5.3
  * Scale 2 Dynamic Weather Particles, Polar Aurora Ribbons, Seasonal Frost Ring &
- * Geodesic Telemetry Overlays (Usure / Maintenance Stress & Flux Conduits).
+ * Geodesic Telemetry Overlays (Usure, Flux, Tactique, Biosphère & Arcs Diplomatiques).
  */
 export interface PlanetWeatherFxNodes {
   readonly group: THREE.Group;
@@ -28,12 +32,12 @@ export interface WeatherFxDiffInput {
   readonly capturedTiles: readonly number[];
   readonly rivalTiles: readonly number[];
   readonly tileDirections: readonly THREE.Vector3[];
+  readonly diplomaticArcs?: readonly DiplomaticArcPacket[];
 }
 
 export function buildPlanetWeatherFx(radius: number): PlanetWeatherFxNodes {
   const group = new THREE.Group();
 
-  // Weather particle cloud shell (re-colored & re-sized per weather state)
   const count = 160;
   const positions = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
@@ -62,7 +66,6 @@ export function buildPlanetWeatherFx(radius: number): PlanetWeatherFxNodes {
   stormParticles.visible = false;
   group.add(stormParticles);
 
-  // Polar aurora ribbons (SOLAR_FLARE / CRYO_FRONT)
   const auroraMatN = new THREE.MeshBasicMaterial({
     color: 0x38bdf8,
     transparent: true,
@@ -89,7 +92,6 @@ export function buildPlanetWeatherFx(radius: number): PlanetWeatherFxNodes {
   auroraSouth.visible = false;
   group.add(auroraSouth);
 
-  // Equatorial cyclonic / rain circulation bands
   const rainBands = new THREE.Group();
   for (let i = 0; i < 3; i++) {
     const ring = new THREE.Mesh(
@@ -143,9 +145,16 @@ export function updatePlanetWeatherFx(
   nodes: PlanetWeatherFxNodes,
   input: WeatherFxDiffInput,
 ): void {
-  const { weatherState, season, overlayMode, capturedTiles, rivalTiles, tileDirections } = input;
+  const {
+    weatherState,
+    season,
+    overlayMode,
+    capturedTiles,
+    rivalTiles,
+    tileDirections,
+    diplomaticArcs = [],
+  } = input;
 
-  // 1. Weather state particle & ribbon styling
   if (weatherState === 'DUST_STORM') {
     nodes.stormParticles.visible = true;
     nodes.stormMat.color.setHex(0xf59e0b);
@@ -215,17 +224,20 @@ export function updatePlanetWeatherFx(
     }
   }
 
-  // 2. Telemetry Overlay 3D Arcs (LOGISTICS Flux conduits | MAINTENANCE Wear rings)
-  const overlaySig = `${overlayMode}::${capturedTiles.join(',')}::${rivalTiles.join(',')}`;
+  // Telemetry Overlay 3D Arcs + Planetary Diplomatic Arcs
+  const arcSig = diplomaticArcs.map((a) => `${a.id}:${a.kind}:${a.toTile}`).join(',');
+  const overlaySig = `${overlayMode}::${capturedTiles.join(',')}::${rivalTiles.join(',')}::${arcSig}`;
   if (overlaySig === nodes.lastOverlaySig) return;
   nodes.lastOverlaySig = overlaySig;
   clearOverlayGroup(nodes.overlayGroup);
+
+  const up = new THREE.Vector3(0, 1, 0);
 
   if (overlayMode === 'LOGISTICS' && capturedTiles.length >= 2) {
     const lineMat = new THREE.LineBasicMaterial({
       color: 0x2dd4bf,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.78,
     });
     const hub = tileDirections[capturedTiles[0]!];
     if (hub) {
@@ -233,7 +245,7 @@ export function updatePlanetWeatherFx(
       for (let i = 1; i < maxLinks; i++) {
         const targetDir = tileDirections[capturedTiles[i]!];
         if (!targetDir) continue;
-        const mid = hub.clone().add(targetDir).normalize().multiplyScalar(nodes.radius * 1.12);
+        const mid = hub.clone().add(targetDir).normalize().multiplyScalar(nodes.radius * 1.13);
         const start = hub.clone().multiplyScalar(nodes.radius * 1.025);
         const end = targetDir.clone().multiplyScalar(nodes.radius * 1.025);
         const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
@@ -244,7 +256,6 @@ export function updatePlanetWeatherFx(
     lineMat.dispose();
   } else if (overlayMode === 'MAINTENANCE') {
     const stressTargets = [...rivalTiles.slice(0, 6), ...capturedTiles.slice(0, 3)];
-    const up = new THREE.Vector3(0, 1, 0);
     for (let i = 0; i < stressTargets.length; i++) {
       const idx = stressTargets[i]!;
       const dir = tileDirections[idx];
@@ -263,6 +274,86 @@ export function updatePlanetWeatherFx(
       ring.rotateX(Math.PI / 2);
       nodes.overlayGroup.add(ring);
     }
+  } else if (overlayMode === 'TACTICAL') {
+    const frontTiles = rivalTiles.slice(0, 8);
+    const homeDir = tileDirections[capturedTiles[0] ?? 12];
+    for (const tileIdx of frontTiles) {
+      const dir = tileDirections[tileIdx];
+      if (!dir) continue;
+      const threatRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.185, 0.015, 6, 24),
+        new THREE.MeshBasicMaterial({
+          color: 0xf43f5e,
+          transparent: true,
+          opacity: 0.85,
+        }),
+      );
+      threatRing.position.copy(dir).multiplyScalar(nodes.radius + 0.045);
+      threatRing.quaternion.setFromUnitVectors(up, dir);
+      threatRing.rotateX(Math.PI / 2);
+      nodes.overlayGroup.add(threatRing);
+
+      if (homeDir) {
+        const mid = homeDir.clone().add(dir).normalize().multiplyScalar(nodes.radius * 1.18);
+        const curve = new THREE.QuadraticBezierCurve3(
+          homeDir.clone().multiplyScalar(nodes.radius * 1.03),
+          mid,
+          dir.clone().multiplyScalar(nodes.radius * 1.03),
+        );
+        const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(18));
+        nodes.overlayGroup.add(
+          new THREE.Line(
+            geo,
+            new THREE.LineBasicMaterial({
+              color: 0xfb7185,
+              transparent: true,
+              opacity: 0.45,
+            }),
+          ),
+        );
+      }
+    }
+  } else if (overlayMode === 'BIOSPHERE') {
+    for (let i = 0; i < 3; i++) {
+      const bioBand = new THREE.Mesh(
+        new THREE.TorusGeometry(nodes.radius * (1.07 + i * 0.015), 0.014, 6, 64),
+        new THREE.MeshBasicMaterial({
+          color: i === 1 ? 0x10b981 : 0x2dd4bf,
+          transparent: true,
+          opacity: 0.56,
+          depthWrite: false,
+        }),
+      );
+      bioBand.rotation.x = Math.PI / 2 + (i - 1) * 0.42;
+      bioBand.rotation.z = i * 0.7;
+      nodes.overlayGroup.add(bioBand);
+    }
+  }
+
+  // Render active planetary diplomatic treaty / embargo geodesic arcs across Scale 2
+  for (const arc of diplomaticArcs) {
+    const startDir = tileDirections[arc.fromTile];
+    const endDir = tileDirections[arc.toTile];
+    if (!startDir || !endDir) continue;
+    const arcColor =
+      arc.kind === 'ALLY' ? 0x10b981 : arc.kind === 'EMBARGO' ? 0xf43f5e : 0x38bdf8;
+    const mid = startDir.clone().add(endDir).normalize().multiplyScalar(nodes.radius * 1.24);
+    const curve = new THREE.QuadraticBezierCurve3(
+      startDir.clone().multiplyScalar(nodes.radius * 1.035),
+      mid,
+      endDir.clone().multiplyScalar(nodes.radius * 1.035),
+    );
+    const geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(20));
+    nodes.overlayGroup.add(
+      new THREE.Line(
+        geo,
+        new THREE.LineBasicMaterial({
+          color: arcColor,
+          transparent: true,
+          opacity: 0.85,
+        }),
+      ),
+    );
   }
 }
 

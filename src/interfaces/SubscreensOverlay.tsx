@@ -3,6 +3,7 @@ import { useAtom } from 'jotai';
 import { BookOpen, Globe2, Maximize2, Minimize2, Sparkles, X } from 'lucide-react';
 import { BiosphereCabinetTab } from './subscreens/BiosphereCabinetTab.tsx';
 import { ChronicleSavesTab } from './subscreens/ChronicleSavesTab.tsx';
+import { DocsSkillsHubScreen } from './DocsSkillsHubScreen.tsx';
 import { DocSyncStudioModal } from './subscreens/DocSyncStudioModal.tsx';
 import { DossierWorkshopModal } from './subscreens/DossierWorkshopModal.tsx';
 import { EventsHubTab } from './subscreens/EventsHubTab.tsx';
@@ -62,6 +63,10 @@ export function SubscreensOverlay() {
   }
 
   if (subscreen === 'NONE') return null;
+
+  if (subscreen === 'DOCS_SKILLS_HUB') {
+    return <DocsSkillsHubScreen onClose={() => setSubscreen('NONE')} />;
+  }
 
   if (subscreen === 'DOC_SYNC_STUDIO' || subscreen === 'BLUEPRINT_ATLAS') {
     return (
@@ -129,26 +134,31 @@ export function SubscreensOverlay() {
 
         {isPrimaryHub && (
           <nav
+            role="tablist"
             aria-label="Basculer entre les 3 onglets principaux"
-            className="grid shrink-0 grid-cols-3 gap-1.5 border-t exo-accent-border bg-[var(--exo-surface-alt)] p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-5"
+            className="shrink-0 border-t exo-accent-border bg-[var(--exo-surface-alt)] p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-5"
           >
-            {QUICK_PRIMARY_TABS.map((tab) => {
-              const Icon = tab.icon;
-              const active = subscreen === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setSubscreen(tab.id)}
-                  className={`inline-flex min-h-[42px] items-center justify-center gap-1.5 px-2 text-xs font-semibold transition ${
-                    active ? 'exo-accent-chip-active' : 'exo-accent-chip'
-                  }`}
-                >
-                  <Icon className="h-4 w-4 exo-accent-text" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
+            <div className="exo-window-tabs-rail grid grid-cols-3 gap-1.5">
+              {QUICK_PRIMARY_TABS.map((tab) => {
+                const Icon = tab.icon;
+                const active = subscreen === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setSubscreen(tab.id)}
+                    className={`inline-flex min-h-[44px] items-center justify-center gap-2 px-3 text-[13px] font-bold transition whitespace-nowrap ${
+                      active ? 'exo-window-tab-active' : 'exo-window-tab'
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-current' : 'exo-accent-text'}`} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </nav>
         )}
       </div>

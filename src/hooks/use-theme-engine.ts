@@ -7,13 +7,15 @@ import type { ResolvedThemeSnapshot } from '../contracts/ui-theme.schema.ts';
 import { useExoStore } from '../stores/game.store.ts';
 import {
   computeEffectiveFontScale,
+  detectWebkitEnvironment,
   probeSafariSystemFontPx,
 } from '../utils/safari-webkit.ts';
 
 /**
- * [L6] EXW.L6.THEME_ENGINE_HOOK | v5.0.0 | SADT A5.1
- * Synchronizes UiThemeStudioConfig + Safari Dynamic Type (-apple-system-body) + active weather
- * with document CSS custom properties, root rem font size, localStorage, and Three.js themeMode.
+ * [L6] EXW.L6.THEME_ENGINE_HOOK | v5.1.0 | SADT A5.1
+ * Synchronizes UiThemeStudioConfig + Safari Dynamic Type (-apple-system-body) +
+ * browser/visualViewport zoom + active weather with document CSS custom properties,
+ * root rem App Shell scale, localStorage, and Three.js themeMode.
  */
 function readOsPrefersDark(): boolean {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -22,13 +24,30 @@ function readOsPrefersDark(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
+interface ViewportZoomMetrics {
+  readonly safariBodyPx: number;
+  readonly browserZoomRatio: number;
+  readonly viewportWidthPx: number;
+}
+
+function readViewportZoomMetrics(): ViewportZoomMetrics {
+  const env = detectWebkitEnvironment();
+  return {
+    safariBodyPx: probeSafariSystemFontPx(),
+    browserZoomRatio: env.browserZoomPct / 100,
+    viewportWidthPx: env.viewportWidthPx,
+  };
+}
+
 export function useThemeEngine(): ResolvedThemeSnapshot {
   const uiTheme = useExoStore((s) => s.uiTheme);
   const weatherState = useExoStore((s) => s.world.weatherState);
   const currentThemeMode = useExoStore((s) => s.graphics.themeMode);
   const updateGraphics = useExoStore((s) => s.updateGraphics);
   const [osPrefersDark, setOsPrefersDark] = useState<boolean>(readOsPrefersDark);
-  const [safariBodyPx, setSafariBodyPx] = useState<number>(() => probeSafariSystemFontPx());
+  const [zoomMetrics, setZoomMetrics] = useState<ViewportZoomMetrics>(() =>
+    readViewportZoomMetrics(),
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
@@ -40,17 +59,20 @@ export function useThemeEngine(): ResolvedThemeSnapshot {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const refreshProbe = () => setSafariBodyPx(probeSafariSystemFontPx());
+    const refreshProbe = () => setZoomMetrics(readViewportZoomMetrics());
     refreshProbe();
     window.addEventListener('resize', refreshProbe, { passive: true });
     window.addEventListener('focus', refreshProbe);
     document.addEventListener('visibilitychange', refreshProbe);
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', refreshProbe);
     return () => {
       window.removeEventListener('resize', refreshProbe);
       window.removeEventListener('focus', refreshProbe);
       document.removeEventListener('visibilitychange', refreshProbe);
+      vv?.removeEventListener('resize', refreshProbe);
     };
-  }, [uiTheme.safariTextSync]);
+  }, [uiTheme.safariTextSync, uiTheme.safariZoomAdaptMode]);
 
   const resolved = useMemo(
     () => resolveThemeSnapshot(uiTheme, osPrefersDark),
@@ -62,9 +84,19 @@ export function useThemeEngine(): ResolvedThemeSnapshot {
       computeEffectiveFontScale({
         manualPct: uiTheme.fontScalePct ?? 100,
         safariSyncEnabled: uiTheme.safariTextSync ?? true,
-        systemBodyPx: safariBodyPx,
+        systemBodyPx: zoomMetrics.safariBodyPx,
+        adaptMode: uiTheme.safariZoomAdaptMode ?? 'AUTO_SYSTEM',
+        browserZoomRatio: zoomMetrics.browserZoomRatio,
+        viewportWidthPx: zoomMetrics.viewportWidthPx,
       }),
-    [uiTheme.fontScalePct, uiTheme.safariTextSync, safariBodyPx],
+    [
+      uiTheme.fontScalePct,
+      uiTheme.safariTextSync,
+      uiTheme.safariZoomAdaptMode,
+      zoomMetrics.safariBodyPx,
+      zoomMetrics.browserZoomRatio,
+      zoomMetrics.viewportWidthPx,
+    ],
   );
 
   useEffect(() => {
@@ -77,13 +109,20 @@ export function useThemeEngine(): ResolvedThemeSnapshot {
     root.dataset.exoContrast = uiTheme.highContrast ? 'high' : 'normal';
     root.dataset.exoMotion = uiTheme.reducedMotion ? 'reduced' : 'full';
     root.dataset.exoTactile = uiTheme.tactileTargetBoost ?? true ? 'on' : 'off';
+    root.dataset.exoSafariZoomMode = uiTheme.safariZoomAdaptMode ?? 'AUTO_SYSTEM';
     root.dataset.exoWeather = weatherState;
 
     for (const [key, val] of Object.entries(resolved.cssVars)) {
       root.style.setProperty(key, val);
     }
     root.style.setProperty('--exo-font-scale', String(fontScaleMetrics.effectiveScale));
+    root.style.setProperty('--exo-shell-scale', String(fontScaleMetrics.effectiveScale));
+    root.style.setProperty('--exo-shell-gap-scale', String(fontScaleMetrics.shellGapScale));
     root.style.setProperty('--exo-safari-ratio', String(fontScaleMetrics.safariSystemRatio));
+    root.style.setProperty(
+      '--exo-browser-zoom-comp',
+      String(fontScaleMetrics.browserZoomCompensation),
+    );
     root.style.fontSize = `${fontScaleMetrics.effectiveRootPx}px`;
 
     const themeMeta = document.querySelector('meta[name="theme-color"]');

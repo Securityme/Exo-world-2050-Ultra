@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { CityDistrictPacket } from '../contracts/render-bridge.schema.ts';
+import type { CityColonistPacket, CityDistrictPacket } from '../contracts/render-bridge.schema.ts';
 import {
   createContactShadowTexture,
   createFacadeTextures,
@@ -140,11 +140,10 @@ export function buildPlanetarySatellite(accentHex: number): THREE.Group {
 }
 
 /**
- * Scale 3 Open-Sky Perimeter Stabilization Spires (ZERO glass dome overhead per R-16).
+ * Scale 3 Open-Sky Coastal Promenade & Boulevard Anchors (ZERO glass dome overhead per R-16).
  */
-export function buildOpenSkyPerimeterPylons(radius: number): THREE.Group {
+export function buildOpenSkyPerimeterPylons(halfSpan: number): THREE.Group {
   const group = new THREE.Group();
-  const count = 8;
 
   const pearlMat = new THREE.MeshStandardMaterial({
     color: 0xf7eef2,
@@ -157,66 +156,59 @@ export function buildOpenSkyPerimeterPylons(radius: number): THREE.Group {
     metalness: 0.72,
   });
   const roseGlowMat = new THREE.MeshStandardMaterial({
-    color: 0xfb7185,
-    emissive: 0xe11d48,
-    emissiveIntensity: 0.95,
+    color: 0x38bdf8,
+    emissive: 0x0ea5e9,
+    emissiveIntensity: 0.9,
     roughness: 0.2,
     metalness: 0.3,
   });
 
-  const baseGeo = new THREE.CylinderGeometry(0.28, 0.4, 0.28, 6);
-  const shaftGeo = new THREE.CylinderGeometry(0.09, 0.2, 2.05, 6);
-  const finGeo = new THREE.BoxGeometry(0.06, 1.45, 0.34);
-  const emitterGeo = new THREE.OctahedronGeometry(0.15, 0);
-  const ringGeo = new THREE.TorusGeometry(0.24, 0.024, 8, 24);
+  const baseGeo = new THREE.BoxGeometry(0.46, 0.26, 0.46);
+  const shaftGeo = new THREE.CylinderGeometry(0.08, 0.16, 1.85, 6);
+  const finGeo = new THREE.BoxGeometry(0.06, 1.25, 0.3);
+  const emitterGeo = new THREE.OctahedronGeometry(0.14, 0);
+  const ringGeo = new THREE.TorusGeometry(0.22, 0.022, 8, 20);
 
-  for (let i = 0; i < count; i++) {
-    const angle = (i / count) * Math.PI * 2 + Math.PI / 8;
-    const x = Math.cos(angle) * radius;
-    const z = Math.sin(angle) * radius;
+  // Place along orthogonal waterfront promenade corners & avenue gateways (never a closed bullseye circle)
+  const anchorPositions: readonly [number, number, number][] = [
+    [-halfSpan, -halfSpan * 0.88, Math.PI * 0.25],
+    [0, -halfSpan * 0.92, Math.PI * 0.5],
+    [halfSpan * 0.85, -halfSpan * 0.82, Math.PI * 0.75],
+    [-halfSpan * 0.92, 0.4, 0],
+    [halfSpan * 0.88, 0.2, Math.PI],
+    [-halfSpan * 0.85, halfSpan * 0.78, -Math.PI * 0.25],
+    [1.6, halfSpan * 0.74, -Math.PI * 0.5],
+    [halfSpan * 0.42, halfSpan * 0.42, -Math.PI * 0.75],
+  ];
 
+  for (const [x, z, rotY] of anchorPositions) {
     const pylon = new THREE.Group();
     pylon.position.set(x, 0, z);
-    pylon.rotation.y = -angle;
+    pylon.rotation.y = rotY;
 
     const base = new THREE.Mesh(baseGeo, darkMetalMat);
-    base.position.y = 0.14;
+    base.position.y = 0.13;
     pylon.add(base);
 
     const shaft = new THREE.Mesh(shaftGeo, pearlMat);
-    shaft.position.y = 1.24;
+    shaft.position.y = 1.12;
     pylon.add(shaft);
 
     const fin = new THREE.Mesh(finGeo, roseGlowMat);
-    fin.position.set(-0.14, 1.15, 0);
+    fin.position.set(-0.12, 1.05, 0);
     pylon.add(fin);
 
     const emitter = new THREE.Mesh(emitterGeo, roseGlowMat);
-    emitter.position.y = 2.48;
+    emitter.position.y = 2.24;
     pylon.add(emitter);
 
     const halo = new THREE.Mesh(ringGeo, roseGlowMat);
-    halo.position.y = 2.48;
+    halo.position.y = 2.24;
     halo.rotation.x = Math.PI / 2;
     pylon.add(halo);
 
     group.add(pylon);
   }
-
-  // Open-sky ground perimeter energy trim ring (strictly open overhead)
-  const perimeterRing = new THREE.Mesh(
-    new THREE.TorusGeometry(radius, 0.045, 8, 96),
-    new THREE.MeshStandardMaterial({
-      color: 0xfb7185,
-      emissive: 0xe11d48,
-      emissiveIntensity: 0.65,
-      roughness: 0.3,
-      metalness: 0.4,
-    }),
-  );
-  perimeterRing.rotation.x = Math.PI / 2;
-  perimeterRing.position.y = 0.07;
-  group.add(perimeterRing);
 
   return group;
 }
@@ -339,30 +331,19 @@ export function buildDistrictMesh(district: CityDistrictPacket): THREE.Group {
   contactShadow.position.y = 0.008;
   group.add(contactShadow);
 
-  // 2-tier beveled hexagonal architectural plaza plinth
-  const basePlinth = new THREE.Mesh(
-    new THREE.CylinderGeometry(1.06, 1.18, 0.14, 6),
-    plinthMat,
-  );
+  // 2-tier beveled rectangular architectural city-block plinth (non-circular alignment)
+  const basePlinth = new THREE.Mesh(new THREE.BoxGeometry(2.14, 0.14, 2.14), plinthMat);
   basePlinth.position.y = 0.07;
   basePlinth.receiveShadow = true;
   group.add(basePlinth);
 
-  const upperPlinth = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.92, 1.0, 0.1, 6),
-    pearlMat,
-  );
+  const upperPlinth = new THREE.Mesh(new THREE.BoxGeometry(1.88, 0.1, 1.88), pearlMat);
   upperPlinth.position.y = 0.19;
   group.add(upperPlinth);
 
-  const trimRing = new THREE.Mesh(
-    new THREE.TorusGeometry(0.99, 0.022, 6, 6),
-    accentMat,
-  );
-  trimRing.rotation.x = Math.PI / 2;
-  trimRing.rotation.z = Math.PI / 6;
-  trimRing.position.y = 0.15;
-  group.add(trimRing);
+  const trimBand = new THREE.Mesh(new THREE.BoxGeometry(1.94, 0.032, 1.94), accentMat);
+  trimBand.position.y = 0.145;
+  group.add(trimBand);
 
   const h = 1.05 + district.level * 0.46;
 
@@ -650,37 +631,471 @@ export function buildDistrictMesh(district: CityDistrictPacket): THREE.Group {
   return group;
 }
 
+export type DroneVisualRole = 'RECON' | 'LOGISTICS' | 'PATROL';
+
+const DRONE_ROLE_ACCENT: Record<DroneVisualRole, number> = {
+  RECON: 0x06b6d4,
+  LOGISTICS: 0xf59e0b,
+  PATROL: 0xf43f5e,
+};
+
 /**
- * Scale 3 Winged Autonomous Shuttle / Drone (4-part composite)
+ * Scale 3 Articulated Quad-Tilt-Rotor Autonomous Solarpunk Drone (10+ parts, spinning rotors, optical gimbal)
  */
-export function buildDroneUnit(): THREE.Group {
+export function buildDroneUnit(role: DroneVisualRole = 'RECON'): THREE.Group {
   const drone = new THREE.Group();
+  const accentHex = DRONE_ROLE_ACCENT[role];
+
   const hullMat = new THREE.MeshStandardMaterial({
-    color: 0xfff5f8,
+    color: 0xf8f1f4,
     roughness: 0.24,
-    metalness: 0.62,
+    metalness: 0.56,
+  });
+  const carbonMat = new THREE.MeshStandardMaterial({
+    color: 0x2a1f33,
+    roughness: 0.42,
+    metalness: 0.78,
+  });
+  const lensMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0f172a,
+    roughness: 0.08,
+    metalness: 0.72,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.06,
   });
   const glowMat = new THREE.MeshStandardMaterial({
-    color: 0xfb7185,
-    emissive: 0xe11d48,
-    emissiveIntensity: 0.95,
-    roughness: 0.2,
-    metalness: 0.4,
+    color: accentHex,
+    emissive: accentHex,
+    emissiveIntensity: 1.1,
+    roughness: 0.18,
+    metalness: 0.35,
+  });
+  const rotorDiscMat = new THREE.MeshBasicMaterial({
+    color: 0xe2e8f0,
+    transparent: true,
+    opacity: 0.38,
+    side: THREE.DoubleSide,
+    depthWrite: false,
   });
 
-  const body = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.34, 6), hullMat);
-  body.rotation.x = Math.PI / 2;
-  drone.add(body);
+  // 1. Sleek oval fuselage shell (nose pointing along -Z)
+  const hull = new THREE.Mesh(new THREE.CapsuleGeometry(0.068, 0.19, 6, 12), hullMat);
+  hull.rotation.x = Math.PI / 2;
+  hull.scale.set(1.25, 1.0, 0.68);
+  drone.add(hull);
 
-  const wings = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.025, 0.11), hullMat);
-  wings.position.z = 0.04;
-  drone.add(wings);
+  // 2. Carbon dorsal avionics spine
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.095, 0.036, 0.22), carbonMat);
+  spine.position.set(0, 0.044, 0.01);
+  drone.add(spine);
 
-  const engine = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 6), glowMat);
-  engine.position.z = 0.18;
-  drone.add(engine);
+  // 3. Dorsal status beacon strip
+  const beacon = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.018, 0.11), glowMat);
+  beacon.position.set(0, 0.066, -0.02);
+  drone.add(beacon);
 
+  // 4. Underbelly optical sensor gimbal + sapphire lens
+  const gimbal = new THREE.Mesh(new THREE.SphereGeometry(0.042, 10, 8), carbonMat);
+  gimbal.position.set(0, -0.056, -0.07);
+  drone.add(gimbal);
+
+  const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.024, 10), lensMat);
+  lens.rotation.x = Math.PI / 2;
+  lens.position.set(0, -0.058, -0.108);
+  drone.add(lens);
+
+  // 5. Twin rear micro-thruster glow cones
+  const thrusterGeo = new THREE.ConeGeometry(0.022, 0.075, 8);
+  for (const sx of [-0.042, 0.042]) {
+    const thruster = new THREE.Mesh(thrusterGeo, glowMat);
+    thruster.rotation.x = Math.PI / 2;
+    thruster.position.set(sx, 0.005, 0.165);
+    drone.add(thruster);
+  }
+
+  // 6. Four swept quad-tilt rotor arms, shrouds, and spinning blade hubs
+  const armGeo = new THREE.BoxGeometry(0.024, 0.018, 0.19);
+  const shroudGeo = new THREE.TorusGeometry(0.072, 0.011, 6, 16);
+  const bladeGeo = new THREE.BoxGeometry(0.125, 0.006, 0.018);
+  const discGeo = new THREE.CircleGeometry(0.066, 14);
+
+  const mounts: readonly [number, number, number][] = [
+    [-0.175, 0.032, -0.135],
+    [0.175, 0.032, -0.135],
+    [-0.175, 0.042, 0.135],
+    [0.175, 0.042, 0.135],
+  ];
+
+  mounts.forEach(([mx, my, mz], idx) => {
+    const arm = new THREE.Mesh(armGeo, carbonMat);
+    arm.position.set(mx * 0.52, my * 0.7, mz * 0.52);
+    arm.rotation.y = Math.atan2(mx, mz);
+    drone.add(arm);
+
+    const shroud = new THREE.Mesh(shroudGeo, hullMat);
+    shroud.rotation.x = Math.PI / 2;
+    shroud.position.set(mx, my, mz);
+    drone.add(shroud);
+
+    const rotorSpin = new THREE.Group();
+    rotorSpin.name = `rotorRing${idx}`;
+    rotorSpin.position.set(mx, my + 0.006, mz);
+
+    const bladeA = new THREE.Mesh(bladeGeo, carbonMat);
+    const bladeB = new THREE.Mesh(bladeGeo, carbonMat);
+    bladeB.rotation.y = Math.PI / 2;
+    const disc = new THREE.Mesh(discGeo, rotorDiscMat);
+    disc.rotation.x = -Math.PI / 2;
+    rotorSpin.add(bladeA, bladeB, disc);
+    drone.add(rotorSpin);
+  });
+
+  drone.userData.role = role;
   return drone;
+}
+
+/**
+ * Scale 3 Atmospheric VTOL Cargo / Passenger Shuttle Vessel (10 parts) cruising high-altitude skyline arcs.
+ */
+export function buildCityShuttleVessel(accentHex = 0x38bdf8): THREE.Group {
+  const vessel = new THREE.Group();
+
+  const pearlMat = new THREE.MeshStandardMaterial({
+    color: 0xf8f3f6,
+    roughness: 0.25,
+    metalness: 0.52,
+  });
+  const hullDarkMat = new THREE.MeshStandardMaterial({
+    color: 0x31233d,
+    roughness: 0.42,
+    metalness: 0.72,
+  });
+  const canopyMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0f172a,
+    roughness: 0.08,
+    metalness: 0.65,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.05,
+  });
+  const exhaustMat = new THREE.MeshStandardMaterial({
+    color: accentHex,
+    emissive: accentHex,
+    emissiveIntensity: 1.35,
+    roughness: 0.15,
+    metalness: 0.2,
+  });
+
+  // 1. Primary aerodynamic fuselage (nose oriented toward -Z)
+  const fuselage = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.68, 6, 14), pearlMat);
+  fuselage.rotation.x = Math.PI / 2;
+  fuselage.scale.set(1.15, 1.0, 0.76);
+  vessel.add(fuselage);
+
+  // 2. Tapered nose radome
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.115, 0.34, 12), pearlMat);
+  nose.rotation.x = -Math.PI / 2;
+  nose.scale.set(1.12, 1.0, 0.76);
+  nose.position.set(0, -0.008, -0.54);
+  vessel.add(nose);
+
+  // 3. Smoked wrap-around cockpit canopy
+  const canopy = new THREE.Mesh(new THREE.SphereGeometry(0.115, 12, 8), canopyMat);
+  canopy.scale.set(0.95, 0.52, 1.9);
+  canopy.position.set(0, 0.072, -0.22);
+  vessel.add(canopy);
+
+  // 4. Dorsal aero fin + accent stripe
+  const dorsalFin = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.19, 0.36), hullDarkMat);
+  dorsalFin.position.set(0, 0.135, 0.24);
+  vessel.add(dorsalFin);
+
+  const dorsalTrim = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.025, 0.56), exhaustMat);
+  dorsalTrim.position.set(0, 0.115, 0.02);
+  vessel.add(dorsalTrim);
+
+  // 5-6. Swept left and right delta wings
+  const wingGeo = new THREE.BoxGeometry(0.56, 0.026, 0.28);
+  const leftWing = new THREE.Mesh(wingGeo, pearlMat);
+  leftWing.position.set(-0.34, -0.01, 0.06);
+  leftWing.rotation.y = 0.26;
+  leftWing.rotation.z = -0.06;
+  vessel.add(leftWing);
+
+  const rightWing = new THREE.Mesh(wingGeo, pearlMat);
+  rightWing.position.set(0.34, -0.01, 0.06);
+  rightWing.rotation.y = -0.26;
+  rightWing.rotation.z = 0.06;
+  vessel.add(rightWing);
+
+  // 7-8. Twin wingtip VTOL thruster pods + luminous exhaust plumes
+  const nacelleGeo = new THREE.CylinderGeometry(0.056, 0.068, 0.38, 10);
+  const plumeGeo = new THREE.ConeGeometry(0.044, 0.24, 10);
+  for (const sx of [-0.56, 0.56]) {
+    const nacelle = new THREE.Mesh(nacelleGeo, hullDarkMat);
+    nacelle.rotation.x = Math.PI / 2;
+    nacelle.position.set(sx, -0.015, 0.14);
+    vessel.add(nacelle);
+
+    const plume = new THREE.Mesh(plumeGeo, exhaustMat);
+    plume.rotation.x = Math.PI / 2;
+    plume.position.set(sx, -0.015, 0.43);
+    vessel.add(plume);
+  }
+
+  // 9. Belly navigation strobe
+  const bellyLight = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), exhaustMat);
+  bellyLight.position.set(0, -0.105, -0.08);
+  vessel.add(bellyLight);
+
+  return vessel;
+}
+
+/**
+ * Scale 3 Articulated Soaring Seabird / Crane (8 parts: body, head, beak, tail, 2-joint inner + outer wings)
+ */
+export function buildRealisticBird(scale = 1): THREE.Group {
+  const bird = new THREE.Group();
+
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    emissive: 0xfef2f8,
+    emissiveIntensity: 0.18,
+    roughness: 0.52,
+    metalness: 0.05,
+  });
+  const wingTipMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.62,
+    metalness: 0.08,
+  });
+  const beakMat = new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    roughness: 0.48,
+    metalness: 0.05,
+  });
+
+  // 1. Streamlined avian fuselage (facing -Z)
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.032, 0.13, 4, 8), bodyMat);
+  body.rotation.x = Math.PI / 2;
+  body.scale.set(1.0, 1.0, 0.78);
+  bird.add(body);
+
+  // 2. Neck & head
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.026, 8, 6), bodyMat);
+  head.position.set(0, 0.012, -0.105);
+  bird.add(head);
+
+  // 3. Tapered beak
+  const beak = new THREE.Mesh(new THREE.ConeGeometry(0.01, 0.048, 6), beakMat);
+  beak.rotation.x = -Math.PI / 2;
+  beak.position.set(0, 0.01, -0.145);
+  bird.add(beak);
+
+  // 4. Fanned tail feathers
+  const tail = new THREE.Mesh(new THREE.ConeGeometry(0.044, 0.095, 4), bodyMat);
+  tail.rotation.x = -Math.PI / 2;
+  tail.scale.set(1.2, 1.0, 0.2);
+  tail.position.set(0, 0.002, 0.125);
+  bird.add(tail);
+
+  // 5-6. Articulated Left Inner + Outer Wing (shoulder pivot -> elbow pivot)
+  const leftInnerWing = new THREE.Group();
+  leftInnerWing.name = 'leftInnerWing';
+  leftInnerWing.position.set(-0.025, 0.008, -0.01);
+  const lwInMesh = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.012, 0.078), bodyMat);
+  lwInMesh.position.set(-0.08, 0, 0.008);
+  leftInnerWing.add(lwInMesh);
+
+  const leftOuterWing = new THREE.Group();
+  leftOuterWing.name = 'leftOuterWing';
+  leftOuterWing.position.set(-0.155, 0, 0.012);
+  const lwOutMesh = new THREE.Mesh(new THREE.BoxGeometry(0.155, 0.009, 0.056), wingTipMat);
+  lwOutMesh.position.set(-0.075, 0, 0.015);
+  lwOutMesh.rotation.y = 0.22;
+  leftOuterWing.add(lwOutMesh);
+  leftInnerWing.add(leftOuterWing);
+  bird.add(leftInnerWing);
+
+  // 7-8. Articulated Right Inner + Outer Wing
+  const rightInnerWing = new THREE.Group();
+  rightInnerWing.name = 'rightInnerWing';
+  rightInnerWing.position.set(0.025, 0.008, -0.01);
+  const rwInMesh = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.012, 0.078), bodyMat);
+  rwInMesh.position.set(0.08, 0, 0.008);
+  rightInnerWing.add(rwInMesh);
+
+  const rightOuterWing = new THREE.Group();
+  rightOuterWing.name = 'rightOuterWing';
+  rightOuterWing.position.set(0.155, 0, 0.012);
+  const rwOutMesh = new THREE.Mesh(new THREE.BoxGeometry(0.155, 0.009, 0.056), wingTipMat);
+  rwOutMesh.position.set(0.075, 0, 0.015);
+  rwOutMesh.rotation.y = -0.22;
+  rightOuterWing.add(rwOutMesh);
+  rightInnerWing.add(rightOuterWing);
+  bird.add(rightInnerWing);
+
+  bird.scale.setScalar(scale);
+  return bird;
+}
+
+const CITIZEN_TUNICS = [0xe11d48, 0x0d9488, 0xd97706, 0x4f46e5, 0x059669, 0xdb2777];
+const SPECIALTY_TUNIC_COLOR: Record<CityColonistPacket['specialty'], number> = {
+  ENGINEERING: 0xf59e0b,
+  AGRONOMY: 0x10b981,
+  CYBERNETICS: 0x06b6d4,
+  SECURITY: 0xe11d48,
+  EXOBIOLOGY: 0xa855f7,
+};
+const CITIZEN_SKINS = [0xf1c7a6, 0xd89f78, 0x9c6644, 0xf5d4ba];
+const CITIZEN_HAIR = [0x1f1722, 0x4a2f22, 0xb45309, 0xe2e8f0];
+
+/**
+ * Scale 3 Articulated Solarpunk Human Citizen / Villager (9 parts, grounded bottom-center pivot y = 0).
+ * Includes specialty-coded tunic + generous invisible raycast capsule for reliable 3D clicking.
+ */
+export function buildCitizenAgent(
+  variantIdx = 0,
+  spec?: { id?: string; specialty?: CityColonistPacket['specialty'] },
+): THREE.Group {
+  const citizen = new THREE.Group();
+  const tunicColor = spec?.specialty
+    ? SPECIALTY_TUNIC_COLOR[spec.specialty]
+    : (CITIZEN_TUNICS[variantIdx % CITIZEN_TUNICS.length] ?? 0xe11d48);
+  const skinColor = CITIZEN_SKINS[variantIdx % CITIZEN_SKINS.length] ?? 0xf1c7a6;
+  const hairColor = CITIZEN_HAIR[(variantIdx * 3) % CITIZEN_HAIR.length] ?? 0x1f1722;
+
+  const tunicMat = new THREE.MeshStandardMaterial({
+    color: tunicColor,
+    roughness: 0.56,
+    metalness: 0.16,
+  });
+  const trouserMat = new THREE.MeshStandardMaterial({
+    color: 0x2a2438,
+    roughness: 0.78,
+    metalness: 0.08,
+  });
+  const skinMat = new THREE.MeshStandardMaterial({
+    color: skinColor,
+    roughness: 0.68,
+    metalness: 0.02,
+  });
+  const hairMat = new THREE.MeshStandardMaterial({
+    color: hairColor,
+    roughness: 0.72,
+    metalness: 0.08,
+  });
+  const propMat = new THREE.MeshStandardMaterial({
+    color: spec?.specialty ? tunicColor : variantIdx % 2 === 0 ? 0x38bdf8 : 0xfbbf24,
+    emissive: spec?.specialty ? tunicColor : variantIdx % 2 === 0 ? 0x0284c7 : 0xb45309,
+    emissiveIntensity: 0.55,
+    roughness: 0.35,
+    metalness: 0.3,
+  });
+
+  // 0. Generous invisible hit proxy capsule for effortless raycast clicking
+  const hitProxy = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.18, 0.18, 0.52, 8),
+    new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+    }),
+  );
+  hitProxy.position.y = 0.26;
+  hitProxy.name = 'citizenHitProxy';
+  citizen.add(hitProxy);
+
+  // 1. Grounded radial contact shadow disc (flush at y = 0.005)
+  const shadow = new THREE.Mesh(
+    new THREE.CircleGeometry(0.092, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0x1a0c22,
+      transparent: true,
+      opacity: 0.34,
+      depthWrite: false,
+    }),
+  );
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = 0.005;
+  citizen.add(shadow);
+
+  // Subtle glowing base beacon for named clickable colonists
+  if (spec?.id) {
+    const beaconRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.09, 0.12, 16),
+      new THREE.MeshBasicMaterial({
+        color: tunicColor,
+        transparent: true,
+        opacity: 0.78,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      }),
+    );
+    beaconRing.rotation.x = -Math.PI / 2;
+    beaconRing.position.y = 0.009;
+    citizen.add(beaconRing);
+  }
+
+  // 2-3. Articulated Left & Right Legs (pivoted at hip y = 0.145)
+  const legGeo = new THREE.CapsuleGeometry(0.02, 0.11, 4, 6);
+  const leftLeg = new THREE.Group();
+  leftLeg.name = 'leftLeg';
+  leftLeg.position.set(-0.026, 0.155, 0);
+  const leftLegMesh = new THREE.Mesh(legGeo, trouserMat);
+  leftLegMesh.position.y = -0.072;
+  leftLeg.add(leftLegMesh);
+  citizen.add(leftLeg);
+
+  const rightLeg = new THREE.Group();
+  rightLeg.name = 'rightLeg';
+  rightLeg.position.set(0.026, 0.155, 0);
+  const rightLegMesh = new THREE.Mesh(legGeo, trouserMat);
+  rightLegMesh.position.y = -0.072;
+  rightLeg.add(rightLegMesh);
+  citizen.add(rightLeg);
+
+  // 4. Sculpted Solarpunk Tunic Torso
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.06, 0.155, 8), tunicMat);
+  torso.position.y = 0.22;
+  citizen.add(torso);
+
+  // 5-6. Articulated Left & Right Arms (pivoted at shoulder y = 0.275)
+  const armGeo = new THREE.CapsuleGeometry(0.015, 0.09, 4, 6);
+  const leftArm = new THREE.Group();
+  leftArm.name = 'leftArm';
+  leftArm.position.set(-0.062, 0.275, 0);
+  const leftArmMesh = new THREE.Mesh(armGeo, tunicMat);
+  leftArmMesh.position.y = -0.052;
+  leftArm.add(leftArmMesh);
+  citizen.add(leftArm);
+
+  const rightArm = new THREE.Group();
+  rightArm.name = 'rightArm';
+  rightArm.position.set(0.062, 0.275, 0);
+  const rightArmMesh = new THREE.Mesh(armGeo, tunicMat);
+  rightArmMesh.position.y = -0.052;
+  rightArm.add(rightArmMesh);
+  const prop = new THREE.Mesh(new THREE.BoxGeometry(0.024, 0.044, 0.038), propMat);
+  prop.position.set(0.01, -0.095, -0.012);
+  rightArm.add(prop);
+  citizen.add(rightArm);
+
+  // 7. Head
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 8), skinMat);
+  head.position.y = 0.338;
+  citizen.add(head);
+
+  // 8. Stylized Hair / Solarpunk Sun-Visor Crown
+  const crown = new THREE.Mesh(
+    new THREE.SphereGeometry(0.043, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.58),
+    hairMat,
+  );
+  crown.position.y = 0.344;
+  citizen.add(crown);
+
+  // Scale slightly taller so citizens read clearly in Scale 3
+  citizen.scale.setScalar(1.22);
+  return citizen;
 }
 
 /**

@@ -138,6 +138,74 @@ service cloud.firestore {
         data.createdAt is timestamp;
     }
 
+    function isValidDocVcsEntry(data) {
+      return data.keys().hasAll([
+          'docId', 'ownerId', 'title', 'category', 'domain', 'linkedSkillId',
+          'driveFileId', 'driveUrl', 'currentSemver', 'currentRevisionId', 'currentContentHash', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'docId', 'ownerId', 'title', 'category', 'domain', 'linkedSkillId',
+          'driveFileId', 'driveUrl', 'currentSemver', 'currentRevisionId', 'currentContentHash', 'updatedAt'
+        ]) &&
+        isValidId(data.docId) && data.docId.size() <= 80 &&
+        isValidId(data.ownerId) &&
+        data.title is string && data.title.size() >= 2 && data.title.size() <= 140 &&
+        data.category is string && data.category.size() >= 2 && data.category.size() <= 40 &&
+        data.domain is string && data.domain.size() >= 2 && data.domain.size() <= 40 &&
+        data.linkedSkillId is string && data.linkedSkillId.size() <= 80 &&
+        data.driveFileId is string && data.driveFileId.size() <= 128 &&
+        isValidHttpsUrl(data.driveUrl) &&
+        data.currentSemver is string && data.currentSemver.size() >= 5 && data.currentSemver.size() <= 32 &&
+        data.currentRevisionId is string && data.currentRevisionId.size() >= 3 && data.currentRevisionId.size() <= 96 &&
+        data.currentContentHash is string && data.currentContentHash.size() >= 8 && data.currentContentHash.size() <= 128 &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidDocVcsRevision(data) {
+      return data.keys().hasAll([
+          'revisionId', 'docId', 'ownerId', 'semver', 'contentHash', 'author',
+          'summary', 'parentRevisionId', 'source', 'content', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'revisionId', 'docId', 'ownerId', 'semver', 'contentHash', 'author',
+          'summary', 'parentRevisionId', 'source', 'content', 'createdAt'
+        ]) &&
+        isValidId(data.revisionId) && data.revisionId.size() <= 96 &&
+        isValidId(data.docId) && data.docId.size() <= 80 &&
+        isValidId(data.ownerId) &&
+        data.semver is string && data.semver.size() >= 5 && data.semver.size() <= 32 &&
+        data.contentHash is string && data.contentHash.size() >= 8 && data.contentHash.size() <= 128 &&
+        data.author is string && data.author.size() >= 1 && data.author.size() <= 80 &&
+        data.summary is string && data.summary.size() >= 2 && data.summary.size() <= 240 &&
+        data.parentRevisionId is string && data.parentRevisionId.size() <= 96 &&
+        data.source is string && data.source in ['LOCAL', 'REVERT', 'DRIVE_IMPORT'] &&
+        data.content is string && data.content.size() >= 1 && data.content.size() <= 64000 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidModularSkillRecord(data) {
+      return data.keys().hasAll([
+          'skillId', 'ownerId', 'code', 'name', 'domain', 'hookKind',
+          'semver', 'enabled', 'entryModule', 'docId', 'config', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'skillId', 'ownerId', 'code', 'name', 'domain', 'hookKind',
+          'semver', 'enabled', 'entryModule', 'docId', 'config', 'updatedAt'
+        ]) &&
+        isValidId(data.skillId) && data.skillId.size() <= 64 &&
+        isValidId(data.ownerId) &&
+        data.code is string && data.code.size() >= 2 && data.code.size() <= 32 &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+        data.domain is string && data.domain.size() >= 2 && data.domain.size() <= 40 &&
+        data.hookKind is string && data.hookKind.size() >= 2 && data.hookKind.size() <= 60 &&
+        data.semver is string && data.semver.size() >= 5 && data.semver.size() <= 32 &&
+        data.enabled is bool &&
+        data.entryModule is string && data.entryModule.size() >= 3 && data.entryModule.size() <= 140 &&
+        isValidId(data.docId) && data.docId.size() <= 80 &&
+        data.config is map &&
+        data.updatedAt is timestamp;
+    }
+
     match /players/{userId} {
       allow get: if isOwner(userId);
       allow list: if false;
@@ -258,6 +326,60 @@ service cloud.firestore {
         allow update: if false;
         allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
       }
+    }
+
+    match /docEntries/{docId} {
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(docId) &&
+        isValidDocVcsEntry(incoming()) &&
+        incoming().docId == docId &&
+        incoming().ownerId == request.auth.uid &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidDocVcsEntry(incoming()) &&
+        existing().ownerId == request.auth.uid &&
+        incoming().docId == existing().docId &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().updatedAt == request.time;
+
+      allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      match /revisions/{revId} {
+        allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+        allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+        allow create: if isVerifiedUser() &&
+          isValidId(docId) &&
+          isValidId(revId) &&
+          isValidDocVcsRevision(incoming()) &&
+          incoming().revisionId == revId &&
+          incoming().docId == docId &&
+          incoming().ownerId == request.auth.uid &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/docEntries/$(docId)) &&
+          get(/databases/$(database)/documents/docEntries/$(docId)).data.ownerId == request.auth.uid;
+
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+
+    match /skillRegistry/{skillId} {
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      allow create, update: if isVerifiedUser() &&
+        isValidId(skillId) &&
+        isValidModularSkillRecord(incoming()) &&
+        incoming().skillId == skillId &&
+        incoming().ownerId == request.auth.uid &&
+        incoming().updatedAt == request.time;
+
+      allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
     }
   }
 }

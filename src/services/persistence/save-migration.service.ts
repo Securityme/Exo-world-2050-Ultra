@@ -88,7 +88,16 @@ export function migrateWorldStateV3ToV4(rawInput: unknown): MigrationResult {
     };
   }
   if (!clone.fleetShips) {
-    clone.fleetShips = [...INITIAL_FLEET_SHIPS];
+    clone.fleetShips = INITIAL_FLEET_SHIPS.map((s) => ({ ...s, loadout: [...s.loadout] }));
+  } else if (Array.isArray(clone.fleetShips)) {
+    clone.fleetShips = clone.fleetShips.map((ship: Record<string, unknown>) => ({
+      ...ship,
+      maxSlots: typeof ship.maxSlots === 'number' ? ship.maxSlots : 4,
+      loadout: Array.isArray(ship.loadout) ? ship.loadout : [],
+    }));
+  }
+  if (!clone.colonistGear) {
+    clone.colonistGear = { outfitTier: 1, toolTier: 1, weaponTier: 1 };
   }
   if (!clone.promises) {
     clone.promises = [];

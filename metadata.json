@@ -1,6 +1,6 @@
 {
   "name": "Exo world : 2050 ",
-  "description": "",
+  "description": "Bâtissez le destin orbital de l'humanité. Pilotez une civilisation multi-mondes, développez vos cités à ciel ouvert et transformez la biosphère.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

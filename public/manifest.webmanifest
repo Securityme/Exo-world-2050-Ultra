@@ -1,0 +1,32 @@
+{
+  "name": "EXO WORLD : 2050",
+  "short_name": "EXO WORLD 2050",
+  "description": "Bâtissez le destin orbital de l'humanité. Pilotez une civilisation multi-mondes, développez vos cités à ciel ouvert et transformez la biosphère.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#120818",
+  "theme_color": "#120818",
+  "icons": [
+    {
+      "src": "/app-icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/app-thumbnail.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "EXO WORLD : 2050 — Vue orbitale et flotte coloniale"
+    }
+  ]
+}

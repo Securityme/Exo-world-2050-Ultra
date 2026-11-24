@@ -104,6 +104,103 @@
         "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
       },
       "required": ["honorsId", "ownerId", "payload", "updatedAt"]
+    },
+    "DocVcsEntryRecord": {
+      "title": "DocVcsEntryRecord",
+      "description": "Version-controlled documentation entry mirrored for verified owners.",
+      "type": "object",
+      "properties": {
+        "docId": { "type": "string", "description": "Document ID matching document key" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of owner" },
+        "title": { "type": "string", "description": "Document display title" },
+        "category": { "type": "string", "description": "Documentation category" },
+        "domain": { "type": "string", "description": "Domain scope" },
+        "linkedSkillId": { "type": "string", "description": "Optional linked modular skill ID" },
+        "driveFileId": { "type": "string", "description": "Optional linked Google Drive file ID" },
+        "driveUrl": { "type": "string", "description": "Optional HTTPS Google Drive/Docs link" },
+        "currentSemver": { "type": "string", "description": "Current SemVer" },
+        "currentRevisionId": { "type": "string", "description": "Active revision ID" },
+        "currentContentHash": { "type": "string", "description": "Content digest" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp" }
+      },
+      "required": [
+        "docId",
+        "ownerId",
+        "title",
+        "category",
+        "domain",
+        "linkedSkillId",
+        "driveFileId",
+        "driveUrl",
+        "currentSemver",
+        "currentRevisionId",
+        "currentContentHash",
+        "updatedAt"
+      ]
+    },
+    "DocVcsRevisionRecord": {
+      "title": "DocVcsRevisionRecord",
+      "description": "Immutable documentation revision record for diff & non-destructive revert.",
+      "type": "object",
+      "properties": {
+        "revisionId": { "type": "string", "description": "Revision ID" },
+        "docId": { "type": "string", "description": "Parent document ID" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of owner" },
+        "semver": { "type": "string", "description": "Revision SemVer" },
+        "contentHash": { "type": "string", "description": "Content digest" },
+        "author": { "type": "string", "description": "Author name" },
+        "summary": { "type": "string", "description": "Change summary" },
+        "parentRevisionId": { "type": "string", "description": "Parent revision ID or empty" },
+        "source": { "type": "string", "enum": ["LOCAL", "REVERT", "DRIVE_IMPORT"], "description": "Origin" },
+        "content": { "type": "string", "description": "Markdown text snapshot" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" }
+      },
+      "required": [
+        "revisionId",
+        "docId",
+        "ownerId",
+        "semver",
+        "contentHash",
+        "author",
+        "summary",
+        "parentRevisionId",
+        "source",
+        "content",
+        "createdAt"
+      ]
+    },
+    "ModularSkillRecord": {
+      "title": "ModularSkillRecord",
+      "description": "Self-contained modular skill registry state separated from documentation prose.",
+      "type": "object",
+      "properties": {
+        "skillId": { "type": "string", "description": "Skill ID" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of owner" },
+        "code": { "type": "string", "description": "Skill short code" },
+        "name": { "type": "string", "description": "Skill display name" },
+        "domain": { "type": "string", "description": "Skill domain" },
+        "hookKind": { "type": "string", "description": "Runtime hook classification" },
+        "semver": { "type": "string", "description": "Independent skill SemVer" },
+        "enabled": { "type": "boolean", "description": "Active toggle" },
+        "entryModule": { "type": "string", "description": "Source module path" },
+        "docId": { "type": "string", "description": "Separated external docId pointer" },
+        "config": { "type": "object", "description": "Modular runtime configuration" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server update timestamp" }
+      },
+      "required": [
+        "skillId",
+        "ownerId",
+        "code",
+        "name",
+        "domain",
+        "hookKind",
+        "semver",
+        "enabled",
+        "entryModule",
+        "docId",
+        "config",
+        "updatedAt"
+      ]
     }
   },
   "firestore": {
@@ -130,6 +227,18 @@
     "/campaigns/{campaignId}/driveLinks/{linkId}": {
       "schema": { "$ref": "#/entities/DriveLinkRecord" },
       "description": "Google Picker linked Drive files associated with an owner-verified campaign."
+    },
+    "/docEntries/{docId}": {
+      "schema": { "$ref": "#/entities/DocVcsEntryRecord" },
+      "description": "Owner-scoped version-controlled documentation metadata."
+    },
+    "/docEntries/{docId}/revisions/{revId}": {
+      "schema": { "$ref": "#/entities/DocVcsRevisionRecord" },
+      "description": "Append-only documentation revision snapshots for diff and revert."
+    },
+    "/skillRegistry/{skillId}": {
+      "schema": { "$ref": "#/entities/ModularSkillRecord" },
+      "description": "Owner-scoped modular skills registry decoupled from documentation."
     }
   }
 }

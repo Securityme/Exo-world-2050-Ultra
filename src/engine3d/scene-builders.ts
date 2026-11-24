@@ -9,10 +9,13 @@ import {
   type PlanetWeatherFxNodes,
 } from './planet-weather-fx.ts';
 import {
+  buildCityLifeActors,
+  buildCityUrbanProps,
+} from './city-life.ts';
+import {
   buildOpenSkyPerimeterPylons,
   buildOrbitalStation,
   buildPlanetarySatellite,
-  buildSkyRailShuttle,
 } from './procedural-models.ts';
 import {
   createAtmosphereHaloMaterial,
@@ -430,6 +433,7 @@ export function rebuildDossierPins(
 export interface CityScaleNodes {
   readonly group: THREE.Group;
   readonly groundMesh: THREE.Mesh;
+  readonly waterBayMesh: THREE.Mesh;
   readonly horizonMesh: THREE.Mesh;
   readonly skyDomeMesh: THREE.Mesh;
   readonly districtsGroup: THREE.Group;
@@ -437,19 +441,27 @@ export interface CityScaleNodes {
   readonly shuttlesGroup: THREE.Group;
   readonly pedestriansGroup: THREE.Group;
   readonly wildlifeGroup: THREE.Group;
+  readonly vesselsGroup: THREE.Group;
+  readonly cloudLayer: THREE.Group;
   readonly windRotors: readonly THREE.Group[];
   readonly civilRailTex: THREE.CanvasTexture;
   readonly freightRailTex: THREE.CanvasTexture;
+  readonly pondNormalMap: THREE.CanvasTexture;
+  readonly streetlampMat: THREE.MeshStandardMaterial;
   readonly atmoMotes: THREE.Points;
 }
 
 function sampleTerrainHeight(x: number, z: number): number {
-  const r = Math.hypot(x, z);
-  if (r <= 8.2) return -0.04;
-  // Smooth cubic hermite ramp from city basin (r=8.2) into rolling foothills (r=18+)
-  const t = Math.min(1, (r - 8.2) / 11.5);
+  const maxAbs = Math.max(Math.abs(x), Math.abs(z));
+  // Smooth coastal harbor basin in SE quadrant (+x, +z)
+  if (x + z > 7.8 && maxAbs > 6.5) {
+    const depth = Math.min(1, (x + z - 7.8) / 14);
+    return -0.05 - depth * 0.45;
+  }
+  if (maxAbs <= 8.4) return -0.04;
+  const t = Math.min(1, (maxAbs - 8.4) / 11.5);
   const smooth = t * t * (3 - 2 * t);
-  const farBoost = Math.min(1, Math.max(0, (r - 18) / 26));
+  const farBoost = Math.min(1, Math.max(0, (maxAbs - 18) / 26));
   const rolling =
     Math.sin(x * 0.14 + 0.9) * Math.cos(z * 0.13 - 0.6) * 1.35 +
     Math.sin((x - z) * 0.09 + 1.4) * 0.95 +
@@ -458,7 +470,11 @@ function sampleTerrainHeight(x: number, z: number): number {
   return -0.04 + ridgeLift * smooth;
 }
 
-export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes {
+export function buildCityScaleGroup(
+  initialTier: AtmosphereTier,
+  biomeProfile?: import('../contracts/render-bridge.schema.ts').PlanetBiomeProfile,
+  hasOcean = true,
+): CityScaleNodes {
   const group = new THREE.Group();
 
   // 1. Open-Sky Hemisphere Gradient Dome
@@ -466,7 +482,7 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   const skyDomeMesh = new THREE.Mesh(new THREE.SphereGeometry(72, 32, 20), skyDomeMat);
   group.add(skyDomeMesh);
 
-  // 2. Seamless Continuous Planetary Terrain Heightfield (ZERO plateau step or seam)
+  // 2. Seamless Continuous Planetary Terrain Heightfield
   const horizonGeo = new THREE.PlaneGeometry(132, 132, 56, 56);
   horizonGeo.rotateX(-Math.PI / 2);
   const posAttr = horizonGeo.attributes.position;
@@ -479,7 +495,7 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   }
   horizonGeo.computeVertexNormals();
 
-  const horizonTex = createCityHorizonTexture(initialTier);
+  const horizonTex = createCityHorizonTexture(initialTier, biomeProfile);
   const horizonBump = createCityHorizonBumpTexture();
   const horizonMat = new THREE.MeshStandardMaterial({
     map: horizonTex,
@@ -492,8 +508,8 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   horizonMesh.receiveShadow = true;
   group.add(horizonMesh);
 
-  // 3. Flush Feathered City Plaza (blends seamlessly into the surrounding natural landscape)
-  const groundTex = createCityGroundTexture(initialTier);
+  // 3. Non-Circular Coastal Waterfront City Ground (Orthogonal Avenues + Canal + SE Bay)
+  const groundTex = createCityGroundTexture(initialTier, biomeProfile);
   const groundMat = new THREE.MeshStandardMaterial({
     map: groundTex,
     roughness: 0.72,
@@ -501,13 +517,36 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     transparent: true,
     depthWrite: false,
   });
-  const groundMesh = new THREE.Mesh(new THREE.CircleGeometry(10.2, 64), groundMat);
+  const groundMesh = new THREE.Mesh(new THREE.PlaneGeometry(21.5, 21.5), groundMat);
   groundMesh.rotation.x = -Math.PI / 2;
   groundMesh.position.y = -0.015;
   groundMesh.receiveShadow = true;
   group.add(groundMesh);
 
-  // 4. Refined Architectural Transit Ring & Animated Emissive Maglev Rails
+  // 3b. SE Coastal Bay Specular Ocean Sheet
+  const pondNormalMap = createWaterRippleNormalMap();
+  const bayMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0284c7,
+    emissive: 0x075985,
+    emissiveIntensity: 0.22,
+    roughness: 0.08,
+    metalness: 0.14,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.06,
+    ior: 1.333,
+    normalMap: pondNormalMap,
+    normalScale: new THREE.Vector2(0.55, 0.55),
+    envMapIntensity: 1.4,
+    transparent: true,
+    opacity: 0.88,
+  });
+  const waterBayMesh = new THREE.Mesh(new THREE.PlaneGeometry(34, 34), bayMat);
+  waterBayMesh.rotation.x = -Math.PI / 2;
+  waterBayMesh.position.set(17.5, -0.028, 17.5);
+  waterBayMesh.visible = hasOcean;
+  group.add(waterBayMesh);
+
+  // 4. Linear Elevated Maglev Sky-Rail Viaducts (Zero circular bullseye tracks)
   const curbMat = new THREE.MeshStandardMaterial({
     color: 0xf8eef3,
     roughness: 0.34,
@@ -523,33 +562,23 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     metalness: 0.35,
   });
 
-  const viaductRadius = 6.2;
-  const viaductTrack = new THREE.Mesh(
-    new THREE.TorusGeometry(viaductRadius, 0.075, 8, 64),
-    curbMat,
-  );
-  viaductTrack.rotation.x = Math.PI / 2;
-  viaductTrack.position.y = 0.68;
+  // Civil E-W Sky-Rail along z = -5.4
+  const viaductTrack = new THREE.Mesh(new THREE.BoxGeometry(20.5, 0.14, 0.28), curbMat);
+  viaductTrack.position.set(0, 0.68, -5.4);
   group.add(viaductTrack);
 
-  const viaductGlow = new THREE.Mesh(
-    new THREE.TorusGeometry(viaductRadius, 0.025, 6, 64),
-    accentMat,
-  );
-  viaductGlow.rotation.x = Math.PI / 2;
-  viaductGlow.position.y = 0.755;
+  const viaductGlow = new THREE.Mesh(new THREE.BoxGeometry(20.5, 0.045, 0.09), accentMat);
+  viaductGlow.position.set(0, 0.76, -5.4);
   group.add(viaductGlow);
 
-  const pierGeo = new THREE.CylinderGeometry(0.055, 0.085, 0.68, 6);
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * Math.PI * 2;
+  const pierGeo = new THREE.BoxGeometry(0.16, 0.68, 0.24);
+  for (let x = -9; x <= 9; x += 3) {
     const pier = new THREE.Mesh(pierGeo, curbMat);
-    pier.position.set(Math.cos(a) * viaductRadius, 0.34, Math.sin(a) * viaductRadius);
+    pier.position.set(x, 0.34, -5.4);
     group.add(pier);
   }
 
-  // 4b. Dual Maglev — Outer Military & Industrial Freight Line (Amber/Gold animated pulse, r = 8.4, y = 1.05)
-  const freightRadius = 8.4;
+  // Freight N-S Viaduct along x = -5.6
   const freightRailTex = createMaglevRailEmissiveTexture('#ffb800');
   const freightAccentMat = new THREE.MeshStandardMaterial({
     color: 0xf59e0b,
@@ -559,26 +588,25 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     roughness: 0.3,
     metalness: 0.45,
   });
-  const freightTrack = new THREE.Mesh(
-    new THREE.TorusGeometry(freightRadius, 0.068, 8, 72),
-    curbMat,
-  );
-  freightTrack.rotation.x = Math.PI / 2;
-  freightTrack.position.y = 1.05;
+  const freightTrack = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.14, 18.8), curbMat);
+  freightTrack.position.set(-5.6, 1.04, 0);
   group.add(freightTrack);
 
-  const freightGlow = new THREE.Mesh(
-    new THREE.TorusGeometry(freightRadius, 0.025, 6, 72),
-    freightAccentMat,
-  );
-  freightGlow.rotation.x = Math.PI / 2;
-  freightGlow.position.y = 1.125;
+  const freightGlow = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 18.8), freightAccentMat);
+  freightGlow.position.set(-5.6, 1.12, 0);
   group.add(freightGlow);
 
-  // 4c. 24-Hex Expandable City Footprint Pads with PBR normal/roughness/emissive telemetry maps
-  const hexPadGeo = new THREE.CylinderGeometry(0.82, 0.86, 0.045, 6);
+  const freightPierGeo = new THREE.BoxGeometry(0.22, 1.04, 0.16);
+  for (let z = -8; z <= 8; z += 4) {
+    const pier = new THREE.Mesh(freightPierGeo, curbMat);
+    pier.position.set(-5.6, 0.52, z);
+    group.add(pier);
+  }
+
+  // 4c. Orthogonal City Block Expansion Pads (16 rectangular urban block foundations)
+  const blockPadGeo = new THREE.BoxGeometry(2.05, 0.04, 2.05);
   const hexPadTex = createHexPadPbrTextures('#00f0ff');
-  const hexPadMat = new THREE.MeshStandardMaterial({
+  const blockPadMat = new THREE.MeshStandardMaterial({
     map: hexPadTex.map,
     normalMap: hexPadTex.normalMap,
     normalScale: new THREE.Vector2(0.7, 0.7),
@@ -587,27 +615,26 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     metalness: 0.42,
     emissive: 0xffffff,
     emissiveMap: hexPadTex.emissiveMap,
-    emissiveIntensity: 0.45,
+    emissiveIntensity: 0.4,
     transparent: true,
-    opacity: 0.78,
+    opacity: 0.76,
   });
-  for (let i = 0; i < 24; i++) {
-    const isInner = i < 8;
-    const count = isInner ? 8 : 16;
-    const idx = isInner ? i : i - 8;
-    const rad = isInner ? 3.55 : 7.25;
-    const ang = (idx / count) * Math.PI * 2 + (isInner ? 0.2 : 0.1);
-    const pad = new THREE.Mesh(hexPadGeo, hexPadMat);
-    pad.position.set(Math.cos(ang) * rad, 0.014, Math.sin(ang) * rad);
-    pad.rotation.y = ang;
-    pad.receiveShadow = true;
-    group.add(pad);
+  for (let gx = -1; gx <= 2; gx++) {
+    for (let gz = -1; gz <= 2; gz++) {
+      const wx = gx * 3.1 - 0.6;
+      const wz = gz * 3.1 - 0.6;
+      if (wx > 3.6 && wz > 3.2) continue; // Keep SE coastal bay unobstructed
+      const pad = new THREE.Mesh(blockPadGeo, blockPadMat);
+      pad.position.set(wx, 0.01, wz);
+      pad.receiveShadow = true;
+      group.add(pad);
+    }
   }
 
-  // 5. Open-Sky Perimeter Beacons (subtle, airy framing)
-  group.add(buildOpenSkyPerimeterPylons(7.85));
+  // 5. Open-Sky Coastal Boulevard Anchors
+  group.add(buildOpenSkyPerimeterPylons(7.6));
 
-  // 6. Living Flora (Trees, Cypresses & Garden Shrubs bridging City -> Countryside)
+  // 6. Living Flora (Trees, Cypresses & Garden Shrubs outside the bay & avenues)
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x7c5c48, roughness: 0.9 });
   const leafMats = [
     new THREE.MeshStandardMaterial({ color: 0x2d8a64, roughness: 0.78 }),
@@ -626,81 +653,76 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   const cypressGeo = new THREE.ConeGeometry(0.18, 0.85, 7);
   const shrubGeo = new THREE.DodecahedronGeometry(0.18, 0);
 
-  const floraSpecs: readonly { angle: number; radius: number; scale: number; kind: 'TREE' | 'CYPRESS' | 'SHRUB' }[] = [
-    // Inner park ring & avenue borders (r = 5.4..8.6)
-    ...Array.from({ length: 18 }, (_, i) => ({
-      angle: (i / 18) * Math.PI * 2 + 0.17,
-      radius: 7.0 + (i % 3) * 0.72,
-      scale: 0.85 + (i % 3) * 0.18,
-      kind: (i % 3 === 0 ? 'CYPRESS' : i % 4 === 1 ? 'SHRUB' : 'TREE') as 'TREE' | 'CYPRESS' | 'SHRUB',
-    })),
-    // Transition groves dissolving the city edge (r = 9.0..14.8)
-    ...Array.from({ length: 28 }, (_, i) => ({
-      angle: (i / 28) * Math.PI * 2 + (i % 2) * 0.08,
-      radius: 9.2 + (i % 5) * 1.35,
-      scale: 0.9 + (i % 4) * 0.24,
-      kind: (i % 5 === 0 ? 'SHRUB' : i % 3 === 0 ? 'CYPRESS' : 'TREE') as 'TREE' | 'CYPRESS' | 'SHRUB',
-    })),
-    // Distant hillside woodland clusters (r = 16..26)
-    ...Array.from({ length: 22 }, (_, i) => ({
-      angle: (i / 22) * Math.PI * 2 + 0.25,
-      radius: 16.5 + (i % 4) * 2.5,
-      scale: 1.15 + (i % 3) * 0.3,
-      kind: (i % 2 === 0 ? 'TREE' : 'CYPRESS') as 'TREE' | 'CYPRESS' | 'SHRUB',
-    })),
+  const floraCoords: readonly { x: number; z: number; scale: number; kind: 'TREE' | 'CYPRESS' | 'SHRUB' }[] = [
+    // Avenue tree-lined rows & coastal park edges
+    ...[-4.6, -1.8, 0.6, 3.6, 5.2].flatMap((x, i) => [
+      { x, z: -6.8, scale: 0.95 + (i % 3) * 0.15, kind: (i % 2 === 0 ? 'TREE' : 'CYPRESS') as 'TREE' | 'CYPRESS' },
+      { x: -6.9, z: x, scale: 0.9 + (i % 2) * 0.2, kind: (i % 3 === 0 ? 'SHRUB' : 'TREE') as 'SHRUB' | 'TREE' },
+    ]),
+    // Coastal & hillside woodland groves (avoid SE bay)
+    ...Array.from({ length: 36 }, (_, i) => {
+      const a = (i / 36) * Math.PI * 2 + 0.14;
+      const dist = 10.2 + (i % 5) * 2.4;
+      return {
+        x: Math.cos(a) * dist,
+        z: Math.sin(a) * dist,
+        scale: 0.95 + (i % 4) * 0.24,
+        kind: (i % 5 === 0 ? 'SHRUB' : i % 3 === 0 ? 'CYPRESS' : 'TREE') as 'TREE' | 'CYPRESS' | 'SHRUB',
+      };
+    }),
   ];
 
-  floraSpecs.forEach((item, idx) => {
-    const x = Math.cos(item.angle) * item.radius;
-    const z = Math.sin(item.angle) * item.radius;
-    const y = sampleTerrainHeight(x, z);
+  floraCoords.forEach((item, idx) => {
+    if (item.x > 4.2 && item.z > 3.8) return; // Never place trees underwater in SE bay
+    const y = sampleTerrainHeight(item.x, item.z);
     const leafMat = leafMats[idx % leafMats.length]!;
 
     if (item.kind === 'SHRUB') {
       const bush = new THREE.Mesh(shrubGeo, leafMat);
       bush.scale.set(item.scale * 1.2, item.scale * 0.75, item.scale * 1.1);
-      bush.position.set(x, y + 0.1 * item.scale, z);
+      bush.position.set(item.x, y + 0.1 * item.scale, item.z);
       group.add(bush);
       if (idx % 2 === 0) {
         const bloom = new THREE.Mesh(shrubGeo, flowerMat);
         bloom.scale.setScalar(item.scale * 0.36);
-        bloom.position.set(x + 0.08, y + 0.2 * item.scale, z + 0.05);
+        bloom.position.set(item.x + 0.08, y + 0.2 * item.scale, item.z + 0.05);
         group.add(bloom);
       }
     } else if (item.kind === 'CYPRESS') {
       const trunk = new THREE.Mesh(trunkGeo, trunkMat);
       trunk.scale.setScalar(item.scale * 0.8);
-      trunk.position.set(x, y + 0.16 * item.scale, z);
+      trunk.position.set(item.x, y + 0.16 * item.scale, item.z);
       const cone = new THREE.Mesh(cypressGeo, leafMat);
       cone.scale.setScalar(item.scale);
-      cone.position.set(x, y + 0.62 * item.scale, z);
+      cone.position.set(item.x, y + 0.62 * item.scale, item.z);
       group.add(trunk, cone);
     } else {
       const trunk = new THREE.Mesh(trunkGeo, trunkMat);
       trunk.scale.setScalar(item.scale);
-      trunk.position.set(x, y + 0.2 * item.scale, z);
+      trunk.position.set(item.x, y + 0.2 * item.scale, item.z);
       const crown1 = new THREE.Mesh(canopyGeo, leafMat);
       crown1.scale.set(item.scale * 1.05, item.scale * 0.9, item.scale * 1.05);
-      crown1.position.set(x, y + 0.56 * item.scale, z);
+      crown1.position.set(item.x, y + 0.56 * item.scale, item.z);
       const crown2 = new THREE.Mesh(canopyGeo, leafMats[(idx + 1) % leafMats.length]!);
       crown2.scale.setScalar(item.scale * 0.68);
-      crown2.position.set(x + 0.16 * item.scale, y + 0.7 * item.scale, z - 0.12 * item.scale);
+      crown2.position.set(item.x + 0.16 * item.scale, y + 0.7 * item.scale, item.z - 0.12 * item.scale);
       group.add(trunk, crown1, crown2);
     }
   });
 
-  // 7. Natural Relief Decor: Sculpted Rocks, Outcrops, Ponds, Streetlamps & Distant Wind Turbines
+  // 7. Natural Relief Decor: Coastal Cliffs, Rocks, Streetlamps & Wind Turbines
   const rockMat = new THREE.MeshStandardMaterial({
     color: 0x9b8b86,
     roughness: 0.92,
     metalness: 0.06,
   });
   const rockGeo = new THREE.DodecahedronGeometry(0.55, 0);
-  for (let i = 0; i < 24; i++) {
-    const a = (i / 24) * Math.PI * 2 + 0.31;
-    const dist = 10.6 + (i % 5) * 3.4;
+  for (let i = 0; i < 20; i++) {
+    const a = (i / 20) * Math.PI * 2 + 0.31;
+    const dist = 10.6 + (i % 5) * 3.2;
     const rx = Math.cos(a) * dist;
     const rz = Math.sin(a) * dist;
+    if (rx > 5.0 && rz > 4.5) continue;
     const ry = sampleTerrainHeight(rx, rz);
     const rock = new THREE.Mesh(rockGeo, rockMat);
     const sx = 0.7 + (i % 3) * 0.55;
@@ -712,70 +734,45 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     group.add(rock);
   }
 
-  // Natural reflective park ponds in outer gardens (MeshPhysicalMaterial + clearcoat + ripple normalMap)
-  const pondMat = new THREE.MeshPhysicalMaterial({
-    color: 0x0ea5a0,
-    emissive: 0x0f766e,
-    emissiveIntensity: 0.16,
-    roughness: 0.07,
-    metalness: 0.1,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.05,
-    ior: 1.333,
-    normalMap: createWaterRippleNormalMap(),
-    normalScale: new THREE.Vector2(0.5, 0.5),
-    envMapIntensity: 1.45,
-  });
-  const pondGeo = new THREE.CircleGeometry(1.15, 20);
-  for (let i = 0; i < 3; i++) {
-    const a = i * ((Math.PI * 2) / 3) + 0.65;
-    const px = Math.cos(a) * 10.2;
-    const pz = Math.sin(a) * 10.2;
-    const py = sampleTerrainHeight(px, pz);
-    const pond = new THREE.Mesh(pondGeo, pondMat);
-    pond.rotation.x = -Math.PI / 2;
-    pond.scale.set(1.25, 0.85, 1);
-    pond.position.set(px, py + 0.03, pz);
-    group.add(pond);
-  }
-
-  // Warm avenue streetlamps along urban promenade
+  // Orthogonal boulevard streetlamps
   const poleGeo = new THREE.CylinderGeometry(0.02, 0.03, 0.52, 5);
   const bulbGeo = new THREE.SphereGeometry(0.055, 6, 6);
-  const bulbMat = new THREE.MeshStandardMaterial({
+  const streetlampMat = new THREE.MeshStandardMaterial({
     color: 0xfff3d6,
     emissive: 0xf59e0b,
     emissiveIntensity: 0.85,
   });
-  for (let i = 0; i < 16; i++) {
-    const a = (i / 16) * Math.PI * 2 + 0.19;
-    const lx = Math.cos(a) * 4.55;
-    const lz = Math.sin(a) * 4.55;
-    const pole = new THREE.Mesh(poleGeo, curbMat);
-    pole.position.set(lx, 0.24, lz);
-    const bulb = new THREE.Mesh(bulbGeo, bulbMat);
-    bulb.position.set(lx, 0.52, lz);
-    group.add(pole, bulb);
+  for (const x of [-4.2, -1.8, 0.8, 3.4]) {
+    for (const z of [-2.35, 1.15]) {
+      const pole = new THREE.Mesh(poleGeo, curbMat);
+      pole.position.set(x, 0.24, z);
+      const bulb = new THREE.Mesh(bulbGeo, streetlampMat);
+      bulb.position.set(x, 0.52, z);
+      group.add(pole, bulb);
+    }
   }
 
-  // Distant hillside eco wind turbines (animated rotors!) & low rural pavilions
+  // Distant hillside eco wind turbines (NW/N/NE ridges)
   const windRotors: THREE.Group[] = [];
   const mastGeo = new THREE.CylinderGeometry(0.05, 0.11, 2.5, 8);
   const bladeGeo = new THREE.BoxGeometry(0.07, 0.95, 0.02);
-  for (let i = 0; i < 6; i++) {
-    const a = (i / 6) * Math.PI * 2 + 0.52;
-    const dist = 19.5 + (i % 2) * 5.2;
-    const tx = Math.cos(a) * dist;
-    const tz = Math.sin(a) * dist;
+  const turbineCoords: readonly [number, number][] = [
+    [-19, -12],
+    [-14, -22],
+    [4, -21],
+    [18, -16],
+    [-21, 5],
+    [-16, 16],
+  ];
+  turbineCoords.forEach(([tx, tz], i) => {
     const ty = sampleTerrainHeight(tx, tz);
-
     const mast = new THREE.Mesh(mastGeo, curbMat);
     mast.position.set(tx, ty + 1.2, tz);
     group.add(mast);
 
     const rotor = new THREE.Group();
     rotor.position.set(tx, ty + 2.42, tz);
-    rotor.rotation.y = -a + Math.PI / 2;
+    rotor.rotation.y = (i % 3) * 0.4;
     for (let b = 0; b < 3; b++) {
       const bladeWrap = new THREE.Group();
       bladeWrap.rotation.z = (b * Math.PI * 2) / 3;
@@ -786,105 +783,41 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     }
     group.add(rotor);
     windRotors.push(rotor);
-  }
+  });
 
-  // Subtle low countryside cottages/greenhouses nestled smoothly in the foothills
+  // Coastal & hillside cottages/greenhouses
   const cottageMat = new THREE.MeshStandardMaterial({ color: 0xf1e7ec, roughness: 0.65 });
   const roofMat = new THREE.MeshStandardMaterial({ color: 0x3b8f72, roughness: 0.55 });
   const cottageGeo = new THREE.BoxGeometry(0.95, 0.42, 0.68);
   const roofGeo = new THREE.ConeGeometry(0.76, 0.28, 4);
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2 + 0.28;
-    const dist = 12.6 + (i % 3) * 2.2;
-    const hx = Math.cos(a) * dist;
-    const hz = Math.sin(a) * dist;
+  const cottageCoords: readonly [number, number][] = [
+    [-11.5, -8.5],
+    [-8.5, -11.5],
+    [6.5, -10.5],
+    [11.2, -5.5],
+    [-12.2, 2.5],
+    [-9.4, 9.6],
+  ];
+  cottageCoords.forEach(([hx, hz], i) => {
     const hy = sampleTerrainHeight(hx, hz);
     const house = new THREE.Mesh(cottageGeo, cottageMat);
     house.position.set(hx, hy + 0.18, hz);
-    house.rotation.y = -a;
+    house.rotation.y = i * 0.5;
     const roof = new THREE.Mesh(roofGeo, roofMat);
     roof.position.set(hx, hy + 0.51, hz);
-    roof.rotation.y = -a + Math.PI / 4;
+    roof.rotation.y = i * 0.5 + Math.PI / 4;
     group.add(house, roof);
-  }
-
-  // 8. Living Fauna — Flocks of Soaring Birds circling above parks & hills
-  const wildlifeGroup = new THREE.Group();
-  const birdMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    emissive: 0xfce7f3,
-    emissiveIntensity: 0.25,
-    roughness: 0.5,
   });
-  const wingGeo = new THREE.BoxGeometry(0.24, 0.02, 0.08);
-  for (let i = 0; i < 10; i++) {
-    const bird = new THREE.Group();
-    const leftWing = new THREE.Mesh(wingGeo, birdMat);
-    leftWing.position.set(-0.11, 0, 0);
-    leftWing.name = 'leftWing';
-    const rightWing = new THREE.Mesh(wingGeo, birdMat);
-    rightWing.position.set(0.11, 0, 0);
-    rightWing.name = 'rightWing';
-    bird.add(leftWing, rightWing);
-    bird.userData = {
-      orbitPhase: (i / 10) * Math.PI * 2 + (i % 3) * 0.25,
-      orbitR: 5.5 + (i % 4) * 2.4,
-      orbitY: 2.9 + (i % 3) * 0.85,
-      speed: 0.26 + (i % 3) * 0.07,
-    };
-    wildlifeGroup.add(bird);
-  }
-  group.add(wildlifeGroup);
 
-  // 9. Living Transit — Dual Maglev (3 Civil Rose/Emerald + 2 Military Freight Amber Shuttles)
-  const shuttlesGroup = new THREE.Group();
-  const shuttleAccents = [0xf43f5e, 0x10b981, 0xfb7185];
-  for (let i = 0; i < 3; i++) {
-    const shuttle = buildSkyRailShuttle(shuttleAccents[i] ?? 0xf43f5e);
-    shuttle.userData = {
-      orbitPhase: (i / 3) * Math.PI * 2,
-      orbitR: viaductRadius,
-      orbitY: 0.74,
-      speed: 0.36 + i * 0.04,
-      lineType: 'CIVIL',
-    };
-    shuttlesGroup.add(shuttle);
-  }
-  for (let i = 0; i < 2; i++) {
-    const freight = buildSkyRailShuttle(0xf59e0b);
-    freight.scale.set(1.25, 1.12, 1.35);
-    freight.userData = {
-      orbitPhase: i * Math.PI + 0.4,
-      orbitR: freightRadius,
-      orbitY: 1.12,
-      speed: -(0.24 + i * 0.03),
-      lineType: 'MILITARY_FREIGHT',
-    };
-    shuttlesGroup.add(freight);
-  }
-  group.add(shuttlesGroup);
+  // 8. Grounded Urban Props (Benches, Canal Bridge, Harbor Piers, Orbital Anchor Spire)
+  group.add(buildCityUrbanProps(sampleTerrainHeight, hasOcean));
 
-  // 10. OpenRW-style Citizen Waypoint Walkers strolling along urban promenades
-  const pedestriansGroup = new THREE.Group();
-  const walkerGeo = new THREE.CapsuleGeometry(0.055, 0.14, 4, 6);
-  const walkerMats = [
-    new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xbe123c, emissiveIntensity: 0.25 }),
-    new THREE.MeshStandardMaterial({ color: 0x14b8a6, emissive: 0x0f766e, emissiveIntensity: 0.25 }),
-    new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xb45309, emissiveIntensity: 0.25 }),
-  ];
-  for (let i = 0; i < 18; i++) {
-    const walker = new THREE.Mesh(walkerGeo, walkerMats[i % walkerMats.length]!);
-    const ringR = i % 3 === 0 ? 3.85 : i % 3 === 1 ? 5.05 : 7.15;
-    walker.userData = {
-      orbitPhase: (i / 18) * Math.PI * 2,
-      orbitR: ringR,
-      speed: (i % 2 === 0 ? 1 : -1) * (0.14 + (i % 4) * 0.035),
-    };
-    pedestriansGroup.add(walker);
-  }
-  group.add(pedestriansGroup);
+  // 9. Living Metropolis Actors (Clickable Colonists, Linear Maglev, Seabirds, VTOL Shuttles, Clouds)
+  const { shuttlesGroup, pedestriansGroup, wildlifeGroup, vesselsGroup, cloudLayer } =
+    buildCityLifeActors();
+  group.add(shuttlesGroup, pedestriansGroup, wildlifeGroup, vesselsGroup, cloudLayer);
 
-  // 11. Environmental Solarpunk Floating Motes
+  // 10. Environmental Solarpunk Floating Motes
   const moteCount = 120;
   const motePos = new Float32Array(moteCount * 3);
   for (let i = 0; i < moteCount; i++) {
@@ -919,6 +852,7 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
   return {
     group,
     groundMesh,
+    waterBayMesh,
     horizonMesh,
     skyDomeMesh,
     districtsGroup,
@@ -926,9 +860,13 @@ export function buildCityScaleGroup(initialTier: AtmosphereTier): CityScaleNodes
     shuttlesGroup,
     pedestriansGroup,
     wildlifeGroup,
+    vesselsGroup,
+    cloudLayer,
     windRotors,
     civilRailTex,
     freightRailTex,
+    pondNormalMap,
+    streetlampMat,
     atmoMotes,
   };
 }

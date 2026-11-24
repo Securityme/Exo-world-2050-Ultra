@@ -117,6 +117,12 @@ export function getSubChoicesForOption(
         extraPaGeneralCost: 0,
         extraSubPaCost: 0,
         bonusEffects: { ...ZERO_SUB_BONUS },
+        badgeMeta: {
+          modeTag: 'CLASSEMENT',
+          focusTag: 'NEUTRE',
+          costTag: '0 SURCOÛT',
+          tone: 'SLATE',
+        },
       },
       {
         id: `${option.id}-sub-audit`,
@@ -125,6 +131,12 @@ export function getSubChoicesForOption(
         extraPaGeneralCost: 0,
         extraSubPaCost: 0,
         bonusEffects: { ...ZERO_SUB_BONUS, maintenanceDelta: 4 },
+        badgeMeta: {
+          modeTag: 'VEILLE TECH',
+          focusTag: 'ENTRETIEN +4%',
+          costTag: '0 SURCOÛT',
+          tone: 'INDIGO',
+        },
       },
       {
         id: `${option.id}-sub-reserve`,
@@ -133,6 +145,12 @@ export function getSubChoicesForOption(
         extraPaGeneralCost: 0,
         extraSubPaCost: 0,
         bonusEffects: { ...ZERO_SUB_BONUS, credits: 25 },
+        badgeMeta: {
+          modeTag: 'RÉALLOCATION',
+          focusTag: 'TRÉSORERIE +25',
+          costTag: 'GAIN NET',
+          tone: 'AMBER',
+        },
       },
     ];
   }
@@ -149,6 +167,12 @@ export function getSubChoicesForOption(
       extraPaGeneralCost: 0,
       extraSubPaCost: 0,
       bonusEffects: { ...ZERO_SUB_BONUS },
+      badgeMeta: {
+        modeTag: 'STANDARD',
+        focusTag: 'ÉQUILIBRE',
+        costTag: '0 SURCOÛT',
+        tone: 'GOLD',
+      },
     },
     {
       id: `${option.id}-sub-budget`,
@@ -161,6 +185,19 @@ export function getSubChoicesForOption(
       bonusEffects: isEco
         ? { ...ZERO_SUB_BONUS, credits: -25, water: 12, breathingKits: 5, atmosphereDelta: 3 }
         : { ...ZERO_SUB_BONUS, credits: 45, energy: 8 },
+      badgeMeta: isEco
+        ? {
+            modeTag: 'BIOSPHÈRE',
+            focusTag: 'AIR & EAU',
+            costTag: '-25 CR',
+            tone: 'EMERALD',
+          }
+        : {
+            modeTag: 'OPTIMISATION',
+            focusTag: 'TRÉSORERIE',
+            costTag: '+45 CR',
+            tone: 'AMBER',
+          },
     },
     {
       id: `${option.id}-sub-boost`,
@@ -175,6 +212,19 @@ export function getSubChoicesForOption(
       bonusEffects: isTechOrSecurity
         ? { ...ZERO_SUB_BONUS, credits: -40, materials: 15, maintenanceDelta: 8 }
         : { ...ZERO_SUB_BONUS, credits: -45, materials: 15, compute: 10, allianceTrustDelta: 3 },
+      badgeMeta: isTechOrSecurity
+        ? {
+            modeTag: 'RENFORT TECH',
+            focusTag: 'MAINTENANCE',
+            costTag: '-40 CR',
+            tone: 'CORAL',
+          }
+        : {
+            modeTag: 'DÉPLOIEMENT',
+            focusTag: 'CALCUL & ALLIANCE',
+            costTag: '-45 CR',
+            tone: 'VIOLET',
+          },
     },
   ];
 }

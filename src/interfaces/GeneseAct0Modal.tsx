@@ -77,11 +77,15 @@ export function GeneseAct0Modal() {
                   <Bot className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
-                  <div className="font-mono text-[10.5px] font-bold uppercase tracking-wider exo-accent-text">
-                    {aiSpec.voicePrefix} Co-pilote {world.aiPersona?.name ?? 'AURA-2050'} · {formatAtmosphereStageName(world.atmosphereTier)}
+                  <div className="flex flex-wrap items-center gap-2 font-mono text-[10.5px] font-bold exo-accent-text">
+                    <span>{aiSpec.voicePrefix} {world.aiPersona?.name ?? 'AURA-2050'}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{formatAtmosphereStageName(world.atmosphereTier)}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>Tour 1 ({world.year})</span>
                   </div>
                   <p className="mt-1 leading-relaxed text-[var(--exo-text)] opacity-90">
-                    Atterrissage confirmé sur <strong>Novaterra-1</strong>. Votre escouade de spécialistes est prête et un système de <strong>quêtes guidées</strong> vous accompagnera dès le premier cycle.
+                    Contact établi sur <strong>Novaterra-1</strong>. Votre périmètre à ciel ouvert est prêt : <strong>{world.districts.length} quartiers</strong> actifs, <strong>{world.activeDossiers.length} dossiers</strong> prioritaires et votre premier équipage de 4 spécialistes attendent vos ordres.
                   </p>
                 </div>
               </div>
@@ -106,9 +110,9 @@ export function GeneseAct0Modal() {
 
               <div className="grid gap-2.5 sm:grid-cols-3 text-xs">
                 {[
-                  ['1. Observer & Optimiser', 'Inspectez la 3D (Espace / Planète / Ville) et affectez vos colons selon leurs synergies.'],
-                  ['2. Arbitrer & Quêtes', 'Traitez vos dossiers actifs et réclamez les récompenses de quêtes pour accélérer votre essor.'],
-                  ['3. Valider la Fin de tour', 'Cliquez « Fin de tour → » pour encaisser la production, les étoiles d’ère et faire avancer le climat.'],
+                  ['1. Explorer la cité 3D', 'Basculez entre Espace, Planète et Ville pour inspecter vos quartiers et cliquer sur les repères.'],
+                  ['2. Traiter vos événements', 'Ouvrez l’onglet Événements : choisissez une option principale puis affinez sa modalité (sous-choix).'],
+                  ['3. Valider la Fin de tour', 'Appuyez sur « Fin de tour → » pour récolter vos flux, faire progresser l’atmosphère et passer au cycle suivant.'],
                 ].map(([title, desc]) => (
                   <div key={title} className="exo-surface-sub rounded-xl p-3">
                     <div className="font-display font-bold exo-accent-text">{title}</div>
@@ -118,44 +122,49 @@ export function GeneseAct0Modal() {
               </div>
             </>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-3">
-              {GENESE_ACT0_CHOICES.map((choice) => {
-                const active = choice.id === selectedId;
-                return (
-                  <button
-                    key={choice.id}
-                    type="button"
-                    onClick={() => setSelectedId(choice.id)}
-                    className={`flex flex-col justify-between p-3.5 text-left transition ${
-                      active ? 'exo-accent-chip-active ring-1 ring-[var(--exo-accent)]' : 'exo-accent-chip'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="rounded border exo-accent-border bg-[var(--exo-accent-soft)] px-1.5 py-0.5 font-mono text-[10px] font-bold exo-accent-text">
-                          {choice.doctrineTag}
-                        </span>
-                        {active && <CheckCircle2 className="h-4 w-4 exo-accent-text" />}
+            <div className="space-y-3">
+              <p className="text-xs leading-relaxed exo-muted-text">
+                Choisissez l’orientation fondatrice de votre colonie. Elle octroie un bonus immédiat et fixe votre premier cap d’engagement sur 6 tours.
+              </p>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {GENESE_ACT0_CHOICES.map((choice) => {
+                  const active = choice.id === selectedId;
+                  return (
+                    <button
+                      key={choice.id}
+                      type="button"
+                      onClick={() => setSelectedId(choice.id)}
+                      className={`flex flex-col justify-between p-3.5 text-left transition ${
+                        active ? 'exo-accent-chip-active ring-1 ring-[var(--exo-accent)]' : 'exo-accent-chip'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-mono text-[10px] font-bold exo-accent-text">
+                            Orientation · {choice.doctrineTag}
+                          </span>
+                          {active && <CheckCircle2 className="h-4 w-4 exo-accent-text" />}
+                        </div>
+                        <h3 className="mt-1.5 font-display text-sm font-bold text-[var(--exo-text)]">
+                          {choice.title}
+                        </h3>
+                        <p className="mt-1 text-[11.5px] leading-relaxed exo-muted-text">
+                          {choice.subtitle}
+                        </p>
                       </div>
-                      <h3 className="mt-2 font-display text-sm font-bold text-[var(--exo-text)]">
-                        {choice.title}
-                      </h3>
-                      <p className="mt-1 text-[11.5px] leading-relaxed exo-muted-text">
-                        {choice.subtitle}
-                      </p>
-                    </div>
-                    <div className="mt-3 space-y-1.5 border-t exo-accent-border pt-2.5 text-[11px]">
-                      <div className="font-mono font-semibold text-emerald-500 dark:text-emerald-300">
-                        {choice.immediateSummary}
+                      <div className="mt-3 space-y-1.5 border-t exo-accent-border pt-2.5 text-[11px]">
+                        <div className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">
+                          {choice.immediateSummary}
+                        </div>
+                        <div className="flex items-start gap-1 exo-accent-2-text">
+                          <Compass className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          <span><strong>Cap :</strong> {choice.promiseDescription}</span>
+                        </div>
                       </div>
-                      <div className="flex items-start gap-1 exo-accent-2-text">
-                        <Compass className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                        <span><strong>Engagement :</strong> {choice.promiseDescription}</span>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -171,7 +180,7 @@ export function GeneseAct0Modal() {
               <span>Retour</span>
             </button>
           ) : (
-            <span className="text-xs exo-muted-text">Séquence d’initialisation · Tour par tour</span>
+            <span className="text-xs exo-muted-text">Bienvenue sur Novaterra-1 · Prise en main rapide</span>
           )}
 
           {step === 1 ? (
@@ -192,7 +201,7 @@ export function GeneseAct0Modal() {
               className="exo-accent-btn inline-flex min-h-[44px] items-center gap-2 px-5 text-xs font-bold transition"
             >
               <ShieldCheck className="h-4 w-4" />
-              <span>Ratifier la Charte 2050</span>
+              <span>Ratifier et démarrer</span>
             </button>
           )}
         </div>

@@ -6,10 +6,18 @@ import {
   useLegacyTable,
   type LegacyColumnDef,
 } from '@tanstack/react-table/legacy';
-import { ArrowUpDown, Globe, ShieldCheck } from 'lucide-react';
+import { useSetAtom } from 'jotai';
+import { ArrowUpDown, Globe, Handshake, ShieldCheck } from 'lucide-react';
 import { SUPERPOWERS_CATALOG } from '../../data/world.catalog.ts';
 import { ExternalPolitiesPanel } from '../../components/world/ExternalPolitiesPanel.tsx';
+import { handleGenerateActionEvent } from '../../pipelines/game-actions.pipeline.ts';
 import { useExoStore } from '../../stores/game.store.ts';
+import {
+  activeDossierIdAtom,
+  activeSubscreenAtom,
+  toastNoticeAtom,
+} from '../../stores/selection.atoms.ts';
+import { formatTreatyKindLabel } from '../../systems/geopolitics/planetary-diplomacy.ts';
 
 /**
  * [L7] FUP-006 | SM-04 | SADT A4.3
@@ -29,7 +37,27 @@ interface PowerComparisonRow {
 
 export function GeopoliticsTab() {
   const world = useExoStore((s) => s.world);
+  const setSubscreen = useSetAtom(activeSubscreenAtom);
+  const setActiveDossierId = useSetAtom(activeDossierIdAtom);
+  const setToast = useSetAtom(toastNoticeAtom);
   const [sorting, setSorting] = useState([{ id: 'globalScore', desc: true }]);
+
+  const triggerTreatyDossier = (
+    partnerRivalId: string,
+    treatyKind: 'MARITIME_TRADE' | 'NON_AGGRESSION' | 'SCIENCE_SHARE' | 'ORBITAL_EMBARGO' | 'PLANETARY_SUMMIT',
+  ) => {
+    const [err, dossier] = handleGenerateActionEvent({
+      kind: 'SIGN_PLANETARY_TREATY',
+      rivalId: partnerRivalId,
+      treatyKind,
+    });
+    if (err || !dossier) {
+      setToast({ id: Date.now(), tone: 'error', text: err?.message ?? 'Traité indisponible.' });
+      return;
+    }
+    setSubscreen('EVENTS_HUB');
+    setActiveDossierId(dossier.id);
+  };
 
   const rows = useMemo<PowerComparisonRow[]>(() => {
     const playerPower = world.militaryRoster.reduce((acc, u) => acc + u.count * u.basePower * u.level, 0);
@@ -146,6 +174,69 @@ export function GeopoliticsTab() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Planetary Diplomacy Treaties & R-24 Actions */}
+      <div className="exo-bento-card space-y-3 p-4" data-testid="planetary-diplomacy-panel">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 font-display text-sm font-bold text-[var(--exo-text)]">
+            <Handshake className="h-4 w-4 exo-accent-text" />
+            <span>Traités Planétaires &amp; Influence Globale</span>
+          </div>
+          <span className="exo-accent-chip rounded-lg px-2.5 py-1 font-mono text-xs font-bold">
+            Influence Planétaire : {world.planetaryDiplomacy?.influenceScore ?? 32} pts ·{' '}
+            {(world.planetaryDiplomacy?.treaties ?? []).length} accord(s) actif(s)
+          </span>
+        </div>
+
+        {(world.planetaryDiplomacy?.treaties ?? []).length > 0 && (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {(world.planetaryDiplomacy?.treaties ?? []).map((t) => {
+              const rival = world.rivals.find((r) => r.id === t.partnerRivalId);
+              return (
+                <div
+                  key={t.id}
+                  className="exo-surface-sub rounded-xl border exo-accent-border p-2.5 text-xs"
+                >
+                  <div className="flex items-center justify-between font-mono text-[10.5px] font-bold">
+                    <span className="exo-accent-text">{formatTreatyKindLabel(t.kind)}</span>
+                    <span>{t.remainingCycles} tour(s)</span>
+                  </div>
+                  <div className="mt-0.5 font-semibold text-[var(--exo-text)]">
+                    Partenaire : {rival?.name ?? t.partnerRivalId}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {world.rivals[0] && (
+          <div className="flex flex-wrap items-center gap-2 border-t exo-accent-border pt-2.5">
+            <span className="font-mono text-[11px] exo-muted-text">
+              Négocier avec {world.rivals[0].name} (R-24) :
+            </span>
+            {(
+              [
+                ['MARITIME_TRADE', 'Route Maritime'],
+                ['NON_AGGRESSION', 'Non-Agression'],
+                ['SCIENCE_SHARE', 'Partage Science'],
+                ['PLANETARY_SUMMIT', 'Sommet Planétaire'],
+              ] as const
+            ).map(([kind, label]) => (
+              <button
+                key={kind}
+                type="button"
+                data-testid={`diplomacy-treaty-${kind.toLowerCase()}-btn`}
+                onClick={() => triggerTreatyDossier(world.rivals[0]!.id, kind)}
+                className="exo-accent-chip inline-flex min-h-[34px] items-center gap-1 rounded-lg px-2.5 font-mono text-[11px] font-bold"
+              >
+                <Handshake className="h-3 w-3 exo-accent-text" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <ExternalPolitiesPanel />

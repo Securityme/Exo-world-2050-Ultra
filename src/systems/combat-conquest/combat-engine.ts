@@ -67,16 +67,20 @@ export function resolveDeterministicCombat(
     defenderRemainingPower: defenderPower,
   });
 
-  // Phase 2: Orbital Bombardment
+  // Phase 2: Orbital Bombardment (scaled by era + equipped ship firepower)
+  const fleetFire = order.fleetFirepowerBonus ?? 0;
+  const fleetDef = order.fleetDefenseBonus ?? 0;
   const orbitalFactor = 0.06 + order.orbitalSupportLevel * 0.045;
-  const p2AtkDmg = Number((attackerPower * orbitalFactor * prng.nextRange(0.95, 1.1)).toFixed(2));
-  const p2DefDmg = Number((defenderPower * 0.1 * prng.nextRange(0.9, 1.05)).toFixed(2));
+  const fleetVolley = fleetFire * 0.42;
+  const shieldMitigation = Math.min(0.38, fleetDef * 0.0022);
+  const p2AtkDmg = Number(((attackerPower * orbitalFactor + fleetVolley) * prng.nextRange(0.95, 1.1)).toFixed(2));
+  const p2DefDmg = Number((defenderPower * 0.1 * (1 - shieldMitigation) * prng.nextRange(0.9, 1.05)).toFixed(2));
   defenderPower = Math.max(0, Number((defenderPower - p2AtkDmg).toFixed(2)));
   attackerPower = Math.max(0, Number((attackerPower - p2DefDmg).toFixed(2)));
 
   phases.push({
     phase: 'PHASE_2_ORBITAL_BOMBARDMENT',
-    summary: `Frappe orbitale Niv.${order.orbitalSupportLevel} (${p2AtkDmg.toFixed(1)} dégâts structurels).`,
+    summary: `Frappe orbitale Niv.${order.orbitalSupportLevel}${fleetFire > 0 ? ` (+${Math.round(fleetFire)} armement flotte)` : ''} : ${p2AtkDmg.toFixed(1)} dégâts structurels.`,
     attackerDamageDealt: p2AtkDmg,
     defenderDamageDealt: p2DefDmg,
     attackerRemainingPower: attackerPower,
@@ -85,7 +89,7 @@ export function resolveDeterministicCombat(
 
   // Phase 3: Combined Arms Rounds
   const p3AtkDmg = Number((attackerPower * 0.58 * prng.nextRange(0.92, 1.12)).toFixed(2));
-  const p3DefDmg = Number((defenderPower * 0.46 * prng.nextRange(0.9, 1.1)).toFixed(2));
+  const p3DefDmg = Number((defenderPower * 0.46 * (1 - shieldMitigation * 0.5) * prng.nextRange(0.9, 1.1)).toFixed(2));
   defenderPower = Math.max(0, Number((defenderPower - p3AtkDmg).toFixed(2)));
   attackerPower = Math.max(0, Number((attackerPower - p3DefDmg).toFixed(2)));
 

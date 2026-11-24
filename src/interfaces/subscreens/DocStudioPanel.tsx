@@ -9,12 +9,9 @@ import {
   Database,
   Gamepad2,
   GitBranch,
-  GitCommitHorizontal,
   Network,
-  Radio,
   Search,
   ShieldCheck,
-  Workflow,
 } from 'lucide-react';
 import type { DocCategoryCode, DocDomainScope } from '../../contracts/doc-governance.schema.ts';
 import { DOC_CATEGORIES_CATALOG } from '../../data/doc-governance.catalog.ts';
@@ -23,16 +20,12 @@ import { AgentPyramidPanel } from './AgentPyramidPanel.tsx';
 import { BetaP13HubPanel } from './BetaP13HubPanel.tsx';
 import { BlueprintAtlasView } from './BlueprintAtlasView.tsx';
 import { DocGovernancePanel } from './DocGovernancePanel.tsx';
-import { DocVcsPanel } from './DocVcsPanel.tsx';
 import { DriveSyncPanel } from './DriveSyncPanel.tsx';
 import { ExternalSyncPanel } from './ExternalSyncPanel.tsx';
 import { LlmLexiconPanel } from './LlmLexiconPanel.tsx';
-import { SwarmRelayPanel } from './SwarmRelayPanel.tsx';
-import { WorkflowComparisonPanel } from './WorkflowComparisonPanel.tsx';
 
 export type DocStudioTabId =
   | 'GOVERNANCE'
-  | 'DOC_VCS'
   | 'DRIVE_SYNC'
   | 'EXTERNAL_SYNC'
   | 'PROJECT_DOCS'
@@ -40,9 +33,7 @@ export type DocStudioTabId =
   | 'LLM_LEXICON'
   | 'ATLAS'
   | 'BETA_P13'
-  | 'WORKFLOWS'
-  | 'AGENTS_PYRAMID'
-  | 'SWARM_BRIDGE';
+  | 'AGENTS_PYRAMID';
 
 export type HubWingId = 'APP_CORE' | 'GAME_ASSETS' | 'WORKFLOWS_SWARM';
 
@@ -52,7 +43,6 @@ interface DocStudioPanelProps {
 
 const TAB_TO_WING: Readonly<Record<DocStudioTabId, HubWingId>> = {
   GOVERNANCE: 'APP_CORE',
-  DOC_VCS: 'APP_CORE',
   DRIVE_SYNC: 'APP_CORE',
   EXTERNAL_SYNC: 'APP_CORE',
   PROJECT_DOCS: 'GAME_ASSETS',
@@ -60,16 +50,14 @@ const TAB_TO_WING: Readonly<Record<DocStudioTabId, HubWingId>> = {
   LLM_LEXICON: 'GAME_ASSETS',
   ATLAS: 'GAME_ASSETS',
   BETA_P13: 'GAME_ASSETS',
-  WORKFLOWS: 'WORKFLOWS_SWARM',
   AGENTS_PYRAMID: 'WORKFLOWS_SWARM',
-  SWARM_BRIDGE: 'WORKFLOWS_SWARM',
 };
 
 const HUB_WINGS = [
   {
     id: 'APP_CORE' as const,
-    title: 'Pôle 1 · Application Core (Drive / Docs & VCS)',
-    subtitle: 'Architecture, Skills, RBAC, Drive Picker & contrôle de version documentaire séparé du code',
+    title: 'Pôle 1 · Application Core (Drive / Docs)',
+    subtitle: 'Architecture, Skills, RBAC, Drive Picker & synchronisation documentaire',
     defaultTab: 'GOVERNANCE' as const,
     icon: AppWindow,
   },
@@ -82,10 +70,10 @@ const HUB_WINGS = [
   },
   {
     id: 'WORKFLOWS_SWARM' as const,
-    title: 'Pôle 3 · Workflows, Essaim & Communication',
-    subtitle: 'Flux Drive/Doc vs Code, pyramide 15 agents & pont Preview ↔ AI Studio ↔ Antigravity',
-    defaultTab: 'WORKFLOWS' as const,
-    icon: Workflow,
+    title: 'Pôle 3 · Pyramide Multi-Agents',
+    subtitle: 'Organigramme hiérarchique en triangle à 3 niveaux et spécialisation des 15 sous-agents',
+    defaultTab: 'AGENTS_PYRAMID' as const,
+    icon: Network,
   },
 ] as const;
 
@@ -97,7 +85,6 @@ const TABS_BY_WING: Readonly<
 > = {
   APP_CORE: [
     { id: 'GOVERNANCE', label: 'Gouvernance, Rôles & Validation', icon: ShieldCheck },
-    { id: 'DOC_VCS', label: 'Git Docs (VCS Séparé)', icon: GitCommitHorizontal },
     { id: 'DRIVE_SYNC', label: 'Google Drive & Docs (Isolé)', icon: Cloud },
     { id: 'EXTERNAL_SYNC', label: 'GitHub & Notebook', icon: GitBranch },
   ],
@@ -109,18 +96,16 @@ const TABS_BY_WING: Readonly<
     { id: 'BETA_P13', label: 'Bêta P13', icon: ClipboardCheck },
   ],
   WORKFLOWS_SWARM: [
-    { id: 'WORKFLOWS', label: 'Workflows Drive/Doc vs Code', icon: Workflow },
     { id: 'AGENTS_PYRAMID', label: 'Organigramme Agents (Triangle)', icon: Network },
-    { id: 'SWARM_BRIDGE', label: 'Pont Preview ↔ Antigravity / Swarm', icon: Radio },
   ],
 };
 
 /**
- * [L7 — SEPARATED DOCUMENTATION HUB, DOC VCS & MULTI-SURFACE SWARM STUDIO]
+ * [L7 — SEPARATED DOCUMENTATION HUB & GOVERNANCE STUDIO]
  * Clearly isolates:
- * 1. Application Core Documentation (Drive / Google Docs + dedicated Doc VCS)
+ * 1. Application Core Documentation (Drive / Google Docs + RBAC)
  * 2. Game, Rules & 3D/Asset Documentation
- * 3. Explicit Dual Workflows & Preview ↔ AI Studio ↔ Antigravity Swarm Bridge
+ * 3. 3-Level Multi-Agent Pyramid
  */
 export function DocStudioPanel({ initialTab = 'GOVERNANCE' }: DocStudioPanelProps) {
   const [tab, setTab] = useState<DocStudioTabId>(initialTab);
@@ -197,7 +182,11 @@ export function DocStudioPanel({ initialTab = 'GOVERNANCE' }: DocStudioPanelProp
       </div>
 
       {/* Sub-navigation within the active Hub Wing */}
-      <div className="flex flex-wrap gap-2 border-b exo-accent-border pb-3">
+      <nav
+        role="tablist"
+        aria-label="Sous-onglets du pôle documentaire"
+        className="exo-window-tabs-rail flex shrink-0 flex-nowrap gap-1.5 overflow-x-auto sm:flex-wrap sm:overflow-visible"
+      >
         {TABS_BY_WING[activeWing].map((item) => {
           const Icon = item.icon;
           const active = tab === item.id;
@@ -205,21 +194,22 @@ export function DocStudioPanel({ initialTab = 'GOVERNANCE' }: DocStudioPanelProp
             <button
               key={item.id}
               type="button"
+              role="tab"
+              aria-selected={active}
               data-testid={`doc-studio-tab-${item.id.toLowerCase()}`}
               onClick={() => setTab(item.id)}
-              className={`inline-flex min-h-[44px] items-center gap-2 px-3 py-1.5 text-xs font-semibold transition whitespace-nowrap ${
-                active ? 'exo-accent-chip-active' : 'exo-accent-chip'
+              className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 px-3.5 text-[13px] font-bold transition whitespace-nowrap ${
+                active ? 'exo-window-tab-active' : 'exo-window-tab'
               }`}
             >
-              <Icon className="h-3.5 w-3.5 exo-accent-text" />
+              <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-current' : 'exo-accent-text'}`} />
               <span>{item.label}</span>
             </button>
           );
         })}
-      </div>
+      </nav>
 
       {tab === 'GOVERNANCE' && <DocGovernancePanel />}
-      {tab === 'DOC_VCS' && <DocVcsPanel />}
       {tab === 'DRIVE_SYNC' && <DriveSyncPanel />}
       {tab === 'EXTERNAL_SYNC' && <ExternalSyncPanel />}
 
@@ -426,16 +416,7 @@ export function DocStudioPanel({ initialTab = 'GOVERNANCE' }: DocStudioPanelProp
       {tab === 'LLM_LEXICON' && <LlmLexiconPanel />}
       {tab === 'ATLAS' && <BlueprintAtlasView />}
       {tab === 'BETA_P13' && <BetaP13HubPanel />}
-      {tab === 'WORKFLOWS' && (
-        <WorkflowComparisonPanel
-          onOpenDocVcs={() => setTab('DOC_VCS')}
-          onOpenDriveSync={() => setTab('DRIVE_SYNC')}
-          onOpenGovernance={() => setTab('GOVERNANCE')}
-          onOpenSwarmBridge={() => setTab('SWARM_BRIDGE')}
-        />
-      )}
       {tab === 'AGENTS_PYRAMID' && <AgentPyramidPanel />}
-      {tab === 'SWARM_BRIDGE' && <SwarmRelayPanel />}
     </div>
   );
 }

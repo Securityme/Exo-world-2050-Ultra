@@ -50,6 +50,6 @@
 - **M11 Protocole Genèse 2050 Acte 0, Promesses & Co-pilote IA** [PASS] — 3 Doctrines · 5 Personnalités IA · Bypass (Onboarding narratif, suivi de promesses (PM) et déblocage HUD progressif.)
 - **M12 Radio FIP 6 Flux + Synthé Ambiant + SFX WebAudio** [PASS] — Auto-ON 1er geste · Fallback <500ms (Direct, Jazz, Électro, Groove, Monde, Rock + retours sonores <25ms.)
 - **M13-A Dualité SADT A1..A5 & 15 Sous-boîtes ICOM** [PASS] — 5 D1 · 15 D2 · 0 err (Complétude verticale et horizontale des 5 datagrammes D1..D5.)
-- **M13-D Cartographie 1:1 Modules SRC & Quotas R-14** [PASS] — 250 modules · 0 non-mappés (Chaque fichier src/ est indexé avec sa couche L0–L8, boîte SADT et SemVer.)
+- **M13-D Cartographie 1:1 Modules SRC & Quotas R-14** [PASS] — 279 modules · 0 non-mappés (Chaque fichier src/ est indexé avec sa couche L0–L8, boîte SADT et SemVer.)
 - **M14 Persistance, Auto-Migration v3.1→v5.1 & Export** [PASS] — Backup exow_backup · Zod D1..D5 (Purge automatique des champs hérités, P13 Bêta et vérification d’intégrité.)
 - **M15 Audit Bloquant exo:audit, Fuzz 60t & Tri-Format DIR-01** [PASS] — ISO err: 0 · Parité U⇄M⇄S (Zéro Z0, pureté L2/L3, R-14, parité Tri-Format et export automatique.)

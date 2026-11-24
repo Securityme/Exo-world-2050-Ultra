@@ -877,6 +877,14 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 300
     },
     {
+      "path": "src/app/api/docs-vcs.route.ts",
+      "layer": "L5",
+      "sadtBox": "A4.3",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
       "path": "src/app/api/health.route.ts",
       "layer": "L5",
       "sadtBox": "A4.3",
@@ -1077,6 +1085,102 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 200
     },
     {
+      "path": "src/components/events/ActionGatewayDrawer.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/events/DossierCard.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/events/EventsActionCommandCenter.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/events/OperationsQueuePanel.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/genesis/GenesisBiomeStep.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/genesis/GenesisColonyLaunchStep.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/genesis/GenesisGovernanceStep.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/genesis/PlanetLivePreview.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/genesis/SuggestionBubbleField.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/governance/DocRevisionTimelineDiff.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/governance/DocsVcsLibraryPanel.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/governance/ModularSkillsRegistryPanel.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
       "path": "src/components/hud/HeaderDevDrawer.tsx",
       "layer": "L7",
       "sadtBox": "A5.1",
@@ -1117,6 +1221,14 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 200
     },
     {
+      "path": "src/components/world/BioHealthEcclesiaCards.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
       "path": "src/components/world/CitizensSocietyPanel.tsx",
       "layer": "L7",
       "sadtBox": "A5.1",
@@ -1126,6 +1238,14 @@ export const M13_MANIFEST: M13Manifest = {
     },
     {
       "path": "src/components/world/ColonistDetailModal.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/world/ColonistPortraitAvatar.tsx",
       "layer": "L7",
       "sadtBox": "A5.1",
       "semver": "5.1.0-alpha.1",
@@ -1158,6 +1278,14 @@ export const M13_MANIFEST: M13Manifest = {
     },
     {
       "path": "src/components/world/ExternalPolitiesPanel.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/components/world/JournalArchivesSuite.tsx",
       "layer": "L7",
       "sadtBox": "A5.1",
       "semver": "5.1.0-alpha.1",
@@ -1469,6 +1597,14 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 300
     },
     {
+      "path": "src/contracts/skills-vcs.schema.ts",
+      "layer": "L0",
+      "sadtBox": "A1.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
       "path": "src/contracts/trigger-bus.schema.ts",
       "layer": "L0",
       "sadtBox": "A1.1",
@@ -1685,6 +1821,14 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 300
     },
     {
+      "path": "src/data/campaign-genesis.catalog.ts",
+      "layer": "L1",
+      "sadtBox": "A1.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
       "path": "src/data/doc-governance.catalog.ts",
       "layer": "L1",
       "sadtBox": "A1.1",
@@ -1742,6 +1886,22 @@ export const M13_MANIFEST: M13Manifest = {
     },
     {
       "path": "src/data/scientific-discoveries.catalog.ts",
+      "layer": "L1",
+      "sadtBox": "A1.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
+      "path": "src/data/ship-equipment.catalog.ts",
+      "layer": "L1",
+      "sadtBox": "A1.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
+      "path": "src/data/skills-vcs.catalog.ts",
       "layer": "L1",
       "sadtBox": "A1.1",
       "semver": "5.1.0-alpha.1",
@@ -1824,6 +1984,14 @@ export const M13_MANIFEST: M13Manifest = {
       "path": "src/doc-sync/sot-manifest.ts",
       "layer": "L5",
       "sadtBox": "A4.3",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
+      "path": "src/engine3d/city-life.ts",
+      "layer": "L4",
+      "sadtBox": "A5.3",
       "semver": "5.1.0-alpha.1",
       "status": "VERIFIED",
       "maxLinesBudget": 300
@@ -2006,6 +2174,14 @@ export const M13_MANIFEST: M13Manifest = {
     },
     {
       "path": "src/interfaces/BriefingLobbyScreen.tsx",
+      "layer": "L7",
+      "sadtBox": "A5.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 200
+    },
+    {
+      "path": "src/interfaces/DocsSkillsHubScreen.tsx",
       "layer": "L7",
       "sadtBox": "A5.1",
       "semver": "5.1.0-alpha.1",
@@ -2477,6 +2653,14 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 300
     },
     {
+      "path": "src/services/governance/docs-vcs.service.ts",
+      "layer": "L5",
+      "sadtBox": "A4.3",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
       "path": "src/services/persistence/save-migration.service.ts",
       "layer": "L5",
       "sadtBox": "A4.3",
@@ -2536,6 +2720,14 @@ export const M13_MANIFEST: M13Manifest = {
       "path": "src/stores/user-context.store.ts",
       "layer": "L6",
       "sadtBox": "A4.2",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
+      "path": "src/systems/biosphere-cabinet/bioclimate-health.ts",
+      "layer": "L3",
+      "sadtBox": "A3.1",
       "semver": "5.1.0-alpha.1",
       "status": "VERIFIED",
       "maxLinesBudget": 300
@@ -2629,6 +2821,14 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 300
     },
     {
+      "path": "src/systems/dossiers-pa/event-action-taxonomy.ts",
+      "layer": "L3",
+      "sadtBox": "A3.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
       "path": "src/systems/dossiers-pa/genese-promises.ts",
       "layer": "L3",
       "sadtBox": "A3.1",
@@ -2693,7 +2893,23 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 300
     },
     {
+      "path": "src/systems/fleet/ship-loadout.engine.ts",
+      "layer": "L3",
+      "sadtBox": "A3.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
       "path": "src/systems/geopolitics/humankind-progression.ts",
+      "layer": "L3",
+      "sadtBox": "A3.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
+      "path": "src/systems/geopolitics/planetary-diplomacy.ts",
       "layer": "L3",
       "sadtBox": "A3.1",
       "semver": "5.1.0-alpha.1",
@@ -2717,7 +2933,23 @@ export const M13_MANIFEST: M13Manifest = {
       "maxLinesBudget": 300
     },
     {
+      "path": "src/systems/governance/skills-vcs.engine.ts",
+      "layer": "L3",
+      "sadtBox": "A3.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
       "path": "src/systems/honors/honors-evaluator.ts",
+      "layer": "L3",
+      "sadtBox": "A3.1",
+      "semver": "5.1.0-alpha.1",
+      "status": "VERIFIED",
+      "maxLinesBudget": 300
+    },
+    {
+      "path": "src/systems/journal/archives-analytics.ts",
       "layer": "L3",
       "sadtBox": "A3.1",
       "semver": "5.1.0-alpha.1",

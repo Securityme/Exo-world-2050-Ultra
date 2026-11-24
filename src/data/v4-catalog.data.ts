@@ -270,9 +270,69 @@ export const HK_STAR_DOMAINS: readonly { id: HkStarDomain; label: string; metric
 ]);
 
 export const INITIAL_FLEET_SHIPS: readonly FleetShip[] = Object.freeze([
-  { id: 'ship-cargo-1', name: 'Navette Hélios-01', shipClass: 'SHUTTLE_CARGO', level: 1, integrity: 96, assignedRole: 'RESOURCE_HAUL' },
-  { id: 'ship-probe-1', name: 'Sonde Exosphère-A', shipClass: 'SCIENCE_PROBE', level: 1, integrity: 94, assignedRole: 'RECON' },
-  { id: 'ship-corv-1', name: 'Corvette Égide-I', shipClass: 'CORVETTE_ORBITAL', level: 1, integrity: 98, assignedRole: 'ORBIT_PATROL' },
+  {
+    id: 'ship-cargo-1',
+    name: 'Navette Hélios-01',
+    shipClass: 'SHUTTLE_CARGO',
+    level: 1,
+    integrity: 96,
+    assignedRole: 'RESOURCE_HAUL',
+    maxSlots: 3,
+    loadout: [
+      {
+        id: 'mod-util-cargo-bay',
+        slot: 'UTILITY',
+        name: 'Baie Logistique Modulaire',
+        tier: 1,
+        firepower: 0,
+        defense: 0,
+        speed: 0,
+        utilityYield: 14,
+      },
+    ],
+  },
+  {
+    id: 'ship-probe-1',
+    name: 'Sonde Exosphère-A',
+    shipClass: 'SCIENCE_PROBE',
+    level: 1,
+    integrity: 94,
+    assignedRole: 'RECON',
+    maxSlots: 3,
+    loadout: [
+      {
+        id: 'mod-util-quantum-relay',
+        slot: 'UTILITY',
+        name: 'Relais Calcul Orbital',
+        tier: 2,
+        firepower: 4,
+        defense: 0,
+        speed: 0,
+        utilityYield: 22,
+      },
+    ],
+  },
+  {
+    id: 'ship-corv-1',
+    name: 'Corvette Égide-I',
+    shipClass: 'CORVETTE_ORBITAL',
+    level: 1,
+    integrity: 98,
+    assignedRole: 'ORBIT_PATROL',
+    maxSlots: 4,
+    loadout: [
+      {
+        id: 'mod-wpn-railgun',
+        slot: 'WEAPON',
+        name: 'Canon Railgun Cinétique',
+        tier: 1,
+        firepower: 18,
+        defense: 0,
+        speed: 0,
+        utilityYield: 0,
+      },
+    ],
+  },
 ]);
 
 export function resolveSuperpowerV4(superpowerId: string): SuperpowerV4Spec {

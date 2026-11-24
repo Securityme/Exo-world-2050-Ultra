@@ -1,4 +1,5 @@
 import type { WorldState } from '../../contracts/world-state.schema.ts';
+import { computeFleetTotals } from '../fleet/ship-loadout.engine.ts';
 
 /**
  * [L3] EXW.L3.THEATERS_AND_POLITIES | v5.0.0 | SADT A3.3/A4.1
@@ -63,6 +64,7 @@ export interface CivilPressureStatus {
 
 export function computeFourTheaterForces(world: WorldState): readonly TheaterForceSummary[] {
   const ships = world.fleetShips ?? [];
+  const fleetTotals = computeFleetTotals(ships);
   const spaceUnits = ships.length + world.militaryRoster.filter((u) => u.unitClass === 'ORBITAL_CORVETTE').reduce((a, u) => a + u.count, 0);
   const airUnits = world.drones.attack + world.drones.recon + world.militaryRoster.filter((u) => u.unitClass === 'DRONE_SWARM').reduce((a, u) => a + u.count, 0);
   const landUnits = world.militaryRoster
@@ -72,16 +74,20 @@ export function computeFourTheaterForces(world: WorldState): readonly TheaterFor
 
   const fuelOk = world.resources.orbitalFuel >= 15;
   const energyOk = world.resources.energy >= 20;
+  const flagship = ships[0];
+  const flagshipLabel = flagship
+    ? `${flagship.name} (${fleetTotals.totalModulesFitted} mod. flotte)`
+    : 'Corvette Aurore-I';
 
   return [
     {
       id: 'SPACE',
       label: 'Spatial',
       unitCount: spaceUnits,
-      powerScore: spaceUnits * 28 + world.datacenterTier * 18,
-      readinessPct: fuelOk ? 92 : 58,
+      powerScore: spaceUnits * 16 + fleetTotals.totalCombatRating + world.datacenterTier * 18,
+      readinessPct: fuelOk ? Math.min(100, 86 + Math.min(14, fleetTotals.totalModulesFitted * 2)) : 58,
       supplyStatus: fuelOk ? 'OPTIMAL' : 'TENDU',
-      flagshipLabel: ships[0]?.name ?? 'Corvette Aurore-I',
+      flagshipLabel,
     },
     {
       id: 'AIR',

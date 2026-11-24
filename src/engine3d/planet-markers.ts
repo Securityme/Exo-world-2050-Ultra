@@ -202,6 +202,55 @@ export function applySectorMarkerStates(
         m.coreMat.emissiveIntensity = 0.16;
         m.coreMesh.scale.setScalar(0.76);
       }
+    } else if (overlayMode === 'TACTICAL') {
+      if (isRival) {
+        m.ringMat.color.setHex(0xf43f5e);
+        m.ringMat.opacity = 0.94;
+        m.coreMat.color.setHex(0xfecdd3);
+        m.coreMat.emissive.setHex(0xe11d48);
+        m.coreMat.emissiveIntensity = 1.45;
+        m.coreMesh.scale.setScalar(1.3);
+        m.bracketMat.color.setHex(0xf43f5e);
+        m.bracketMat.opacity = 0.65;
+        m.bracketMesh.visible = true;
+      } else if (isPlayer) {
+        m.ringMat.color.setHex(0x38bdf8);
+        m.ringMat.opacity = 0.9;
+        m.coreMat.color.setHex(0xe0f2fe);
+        m.coreMat.emissive.setHex(0x0284c7);
+        m.coreMat.emissiveIntensity = 1.25;
+        m.coreMesh.scale.setScalar(1.22);
+      } else {
+        m.ringMat.color.setHex(0xf59e0b);
+        m.ringMat.opacity = 0.36;
+        m.coreMat.color.setHex(0xfde68a);
+        m.coreMat.emissive.setHex(0x92400e);
+        m.coreMat.emissiveIntensity = 0.25;
+        m.coreMesh.scale.setScalar(0.82);
+      }
+    } else if (overlayMode === 'BIOSPHERE') {
+      if (isPlayer) {
+        m.ringMat.color.setHex(0x10b981);
+        m.ringMat.opacity = 0.92;
+        m.coreMat.color.setHex(0xd1fae5);
+        m.coreMat.emissive.setHex(0x059669);
+        m.coreMat.emissiveIntensity = 1.35;
+        m.coreMesh.scale.setScalar(1.26);
+      } else if (isRival) {
+        m.ringMat.color.setHex(0xa855f7);
+        m.ringMat.opacity = 0.68;
+        m.coreMat.color.setHex(0xf3e8ff);
+        m.coreMat.emissive.setHex(0x7e22ce);
+        m.coreMat.emissiveIntensity = 0.72;
+        m.coreMesh.scale.setScalar(1.0);
+      } else {
+        m.ringMat.color.setHex(0x2dd4bf);
+        m.ringMat.opacity = 0.42;
+        m.coreMat.color.setHex(0x99f6e4);
+        m.coreMat.emissive.setHex(0x0f766e);
+        m.coreMat.emissiveIntensity = 0.38;
+        m.coreMesh.scale.setScalar(0.9);
+      }
     } else if (isPlayer) {
       m.ringMat.color.setHex(0x34d399);
       m.ringMat.opacity = 0.85;

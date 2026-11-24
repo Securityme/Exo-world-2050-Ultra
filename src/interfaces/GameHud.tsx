@@ -54,6 +54,7 @@ import {
   inspectedDossierIdsAtom,
   latestTurnEvents4TAtom,
   questUiMilestonesAtom,
+  returnEventContextAtom,
   selectedTileAtom,
   tacticalHeatmapOpenAtom,
   toastNoticeAtom,
@@ -97,10 +98,54 @@ const RESOURCE_ICONS: Record<ResourceMetricItem['id'], typeof Coins> = {
   electronics: Cpu,
 };
 
-const OVERLAY_OPTIONS: readonly { id: ViewportOverlayMode; label: string; short: string }[] = [
-  { id: 'STANDARD', label: 'Vue planétaire & urbaine naturelle', short: 'Réel' },
-  { id: 'MAINTENANCE', label: "Carte d'usure, intégrité & maintenance 3D", short: 'Usure' },
-  { id: 'LOGISTICS', label: 'Carte des réseaux logistiques & énergie 3D', short: 'Flux' },
+const OVERLAY_OPTIONS: readonly {
+  id: ViewportOverlayMode;
+  label: string;
+  short: string;
+  formula: string;
+  body: string;
+  accent: 'cyan' | 'amber' | 'emerald' | 'coral';
+}[] = [
+  {
+    id: 'STANDARD',
+    label: 'Vue planétaire & urbaine naturelle',
+    short: 'Réel',
+    formula: 'Rendu PBR naturel · Océans & Quartiers côtiers',
+    body: 'Affiche les continents, océans spéculaires, météo dynamique et quartiers ouverts sans surcouche technique.',
+    accent: 'cyan',
+  },
+  {
+    id: 'MAINTENANCE',
+    label: "Carte d'usure, intégrité & maintenance 3D",
+    short: 'Usure',
+    formula: 'Vert ≥ 85 % · Ambre 60–84 % · Rouge < 60 %',
+    body: 'Met en évidence l’intégrité structurelle de chaque quartier et signale les zones nécessitant réparation ou drones.',
+    accent: 'amber',
+  },
+  {
+    id: 'LOGISTICS',
+    label: 'Carte des réseaux logistiques & énergie 3D',
+    short: 'Flux',
+    formula: 'Cyan Énergie/Flux · Or Traités · Émeraude Convois',
+    body: 'Révèle les flux inter-quartiers, liaisons maritimes côtières et lignes logistiques orbitales en 3D.',
+    accent: 'emerald',
+  },
+  {
+    id: 'TACTICAL',
+    label: 'Surcouche Tactique, Rivaux & Embargos 3D',
+    short: 'Tactique 3D',
+    formula: 'Bleu/Cyan Contrôlé · Rouge/Ambre Rivaux & Embargos',
+    body: 'Projette les frontières territoriales, secteurs contestés, garnisons et arcs diplomatiques ou d’embargo.',
+    accent: 'coral',
+  },
+  {
+    id: 'BIOSPHERE',
+    label: 'Carte Bioclimatique 5 Divisions & Océans',
+    short: 'Biomes',
+    formula: 'BioHealth 0–100 % · Hydro · Flore · Atmosphère',
+    body: 'Visualise la vitalité écologique (BioHealth), l’humidité océanique et la progression atmosphérique P1→P4.',
+    accent: 'emerald',
+  },
 ];
 
 export function GameHud() {
@@ -129,6 +174,7 @@ export function GameHud() {
   const [tutorialOpen, setTutorialOpen] = useAtom(tutorialOpenAtom);
   const [investigationDossierId, setInvestigationDossierId] = useAtom(activeInvestigationDossierIdAtom);
   const [inspectedDossierIds, setInspectedDossierIds] = useAtom(inspectedDossierIdsAtom);
+  const [returnContext, setReturnContext] = useAtom(returnEventContextAtom);
   const setTurnSummaryOpen = useSetAtom(turnSummaryModalOpenAtom);
   const setLatestTurnEvents4T = useSetAtom(latestTurnEvents4TAtom);
   const setTurnEventsLoading = useSetAtom(turnEventsLoadingAtom);
@@ -565,6 +611,48 @@ export function GameHud() {
 
       {/* Bottom Stack: Above-Footer Tactical Resource Deck + STRICT 3-Tab Footer ONLY */}
       <div className="pointer-events-auto flex flex-col gap-1.5 sm:gap-2">
+        {/* Quick Return to Event / Dossier after 3D Entity Focus */}
+        {returnContext && (
+          <div
+            data-testid="return-to-event-banner"
+            className="exo-bento-card flex flex-wrap items-center justify-between gap-2 rounded-xl border-cyan-400/75 bg-cyan-950/85 px-3 py-2 text-xs text-cyan-50 shadow-md"
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <Compass className="h-4 w-4 shrink-0 text-cyan-300" />
+              <span className="truncate font-medium">
+                Focus 3D sur <strong className="text-cyan-200">{returnContext.entityLabel}</strong>
+                {' · '}
+                <span className="opacity-80">{returnContext.title}</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                data-testid="return-to-event-btn"
+                onClick={() => {
+                  const ctx = returnContext;
+                  setReturnContext(null);
+                  setSubscreen(ctx.returnSubscreen === 'NONE' ? 'EVENTS_HUB' : ctx.returnSubscreen);
+                  if (ctx.dossierId) {
+                    setActiveDossierId(ctx.dossierId);
+                  }
+                }}
+                className="min-h-[36px] rounded-lg bg-cyan-500 px-3 font-mono text-[11px] font-bold text-slate-950 shadow-xs hover:bg-cyan-400 whitespace-nowrap"
+              >
+                ← Retour à l&apos;événement
+              </button>
+              <button
+                type="button"
+                onClick={() => setReturnContext(null)}
+                aria-label="Fermer la bannière de retour"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-900/50 text-cyan-100 hover:bg-cyan-800/70"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Active 3D Inspection Banner */}
         {investigationDossierId && (
           <div className="exo-bento-card flex flex-wrap items-center justify-between gap-2 rounded-xl border-amber-400/80 bg-amber-50/95 px-3 py-2 text-xs shadow-md dark:border-amber-500/60 dark:bg-amber-950/85">
@@ -662,47 +750,65 @@ export function GameHud() {
               <div
                 role="group"
                 aria-label="Filtre visuel 3D"
-                className="exo-surface-sub inline-flex items-center rounded-lg p-0.5"
+                className="exo-surface-sub inline-flex flex-wrap items-center rounded-lg p-0.5"
               >
                 {OVERLAY_OPTIONS.map((opt) => {
                   const active = overlayMode === opt.id;
                   return (
-                    <button
+                    <ExoTooltip
                       key={opt.id}
-                      type="button"
-                      data-testid={`overlay-btn-${opt.id.toLowerCase()}`}
-                      onClick={() => {
-                        setOverlayMode(opt.id);
-                        setQuestUi((prev) => (prev.filterSwitched ? prev : { ...prev, filterSwitched: true }));
-                      }}
                       title={opt.label}
-                      className={`min-h-[30px] rounded-md px-2 font-mono text-[10.5px] font-semibold transition whitespace-nowrap ${
-                        active
-                          ? opt.id === 'MAINTENANCE'
-                            ? 'bg-amber-500 text-white shadow-xs'
-                            : opt.id === 'LOGISTICS'
-                              ? 'bg-emerald-600 text-white shadow-xs'
-                              : 'exo-accent-btn'
-                          : 'exo-muted-text hover:text-[var(--exo-accent)]'
-                      }`}
+                      formula={opt.formula}
+                      body={opt.body}
+                      accent={opt.accent}
+                      position="top"
                     >
-                      {opt.short}
-                    </button>
+                      <button
+                        type="button"
+                        data-testid={`overlay-btn-${opt.id.toLowerCase()}`}
+                        onClick={() => {
+                          setOverlayMode(opt.id);
+                          setQuestUi((prev) => (prev.filterSwitched ? prev : { ...prev, filterSwitched: true }));
+                        }}
+                        aria-label={opt.label}
+                        className={`min-h-[30px] rounded-md px-2 font-mono text-[10.5px] font-semibold transition whitespace-nowrap ${
+                          active
+                            ? opt.id === 'MAINTENANCE'
+                              ? 'bg-amber-500 text-white shadow-xs'
+                              : opt.id === 'LOGISTICS' || opt.id === 'BIOSPHERE'
+                                ? 'bg-emerald-600 text-white shadow-xs'
+                                : opt.id === 'TACTICAL'
+                                  ? 'bg-rose-600 text-white shadow-xs'
+                                  : 'exo-accent-btn'
+                            : 'exo-muted-text hover:text-[var(--exo-accent)]'
+                        }`}
+                      >
+                        {opt.short}
+                      </button>
+                    </ExoTooltip>
                   );
                 })}
-                <button
-                  type="button"
-                  data-testid="toggle-tactical-heatmap-btn"
-                  onClick={() => setTacticalHeatmapOpen((v) => !v)}
-                  title="Carte d'intensité tactique 3D L1–L5 × Zones Atmosphériques (T)"
-                  className={`min-h-[30px] rounded-md px-2 font-mono text-[10.5px] font-semibold transition whitespace-nowrap ${
-                    tacticalHeatmapOpen
-                      ? 'exo-accent-btn'
-                      : 'exo-accent-text hover:opacity-80'
-                  }`}
+                <ExoTooltip
+                  title="Matrice Tactique L1–L5 × Zones Atmosphériques"
+                  formula="5 Niveaux Unités × 5 Divisions · Touche T"
+                  body="Ouvre la grille matricielle interactive des forces déployées, défenses orbitales et seuils atmosphériques."
+                  accent="amber"
+                  position="top"
                 >
-                  Tactique
-                </button>
+                  <button
+                    type="button"
+                    data-testid="toggle-tactical-heatmap-btn"
+                    onClick={() => setTacticalHeatmapOpen((v) => !v)}
+                    aria-label="Matrice Tactique L1–L5"
+                    className={`min-h-[30px] rounded-md px-2 font-mono text-[10.5px] font-semibold transition whitespace-nowrap ${
+                      tacticalHeatmapOpen
+                        ? 'exo-accent-btn'
+                        : 'exo-accent-text hover:opacity-80'
+                    }`}
+                  >
+                    Matrice
+                  </button>
+                </ExoTooltip>
               </div>
 
               {isMobile && (

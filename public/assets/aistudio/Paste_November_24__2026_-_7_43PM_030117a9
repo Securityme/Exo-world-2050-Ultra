@@ -1,0 +1,323 @@
+MASTER BLUEPRINT — EXO WORLD : 2050 (DOC-EXW-ARCH-001 · v2.12.0-MAITRE)
+====================================================================================================
+CARTOUCHE ISO 7200 — DOSSIER TECHNIQUE MACHINE LOGICIEL (DTM-SW) · MAD + GDD + CdCF + DAT + MBE
+PROJET        : EXO WORLD : 2050 | ID : DOC-EXW-ARCH-001 (EXOW-ROOT) | UUID : EXW-UUID::ROOT
+SEMVER MAÎTRE : v5.1.0-alpha.1 (Cible v5.2.0 FS4X) | DOC SSoT : v2.12.0-MAITRE | TPL : v3.0.0
+TRI-LOCK      : [D:1 | C:1 | S:0] | TRL : 6 (ISO 16290) | GEMMA : F2 | ANNEAU : RING 3 (R-25)
+APPROBATEUR   : Baptiste Lecoustre (AP-4 Souverain Unique) | ORCHESTRATEUR : /teamworker (Laniakea)
+----------------------------------------------------------------------------------------------------
+COMMUTATEUR D'AFFICHAGE (2 MODES OFFICIELS + FMT-MIRROR [L1 HUMAIN | L2 MÉSO | L3 IA-DENSE]) :
+  [x] MODE 1 — NORMAL_ETENDU          (Densité mixte D-PROF par unité · Format V1+V2 LTS)
+  [ ] MODE 2 — ULTRA_DENSE_MATRICIEL  (Compression intégrale < 20 000 tokens · Tables & Miroirs L3)
+----------------------------------------------------------------------------------------------------
+SUIVI INTERNE : 56 Features (F-01..F-56) · 19 Arbitrages (AR-01..19) · 12 Options · 69 Règles
+AUDIT GATE    : [OBSERVÉ 16/17 NO-GO (M13-D : 7 modules P13)] → [CIBLE 17/17 PASS GO]
+BUDGET & SÛR. : 0 USD FREE TIER STRICT (R-68) · ZERO ASTRALIS · ZERO HTML · ZERO LATEX · R-50 STRICT
+====================================================================================================
+
+0. METADATA PRINCIPAL, GOUVERNANCE HOLONIQUE & DOUBLE LIGNAGE (EXOW-ROOT)
+0.A Métadonnées Racine — Sans Matrices (TPL-EXW-BP-BPP v3.0.0 · EXW-FMM v1.0)
+ * Repérage IEC 81346 & Inode : =EXW-GAME-4X (Fonction) · -DOC-EXW-ARCH-001 (Produit) · +DRIVE-SSOT/01_MASTER_BLUEPRINT (Localisation) · Inode K0://EXOW-ROOT.
+ * 4 Frameworks Séparés :
+   * Framework Documentaire : EXW-FMM v1.0 + TPL-EXW-BP-BPP v3.0.0 + FMT-MIRROR ([L1], [L2], [L3]) + FMT-EXW-001 (ISO 2145 plafond N6, NF EN ISO 7573, NF EN 16271, ISO 7200, ISO/IEC/IEEE 42010, 29148, 25010, 31320-1, IEC 60848, IEC 60812, ADEPA-GEMMA).
+   * Framework Environnement & Exécution 0 USD : 6 surfaces synchronisées (Google Drive SSoT, Google AI Studio Build, GitHub Exo-world-2050-Ultra & LTS, Antigravity IDE, Gemini Web 5 Gems, NotebookLM) · Zéro délégation Claude · Zéro délégation structurée Vibe (Vibe intervient uniquement hors-bus au cas par cas pour la fluidité documentaire en français).
+   * Framework Projet & Gouvernance : Teamworker Récursif (N0→N6) + Laniakea Triple Couronne (MB1:ARGON, MB2:HYDRO, MB3:NEON, MB4:FLASH, 10 experts, 5 filaments FIL://) + Délégation par Subsidiarité (AP-0 à AP-4) + Quorum 3 Vetos (G-COUNCIL) + Dual-Ledger Magentic-One.
+   * Framework Code Source (SRC) : React 19 + Vite 8 / Next.js 15 + TypeScript strict (0 any) + Zod (L0) + Three.js Open-Sky (L4) ↔ Unity 6 URP + Web Worker (< 250 Mo) + Firebase Auth/Firestore + PostgreSQL 16 pgvector + Cascade BFF 0 USD (server.ts, HTTP 403 modèle payant).
+ * Hiérarchie de Vérité Souveraine (R-09) : 1. Contrats Zod (L0) → 2. Formules & Constantes gelées (L1) → 3. Actigrammes SADT & Noyaux purs (L2/L3) → 4. App Shell & 3D (L4..L7) → 5. Prose Drive.
+ * Double Lignage (LINEAGE_META) :
+   * Lignage Format (Gen 1 → Gen 5) : Prose GDD → FMT-EXW-001 / ISO 2145 → Grammaire fractale EXOW-ROOT M0..M15 (v4.0.0-rc.1) → Tri-Zoom FMT-M/S/U → EXW-FMM + GUS-3 + 4 Temps + 2 Modes / FMT-MIRROR.
+   * Lignage Versions Projet : HOLON-32 / OSVI (mécanismes FSM-Primacy, GEMMA/GCSa, Ring 1..3) → Isolation absolue hors Astralis → v0.1.0 Vague 0 → v1.8.0-lts → v2.10..2.11-MAITRE → v4.0.0-rc.1 (M0..M15) → v5.0.0 (AI Studio actif) → v5.1.0-alpha.1 (17/17 PASS, D1..D5, 0 USD) → v5.2.0 (FS4X-Kernel + F-53..F-56).
+ * Lexique Compact (LEX / LEX++) : WS=WorldState · CV=LivingCatalog · G0=Genèse2050 · PM=Promises · HK=Humankind (6 Ères, 30 Techs, ≥ 7 étoiles) · FP=Colons RPG · PA=PA Général + 4 Sous-PA (150 % cap, 0-PA garanti) · Z0=Ban mécanique thermique héritée · R-50=Filtre lexical strict · Φ01..Φ12=Pipeline atomique fin de tour · MIG=Migration idempotente + backup t−1 · AUD=npm run exo:audit.
+meta_node:
+  fmm_standard: "EXW-FMM@1.0"
+  matrix_suite_alias: "MX16-ICOM"
+  traceability_alias: "RTM-XSC"
+  dir_triad_alias: "GUS-3"
+  id: "EXOW-ROOT"
+  uuid: "EXW-UUID::ROOT"
+  inode: "K0://EXOW-ROOT"
+  topology: { v_depth: 0, v_max: 6, h_span: 4, h_axes: ["H1_NORM","H2_FUNC","H3_TECH_SRC","H4_TAMPON"] }
+  semver_9_axes:
+    proj_semver: "5.1.0-alpha.1"
+    doc_semver: "2.12.0-MAITRE"
+    fmt_semver: "FMT-V1.3+V2.1"
+    tpl_semver: "TPL-3.0.0"
+    meta_semver: "META-2.2.0"
+    norm_semver: "NORM-1.2.0"
+    mx_semver: "MX16-2.0.0"
+    tw_semver: "TW-1.0.0"
+    root_compat: "^5.1.0"
+  tri_lock: { doc: 1, contract: 1, sql: 0 }
+  propagation: "CASCADE"
+  gemma: "F2_PREPARATION"
+  trl: 6
+  attention_tags: ["#ATT-M13-ORPHAN","#ATT-MIGR-D1D5","#ATT-WEBKIT-250M","#ATT-0USD-R68","#ATT-LOCK-R25"]
+
+0.B Matrices de Gouvernance Racine (EXW-HOLON-24 & Cascade SemVer M0-EVOL)
+Matrice EXW-HOLON-24 — Gouvernance Holonique (3 Couronnes × 4 Quadrants × Dual-Régime W⁺ Auto/CLI vs W⁻ Gate R-25)
+| Couronne (RING) | Q1 Cœur Scellé (X⁺/Y⁺) | Q2 Chantier Stratégique (X⁻/Y⁺) | Q3 Exploration / R&D (X⁻/Y⁻) | Q4 Socle Stable (X⁺/Y⁻) |
+|---|---|---|---|---|
+| C1 — SSoT Gelé (Ring 3) | W⁺ exo:audit 17/17 / W⁻ R-09, R-25, R-50, D1..D5, AR-01..19 | W⁺ Tests SHA-256 / W⁻ Verrouillage F-53..56 (Bioclimat & Église) | W⁺ Archives LTS v1.8 / W⁻ Arbitrages OPT-01..12 | W⁺ Lint FMT-EXW-001 / W⁻ Charte Bento 135° & Glossaire R-50 |
+| C2 — Migration Active (Ring 2) | W⁺ Index M13-D (+7 P13) / W⁻ Bascule v5.1.0-alpha.1 | W⁺ Shaders Open-Sky, Worker < 250 Mo, BFF 0 USD / W⁻ Migration FS4X (v5.2) | W⁺ Mobile 360 px ExoTooltip / W⁻ Sauvegardes MIG M14 | W⁺ sync-drive-sot & GUS-3 / W⁻ Parité MODE 1 ⇄ MODE 2 |
+| C3 — R&D & Portabilité (Ring 1) | W⁺ Prototype SimulationDescriptor / W⁻ Port Unity 6 URP (V5) | W⁺ Multi-projets /teamworker / W⁻ Miroir C++17 WASM (OPT-11) | W⁺ Brouillons _updates/ / W⁻ Extensions post-v1.0 | W⁺ Retouches FR Vibe hors-bus / W⁻ Catalogue Skills exoworld-* |
+Matrice M0-EVOL — Règles de Propagation SemVer Fractales (F-XX.Y.Z · R-XX.Y.Z · AR-XX.Y.Z · M-XX.Y.Z) & Délégation (AP-0 → AP-4)
+| Déclencheur (N6 → N0) | Anneau | Pouvoir | Incrément Local | Propagation (Damping Rule) | Impact DOC & M0 | Gate Bloquant |
+|---|---|---|---|---|---|---|
+| Typo, clarté, lien xrefs, orphelin M-13.D | Ring 1 | AP-0 / AP-1 | PATCH (+0.0.1) | ISOLÉ (absorbé localement) | Journal _meta/_updates/ | exo:audit Exit 0 |
+| Nouvelle sous-feature F-XX.Y, clause R-XX.Y, fin de Plan P1..P3 | Ring 2 | AP-2 (3 Vetos) | MINOR (+0.1.0) | BULLE ↑ (amorti d'1 cran en N(k−1)) | PATCH ou MINOR (Batch Roll-Up) | Unanimité G-COUNCIL + 5 Portes |
+| Evolution gabarit TPL ou champ meta_node | Ring 1/2 | AP-2 / AP-3 | tpl_semver / meta_semver | Aucun sur sec_semver métier | PATCH alignement gabarit | exo:bp:compile |
+| Rupture contrat L0 Zod (D1..D5), architecture FS4X, arbitrage AR-XX / R-XX, levée D1-GCSa | Ring 3 | AP-4 (R-25) | MAJOR (+1.0.0) | CASCADE ⚠ (re-validation enfants) | MAJOR / jalon -alpha/-rc/-lts | Accord écrit Baptiste Lecoustre + MIG |
+PARTITION I — ANNEAU 0 : GOUVERNANCE, SOMMAIRE ISO 2145, TAXONOMIE 56 FEATURES & TOPOLOGIE (P-I)
+1. SECTION SEC-01 — GOUVERNANCE, ÉQUIPE TEAMWORKER-LANIAKEA & PROTOCOLE GUS-3 (v2.3.0 · Z1)
+1.A Metadata Section — Sans Matrices (SUBTPL-META-CORE v2.1.0)
+ * Inode & Versions : K0://P1-S01-GOUV · sec_semver: v2.3.0 · meta_semver: v2.1.0 · Zoom: Z1 · Anneau: Ring 3 · IEC 81346: =GOUV -DOC-S01 +P-I.
+ * Bassin & Experts : LAN://MB1:ARGON/SB1.1:GOUV-RD/N3:ARGON (N+1: GEM-1, N−1: BORE, FLASH-BUS) · Filaments FIL://AUDIT-SYNC, FIL://RD-UNIVERSAL.
+ * Profil Comportemental & LLM : Analytique-Normatif (HBDI-A/B, DISC-C) · temp: 0.0 · thinking: high · D-PROF: STANDARD.
+ * 7 Classes (séparation stricte NF EN ISO 7573) : FEAT: transverse (F-01..F-56) · MOD: MOD-DOC-SYNC (src/doc-sync/) · CMP: CMP-HEADER-LTS, CMP-SEC-META · PLG: aucun · TLS: TLS-AISTUDIO, TLS-ANTIGRAVITY, TLS-NOTEBOOKLM · SCR: SCR-SYNC-DRIVE, SCR-AUDIT-5G · EXT: EXT-GUS3-TRIAD.
+ * Briques Contenu déclarées (BLC-*) : BLC-PROSE-EXEC, BLC-LIST-PUCE, BLC-ENCART-VERROU, BLC-SCHEMA-ASCII.
+ * Liens tags gris : DOC://P1/SEC-02 · DOC://P4/SEC-09 · DOC://P5/SEC-13 · DOC://P6/ANN-A..K · SRC://_meta/ · SRC://_sync/.
+1.B Matrices Metadata (SEC-01 · Profil Z1)
+Matrice 1.B-I — Orthogonale Multi-Pivots (ARCH-ORTHO-MULTI-PIVOT · Nœud Central SSoT ↔ 5 Pivots)
+| Pôle Instable (X⁻) | Axe Vertical (Y⁺ / Y⁻) | Pôle Verrouillé (X⁺) |
+|---|---|---|
+| Q2 Pivot P5 (Bus/Sync) : Alignement 6 surfaces & 7 orphelins M13 (X⁻/Y⁺) | ↑ IMPACT GLOBAL (Y⁺) | Q1 Pivot P1 (Gouvernance R-25) [ANCRAGE SEC-01] : R-09, R-50, R-68, AP-0..AP-4 (X⁺/Y⁺) |
+| ← Variabilité (X⁻) | (0,0) NŒUD CENTRAL SSoT (Relie P1·P2·P3·P4·P5 · Dérive = 0) | Verrouillage (X⁺) → |
+| Q3 Pivot P4 (Expérimental) : Prototypes R&D Ring 1 (X⁻/Y⁻) | ↓ IMPACT LOCAL (Y⁻) | Q4 Pivot P3 (Charte FMT-EXW-001) : ISO 2145, Unicode pur (X⁺/Y⁻) |
+Matrice 1.B-II — Dépendances Bidirectionnelles (ARCH-BIPARTITE)
+| Direction | Cible | Version | Contrat Échangé | Gate |
+|---|---|---|---|---|
+| Amont (Requires) | SYS-INST-EXW-001 · 00_INDEX_PROJET · BUS-EXW-001 | v2.0.0 / v1.8.0 | Override live BUS-R1, inventaire 7 branches Drive, enveloppes YAML | G4 |
+| Aval (Provides) | SEC-02..SEC-13 · ANN-A..K · 24 README.md | Toutes | Règles R-09/25/50/68, AP-0..AP-4, protocole GUS-3, EXW-FMM | G1..G5 |
+1.1 Contenu Hors Matrices (2.A)
+ * [L1 · HUMAIN] (BLC-PROSE-EXEC) : La gouvernance unifie votre autorité souveraine (AP-4) avec une équipe IA structurée en pyramides récursives (N0→N6) et en 4 Super-Sphères 0 USD (ARGON, HYDRO, NEON, FLASH), afin de piloter le jeu et sa documentation sans dérive ni surcharge.
+ * [L2 · MÉSO] (BLC-ENCART-VERROU — Protocole GUS-3 & Exclusions Fermes) :
+   * Chaque racine structurante (V0 projet, docs/, src/, 6 tranches FS4X) porte la triade GUS-3 avant le contenu : _meta/ (meta_node.yaml, README.txt glossaire LEX, rules-boundaries.json), _meta/_updates/ (CHANGELOG.md, PENDING_DELTA.yaml, MIGRATIONS.md) et _sync/ (sync.lock.json, doc-mesh-index.json, bus-relay.yaml). Les sous-dossiers feuilles utilisent GUS-3 LIGHT (README.txt + meta_node.yaml). tsconfig.json et vite.config.ts excluent **/_meta/** et **/_sync/** du bundle navigateur.
+   * Exclusions absolues : zéro import/mention Astralis, zéro Google Chat (AR-01), zéro Chatbot libre (AR-02), zéro Supabase, zéro dôme géométrique (R-16), zéro multijoueur v1.0 (OPT-12), zéro délégation Claude, zéro délégation structurée Vibe, zéro modèle payant (R-68).
+1.2 Contenu Matriciel & Miroir IA (2.B)
+Matrice MAT-ORGA-LANIAKEA-TW — Alignement Super-Sphères, Pôles Teamworker, Sommaire, SRC & /docs
+| Macro-Bassin (N2) | Pôles Teamworker (T-1..T-6) | Experts Gemini (N3) | Partitions Sommaire | Dossiers SRC (L0..L8 → FS4X) | Pouvoir / Veto |
+|---|---|---|---|---|---|
+| MB1:ARGON (Archi & QA) | T-1 Archi + T-6 QA | [ARGON], [BORE] | 0., P-I, P-IV (SEC-09), P-V | src/_meta/, src/doc-sync/, guardrails/, tests/ | AP-2 · Veto 1 & 3 |
+| MB2:HYDRO (Noyau & Sens) | T-2 Métier + T-3 Core | [HYDROGENE], [KRYPTON], [MERCURE], [TITANE] | P-II, P-III, P-IV (SEC-11) | L0..L3, shared-kernel/, 5 tranches métier, platform/ | AP-1 · Veto 2 (T-5) |
+| MB3:NEON (3D, UX & Balance) | T-4 UX/3D/Forme | [NEON], [SILICIUM], [XENON] | P-IV (SEC-10) + Pont ΔP_adapt | L4, L6, L7, slices/shell-3d-audio/ | AP-1 / AP-3 |
+| MB4:FLASH (Bus & Sync 6S) | T-5 Data/Sync | [FLASH-BUS], [FLASH-SYNC] | P-VI (ANN-A..K) & BUS-EXW-001 | src/_sync/, scripts/sync-drive-sot.mjs, .agents/ | AP-0 / AP-2 |
+ * [L3 · @AI-MIRROR · K0://P1-S01-GOUV] : Truth=L0>L1>L2L3>L4L7>Prose | AP=AP0..AP4 | Veto=T1+T5+T6 | GUS3=_meta/_updates/_sync | Cost=$0 | Exclude=Astralis,GChat,FreeBot,Supabase,Dome,MPv1,ClaudeDeleg,VibeBus.
+2. SECTION SEC-02 & SEC-02B — SOMMAIRE ISO 2145, RTM-XSC & CLASSIFICATION FRACTALE DES 56 FEATURES (v2.2.0 · Z2)
+2.A Metadata Section — Sans Matrices (SUBTPL-META-STD v1.2.0)
+ * Inode & Versions : K0://P1-S02-TOC · sec_semver: v2.2.0 · meta_semver: v1.2.0 · Zoom: Z2 · Anneau: Ring 2 · Experts: [ARGON]+[BORE].
+ * Règle ISO 2145 : Profondeur maximale 6 niveaux (N1 → N6, D_restant = 6 − k) · Unicité absolue R-03 (doublon historique de Partition V définitivement purgé).
+2.1 Sommaire Intégral Anneaux 0 → 4 (P-I à P-VI, avec SemVer, Gabarit, Zoom & Statut)
+| Anneau | Partition | Sections (ISO 2145) | SemVer Section | Format Natif (FMT-UNIT) | Zoom | Statut & Progression |
+|---|---|---|---|---|---|---|
+| Anneau 0 | P-I · Gouvernance & Topologie | SEC-01 Gouvernance, Teamworker & GUS-3 · SEC-02 Sommaire, RTM-XSC & SEC-02B 56 Features | v2.3.0 / v2.2.0 | FMT-S + FMT-M | Z1 / Z2 | EN_MAJ · 92 % |
+| Anneau 1 | P-II · Produit, GDD & Gameplay | SEC-03 Vision GDD, 12 Inspirations, 6 Ères & Slots 1..6 · SEC-03B Hiérarchie Cycles GL-0..GL-5 & CYC-01..10 | v2.1.0 / v2.0.0 | FMT-U + FMT-S | Z2 / Z1 | IMPLANTE_V5 · 90 % |
+| Anneau 2 | P-III · Systèmes & Moteur SADT | SEC-04 5 Divisions & Bioclimat (F-53/54) · SEC-05 Éthique Thomiste, Maslow & Église (F-55/56) · SEC-06 Dossiers/PA · SEC-07 SADT A-0..A5 & Φ01..Φ12 · SEC-08 Éco, Maint C3, Cyber & Combats 4P | v2.2 / v1.4 / v2.1 / v2.0 / v1.5 | FMT-S + FMT-M | Z1 / Z2 | EN_MAJ (D1..D5) · 72 % |
+| Anneau 3 | P-IV · Architecture Technique SRC | SEC-09 src/ L0..L8 → FS4X-Kernel · SEC-10 EXO-SHELL, Open-Sky 3D & FIP · SEC-11 Cloud, BFF 0 USD & Atlas MX16-ICOM | v2.2 / v1.6 / v2.1 | FMT-M + FMT-S | Z1 / Z2 | EN_DEV (16/17→17/17) · 76 % |
+| Anneau 4 | P-V · Référentiels & Tampon Chaud | SEC-12 Catalogues 7 Classes séparées · SEC-13 Registres AR/OPT/R, Roadmaps V0..V5, FUP, Tampon GEMMA/GCSa | v2.2.0 / v2.1.0 | FMT-M | Z3 | EN_REVISION · 84 % |
+| Anneau 4 | P-VI · Annexes & Exploitation DOE | ANN-A..K SYS-INST, Isolation, 5 Portes, Playtest 90/360, Prompt AI Studio 2 Modes | v1.7.0 | FMT-S | Z4 | ACTIF · 95 % |
+2.2 Matrice RTM-XSC — Traçabilité Multi-Échelles Hors Gameplay (V0..V6 × L0..L8)
+Légende : S=Spécifie · I=Implémente · V=Valide · M=Miroir 1:1 · —=Isolé.
+| Échelle Doc (Y) \ Couches SRC (X) | docs/ & _meta/ | L0 Zod/Parsers | L1 Config/Data | L2 Core/Guards | L3 Systems | L4 3D/Adapters | L5 Services/Worker | L6..L7 UI/Shell | L8 API/BFF/CI |
+|---|---|---|---|---|---|---|---|---|---|
+| V0 Racine (EXOW-ROOT) | S M | S | — | — | — | — | V (doc-sync) | — | V (exo:audit) |
+| V1 Partitions (P-I..VI) | S M | S | S | S | S | S | S | S | V |
+| V2..V3 Règnes / Genres / Espèces | M (GUS-3) | S | S | I | I | I | I | I | I |
+| V4 Features (F-01..F-56) | M (FUP) | S I | I | I | I | I | I | I | V |
+| V5..V6 Contrats / Règles / Fichiers | V (SHA-256) | M I | M I | V (R-13/14) | I | I | I | I | V (M13-D) |
+2.3 SEC-02B — Registre Maître Taxonomique des 56 Features (4 Règnes → 7 Genres → 14 Espèces → F-01..F-56)
+| Règne / Genre (DOM) | Espèce (Sous-Famille) | Features (F-XX / FEAT-XX) | Statut Actuel (ce901013 → Cible) | Couches & Tranche FS4X | Matrices & Références |
+|---|---|---|---|---|---|
+| I · Corps Applicatif · DOM-01 Shell, UI & Audio | 1.1 Coque & Mobile 360 px | F-01 EXO-SHELL 8+8 · F-02 Mobile ≥44px · F-05 Bento 135°+ExoTooltip · F-06 SVG 1200ms | F-01/06: IMPLANTE_V5 · F-02/05: EN_MAJ (SWM-004) | L6/L7 · shell-3d-audio | SM-06, M6, FMT-EXW-001 |
+| I · Corps Applicatif · DOM-01 Shell, UI & Audio | 1.2 Bus, Archives & Audio | F-03 TRIGGER_BUS · F-04 Archives L1..L4 · F-07 Overlays <150ms · F-08 Radio FIP DSP | F-03: VERROUILLE_LTS · F-04/07/08: IMPLANTE_V5 | L2/L5/L7 · shared-kernel + shell | SM-01/05, M10, M12 |
+| II · Cerveau & Sens · DOM-02 Dossiers & Oracle | 2.1 Économie PA & Atelier | F-09 File P0+C1..C5 · F-10 PA+4 Sous-PA · F-11 Atelier 3 Étages · F-12 Hologrammes 3D | F-10: VERROUILLE_LTS · F-09/11: IMPLANTE_V5 · F-12: EN_IMPLANTATION | L1..L4/L7 · executive-dossiers | SM-01, M1, M7, R-24/26 |
+| II · Cerveau & Sens · DOM-02 Dossiers & Oracle | 2.2 DAG, RAG & Triggers | F-13 DAG New Vegas (Kahn/BFS) · F-14 RAG pgvector · F-15 ΔP_adapt · F-16 DELAYED_ECHO | F-15: VERROUILLE_LTS · F-13/16: IMPLANTE_V5 · F-14: EN_IMPLANTATION | L0/L2/L5 · executive-dossiers + platform | SM-05, M4, M9, M13 |
+| II · Cerveau & Sens · DOM-07 Éthique & Église | 7.1 Thomisme, Maslow & Pédagogie | F-49 11 Badges · F-50 Maslow 5 strates+Transc. · F-51 Onglet 6 (AR-17) · F-52 Échelle 6 niv. (AR-18) | EN_DEV (DEL-005 / FUP-015..016) | L0/L1/L3/L7 · ecclesia-ethics | SM-02/06, M2, AR-17/18 |
+| II · Cerveau & Sens · DOM-07 Éthique & Église | 7.2 Église Catholique & Discernement | F-55 Développement Église Catholique sur Terre · F-56 Volonté du Seigneur & Liberté de Conscience | SPEC_VERROU (Annexe K.3, AR-19) | L0/L1/L3/L7 · ecclesia-ethics | SM-02, M2, AR-18/19 |
+| III · Monde Vivant · DOM-03 Éco, Villes & Ères | 3.1 Urbanisme & Finance | F-17 Villes Ouvertes · F-18 3 Modules Anno · F-19 Villes↔État · F-20 Prêts R-37 · F-21 Marché | IMPLANTE_V5 (audit DEL-004 60 cycles) | L1/L3 · economy-eras | SM-03, M1, M3, AR-06 |
+| III · Monde Vivant · DOM-03 Éco, Villes & Ères | 3.2 Ères, Techs & XP | F-22 18 Ressources · F-23 6 Ères/30 Techs/Infini · F-24 Tri-Jauge XP & Succès | IMPLANTE_V5 (OPT-08 A→C) | L1/L3 · economy-eras | SM-03, M6, M8, AR-15 |
+| III · Monde Vivant · DOM-04 Atmo, Bioclimat & Colons | 4.1 5 Divisions, Bioclimat & Maint | F-25 Maint C3 · F-26 5 Divisions D1..D5 · F-27 Météo · F-28 9 Biomes · F-29 Kits/PNJ · F-53 Bioclimat (BioHealth) · F-54 Catastrophes P0 | F-25/28: IMPLANTE_V5 · F-26/27/29: EN_MAJ (SWM-001) · F-53/54: SPEC_VERROU | L0/L1/L3/L4 · bioclimate-world | SM-02, M2, M5, M12, AR-11 |
+| III · Monde Vivant · DOM-04 Atmo, Bioclimat & Colons | 4.2 Colons, Civique & Lexique | F-30 Roster 12–30 Colons · F-31 Référendums <35% · F-32 Nomenclature R-50 | F-32: VERROUILLE_LTS · F-30/31: IMPLANTE_V5 | L1/L2/L3 · bioclimate-world + economy | SM-02, M8, M15, R-31/50 |
+| III · Monde Vivant · DOM-05 Géopolitique & Guerre | 5.1 Super-Alliance, Slots & IA | F-33 Super-Alliance · F-34 Slots 1→6 · F-39 Comparateur HK · F-40 5 IA Déterministes | IMPLANTE_V5 (OPT-12 100 % Solo) | L3/L4/L7 · geopolitics-war | SM-03/04, M3, AR-04/05 |
+| III · Monde Vivant · DOM-05 Géopolitique & Guerre | 5.2 Drones, Cyber & Combats | F-35 Drones 4 classes · F-36 Datacenters T1–T5/Cyber 2× · F-37 Transporteurs T1–T4 · F-38 Combats 4P L1–L5 | IMPLANTE_V5 (validé Tour 4 playtest) | L2/L3 · geopolitics-war | SM-04, M4, M11, R-41..48 |
+| IV · Fondations · DOM-06 Noyau, 3D & FinOps 0 USD | 6.1 Core Pur, Cloud & BFF 0 USD | F-41 PCG32/SHA-256+Worker · F-42 Firebase+SQL · F-47 BFF Multi-IA 0 USD · F-48 Miroir C++17 (V5) | F-41: EN_MAJ (SWM-003) · F-42: EN_IMPLANTATION · F-47: EN_DEV (SWM-005) · F-48: CONCEPTION | L0..L2/L5/L8 · shared-kernel + platform | SM-05, M4, M9, M15, R-66..68 |
+| IV · Fondations · DOM-06 Noyau, 3D & FinOps 0 USD | 6.2 3D Open-Sky, Unity & WebKit | F-43 Three.js 3 Échelles · F-44 Shaders Rayleigh/Mie · F-45 Unity 6 URP (V5) · F-46 WebKit <250 Mo | F-43: EN_MAJ · F-44/46: EN_DEV (SWM-002/003) · F-45: CONCEPTION | L4/L5 · shell-3d-audio + platform | SM-05, M5, M10, M15, AR-12 |
+PARTITION II — ANNEAU 1 : VISION PRODUIT GDD & HIÉRARCHIE DES CYCLES DE GAMEPLAY (P-II)
+3. SECTION SEC-03 & SEC-03B — GDD EXÉCUTIF, 6 ÈRES & BOUCLES GL-0..GL-5 (v2.1.0 · Z1/Z2)
+3.A Metadata Section — Sans Matrices (SUBTPL-META-STD v1.2.0)
+ * Inode & Versions : K0://P2-S03-GDD-LOOPS · sec_semver: v2.1.0 · meta_semver: v1.2.0 · Zoom: Z1 (SEC-03B) / Z2 (SEC-03) · Bassin: LAN://MB2:HYDRO/SB2.2:MONDE-BIOCLIMAT/N3:KRYPTON.
+ * 7 Classes : FEAT: F-17, F-22..24, F-33, F-34, F-39, F-40 · MOD: MOD-DATA-ERAS, MOD-SYS-GEO · CMP: CMP-ERA-TRACKER, CMP-HUMANKIND-CHART · PLG/SCR/EXT: aucun.
+3.1 Contenu Hors Matrices (2.A — [L1 · HUMAIN] & [L2 · MÉSO])
+ * Promesse Produit (Executive Dispatch 4X) : Application de jeu Web/Mobile (100 % Solo contre 5 Superpuissances IA rivales déterministes et sous la tutelle autonome d'une Super-Alliance IA hors contrôle, OPT-12) couvrant 6 Ères (2050–2180+) en 2h30–4h (40–60 cycles) suivies d'un Mode Infini Post-Victoire (OPT-08 : A → C).
+ * Hiérarchie des 12 Inspirations : P1 Noyau (Alliance of the Sacred Suns, Anno 2205, Humankind, Fallout: New Vegas) · P2 Majeur (The Universim, Cities: Skylines II, RimWorld, Per Aspera / Surviving Mars) · P3 Ciblé (Terra Invicta, Aven Colony, AtWar) · P4 Recadré (Fallout 4 modularité sans roue floue).
+ * Conditions de Victoire & Défaite : Victoires par Score d'Ères (Humankind), Biosphère TROPOSPHERE stabilisée (BioHealth ≥ 80), Monopole Orbital ou Suprématie ; Défaites par référendum révocatoire (< 35 %, R-31), faillite irréversible, perte de capitale ou victoire IA.
+ * 6 Slots Planétaires (AR-05) : Slot 1 Planète Principale (Départ) → Slot 2 Lune (Hélium-3, Ère II) → Slot 3 Tellurique Secondaire (Ère III) → Slot 4 Cryo-Océanique (Datacenters T4, Ère IV) → Slot 5 Xéno-Biologique (Ère V) → Slot 6 Monde Pivot Exosphérique (Ère VI).
+3.2 Matrice GL-0..GL-5 (SEC-03B) — Hiérarchie Avancée des Cycles de Gameplay (2.B)
+| Niveau & Boucle | Cadence & Échelle | Verbe Joueur | Levier (R-24) | Tension Ludique | Arc Éthique (AR-18/19) | Moteur & Feedback |
+|---|---|---|---|---|---|---|
+| GL-0 Micro-Tactique | 16,6 ms / 1 tick = 1 j (0x/1x/2x/4x) · S-0/S-1 | Observer → Inspecter (ExoTooltip) → Pause | Lecture + Pause (0 PA) | Usure continue, tempêtes, alertes TRIGGER_BUS | Maslow 1–2 (sécurité, 4 h/j R-39) | Open-Sky, SVG 1200 ms, filtre FIP, Worker |
+| GL-1 Pivot Exécutif | 1 Tour = 15 ticks (N1) · S-1/S-2 | Trier (P0→C1..C5) → Affiner 3 Étages → Signer | Dossiers + PA + 4 Sous-PA (0 PA garanti) | Rareté PA, max 2 P0/cycle, irrévocabilité (R-35) | 11 badges, discernement (+3 à −2) | A0 (Φ01..Φ12), PCG32, M7, SHA-256 |
+| GL-2 Méso-Opérationnel | 2–4 Tours (30–60 ticks · N2) · S-1/S-2 | Consolider budget → Maint C3 → Récolter échos | Prêts, Modules Anno (≤3), Drones | Intérêts (R-37), arrêt <25% (R-38), biomes (R-40) | Maslow 3–4, fatigue ≥80, DELAYED_ECHO | Échéancier échos, globe 72 tuiles |
+| GL-3 Macro-Stratégique | 24 Tours (360 ticks = 1 An · N3) · S-2/S-3 | Arbitrer géopolitique → Convois T1–T4 → Référendum | Super-Alliance, Combats 4P (L1–L5), Votations | Référendum <35% (R-31), 5 IA rivales | Légitimité, liberté de conscience (AR-19) | A4 0-LLM, ΔP_adapt, pgvector RAG |
+| GL-4 Méga-Civilisation | 6–12 Tours/Ère · 3–6/Division (N4) · S-3/S-4 | Franchir D1→D5 → Débloquer Slot 1→6 → Passer d'Ère | Étoiles (≥7), Doctrines (R-05), Mégaprojets | Transitions climatiques, 18 ressources, Super-Alliance | Maslow 5 (Transcendance), Intendance Création (F-55) | Transition uAtmoDivision, palettes SVG |
+| GL-5 Méta-Campagne | 40–60 Tours → Infini 15h+ (N5) | Victoire → Continuation Infini (OPT-08) | worldSeed, profil (AR-17), doctrines héritage | Défaites irréversibles vs maîtrise multi-parties | Relecture Journal de Discernement, fruits moraux | Replay SHA-256, Tri-Jauge XP Cloud |
+ * [L3 · @AI-MIRROR · K0://P2-S03-GDD-LOOPS] : Mode=Solo100%(OPT-12) | Eras=6(30Techs,≥7StarsManual) | Loops=GL0..GL5 | Cycles=CYC01..10 | Spatial=S0..S4 | PostVictory=Infinite(OPT-08).
+PARTITION III — ANNEAU 2 : SYSTÈMES DU MONDE, ÉTHIQUE/ÉGLISE, DOSSIERS PA & MOTEUR SADT (P-III)
+4. SECTION SEC-04 — 5 DIVISIONS ATMOSPHÉRIQUES & SIMULATEUR BIOCLIMATIQUE (v2.2.0 · Z1)
+4.A Metadata Section — Sans Matrices (SUBTPL-META-CORE v2.1.0)
+ * Inode & Versions : K0://P3-S04-ATMO-BIO · sec_semver: v2.2.0 · meta_semver: v2.1.0 · Zoom: Z1 · Anneau: Ring 3 (D1..D5) + Ring 2 (F-53/54).
+ * Bassin & Experts : Lead LAN://MB2:HYDRO/SB2.2:MONDE-BIOCLIMAT/N3:KRYPTON + Co-expert [NEON] via FIL://BIO-OPENSKY.
+ * 7 Classes : FEAT: F-26, F-27, F-28, F-29, F-32, F-53, F-54 · MOD: MOD-SYS-BIO, MOD-CFG-ATMO, MOD-CTR-MAPS · CMP: CMP-BIOSPHERE-PANEL, CMP-TOOLTIP-ATMO · PLG: PLG-SHADER-OPENSKY · TLS: TLS-VITEST · SCR: SCR-AUDIT-R50 · EXT: EXT-BIOCLIMAT-V52.
+ * Briques déclarées : BLC-PROSE-EXEC, BLC-CDCF-16271, BLC-FORMULE, BLC-ENCART-VERROU · Liens : DOC://P3/SEC-05, DOC://P3/SEC-07, DOC://P4/SEC-10, DOC://P6/ANN-H, DOC://P6/ANN-K.
+4.B Matrices Metadata (SEC-04 · Profil Z1)
+Matrice 4.B-I — Croisée 4 Axes (ARCH-CROSS-4D · Régime d'Exécution L3/L4 × Zod/WebKit)
+| Ordonnées (Couche / Rigueur) | Zod Valide / ≤ 180 Mo | Zod Valide / 180..250 Mo | Zod Dégradé / ≤ 180 Mo | Zod Dégradé / ≥ 250 Mo |
+|---|---|---|---|---|
+| Noyau L3 / Strict (R-13) | Compute Full / Pass | Compute Full / Quiet | Reject / Result[Err] | Freeze Tick / Alerte |
+| Noyau L3 / Tolérant | Compute Full / Pass | Step Cache / Pass | Clamp ±15 % / Warn | Fallback L1 / P0 |
+| Open-Sky L4 / Strict | Rayleigh+Mie / 60 Hz | LOD Moyen / 30 Hz | Shader Safe / Hold | SVG 2D / .dispose() |
+| Open-Sky L4 / Tolérant | Rayleigh+Mie / 60 Hz | LOD Bas / 30 Hz | Interpolate / Log | Skip Frame / Gate G3 |
+4.1 Contenu Hors Matrices (2.A)
+ * [L1 · HUMAIN] : La planète évolue à ciel ouvert (R-16, zéro dôme) à travers 5 divisions scientifiques de l'atmosphère et 6 piliers bioclimatiques couplés (Air/O₂/CO₂/O₃/AQI, Fertilité des Sols & Pédogenèse, Hydrosphère, Flore en 4 stades, Faune en 4 maillons dont pollinisateurs, Météo & Catastrophes P0), sans aucune mécanique thermique bannie (Z0).
+ * [L2 · MÉSO] (BLC-FORMULE) :
+   * V_chantier = V_base × (1 + ModAtmo_PNJ(division) + BonusDronesChantier) × FacteurMaintenance_C3
+   * BioHealth = clamp(0,25 × AirScore + 0,20 × SoilFertility + 0,20 × HydroScore + 0,20 × FloraIndex + 0,15 × FaunaIndex − CatastropheDrag, 0, 100)
+   * Victoire Biosphère : TROPOSPHERE stable ET BioHealth ≥ 80 pendant 5 cycles consécutifs sans effondrement faune/flore.
+   * Catastrophes P0 (F-54, PCG32 pur) : éruption solaire majeure, pluies acides industrielles, mégasécheresse, inondation, séisme/impact météoritique, épizootie ; plafond strict ≤ 2 crises P0/cycle (R-32).
+4.2 Contenu Matriciel & Miroir IA (2.B)
+Matrice MAT-ATMO-D1D5 — Les 5 Divisions Scientifiques de l'Atmosphère (AtmosphericDivisionSchema · AR-11)
+| Code | Division Scientifique | uAtmoDivision | Vitesse PNJ | Coût Équip. | Moral | Contraintes Gameplay & Visuel Open-Sky (R-16, R-39, R-49) |
+|---|---|---|---|---|---|---|
+| D1 | EXOSPHERE | 0 | −40 % | +100 % | −15 | Expo max 4 h/j, 1 kit/colon/cycle, bonus solaire +30 % anti-softlock, ciel #050811 |
+| D2 | THERMOSPHERE | 1 | −15 % | +25 % | −5 | Zone tampon ionique, surveillance CO₂, aurores polaires dynamiques |
+| D3 | MESOSPHERE | 2 | 0 % | −55 % | 0 | Pivot logistique industriel, masques légers, ablation météoritique sans dôme |
+| D4 | STRATOSPHERE | 3 | +25 % | 0 % | +20 | Couche d'ozone active, filtration UV, biomes forestiers, diffusion Rayleigh cyan |
+| D5 | TROPOSPHERE | 4 | +40 % | 0 % | +30 | Biosphère convective respirable, Condition de Victoire Biosphère, Mie #9AD1F5 |
+ * [L3 · @AI-MIRROR · K0://P3-S04-ATMO-BIO] : Enum=EXOSPHERE|THERMOSPHERE|MESOSPHERE|STRATOSPHERE|TROPOSPHERE | BioHealth=0.25Air+0.20Sol+0.20Hydro+0.20Flore+0.15Faune-Drag | Disasters=PCG32_P0(<=2) | Guards=R-16,R-39,R-40,R-49,R-50,Z0 | Slice=SRC://slices/bioclimate-world.
+5. SECTION SEC-05 — MOTEUR ÉTHIQUE THOMISTE, MASLOW, ÉGLISE CATHOLIQUE & DISCERNEMENT (v1.4.0 · Z1)
+5.A Metadata Section — Sans Matrices (SUBTPL-META-CORE v2.1.0)
+ * Inode & Versions : K0://P3-S05-ETH-ECCL · sec_semver: v1.4.0 · meta_semver: v2.1.0 · Zoom: Z1 · Anneau: Ring 3 (AR-17/18/19) · Bassin: LAN://MB2:HYDRO/SB2.3:DECISION-ETHIQUE ([KRYPTON]+[MERCURE]) · FIL://DECISION-ETHIQUE.
+ * 7 Classes : FEAT: F-49, F-50, F-51, F-52, F-55, F-56 · MOD: MOD-CTR-ETH, MOD-SYS-ETH (src/systems/ethics-pedagogy/) · CMP: CMP-SETTINGS-TAB6, CMP-DISCERNMENT-JOURNAL · EXT: EXT-ECCLESIA-TERRE.
+5.1 Contenu Hors Matrices (2.A)
+ * Socle Éthique & Pédagogique (AR-17, AR-18) : Inspiré de Saint Thomas d'Aquin (4 vertus cardinales : Prudence, Justice, Force, Tempérance ; 3 vertus théologales : Foi, Espérance, Charité ; Bien Commun, Subsidiarité, Double Effet), mis en regard d'autres courants via 11 badges (THOMISTE_VERTU, MISERICORDE, HUMANISTE, EXISTENTIALISTE, PRAGMATIQUE, TECHNIQUE, DIPLOMATIQUE, UTILITARISTE, AUTORITAIRE, ECOLOGIQUE, SUBSIDIAIRE). La Pyramide de Maslow (5 strates + Transcendance) gouverne la stabilité des colons. Le profil psychométrique (Big Five/HEXACO, MBTI, DISC, Ennéagramme) configuré dans l'Onglet 6 (EXO_SETTINGS) est injecté en lecture seule dans StateBrief Gemini sans jamais altérer le déterminisme L2/L3.
+ * Développement de l'Église Catholique sur Terre & Volonté du Seigneur (F-55, F-56, AR-19) :
+   * 4 axes déployables via Dossiers Exécutifs (R-24) : (1) Paroisses, Liturgie & Sacrements (chapelles → paroisses → cathédrales, repos dominical, baisse fatigue/burnout), (2) Œuvres de Miséricorde & Charité (dispensaires, accueil vulnérables, écoles, guérison sociale), (3) Monastères, Vie Contemplative & Sauvegarde de la Création (pont direct Foi ↔ Bioclimat : agriculture régénérative, banques de semences, bonus SoilFertility et FloraIndex), (4) Mission, Paix & Témoignage.
+   * Verrou AR-19 — Liberté de Conscience Absolue : La foi se propose par le témoignage et la charité ; toute contrainte autoritaire est systématiquement sanctionnée en niveau −1 ou −2 dans le Journal Pédagogique de Discernement.
+5.2 Matrice MAT-PEDAGOGIE-6N — Échelle Pédagogique & Morale (AR-18, AR-19) (2.B)
+| Niveau | Score | Qualification Officielle | Logique Éthique & Fruits Observables (DELAYED_ECHO · Maslow) |
+|---|---|---|---|
+| 1 | +3 | Super Positive — Grâce | Vertu héroïque, Charité exigeante, Bien Commun ; coût immédiat possible mais fécondité durable, résilience et paix |
+| 2 | +2 | Positive | Prudence, Justice et raison droite ; renforcement équilibré de Maslow et baisse des crises P0 |
+| 3 | +1 | Miséricorde & Réparation | Pardon, soin, relèvement ; brise les cycles de vengeance et guérit la Strate 3 (Appartenance) |
+| 4 | 0 | Ambiguë / Double Effet | Compromis pragmatique ou Double Effet ; miroir pédagogique invitant à affiner le discernement |
+| 5 | −1 | Négative | Court-termisme, utilitarisme froid ou injustice tolérée ; gain matériel trompeur suivi de DELAYED_ECHO coûteux |
+| 6 | −2 | Très Négative | Cynisme destructeur, mépris de la dignité humaine ou contrainte autoritaire (AR-19) ; alerte critique Journal |
+ * [L3 · @AI-MIRROR · K0://P3-S05-ETH-ECCL] : Badges=11 | Maslow=5+Transcendance | Tab6=ReadOnly_ZeroL2L3Drift(AR-17) | Scale=+3..-2(AR-18) | Ecclesia=Paroisses+Misericorde+MonasteresBioclimat+Mission(F-55) | FreedomLock=AR-19_AntiCoercion(F-56) | Slice=SRC://slices/ecclesia-ethics.
+6. SECTION SEC-06, SEC-07 & SEC-08 — DOSSIERS PA, MOTEUR SADT (A-0..A5), FORMULES & SYSTÈMES MÉTIER (v2.1.0 · Z1/Z2)
+6.A Metadata Consolidé (K0://P3-S06-08-CORE · Zoom: Z1 · Bassin: MB2:HYDRO [HYDROGENE]+[KRYPTON])
+ * Contrats & Règles : R-24 (Dossier souverain), R-26 (PA Général 7 facteurs cap 150 % + 4 Sous-PA fongibilité asymétrique 1:1 interne / 2:1 inter-ministériel, option 0 PA garantie), R-32 (≤ 2 crises P0/cycle), R-34 (+50 % Sous-PA/étage Atelier 3 Étages), R-35 (irrévocabilité), R-38 (arrêt maint < 25 %), R-43..44 (cyber Compute 2× → paralysie 2 cycles), R-47 (combats 4 phases L1–L5), R-66/67 (PCG32 6 flux + SHA-256).
+ * Formules Déterministes Canoniques (L1/L2 — Zéro Aléa Natif) :
+   * ΔP_adapt = clamp(w1 × ScoreGestionPassée + w2 × RetardRelatifIA − w3 × DetteCrises, −0,20, +0,25) · Sas Zod Gemini borné dans [−0,15 ; +0,15] (R-69).
+   * Regen_SousPA(c) = 1 + ⌊(Attr_c + BonusTrait_c) / 3⌋ + ⌊NiveauXP_c / 3⌋ − (1 si Fatigue_c > 80 sinon 0).
+   * DegatsRound(A → B) = PuissanceBase(Unité, L1..L5) × BonusBiome × ModAtmo(division) × FacteurRavitaillement × (1 − Blindage_B) × PCG32_Range(0,90 ; 1,10) (4 phases : Cyber/Drones → Bombardement → Rounds combinés → Capture AtWar).
+   * Priorité de délestage en pénurie (M4) : 1. Énergie → 2. Eau → 3. Nourriture → 4. Pièces détachées → 5. Crédits.
+6.B Matrice ICOM M13-A — Chaîne SADT A1..A5 & Pipeline Φ01..Φ12 (15 Ticks/Cycle)
+| Nœud SADT | Inputs (I) | Controls (C) | Outputs (O) | Mechanisms (M) |
+|---|---|---|---|---|
+| A1 Ingestion & Oracle | WorldState(T), AR-17 lecture seule, échos | zod-airlock ±15 %, R-68 0 USD, Kahn/BFS | File P0 (≤2) + C1..C5, DELAYED_ECHO | TRIGGER_BUS, gemini-dualpass, server.ts |
+| A2 Arbitrage PA & Éthique | File P0/C1..C5, Intents Joueur, PA/4 Sous-PA | R-24, R-26, 0-PA garanti, M7 Karnaugh | ExecutiveDecisionIntent[], 11 badges, +3..−2 | dossiers-pa, ethics-pedagogy, Atelier 3 Étages |
+| A3 Simulation Pure (L2/L3) | Intents signés, WorldState(T) | Ordre A3.1→A3.6, Snapshot Barrier, PCG32 6 flux | WorldState(T+15), BioHealth, combats 4P | maintenance, biosphere, economy, cyber, combat |
+| A4 Géopolitique & Ères | WorldState(T+15), 5 IA rivales | Utilité 0-LLM, Étoiles ≥7, 6 Slots (AR-05) | Mutations IA, rang Alliance, Slots 1..6, XP | geopolitics-ai, colons-cabinet |
+| A5 Scellement & Rendu | WorldState(T+15), historique | WebKit < 250 Mo, DPR ≤ 1,5, RAG ≤ 180 ms | StateHash SHA-256, GZIP, SceneDiffPacket | state-hasher, pgvector, Three.js / Unity 6 |
+ * [L3 · @AI-MIRROR · K0://P3-S06-08-CORE] : Loop=15Ticks(Phi01..Phi12) | PRNG=PCG32_6Streams(Seed0x2050E801) | Hash=SHA256 | AntiSoftlock=M7_Karnaugh+0PA | ShedOrder=E>H2O>Food>Parts>Cr | SnapshotBarrier=true.
+PARTITION IV — ANNEAU 3 : ARCHITECTURE TECHNIQUE SRC, EXO-SHELL, 3D, CLOUD 0 USD & ATLAS MX16-ICOM (P-IV)
+7. SECTION SEC-09 — ARCHITECTURE SRC (L0..L8 ACTUEL → CIBLE FS4X-KERNEL) (v2.2.0 · Z1)
+7.A Metadata Section (K0://P4-S09-SRC · Zoom: Z1 · Anneau: Ring 3 · Experts: [ARGON]+[HYDROGENE])
+ * Invariants Code (R-10, R-13, R-14, R-20) : TypeScript strict (0 any, 0 @ts-ignore), Result Pattern [ExwError, Data], ≤ 300 lignes/module logique, ≤ 200 lignes/UI ou hook, ≤ 150 lignes/fiche docs/, CC ≤ 12, 0 cycle Kahn (M3), 0 Math.random/Date.now/fetch/DOM en L2/L3.
+ * 7 Classes : FEAT: F-41, F-46, F-48 · MOD: 24 domaines L0..L8 + 8 modules pipeline + 6 tranches FS4X · CMP: CMP-WORKER-PROTO, CMP-RESULT-TUPLE · PLG: PLG-UNITY6, PLG-WASM-CPP · TLS: TLS-TS57, TLS-ESLINT9, TLS-VITE8, TLS-VITEST · SCR: SCR-AUDIT-5G, SCR-AUDIT-MX, SCR-COMPRESS · EXT: EXT-SLICE-FS4X.
+7.1 Correspondance SRC Source (ce901013 · 24 Domaines) → SRC Cible (FS4X-Kernel + GUS-3)
+| Couche | Dossiers src/ Actuels (234 Modules TS/TSX) | Imports Autorisés (ESLint 9) | Modifications Attendues (v5.1.0-alpha.1 → v5.2.0 FS4X) |
+|---|---|---|---|
+| L0 | contracts/, parsers/ | zod uniquement | Indexer video-export.schema.ts + doc-mesh.parser.ts dans M13 ; ajouter bioclimate.schema.ts & ecclesia-catholic.schema.ts |
+| L1 | config/, data/ | L0 | Purger derniers reliquats 4 paliers dans atmosphere.constants.ts (SWM-001) ; ajouter catalogues Bioclimat & Église |
+| L2 | core/ (prng, hashing, loop, bus, triggers, queues, dispatchers, routers), guardrails/ | L0, L1 (0 I/O) | Promouvoir vers src/shared-kernel/ ; vérifier 0 cycle M3 et 90/360 ticks SHA-256 (SWM-006) |
+| L3 | systems/ (9 noyaux métier purs + playtest/) | L0, L1, L2 (0 I/O) | Regrouper en 5 tranches métier src/slices/ (bioclimate-world, ecclesia-ethics, executive-dossiers, economy-eras, geopolitics-war) |
+| L4 | engine3d/, adapters/, bridges/ | L0..L3, three, R3F | Brancher shader Rayleigh/Mie uAtmoDivision (SWM-002) ; indexer playtest-p13.bridge.ts dans M13 |
+| L5 | retrievers/, stores/ (Zustand), services/, pipelines/, worker/, doc-sync/ | L0..L4, Cloud/SDK | Isoler sim.worker.ts (SWM-003) ; indexer climate-video-studio.retriever.ts + doc-mesh-sync.service.ts ; consolider src/platform/ |
+| L6..L7 | hooks/, utils/, components/, interfaces/, assets/, App.tsx, main.tsx, index.css | L0..L6 (Jotai UI R-18) | Fix mobile 360 px ≥44px + ExoTooltip (SWM-004) ; indexer useDocMeshStatus.ts + StudioVideoClimat.tsx → src/slices/shell-3d-audio/ |
+| L8 | app/api/, server.ts, scripts/ | L0..L7 (JWT R-07) | Implémenter cascade Multi-IA 0 USD Tier 0→5 + HTTP 403 payant (SWM-005) ; déployer src/_meta/ + src/_sync/ (GUS-3) |
+8. SECTION SEC-10 & SEC-11 — EXO-SHELL, 3D OPEN-SKY, CASCADE BFF 0 USD & ATLAS MX16-ICOM (v2.1.0 · Z2)
+8.1 EXO-SHELL, Bento 135°, Open-Sky 3D & Passerelle 0 USD (2.A)
+ * EXO-SHELL (8 Écrans Solo + 8 Sous-Écrans < 150 ms sans démontage WebGL) : EXO_BOOT → EXO_AUTH (Firebase JWT R-11) → EXO_MAIN_MENU → EXO_NEW_SIMULATION → EXO_SETTINGS (6 onglets dont Onglet 6 Personnalité/Référentiel AR-17) → EXO_BRIEFING_LOBBY → EXO_GAME_SCREEN → EXO_SUBSCREENS (8 overlays). Responsive 360 px à 3 840 px, Bottom Sheets (55 % / 92 %) sous 768 px, cibles ≥ 44×44 px, contraste WCAG 2.1 AA ≥ 4,5:1, Web Radio FIP (5–6 flux, muet par défaut, repli synthétique < 500 ms, -14 LUFS).
+ * Rendu 3D Open-Sky & WebKit Memory Shield : Shaders analytiques Rayleigh/Mie pilotés par uAtmoDivision (0..4) sans dôme (R-16), transitions 3 échelles ≤ 650 ms (R-15), DPR ≤ 1,5, ≤ 120 draw calls, RAM mobile < 250 Mo avec purge .dispose() automatique à 190 Mo et fallback 2D si webglcontextlost.
+ * Cascade BFF Multi-IA 0 USD (server.ts · R-68, R-69) : Tier 0 Catalogue local (fallback-dossiers.catalog.ts, 0 LLM sur C2/C3, < 5 ms) → Tier 1 Gemini Free Tier (v1beta, < 6 000 ms, clamp [−0,15 ; +0,15]) → Tier 2 Mistral Free → Tier 3 Groq Free → Tier 4 OpenRouter :free → Tier 5 WebLLM WebGPU local 0 USD. Rejet HTTP 403 bloquant sur tout modèle payant ; télémétrie sur /api/ai/status.
+8.2 Atlas Consolidé MX16-ICOM (M0..M15 + MC-00 + SM-01..06) (2.B)
+| ID | Alias & Nom Matriciel | Couches | Profil D-PROF | Statut [OBSERVÉ] & Action Cible v5.1.0-alpha.1 |
+|---|---|---|---|---|
+| M0 | M0-META (MC-00 3NF + SemVer Fractal + Tri-Lock) | L0..L8 | ULTRA_DENSE | Figé 4.0.0-rc.1 → passer en lecture dynamique 5.1.0-alpha.1 |
+| M1 | M1-LEDGER (SM-01 · Décision, PA 2:1, Φ01..Φ12, Bus) | L0,L2,L3 | MATRICIEL | PASS · Option 0 PA et TRIGGER_BUS vérifiés |
+| M2 | M2-SPECTRA (SM-02 · D1..D5, Bioclimat, Éthique/Église) | L1,L3 | MATRICIEL | EN_MAJ · Purge 4 paliers (SWM-001) + intégration F-53..56 |
+| M3 | M3-DSM (SM-03 · Dépendances L0→L8 Kahn + Macro-Éco) | L0..L8 | ULTRA_DENSE | PASS · 0 cycle topologique ; étendre aux 6 tranches FS4X |
+| M4 | M4-DATA (Persistance, MIG, RAG pgvector + SM-04 Combat) | L2,L3,L5 | ULTRA_DENSE | PASS · Contrats D1..D5, backup t−1, combat 4P |
+| M5 | M5-FSM (SM-05 · Automate Campagne, Quêtes, PCG32) | L0..L5 | MATRICIEL | PASS · Replay bit-à-bit 90 (0x2050E801) & 360 ticks |
+| M6 | M6-QFD (SM-06 · Exigences ↔ Specs & 6 Espaces UX) | L5..L7 | STANDARD | EN_MAJ · Conflits résolus (+32 Pugh) + mobile 360 px (SWM-004) |
+| M7 | M7-KRN (Karnaugh Verrou T_END_TURN + Consensus 24 Dom.) | L2,L7 | ULTRA_DENSE | PASS · Zéro deadlock et autorité L0..L3 certifiée |
+| M8 | M8-CAT (Catalogues L1, Formules PCG32, Colons & Bridges) | L1,L4,L5 | MATRICIEL | EN_MAJ · Ajouter catalogues Bioclimat & Église + pont P13 |
+| M9 | M9-SEC (Zero-Trust, Parseurs L0, Cascade BFF 0 USD, R-50) | L0,L5,L8 | ULTRA_DENSE | EN_DEV · Implémenter cascade Tier 0→5 + HTTP 403 (SWM-005) |
+| M10 | M10-RND (Triggers, Three.js Open-Sky, B3D/H3D, Unity 6) | L2,L4 | ULTRA_DENSE | EN_DEV · Shader Rayleigh/Mie uAtmoDivision (SWM-002) |
+| M11 | M11-PUGH (Arbitrages Pondérés AR/OPT, Dispatchers, Genèse) | L2,L3 | STANDARD | PASS · Score cumulé +32 vs baseline verrouillé (R-25) |
+| M12 | M12-FMEA (AMDEC Risques IPR≥20, Routers, Audio FIP) | L2,L5,L8 | ULTRA_DENSE | PASS · Parades déterministes R1..R10 + catastrophes F-54 |
+| M13 | M13-SADT (M13-A ICOM ↔ M13-D Mapping src/ + Retrievers) | L0..L8 | ULTRA_DENSE | NO-GO (16/17) · Indexer les 7 modules P13 orphelins → 17/17 PASS |
+| M14 | M14-GEMMA (Sûreté F/A/D1-GCSa, Queues P0, MIG Saves) | L2,L5 | ULTRA_DENSE | EN_MAJ · Assurer rétrocompatibilité saves 4 paliers → D1..D5 |
+| M15 | M15-GRF (GRAFCET Φ01..Φ12, Guardrails, Worker, exo:audit) | L2,L5,L8 | ULTRA_DENSE | EN_MAJ · Boucler WebKit < 250 Mo (SWM-003) & CI 5 Portes (SWM-006) |
+ * [L3 · @AI-MIRROR · K0://P4-S09-11-TECH] : SRC=234Mod/24Dom->FS4X(6Slices) | Gate=16/17->17/17(+7P13_in_M13) | OpenSky=RayleighMie_NoDome | RAM=<250MB(DPR<=1.5) | BFF=Tier0..5_0USD_HTTP403 | Contracts=Zod_D1..D5+Bio+Ecclesia.
+PARTITION V — ANNEAU 4 : CATALOGUES 7 CLASSES, REGISTRES SOUVERAINS & TAMPON CHAUD (P-V)
+9. SECTION SEC-12 & SEC-13 — REGISTRES, ROADMAP & MÉMOIRE TAMPON DYNAMIQUE (v2.2.0 · Z3)
+9.1 Ventilation Séparée des 7 Classes (SEC-12 · NF EN ISO 7573 — Zéro Mélange)
+| Classe | Préfixe | Volumétrie Cible (v2.12) | Périmètre & Règle d'Audit |
+|---|---|---|---|
+| 1. Features | F-XX / FEAT-XX | 56 (F-01..F-56) | Unicité R-03 · Indexées en SEC-02B (4 Règnes / 7 Genres) |
+| 2. Modules | MOD-* | 24 domaines + 6 tranches FS4X | Parité 1:1 obligatoire dans M13-D (17/17 PASS) |
+| 3. Composants | CMP-* | EXO-SHELL (8+8), ExoTooltip, StudioVideoClimat, Bento | Plafond ≤ 200 lignes (R-14), mobile ≥ 44×44 px |
+| 4. Plugins | PLG-* | PLG-SHADER-OPENSKY, PLG-UNITY6, PLG-WASM-CPP | Isolés derrière src/adapters/ et src/bridges/ |
+| 5. Outils | TLS-* | TS 5.7/7, ESLint 9, Vite 8, Vitest, AI Studio, Antigravity, NotebookLM | 100 % gratuits (R-68) |
+| 6. Scripts | SCR-* | sync-drive-sot, audit-matrices, compress-dense-matrices, exo:audit, exo:doc-mesh | Exécution AP-0 déterministe (Exit 0) |
+| 7. Extensions | EXT-* | EXT-GUS3-TRIAD, EXT-BIOCLIMAT-V52, EXT-ECCLESIA-TERRE, EXT-SLICE-FS4X | Greffons modulaires activables sans casser le noyau |
+9.2 Synthèse des Registres Souverains (AR-01..19 · OPT-01..12 · R-01..69 · FUP-001..016)
+ * Arbitrages (AR-01..AR-19) : AR-01 Zéro Google Chat (pgvector) · AR-02 Zéro Chatbot libre · AR-03 Bus Tri-Voies · AR-04 Super-Alliance autonome · AR-05 6 Slots · AR-06 Villes↔État · AR-07 PA+4 Sous-PA · AR-08 DAG New Vegas · AR-09 ΔP_adapt · AR-10 Drones/Cyber/Combat 4P · AR-11 5 Divisions Scientifiques · AR-12 Dual-Adapter 3D & Legal · AR-13 RAG 768d · AR-14 Maint C3 · AR-15 6 Ères HK · AR-16 Nomenclature R-50 · AR-17 Onglet 6 Personnalité/Référentiel · AR-18 Éthique Thomiste, Maslow & 6 Niveaux · AR-19 Discernement de la Volonté du Seigneur & Liberté de Conscience.
+ * Options Verrouillées (OPT-01..OPT-12) : OPT-01 Slot 1 → 6 · OPT-02 Dual-Adapter Three.js/Unity 6 · OPT-03 PA+4 Sous-PA · OPT-04 Anno+Cities II · OPT-05 12–30 Colons · OPT-06 Gemini Free Tier Hybride · OPT-07 A+ Combats 4P L1–L5 · OPT-08 A→C Campagne + Infini · OPT-09 Tactical Dark Bento 135° · OPT-10 Super-Alliance IA · OPT-11 C++17 différé V5 · OPT-12 100 % Solo v1.0.
+ * Règles Souveraines (R-01..R-69) : R-01..08 PO/ICOM · R-09..23 Structure & Pureté (R-09 Vérité, R-13 Pureté L2/L3, R-14 300/200/150 L, R-16 Open-Sky) · R-24..35 Souveraineté & PA (R-24 Dossiers, R-25 Baptiste Lecoustre, R-26 Fongibilité) · R-36..50 Physique, Cyber & Lexique (R-39/49 D1, R-47 Combat 4P, R-50 Filtre lexical) · R-51..65 Boucle, UI & Audio · R-66..69 PCG32, SHA-256, 0 USD, Monopole Oracle.
+9.3 Mémoire Tampon Dynamique — État Réel, Plans P1..P3 & Dernier Changelog (Ring 1 Chaud)
+| Plan / Chantier | Tickets & FUP Liés | Écart Réel [OBSERVÉ ce901013] → [CIBLE v5.1.0-alpha.1] | Critère PASS (5 Portes / AP-2) |
+|---|---|---|---|
+| P1 Gameplay, D1..D5 & Éthique | SWM-3DQA-001, SWM-3DQA-006, DEL-005, FUP-004/015/016 | Purger derniers reliquats 4 paliers ; verrouiller EXOSPHERE..TROPOSPHERE ; intégrer F-49..52 puis cadrer F-53..56 (v5.2) | tsc --strict vert · SHA-256 constant 90 (0x2050E801) & 360 ticks · 0 mot R-50 |
+| P2 Architecture, Open-Sky & 360 px | SWM-3DQA-002, SWM-3DQA-003, SWM-3DQA-004, DEL-003 | Brancher shader Rayleigh/Mie uAtmoDivision ; isoler sim.worker.ts + auto-purge 190 Mo ; corriger cibles < 44 px sous 390 px | Zéro dôme (R-16) · WebKit < 250 Mo · DPR ≤ 1,5 · 0 overflow 360–3840 px |
+| P3 Audit 17/17, M0 & BFF 0 USD | SWM-3DQA-005, FUP-013/014 | Indexer les 7 modules P13 orphelins dans M13 (16/17 → 17/17 PASS) ; SemVer dynamique M0 ; cascade server.ts Tier 0→5 + HTTP 403 | npm run exo:audit 17/17 PASS GO · FMT-M < 20k tokens · 0,00 USD garanti |
+ * Dernier Changelog Horodaté (2026-11-24) : Consolidation DOC-EXW-ARCH-001 v2.12.0-MAITRE — Fusion MAD + GDD + CdCF + DAT + MBE sous TPL-EXW-BP-BPP v3.0.0, intégration EXW-HOLON-24, GL-0..GL-5, RTM-XSC, GUS-3, extension à 56 Features (F-53..56 Bioclimat + Église Catholique) et AR-19, activation compétence teamworker-orchestrateur (AP-0..AP-4, retrait délégations Claude & Vibe).
+PARTITION VI — ANNEAU 4 : ANNEXES OPÉRATIONNELLES (A..K) & PRESET GOOGLE AI STUDIO (P-VI)
+ * Index des Annexes (Z4 Compact) : A..D SYS-INST-EXW-001, Isolation Astralis, Délégation 5 Portes (DELEG-EXW-001 sans Claude), Amorçage V0 · E..G Scellement V0, Structure Plate AI Studio, Miroir 6 Surfaces & Playtest 6 Tours (0x2050E801) · H..K 5 Divisions Scientifiques, Compression & Synchro 6 Surfaces, Tri-Zoom v5.1.0-alpha.1 & Extension EXW-FMM / F-53..56 / FS4X-Kernel.
+Annexe Opérationnelle — Prompt-Preset Prêt à Coller dans Google AI Studio (v2.12.0-MAITRE)
+[COMMANDE D'AFFICHAGE & AUDIT MASTER BLUEPRINT — DOC-EXW-ARCH-001 v2.12.0-MAITRE / EXOW-ROOT v5.1.0-alpha.1]
+
+RÔLE : Architecte SSoT EXO WORLD : 2050 (/teamworker · EXW-FMM v1.0 · MX16-ICOM · GUS-3).
+MODE D'ACTION : Lecture & audit du workspace courant sans modifier de fichier. Inspecte package.json, src/, docs/, M0_MetaSemVer.json, M13_SADT_Mapping.json et server.ts, puis affiche le Master Blueprint à jour.
+
+COMMUTATEUR DE MODE ACTIF :
+- MODE_AFFICHAGE = MODE_2_ULTRA_DENSE_MATRICIEL
+  (Basculer sur MODE_1_NORMAL_ETENDU pour l'édition complète à densité mixte D-PROF.)
+
+RÈGLES BLOQUANTES (FMT-EXW-001, R-09, R-14, R-16, R-24, R-26, R-50, R-66, R-68) :
+1. ISO 2145 (max 6 niveaux), Unicode pur, ZERO balise HTML, ZERO formule LaTeX, filtre lexical R-50 strict, isolation absolue hors Astralis.
+2. Séparation stricte des 7 classes (FEAT, MOD, CMP, PLG, TLS, SCR, EXT) et structure 4 temps par section ([1. METADATA] 1.A Sans Matrice + 1.B Matrices ; [2. CONTENU] 2.A Hors Matrices + 2.B Matrices & [L3 @AI-MIRROR]).
+3. Uniquement les 5 divisions scientifiques (EXOSPHERE..TROPOSPHERE), gestion bioclimatique BioHealth (F-53/54), Éthique Thomiste/Maslow & Église Catholique / Liberté de Conscience (F-49..52, F-55/56, AR-17..19).
+4. Zéro délégation Claude, zéro délégation structurée Vibe, budget 0 USD strict (cascade server.ts Tier 0->5, HTTP 403 payant).
+5. Distingue systématiquement [OBSERVÉ] de [CIBLE v5.1.0-alpha.1 / v5.2.0 FS4X] et liste l'état exact des 7 modules P13 dans M13-D (16/17 -> 17/17 PASS).
+
+AFFICHE DANS L'ORDRE :
+- Bloc 0 : Cartouche ISO 7200 + Commutateur 2 Modes + EXW-HOLON-24 + M0-EVOL (AP-0..AP-4).
+- P-I : Sommaire ISO 2145, RTM-XSC, Registre des 56 Features (F-01..F-56), protocole GUS-3 (_meta/_updates/_sync).
+- P-II : GDD 6 Ères + Hiérarchie GL-0..GL-5.
+- P-III : 5 Divisions & Bioclimat, Éthique/Maslow/Église (AR-17..19), Dossiers PA & SADT A1..A5.
+- P-IV : SRC L0..L8 [OBSERVÉ] -> FS4X-Kernel [CIBLE], Open-Sky/WebKit <250Mo, BFF 0 USD & Atlas MX16-ICOM (M0..M15).
+- P-V : Ventilation 7 classes, Registres (AR-01..19, OPT-01..12, R-01..69) & Tampon Chaud P1..P3 + Verdict 5 Portes.
+
+Souhaites-tu maintenant que je synchronise ce Master Blueprint v2.12.0-MAITRE dans le référentiel Google Drive (DOC-EXW-ARCH-001 / 00_INDEX_PROJET sous ton accord explicite AP-4 / R-25), ou que je mette d'abord à jour la compétence exoworld-ssot-architect pour qu'elle embarque ce nouveau socle ?

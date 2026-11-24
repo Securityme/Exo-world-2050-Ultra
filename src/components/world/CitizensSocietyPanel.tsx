@@ -14,6 +14,7 @@ import { PromptSuggestionChips } from '../bento/PromptSuggestionChips.tsx';
 import { useExoStore } from '../../stores/game.store.ts';
 import { toastNoticeAtom } from '../../stores/selection.atoms.ts';
 import { computeCitizensSocietyReport } from '../../systems/economy-urban/citizens-society.ts';
+import { EcclesiaDiscernmentCard } from './BioHealthEcclesiaCards.tsx';
 
 /**
  * [L7] EXW.L7.CITIZENS_SOCIETY_PANEL | v5.0.0 | SADT A3.1/A3.4
@@ -252,6 +253,8 @@ export function CitizensSocietyPanel() {
           </div>
         )}
       </div>
+
+      <EcclesiaDiscernmentCard />
     </div>
   );
 }

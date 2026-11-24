@@ -8,7 +8,27 @@ export const CameraScaleSchema = z.union([z.literal(1), z.literal(2), z.literal(
 
 export const AtmosphereTierSchema = z.enum(['P1', 'P2', 'P3', 'P4']);
 
-export const ViewportOverlayModeSchema = z.enum(['STANDARD', 'MAINTENANCE', 'LOGISTICS']);
+export const ViewportOverlayModeSchema = z.enum([
+  'STANDARD',
+  'MAINTENANCE',
+  'LOGISTICS',
+  'TACTICAL',
+  'BIOSPHERE',
+]);
+
+export const PlanetBiomeProfileSchema = z.enum([
+  'ARCHIPEL_EMERAUDE',
+  'MONDE_OCEANIQUE',
+  'PANGEE_TEMPEREE',
+  'CANYONS_OCRES',
+  'CRYO_OCEAN',
+  'VOLCANIQUE_BASALTE',
+  'BIOSPHERE_FONGIQUE',
+  'ALPIN_SAUVAGE',
+]);
+
+export const PlanetReliefPresetSchema = z.enum(['DOUX', 'EQUILIBRE', 'ESCARPE']);
+export const PlanetClimatePresetSchema = z.enum(['TEMPERE', 'TROPICAL', 'ARIDE', 'POLAIRE']);
 
 export const DossierPinPacketSchema = z.object({
   dossierId: z.string(),
@@ -28,6 +48,32 @@ export const CityDistrictPacketSchema = z.object({
   gridZ: z.number().int(),
 });
 
+export const CityColonistPacketSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  specialty: z.enum(['ENGINEERING', 'AGRONOMY', 'CYBERNETICS', 'SECURITY', 'EXOBIOLOGY']),
+  morale: z.number().min(0).max(100),
+  fatigue: z.number().min(0).max(100),
+  assignedDistrictId: z.string().nullable(),
+});
+
+export const CameraFocusTargetSchema = z.object({
+  scale: CameraScaleSchema.optional(),
+  targetType: z.enum(['SLOT', 'TILE', 'DISTRICT', 'COLONIST']),
+  slotIndex: z.number().int().min(1).max(6).optional(),
+  tileIndex: z.number().int().min(0).max(71).optional(),
+  districtId: z.string().optional(),
+  colonistId: z.string().optional(),
+  focusNonce: z.number().int().nonnegative(),
+});
+
+export const DiplomaticArcPacketSchema = z.object({
+  id: z.string(),
+  fromTile: z.number().int().min(0).max(71),
+  toTile: z.number().int().min(0).max(71),
+  kind: z.enum(['TRADE', 'ALLY', 'EMBARGO']),
+});
+
 export const SceneDiffPacketSchema = z.object({
   tick: z.number().int().nonnegative(),
   cycle: z.number().int().nonnegative(),
@@ -42,6 +88,7 @@ export const SceneDiffPacketSchema = z.object({
   rivalTiles: z.array(z.number().int().min(0).max(71)),
   activeDossierPins: z.array(DossierPinPacketSchema),
   districts: z.array(CityDistrictPacketSchema),
+  colonists: z.array(CityColonistPacketSchema).optional(),
   droneCount: z.number().int().min(0),
   themeMode: z.enum(['DARK_BENTO', 'LIGHT_ANNO']),
   hologramPreviewDistrict: z.string().nullable(),
@@ -49,6 +96,13 @@ export const SceneDiffPacketSchema = z.object({
   season: z.enum(['PRINTEMPS', 'ETE', 'AUTOMNE', 'HIVER']).optional(),
   themeAccentHex: z.string().optional(),
   themeAccent2Hex: z.string().optional(),
+  worldSeed: z.number().int().nonnegative().optional(),
+  planetBiomeProfile: PlanetBiomeProfileSchema.optional(),
+  oceanCoveragePct: z.number().min(0).max(95).optional(),
+  planetRelief: PlanetReliefPresetSchema.optional(),
+  planetClimate: PlanetClimatePresetSchema.optional(),
+  cameraFocusTarget: CameraFocusTargetSchema.nullable().optional(),
+  diplomaticArcs: z.array(DiplomaticArcPacketSchema).optional(),
 });
 
 export const RenderToGameEventSchema = z.discriminatedUnion('type', [
@@ -56,13 +110,20 @@ export const RenderToGameEventSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('SLOT_SELECTED'), slotIndex: z.number().int().min(1).max(6) }),
   z.object({ type: z.literal('DOSSIER_PIN_CLICKED'), dossierId: z.string() }),
   z.object({ type: z.literal('DISTRICT_CLICKED'), districtId: z.string() }),
+  z.object({ type: z.literal('COLONIST_CLICKED'), colonistId: z.string() }),
   z.object({ type: z.literal('SCALE_CHANGED'), scale: CameraScaleSchema }),
 ]);
 
 export type CameraScale = z.infer<typeof CameraScaleSchema>;
 export type AtmosphereTier = z.infer<typeof AtmosphereTierSchema>;
 export type ViewportOverlayMode = z.infer<typeof ViewportOverlayModeSchema>;
+export type PlanetBiomeProfile = z.infer<typeof PlanetBiomeProfileSchema>;
+export type PlanetReliefPreset = z.infer<typeof PlanetReliefPresetSchema>;
+export type PlanetClimatePreset = z.infer<typeof PlanetClimatePresetSchema>;
 export type DossierPinPacket = z.infer<typeof DossierPinPacketSchema>;
 export type CityDistrictPacket = z.infer<typeof CityDistrictPacketSchema>;
+export type CityColonistPacket = z.infer<typeof CityColonistPacketSchema>;
+export type CameraFocusTarget = z.infer<typeof CameraFocusTargetSchema>;
+export type DiplomaticArcPacket = z.infer<typeof DiplomaticArcPacketSchema>;
 export type SceneDiffPacket = z.infer<typeof SceneDiffPacketSchema>;
 export type RenderToGameEvent = z.infer<typeof RenderToGameEventSchema>;

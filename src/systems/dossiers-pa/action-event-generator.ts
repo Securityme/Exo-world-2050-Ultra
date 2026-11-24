@@ -2,6 +2,14 @@ import type { DossierActionPayload, ExecutiveDossier } from '../../contracts/pa-
 import { err, ok, type ExwResult } from '../../contracts/trigger-bus.schema.ts';
 import type { WorldState } from '../../contracts/world-state.schema.ts';
 import { computeStateHash } from '../../core/hashing/state-hasher.ts';
+import {
+  COLONIST_GEAR_UPGRADE_SPECS,
+  findShipBlueprint,
+  findShipModuleSpec,
+  SHIP_MODULE_SLOT_LABELS,
+} from '../../data/ship-equipment.catalog.ts';
+import { SHARED_TECHS_30 } from '../../data/v4-catalog.data.ts';
+import { getShipRefitCosts } from '../fleet/ship-loadout.engine.ts';
 
 /**
  * [L3] Event-Only Action Gateway Generator.
@@ -534,6 +542,677 @@ export function generateActionEventDossier(
             label: 'Annuler l’opération (0 coût)',
             doctrineTag: 'FEDERAL',
             description: 'Laisse le secteur intact et préserve vos troupes.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'EQUIP_SHIP_MODULE': {
+      const ship = (state.fleetShips ?? []).find((s) => s.id === request.shipId);
+      if (!ship) return err('EXW_ERR_SCHEMA', 'Vaisseau introuvable dans la flotte.');
+      const mod = findShipModuleSpec(request.moduleId);
+      if (!mod) return err('EXW_ERR_SCHEMA', 'Module d’armement ou système introuvable.');
+      const slotLabel = SHIP_MODULE_SLOT_LABELS[mod.slot];
+      const costText = `${mod.costCredits} Cr · ${mod.costMaterials} Mat · ${mod.costElectronics} Élec${mod.costCompute > 0 ? ` · ${mod.costCompute} Calc` : ''}`;
+      const bonusParts = [
+        mod.firepower > 0 ? `+${mod.firepower} Puissance` : null,
+        mod.defense > 0 ? `+${mod.defense} Défense` : null,
+        mod.speed > 0 ? `+${mod.speed} Vitesse` : null,
+        mod.utilityYield > 0 ? `+${mod.utilityYield} Utilité` : null,
+      ].filter(Boolean);
+
+      dossier = {
+        id: `evt-ship-mod-${ship.id}-${mod.id}-${idSuffix}`,
+        code: `FLT-C${state.cycle}`,
+        dossierClass: 'C3',
+        title: `Équipement Vaisseau : ${mod.name} → ${ship.name}`,
+        briefing: `Montage du module « ${mod.name} » (${slotLabel} · T${mod.tier}) sur ${ship.name} (${ship.loadout?.length ?? 0}/${ship.maxSlots ?? 4} baies). Bonus : ${bonusParts.join(', ')}. Coût d’installation : ${costText}.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 15,
+        expiresInCycles: 2,
+        scientificTag: `Flotte · ${slotLabel}`,
+        options: [
+          {
+            id: `opt-mod-std-${idSuffix}`,
+            label: `Installer « ${mod.name} » (-${mod.costCredits} Cr · -${mod.costMaterials} Mat.)`,
+            doctrineTag: 'SECURITY',
+            description: `Monte immédiatement le module sur ${ship.name} (${bonusParts.join(' · ')}).`,
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, xpCiv: 14 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-mod-cal-${idSuffix}`,
+            label: 'Calibrage de précision en cale sèche (1 PA Technique)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Monte le module avec tests complets (+14 Énergie, +8 Calcul, +6% entretien ville).',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_MNT',
+            subPaCost: 1,
+            skillCheck: {
+              attribute: 'engineering',
+              threshold: 9,
+              successBonusLabel: 'Synchronisation orbitale optimale',
+              failureRiskLabel: 'Montage nominal',
+            },
+            effects: { ...ZERO_EFFECTS, energy: 14, compute: 8, maintenanceDelta: 6, xpCiv: 20, xpCabinet: 15 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-mod-joint-${idSuffix}`,
+            label: 'Standardisation Alliance & réserves (1 PA Politique)',
+            doctrineTag: 'FEDERAL',
+            description: 'Homologue le montage auprès de la Super-Alliance (+5% Confiance, +45 Cr subvention).',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_POL',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, credits: 45, allianceTrustDelta: 5, xpAlliance: 15, xpCiv: 14 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-mod-cancel-${idSuffix}`,
+            label: 'Reporter le montage (0 coût)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Conserve vos stocks et laisse la baie libre pour un autre système.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'REFIT_SHIP': {
+      const ship = (state.fleetShips ?? []).find((s) => s.id === request.shipId);
+      if (!ship) return err('EXW_ERR_SCHEMA', 'Vaisseau introuvable.');
+      const costs = getShipRefitCosts(ship, request.mode);
+      const isUpgrade = request.mode === 'UPGRADE_LEVEL';
+      dossier = {
+        id: `evt-refit-${ship.id}-${request.mode}-${idSuffix}`,
+        code: `RFT-C${state.cycle}`,
+        dossierClass: 'C3',
+        title: isUpgrade
+          ? `Modernisation Niv.${Math.min(5, ship.level + 1)} : ${ship.name}`
+          : `Révision coque : ${ship.name} (${ship.integrity}%)`,
+        briefing: isUpgrade
+          ? `Passage de ${ship.name} au Niveau ${Math.min(5, ship.level + 1)} (+22% rendement structurel, intégrité 100%, nouvelle baie aux Niv.3 et Niv.5). Coût : ${costs.credits} Cr, ${costs.materials} Mat., ${costs.electronics} Élec.`
+          : `Réparation intégrale de ${ship.name} (de ${ship.integrity}% à 100%). Coût : ${costs.credits} Cr, ${costs.materials} Mat., ${costs.electronics} Élec.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 16,
+        expiresInCycles: 2,
+        scientificTag: 'Chantier Orbital · Refit',
+        options: [
+          {
+            id: `opt-refit-std-${idSuffix}`,
+            label: isUpgrade
+              ? `Moderniser Niv.${Math.min(5, ship.level + 1)} (-${costs.credits} Cr · -${costs.materials} Mat.)`
+              : `Réparer à 100% (-${costs.credits} Cr · -${costs.materials} Mat.)`,
+            doctrineTag: 'SECURITY',
+            description: isUpgrade
+              ? 'Lance immédiatement la refonte de classe et restaure la coque.'
+              : 'Remet le vaisseau en pleine capacité opérationnelle.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, xpCiv: 14 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-refit-eng-${idSuffix}`,
+            label: 'Optimisation chantier & recyclage (1 PA Technique)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Récupère +18 Matériaux et +12 Énergie durant l’opération en cale.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_MNT',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, materials: 18, energy: 12, xpCabinet: 15, xpCiv: 18 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-refit-crew-${idSuffix}`,
+            label: 'Dotation équipage & Kits O₂ (1 PA Climat)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Complète le refit avec +12 Kits O₂ et +3% Approbation civique.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_BIO',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, breathingKits: 12, approvalDelta: 3, xpCiv: 16 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-refit-cancel-${idSuffix}`,
+            label: 'Ajournement chantier (0 coût)',
+            doctrineTag: 'CORPORATE',
+            description: 'Ferme l’ordre sans dépense.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'COMMISSION_SHIP': {
+      const bp = findShipBlueprint(request.shipClass);
+      const displayName = request.customName?.trim() || bp.label;
+      dossier = {
+        id: `evt-build-ship-${request.shipClass}-${idSuffix}`,
+        code: `SHP-C${state.cycle}`,
+        dossierClass: 'C3',
+        title: `Construction Orbitale : ${displayName}`,
+        briefing: `Mise en chantier d’un nouveau vaisseau « ${bp.label} » (${bp.baseSlots} baies modulaires, module initial inclus). ${bp.summary} Coût : ${bp.costCredits} Cr, ${bp.costMaterials} Mat., ${bp.costElectronics} Élec.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 14,
+        expiresInCycles: 2,
+        scientificTag: 'Chantier Orbital · Flotte',
+        options: [
+          {
+            id: `opt-shp-std-${idSuffix}`,
+            label: `Lancer la construction (-${bp.costCredits} Cr · -${bp.costMaterials} Mat.)`,
+            doctrineTag: 'SECURITY',
+            description: `Assemble et met en orbite « ${displayName} » immédiatement.`,
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, xpCiv: 22 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-shp-rush-${idSuffix}`,
+            label: 'Cale prioritaire & télémétrie (1 PA Technique)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Assemble le vaisseau avec +16 Calcul et +14 Énergie sur le réseau orbital.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_MNT',
+            subPaCost: 1,
+            skillCheck: {
+              attribute: 'engineering',
+              threshold: 10,
+              successBonusLabel: 'Qualité chantier supérieure',
+              failureRiskLabel: 'Assemblage nominal',
+            },
+            effects: { ...ZERO_EFFECTS, compute: 16, energy: 14, xpCiv: 28, xpCabinet: 18 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-shp-ceremony-${idSuffix}`,
+            label: 'Baptême civique & cofinancement (1 PA Politique)',
+            doctrineTag: 'FEDERAL',
+            description: 'Mobilise les partenaires (+65 Cr de subvention, +4% Approbation, +4% Alliance).',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_POL',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, credits: 65, approvalDelta: 4, allianceTrustDelta: 4, xpAlliance: 18 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-shp-cancel-${idSuffix}`,
+            label: 'Annuler la mise en chantier (0 coût)',
+            doctrineTag: 'CORPORATE',
+            description: 'Conserve vos matériaux et crédits.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'UPGRADE_COLONIST_GEAR': {
+      const spec = COLONIST_GEAR_UPGRADE_SPECS[request.gearSlot];
+      const targetColonist = request.colonistId
+        ? state.colonists.find((c) => c.id === request.colonistId) ?? null
+        : null;
+      const baseTier = targetColonist?.gear?.[request.gearSlot] ?? state.colonistGear?.[request.gearSlot] ?? 1;
+      const nextTier = Math.min(3, baseTier + 1);
+      const costCr = spec.costCreditsPerTier * baseTier;
+      const costMat = spec.costMaterialsPerTier * baseTier;
+      const costElec = spec.costElectronicsPerTier * baseTier;
+      const scopeLabel = targetColonist ? targetColonist.name : 'Toute la colonie';
+
+      dossier = {
+        id: `evt-gear-${request.gearSlot}-${idSuffix}`,
+        code: `EQP-C${state.cycle}`,
+        dossierClass: 'C2',
+        title: `Équipement Colons : ${spec.label} T${nextTier}`,
+        briefing: `Dotation « ${spec.label} » palier T${nextTier} (${scopeLabel}). ${spec.summary} Coût : ${costCr} Cr, ${costMat} Mat., ${costElec} Élec.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 12,
+        expiresInCycles: 2,
+        scientificTag: 'Colons · Dotation',
+        options: [
+          {
+            id: `opt-gear-std-${idSuffix}`,
+            label: `Déployer ${spec.label} T${nextTier} (-${costCr} Cr · -${costMat} Mat.)`,
+            doctrineTag: 'SOLARPUNK',
+            description: 'Équipe immédiatement les colons (+4 Moral et rendement accru).',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, approvalDelta: 2, xpCiv: 14 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-gear-ergo-${idSuffix}`,
+            label: 'Atelier ergonomie & formation (1 PA Gestion)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Accompagne la dotation (+10 Kits O₂, +4% Approbation, +15 XP Cabinet).',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_GES',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, breathingKits: 10, approvalDelta: 4, xpCabinet: 15, xpCiv: 18 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-gear-bio-${idSuffix}`,
+            label: 'Programme santé & filtration (1 PA Climat)',
+            doctrineTag: 'FEDERAL',
+            description: 'Combine la dotation avec +12 Eau et +12 Vivres pour les équipes terrain.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_BIO',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, water: 12, food: 12, xpCiv: 16 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-gear-cancel-${idSuffix}`,
+            label: 'Reporter la dotation (0 coût)',
+            doctrineTag: 'CORPORATE',
+            description: 'Ferme ce dossier sans dépense.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'START_RESEARCH': {
+      const tech = SHARED_TECHS_30.find((t) => t.id === request.techId);
+      if (!tech) return err('EXW_ERR_SCHEMA', 'Technologie introuvable.');
+      dossier = {
+        id: `evt-tech-${tech.id}-${idSuffix}`,
+        code: `TEC-C${state.cycle}`,
+        dossierClass: 'C4',
+        title: `Programme Scientifique : ${tech.name}`,
+        briefing: `Réorientation des laboratoires vers « ${tech.name} » (Ère ${tech.era} · Domaine ${tech.domain} · ${tech.turnsBase} tours). Effet visé : ${tech.effectLabel}.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 17,
+        expiresInCycles: 2,
+        scientificTag: `Recherche · ${tech.domain}`,
+        options: [
+          {
+            id: `opt-tech-std-${idSuffix}`,
+            label: `Lancer « ${tech.name} » (${tech.turnsBase} tours · 0 PA)`,
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Active immédiatement cette technologie dans le plan de recherche.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, xpCiv: 12 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-tech-osmosis-${idSuffix}`,
+            label: 'Partage brevets Super-Alliance (1 PA Politique)',
+            doctrineTag: 'FEDERAL',
+            description: 'Active la recherche avec +18 Calcul et +5% Confiance Alliance.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_POL',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, compute: 18, allianceTrustDelta: 5, xpAlliance: 14, xpCiv: 16 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-tech-lab-${idSuffix}`,
+            label: 'Allocation énergie & prototypes (1 PA Technique)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Active la recherche et produit +12 Électronique et +10 Énergie.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_MNT',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, electronics: 12, energy: 10, xpCabinet: 15, xpCiv: 16 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-tech-cancel-${idSuffix}`,
+            label: 'Conserver la recherche en cours (0 coût)',
+            doctrineTag: 'CORPORATE',
+            description: 'Ne modifie pas le programme scientifique actuel.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'DIPLOMATIC_INITIATIVE': {
+      const targetRival =
+        (request.rivalId ? state.rivals.find((r) => r.id === request.rivalId) : undefined) ??
+        [...state.rivals].sort((a, b) => a.relationWithPlayer - b.relationWithPlayer)[0] ??
+        null;
+
+      const metaByMode: Record<
+        'ALLIANCE_PACT' | 'RIVAL_DETENTE' | 'TRADE_ACCORD',
+        {
+          readonly title: string;
+          readonly briefing: string;
+          readonly stdLabel: string;
+          readonly stdDesc: string;
+          readonly tag: string;
+        }
+      > = {
+        ALLIANCE_PACT: {
+          title: 'Sommet fédéral : Pacte Super-Alliance',
+          briefing: `Renforcement de votre mandat auprès de ${state.superAllianceName} (confiance actuelle ${state.superAllianceTrust}%, rang #${state.superAllianceRank}/6).`,
+          stdLabel: 'Ratifier le pacte Alliance (+6% Confiance · +45 Cr)',
+          stdDesc: 'Valide immédiatement le protocole fédéral et libère une dotation.',
+          tag: 'Diplomatie · Super-Alliance',
+        },
+        RIVAL_DETENTE: {
+          title: targetRival ? `Détente bilatérale : ${targetRival.name}` : 'Protocole de détente bilatérale',
+          briefing: targetRival
+            ? `Ouverture d’un dialogue apaisé avec ${targetRival.name} (relation actuelle ${targetRival.relationWithPlayer}, puissance ${targetRival.militaryPower}).`
+            : 'Ouverture d’un dialogue diplomatique inter-puissances.',
+          stdLabel: targetRival
+            ? `Signer le protocole avec ${targetRival.name} (+14 Relation)`
+            : 'Signer le protocole diplomatique',
+          stdDesc: 'Réduit les frictions frontalières et renforce votre crédit diplomatique.',
+          tag: 'Diplomatie · Détente',
+        },
+        TRADE_ACCORD: {
+          title: targetRival ? `Accord commercial : ${targetRival.name}` : 'Accord commercial orbital',
+          briefing: `Échange logistique de 12 Matériaux contre +95 Crédits et un rapprochement diplomatique${targetRival ? ` avec ${targetRival.name}` : ''}.`,
+          stdLabel: 'Exécuter l’accord (-12 Mat. · +95 Cr · +6 Rel.)',
+          stdDesc: 'Convertit des surplus de matériaux en crédits et consolide les relations.',
+          tag: 'Diplomatie · Commerce',
+        },
+      };
+
+      const m = metaByMode[request.mode];
+      dossier = {
+        id: `evt-dip-${request.mode}-${idSuffix}`,
+        code: `DIP-C${state.cycle}`,
+        dossierClass: 'C1',
+        title: m.title,
+        briefing: m.briefing,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 11,
+        expiresInCycles: 2,
+        scientificTag: m.tag,
+        options: [
+          {
+            id: `opt-dip-std-${idSuffix}`,
+            label: m.stdLabel,
+            doctrineTag: 'FEDERAL',
+            description: m.stdDesc,
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, xpAlliance: 15, xpCiv: 10 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-dip-env-${idSuffix}`,
+            label: 'Émissaires & garantie de charte (1 PA Politique)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Ajoute un volet écologique et civique (+4% Approbation, +10 Kits O₂).',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_POL',
+            subPaCost: 1,
+            skillCheck: {
+              attribute: 'diplomacy',
+              threshold: 9,
+              successBonusLabel: 'Rayonnement diplomatique exemplaire',
+              failureRiskLabel: 'Portée diplomatique standard',
+            },
+            effects: { ...ZERO_EFFECTS, approvalDelta: 4, breathingKits: 10, xpCabinet: 15, xpAlliance: 22 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-dip-esc-${idSuffix}`,
+            label: 'Clauses logistiques & calcul partagé (1 PA Gestion)',
+            doctrineTag: 'CORPORATE',
+            description: 'Complète l’accord avec +40 Cr et +12 Calcul partagé.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_GES',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, credits: 40, compute: 12, xpCiv: 16 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-dip-cancel-${idSuffix}`,
+            label: 'Ajournement diplomatique (0 coût)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Reporte la négociation sans modification.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'SIGN_PLANETARY_TREATY': {
+      const rival =
+        (request.rivalId ? state.rivals.find((r) => r.id === request.rivalId) : undefined) ??
+        state.rivals[0] ??
+        null;
+      const treatyNames: Record<typeof request.treatyKind, string> = {
+        MARITIME_TRADE: 'Route Commerciale Maritime',
+        NON_AGGRESSION: 'Pacte de Non-Agression Planétaire',
+        SCIENCE_SHARE: 'Partage Scientifique & Biosphère',
+        ORBITAL_EMBARGO: 'Embargo Logistique Orbital',
+        PLANETARY_SUMMIT: 'Sommet Planétaire de Paix',
+      };
+      const titleName = treatyNames[request.treatyKind];
+      dossier = {
+        id: `evt-treaty-${request.treatyKind}-${idSuffix}`,
+        code: `TRT-C${state.cycle}`,
+        dossierClass: 'C1',
+        title: `Traité Planétaire : ${titleName}`,
+        briefing: `Proposition bilatérale (${titleName})${rival ? ` avec ${rival.name}` : ` à l’échelle planétaire`}. Ce traité projette une liaison active sur le globe et renforce votre influence.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 11,
+        expiresInCycles: 2,
+        scientificTag: 'Diplomatie Planétaire',
+        options: [
+          {
+            id: `opt-trt-std-${idSuffix}`,
+            label: `Ratifier : ${titleName} (0 PA)`,
+            doctrineTag: 'FEDERAL',
+            description: 'Signature officielle du traité avec effets immédiats et durée multi-cycles.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, xpAlliance: 20, xpCiv: 14 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-trt-envoy-${idSuffix}`,
+            label: 'Mission d’ambassadeurs renforcée (1 PA Politique)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Consolide la signature avec +4 % Approbation et +10 Kits O₂ humanitaires.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_POL',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, approvalDelta: 4, breathingKits: 10, xpAlliance: 24 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-trt-cancel-${idSuffix}`,
+            label: 'Ajourner le traité (0 coût)',
+            doctrineTag: 'CORPORATE',
+            description: 'Conserve le statu quo diplomatique.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'DISPATCH_COLONIST_MISSION': {
+      const target = state.colonists.find((c) => c.id === request.colonistId);
+      if (!target) return err('EXW_ERR_SCHEMA', 'Citoyen introuvable.');
+      dossier = {
+        id: `evt-col-mis-${target.id}-${idSuffix}`,
+        code: `CIT-C${state.cycle}`,
+        dossierClass: 'C2',
+        title: `Mission de terrain : ${target.name}`,
+        briefing: `Déploiement ciblé de ${target.name} (${target.specialty}, Moral ${target.morale} %, Fatigue ${target.fatigue} %) en opération de proximité.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 12,
+        expiresInCycles: 2,
+        scientificTag: 'Citoyens · Mission',
+        options: [
+          {
+            id: `opt-cmis-std-${idSuffix}`,
+            label: 'Exécuter la mission de terrain (0 PA)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Génère un bonus immédiat selon la spécialité et +28 XP citoyen.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, xpCiv: 12 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-cmis-esc-${idSuffix}`,
+            label: 'Soutien logistique complet (1 PA Gestion)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Ajoute +12 Eau et +12 Vivres pour l’équipe de terrain.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_GES',
+            subPaCost: 1,
+            effects: { ...ZERO_EFFECTS, water: 12, food: 12, xpCabinet: 12 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-cmis-cancel-${idSuffix}`,
+            label: 'Annuler la mission (0 coût)',
+            doctrineTag: 'FEDERAL',
+            description: 'Laisse le citoyen à son poste actuel.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'REST_COLONIST': {
+      const target = state.colonists.find((c) => c.id === request.colonistId);
+      if (!target) return err('EXW_ERR_SCHEMA', 'Citoyen introuvable.');
+      dossier = {
+        id: `evt-col-rest-${target.id}-${idSuffix}`,
+        code: `REP-C${state.cycle}`,
+        dossierClass: 'C2',
+        title: `Permission & Repos : ${target.name}`,
+        briefing: `Accorder une période de récupération à ${target.name} (Fatigue actuelle ${target.fatigue} %, Moral ${target.morale} %) dans les quartiers côtiers.`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 12,
+        expiresInCycles: 2,
+        scientificTag: 'Citoyens · Bien-être',
+        options: [
+          {
+            id: `opt-crest-std-${idSuffix}`,
+            label: 'Accorder le repos (-28 % Fatigue · +10 Moral · 0 PA)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Restaure la forme et le moral sans dépense budgétaire.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, approvalDelta: 1 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-crest-cancel-${idSuffix}`,
+            label: 'Maintenir en poste (0 coût)',
+            doctrineTag: 'CORPORATE',
+            description: 'Reporte la permission.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS },
+            actionPayload: { kind: 'DEFER_ACTION' },
+          },
+        ],
+      };
+      break;
+    }
+
+    case 'ECCLESIA_DISCERNMENT': {
+      dossier = {
+        id: `evt-ecc-${request.axis}-${idSuffix}`,
+        code: `ECC-C${state.cycle}`,
+        dossierClass: 'C1',
+        title: `Discernement & Subsidiarité (${request.axis})`,
+        briefing: `Initiative pastorale et caritative (FEAT-55/56) menée dans le respect absolu de la liberté de conscience (AR-19) et évaluée selon l’échelle éthique (+3 Grâce à −2).`,
+        source: 'ACTION_GATEWAY',
+        slotIndex: state.activeSlotIndex,
+        tileIndex: 12,
+        expiresInCycles: 2,
+        scientificTag: 'Éthique · AR-19',
+        options: [
+          {
+            id: `opt-ecc-std-${idSuffix}`,
+            label: 'Encourager librement sans contrainte (0 PA)',
+            doctrineTag: 'SOLARPUNK',
+            description: 'Soutient les œuvres locales tout en maintenant 100 % de liberté de conscience.',
+            paGeneralCost: 0,
+            subPaDomain: null,
+            subPaCost: 0,
+            effects: { ...ZERO_EFFECTS, approvalDelta: 2, xpCiv: 14 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-ecc-cancel-${idSuffix}`,
+            label: 'Laisser en observation (0 coût)',
+            doctrineTag: 'FEDERAL',
+            description: 'Conserve la posture actuelle.',
             paGeneralCost: 0,
             subPaDomain: null,
             subPaCost: 0,

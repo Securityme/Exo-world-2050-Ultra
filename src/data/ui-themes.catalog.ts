@@ -35,6 +35,7 @@ export const DEFAULT_UI_THEME_STUDIO_CONFIG: UiThemeStudioConfig = {
   saturationPct: 100,
   fontScalePct: 100,
   safariTextSync: true,
+  safariZoomAdaptMode: 'AUTO_SYSTEM',
   tactileTargetBoost: true,
   climateDynamicWallpaper: true,
 };
@@ -345,7 +346,7 @@ export function resolveThemeSnapshot(
   const bevelRatio = clampRange(config.bevelIntensity) / 100;
   const hudRatio = clampRange(config.hudOpacity, 60, 100) / 100;
   const satRatio = clampRange(config.saturationPct ?? 100, 50, 150) / 100;
-  const fontScaleRatio = clampRange(config.fontScalePct ?? 100, 85, 135) / 100;
+  const fontScaleRatio = clampRange(config.fontScalePct ?? 100, 70, 150) / 100;
   const borderAlpha = config.highContrast
     ? isDark
       ? 0.72

@@ -198,22 +198,70 @@
   }
 
   .exo-accent-chip {
-    border: 1px solid rgba(var(--exo-accent-rgb), calc(var(--exo-border-alpha) * 0.78));
+    border: 1px solid rgba(var(--exo-accent-rgb), calc(var(--exo-border-alpha) * 0.85));
     border-radius: var(--exo-radius-btn);
     background-color: var(--exo-surface);
     color: var(--exo-text);
+    transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   }
 
   .exo-accent-chip:hover {
-    border-color: rgba(var(--exo-accent-rgb), 0.85);
+    border-color: rgba(var(--exo-accent-rgb), 0.92);
+    background-color: var(--exo-surface-alt);
   }
 
   .exo-accent-chip-active {
-    border: 1px solid var(--exo-accent);
+    border: 1.5px solid var(--exo-accent);
     border-radius: var(--exo-radius-btn);
-    background-color: var(--exo-accent-soft);
-    color: var(--exo-accent);
-    box-shadow: 0 0 16px rgba(var(--exo-accent-rgb), calc(var(--exo-glow-alpha) * 0.75));
+    background-color: color-mix(in srgb, var(--exo-accent) 24%, var(--exo-surface));
+    color: var(--exo-text);
+    box-shadow:
+      inset 0 1px 0 rgba(var(--exo-accent-rgb), 0.45),
+      0 0 16px rgba(var(--exo-accent-rgb), calc(var(--exo-glow-alpha) * 0.85));
+  }
+
+  /* High-visibility Window / Modal Entry Tab Rail (Settings & Executive Subscreens) */
+  .exo-window-tabs-rail {
+    background-color: color-mix(in srgb, var(--exo-void) 76%, var(--exo-surface));
+    border: 1.5px solid rgba(var(--exo-accent-rgb), calc(var(--exo-border-alpha) * 0.95));
+    border-radius: calc(var(--exo-radius-btn) + 4px);
+    padding: 0.3125rem;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.28);
+  }
+
+  .exo-window-tab {
+    position: relative;
+    border: 1px solid rgba(var(--exo-accent-rgb), calc(var(--exo-border-alpha) * 0.62));
+    border-radius: var(--exo-radius-btn);
+    background-color: color-mix(in srgb, var(--exo-surface) 92%, transparent);
+    color: var(--exo-text);
+    transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+  }
+
+  .exo-window-tab:hover {
+    border-color: var(--exo-accent);
+    background-color: color-mix(in srgb, var(--exo-accent) 16%, var(--exo-surface));
+  }
+
+  .exo-window-tab:focus-visible,
+  .exo-window-tab-active:focus-visible {
+    outline: 2px solid var(--exo-accent);
+    outline-offset: 2px;
+  }
+
+  .exo-window-tab-active {
+    position: relative;
+    border: 1.5px solid var(--exo-accent);
+    border-radius: var(--exo-radius-btn);
+    background-image: linear-gradient(
+      135deg,
+      var(--exo-accent) 0%,
+      color-mix(in srgb, var(--exo-accent) 78%, var(--exo-accent-2)) 100%
+    );
+    color: var(--exo-accent-on);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      0 6px 18px rgba(var(--exo-accent-rgb), calc(var(--exo-glow-alpha) * 1.15));
   }
 
   .exo-range {

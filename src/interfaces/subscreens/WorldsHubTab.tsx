@@ -25,6 +25,7 @@ import { handleGenerateActionEvent } from '../../pipelines/game-actions.pipeline
 import { useExoStore } from '../../stores/game.store.ts';
 import {
   activeDossierIdAtom,
+  activeSubscreenAtom,
   toastNoticeAtom,
   worldsHubDomainAtom,
   worldsHubSubViewAtom,
@@ -86,6 +87,7 @@ const MONDE_DOMAINS: readonly DomainSpec[] = [
     icon: Shield,
     subViews: [
       { id: 'THEATERS', label: '4 Théâtres', mode: 'MANAGER' },
+      { id: 'FLEET', label: 'Flotte', mode: 'MANAGER' },
       { id: 'POLITIES', label: 'Cités Extérieures', mode: 'STATS' },
     ],
   },
@@ -106,6 +108,7 @@ export function WorldsHubTab() {
   const [domain, setDomain] = useAtom(worldsHubDomainAtom);
   const [subView, setSubView] = useAtom(worldsHubSubViewAtom);
   const setActiveDossierId = useSetAtom(activeDossierIdAtom);
+  const setSubscreen = useSetAtom(activeSubscreenAtom);
   const setToast = useSetAtom(toastNoticeAtom);
   const world = useExoStore((s) => s.world);
 
@@ -146,6 +149,7 @@ export function WorldsHubTab() {
       setToast({ id: Date.now(), tone: 'warn', text: err?.message ?? 'Initiative indisponible.' });
       return;
     }
+    setSubscreen('EVENTS_HUB');
     setActiveDossierId(dossier.id);
   };
 
@@ -281,7 +285,13 @@ export function WorldsHubTab() {
         ))}
 
       {domain === 'MILITARY' &&
-        (resolvedSubView === 'POLITIES' ? <ExternalPolitiesPanel /> : <MilitaryTheatersPanel />)}
+        (resolvedSubView === 'POLITIES' ? (
+          <ExternalPolitiesPanel />
+        ) : resolvedSubView === 'FLEET' ? (
+          <WorldFleetTechPanel subView="HANGAR_COMBAT" />
+        ) : (
+          <MilitaryTheatersPanel />
+        ))}
 
       {domain === 'TECHNOLOGIES' && <WorldFleetTechPanel subView="TECH_TREE" />}
     </div>

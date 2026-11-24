@@ -28,8 +28,11 @@ import { useOracleDossierMutation } from '../../hooks/use-oracle-query.ts';
 import {
   activeInvestigationDossierIdAtom,
   activeSubscreenAtom,
+  cameraFocusTargetAtom,
+  focusNonceAtom,
   inspectedDossierIdsAtom,
   inspectedEntityAtom,
+  returnEventContextAtom,
   selectedDistrictIdAtom,
   selectedTileAtom,
   toastNoticeAtom,
@@ -40,7 +43,10 @@ import { useMetaHonorsStore } from '../../stores/meta-honors.store.ts';
 import {
   buildPhilosophyBadgeTriplet,
   buildProvenanceBadgeTriplet,
+  buildSubChoiceBadgeTriplet,
+  getSubChoiceBadgeMeta,
 } from '../../systems/dossiers-pa/badge-taxonomy.ts';
+import type { BadgeColorTone } from '../../contracts/nested-badges.schema.ts';
 import {
   getEffectiveOptionsForDossier,
   getSubChoicesForOption,
@@ -65,6 +71,17 @@ interface DossierWorkshopModalProps {
   readonly dossier: ExecutiveDossier;
   readonly onClose: () => void;
 }
+
+const SUBCHOICE_TONE_STYLE: Record<BadgeColorTone, string> = {
+  GOLD: 'border-amber-400/90 bg-amber-500/15 text-amber-800 dark:text-amber-200',
+  ROSE: 'border-rose-400/90 bg-rose-500/15 text-rose-800 dark:text-rose-200',
+  EMERALD: 'border-emerald-400/90 bg-emerald-500/15 text-emerald-800 dark:text-emerald-200',
+  INDIGO: 'border-indigo-400/90 bg-indigo-500/15 text-indigo-800 dark:text-indigo-200',
+  VIOLET: 'border-violet-400/90 bg-violet-500/15 text-violet-800 dark:text-violet-200',
+  AMBER: 'border-orange-400/90 bg-orange-500/15 text-orange-800 dark:text-orange-200',
+  CORAL: 'border-red-400/90 bg-red-500/15 text-red-800 dark:text-red-200',
+  SLATE: 'border-slate-400/80 bg-slate-500/15 text-slate-700 dark:text-slate-200',
+};
 
 function buildOptionImpactChips(opt: DossierOption): readonly { label: string; positive: boolean }[] {
   const chips: { label: string; positive: boolean }[] = [];
@@ -140,6 +157,10 @@ export function DossierWorkshopModal({ dossier, onClose }: DossierWorkshopModalP
   const setSelectedDistrict = useSetAtom(selectedDistrictIdAtom);
   const setInspectedEntity = useSetAtom(inspectedEntityAtom);
   const setSubscreen = useSetAtom(activeSubscreenAtom);
+  const focusNonce = useAtomValue(focusNonceAtom);
+  const setFocusNonce = useSetAtom(focusNonceAtom);
+  const setCameraFocus = useSetAtom(cameraFocusTargetAtom);
+  const setReturnContext = useSetAtom(returnEventContextAtom);
   const setInvestigationDossierId = useSetAtom(activeInvestigationDossierIdAtom);
   const inspectedIds = useAtomValue(inspectedDossierIdsAtom);
   const philosophyCounters = useMetaHonorsStore((s) => s.philosophyCumulative);
@@ -313,6 +334,21 @@ export function DossierWorkshopModal({ dossier, onClose }: DossierWorkshopModalP
             <button
               type="button"
               onClick={() => {
+                const nextNonce = focusNonce + 1;
+                setFocusNonce(nextNonce);
+                setReturnContext({
+                  dossierId: dossier.id,
+                  title: dossier.title,
+                  entityLabel: dossierContext.placeLabel,
+                  returnSubscreen: 'EVENTS_HUB',
+                });
+                setActiveScale(2);
+                setCameraFocus({
+                  scale: 2,
+                  targetType: 'TILE',
+                  tileIndex: dossierContext.tileIndex,
+                  focusNonce: nextNonce,
+                });
                 setSelectedTile(dossierContext.tileIndex);
                 setSubscreen('NONE');
                 onClose();
@@ -328,10 +364,26 @@ export function DossierWorkshopModal({ dossier, onClose }: DossierWorkshopModalP
               <button
                 type="button"
                 onClick={() => {
-                  setSelectedDistrict(dossierContext.building!.id);
+                  const bId = dossierContext.building!.id;
+                  const nextNonce = focusNonce + 1;
+                  setFocusNonce(nextNonce);
+                  setReturnContext({
+                    dossierId: dossier.id,
+                    title: dossier.title,
+                    entityLabel: dossierContext.building!.name,
+                    returnSubscreen: 'EVENTS_HUB',
+                  });
+                  setActiveScale(3);
+                  setCameraFocus({
+                    scale: 3,
+                    targetType: 'DISTRICT',
+                    districtId: bId,
+                    focusNonce: nextNonce,
+                  });
+                  setSelectedDistrict(bId);
                   setSubscreen('NONE');
                   onClose();
-                  setInspectedEntity({ kind: 'DISTRICT', districtId: dossierContext.building!.id });
+                  setInspectedEntity({ kind: 'DISTRICT', districtId: bId });
                 }}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300/90 bg-emerald-500/12 px-2.5 py-1 font-semibold text-emerald-900 hover:bg-emerald-500/20 dark:border-emerald-700 dark:text-emerald-100"
               >
@@ -355,12 +407,15 @@ export function DossierWorkshopModal({ dossier, onClose }: DossierWorkshopModalP
             )}
           </div>
 
-          {/* 3-Level Stacked Badges: Provenance + Selected Option Philosophy/Ethics + (i) Color Legend */}
+          {/* 3-Level Stacked Badges: Provenance + Selected Option Philosophy/Ethics + Active Sub-Choice Modality */}
           <NestedBadgeGroup
             triplets={[
               buildProvenanceBadgeTriplet(dossier),
               ...(selectedOption
                 ? [buildPhilosophyBadgeTriplet(selectedOption, philosophyCounters)]
+                : []),
+              ...(selectedOption && selectedSubChoice
+                ? [buildSubChoiceBadgeTriplet(selectedSubChoice, selectedOption, dossier.dossierClass)]
                 : []),
             ]}
           />
@@ -465,22 +520,34 @@ export function DossierWorkshopModal({ dossier, onClose }: DossierWorkshopModalP
                   Personnalise le choix sélectionné
                 </span>
               </div>
-              <div className="grid gap-2 sm:grid-cols-3">
+              <div className="grid gap-2.5 sm:grid-cols-3">
                 {subChoices.map((sub) => {
                   const active = sub.id === selectedSubChoice?.id;
                   const chips = buildSubChoiceChips(sub);
+                  const badge = getSubChoiceBadgeMeta(sub);
                   return (
                     <button
                       key={sub.id}
                       type="button"
+                      data-testid={`subchoice-card-${sub.id}`}
                       onClick={() => setSubChoiceId(sub.id)}
-                      className={`flex flex-col justify-between rounded-xl border p-2.5 text-left transition ${
+                      className={`flex flex-col justify-between rounded-xl border p-3 text-left transition ${
                         active
                           ? 'border-rose-500 bg-white text-[#1f1224] shadow-sm ring-1 ring-rose-400/50 dark:border-rose-400 dark:bg-[#190d1f] dark:text-rose-50'
                           : 'border-rose-200/80 bg-white/75 text-[#1f1224] hover:border-rose-400 dark:border-rose-900/60 dark:bg-[#190d1f]/60 dark:text-rose-100'
                       }`}
                     >
                       <div>
+                        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1 font-mono text-[9.5px] font-bold">
+                          <span
+                            className={`rounded border px-1.5 py-0.5 ${SUBCHOICE_TONE_STYLE[badge.tone]}`}
+                          >
+                            {badge.modeTag}
+                          </span>
+                          <span className="text-[9.5px] font-semibold text-rose-900/70 dark:text-rose-200/75">
+                            {badge.focusTag} · {badge.costTag}
+                          </span>
+                        </div>
                         <div className="text-xs font-bold text-[#1f1224] dark:text-rose-50">
                           {sub.label}
                         </div>
@@ -493,7 +560,7 @@ export function DossierWorkshopModal({ dossier, onClose }: DossierWorkshopModalP
                           {chips.map((c) => (
                             <span
                               key={c.label}
-                              className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+                              className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums ${
                                 c.positive
                                   ? 'bg-emerald-500/15 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200'
                                   : 'bg-rose-500/15 text-rose-800 dark:bg-rose-500/20 dark:text-rose-200'

@@ -1,7 +1,7 @@
 # **MASTER BLUEPRINT — EXO WORLD : 2050**
 
-Identifiant : `DOC-EXW-ARCH-001` \| Version : `v2.10.0-MAITRE` \| Statut : **Référentiel Maître Partitionné — Partition Maître Vierge** \| Date : `2026-11-20`  
-Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-RELATIONNELLES-ICOM FMT-EXW-001 APP-JEU-AI-STUDIO SOLO-VS-IA THREEJS-UNITY6 GEMINI-EXCLUSIF MOBILE-FIRST AUTO-TURN-TRIGGER SRC-PIPELINE-8-MODULES ETHIQUE-THOMISTE PYRAMIDE-MASLOW PEDAGOGIE-6-NIVEAUX BUS-TICKETS-TIMELINE`  
+Identifiant : `DOC-EXW-ARCH-001` \| Version : `v2.12.0-MAITRE` \| Racine Code : `EXOW-ROOT v5.1.0-alpha.1` (`[OBSERVÉ]`) → `v5.2.0 FS4X` (`[CIBLE]`) \| Date : `2026-11-24`  
+Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-JEU-AI-STUDIO SOLO-VS-IA THREEJS-UNITY6 GEMINI-FREE-TIER-STRICT-0USD AUTO-TURN-TRIGGER 5-DIVISIONS-BIOHEALTH ETHIQUE-THOMISTE MASLOW-5-STRATES EGLISE-DISCERNEMENT-AR19 NF-AFNOR-DMT-SW SKILLS-VCS-ISOLE`  
 \---
 
 # **PARTITION I — CADRE, GOUVERNANCE & SOMMAIRE CONVENTIONNEL**
@@ -13,12 +13,12 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-RELATIONNELLES-ICOM FMT-EX
 | Champ Metadonnee | Spécification Technique & Valeurs de Référence | Correspondances |
 | :---- | :---- | :---- |
 | **Titre Officiel du Jeu** | **EXO WORLD : 2050** (Application de Jeu complète sur Google AI Studio \+ Adaptateur Unity 6 URP — pas un OS virtuel) | `1.2`, `3.3`, `AR-12` |
-| **Identifiant & Version** | `DOC-EXW-ARCH-001` · `v2.10.0-MAITRE` (Nouvelle Partition Maître indépendante d'Astralis · Code source `src/` : `v0.1.0-rc0 (Socle Vague 0 livré via MSG-003, 5 sur 5 Portes statiques PASS`) | `6.1`, `11.`, `12.` |
+| **Identifiant & Version** | `DOC-EXW-ARCH-001` · `v2.12.0-MAITRE` (`[OBSERVÉ]` Workspace plat Vite 8 + Express BFF `exo-world-2050@5.1.0-alpha.1`, porte `exo:audit` `17/17 PASS GO` · `[CIBLE]` `v5.2.0 FS4X`) | `6.1`, `11.`, `13.` |
 | **Architecte Général** | Baptiste Lecoustre (Lead System Architect & Game Director — Approbateur Unique) | `R-25`, `3.1` |
-| **Moteur IA Principal** | **Google Gemini Exclusif** (Gemini Pro High Thinking \+ Gemini Flash — suppression définitive de Google Chat et rejet du skill Chatbot libre) | `AR-01`, `AR-02`, `R-68`, `R-69` |
-| **Relecture Pattern** | Mistral / Claude (hors runtime, contrôle ponctuel de gabarit documentaire uniquement) | `3.1` |
-| **Référentiels Normatifs** | SADT / IDEF0 (Actigrammes imbriqués ICOM), VSM, ISO/IEC/IEEE 26512 & 25010, NIST SP 800-207 (Zero-Trust), [FMT-EXW-001 (Charte de Formatage & Légende Chromatique)](https://docs.google.com/document/d/1dDdh7_rzCM5SphH5WyQF8FkkjdPRX-1MzTOUdKveaX4/edit) | `R-06`, `R-11`, `5.` |
-| **Hiérarchie de Vérité** | `1. Contrats Zod (src/contracts/)` → `2. Formules & Constantes (src/config/)` → `3. Actigrammes SADT & Noyaux (src/core/, src/systems/)` → `4. App Shell & 3D (src/interfaces/, src/engine3d/)` → `5. Prose` **Dossier Maître Drive & Modules Architecture** | `R-01`, `R-09`, `R-12`, `6.2` `6.1`, `6.2.15..22`, `A.2`, `B.` [EXO\_WORLD\_2050 — Partition Maître](https://drive.google.com/drive/folders/19MuQPs6wNfh4jAU1EaEhAq1ZZHSTk93k) · [01\_MASTER\_BLUEPRINT](https://drive.google.com/drive/folders/1VpyYCdpDLgnQtW89xrwZFXwPOC7JAFuD) · [SRC\_ARCHITECTURE\_MODULES (8 sous-dossiers)](https://drive.google.com/drive/folders/1M9vcylKdpZkDjUd--eokbYFE199KWHv3) · [SPEC-SRC-DOC-EXW-001 (Structure SRC & DOC)](https://docs.google.com/document/d/1Fdt2A51XDSlQ4D1xmwbz9n3ZphWW9IOTp25Me9yckfw/edit) · [07\_ECHANGES\_INTER\_IA](https://drive.google.com/drive/folders/1T2JfSE-zUBIyZyLgNsqcSf8NHpL0cyo7) ([BUS-EXW-001](https://docs.google.com/document/d/1YJEEnKUu-JEHbjQto5AhLJFMJx4BOzmCyHWIEaqGoTI/edit) · [TIMELINE-TICKETS-EXW-001](https://docs.google.com/document/d/1yxwlYZSnsTNcedgxY8WEvC_-rfmAU_Q7WNbQnbAbZyQ/edit)) · [EXO WORLD : 2050 — Google AI Studio App](https://aistudio.google.com/apps/a21d5e66-3b0e-4b54-9e77-3a272b3c94d1?showAssistant=true) |
+| **Moteur IA Principal** | **Google Gemini API Exclusif (Free Tier Strict 0 USD)** (`gemini-4-hydrogen`, `gemini-3.1-flash-lite`, `gemini-decision-1` + Repli déterministe transparent, rejet HTTP `403` de tout modèle payant) | `AR-01`, `AR-02`, `R-68`, `R-69` |
+| **Classification Artefacts** | **7 Classes NF EN ISO 7573** : `FEAT` (Fonctionnalités 01..56) · `MOD` (Modules `src/`) · `CMP` (Composants UI/3D) · `PLG` (Plugins/Adapters) · `TLS` (Outils Audit/CLI) · `SCR` (Scripts Sync/Gates) · `EXT` (Connectors Drive/Firebase/SQL) | `NF EN ISO 7573`, `13.` |
+| **Référentiels Normatifs** | **DMT-SW**, **NF ISO/IEC/IEEE 42010** (Architecture L0..L8), **NF ISO/IEC 25010** (Qualité & WebKit `< 250 Mo`), **NF ISO/IEC/IEEE 29148** (Exigences `FUP`/`R-01..69`), **NF Z67-100 / NF203 / NF552** (Tests & Coffre SHA-256), SADT/IDEF0, [FMT-EXW-001](https://docs.google.com/document/d/1dDdh7_rzCM5SphH5WyQF8FkkjdPRX-1MzTOUdKveaX4/edit) | `R-06`, `R-11`, `13.` |
+| **Hiérarchie de Vérité** | `1. Contrats Zod (src/contracts/)` → `2. Constantes gelées (src/config/)` → `3. Noyaux Purs & SADT (src/core/, src/systems/)` → `4. App Shell & 3D (src/interfaces/, src/engine3d/)` → `5. Prose & VCS Docs` | `R-01`, `R-09`, `R-12`, `6.2` |
 
 # **1.2 Spécifications Conventionnelles du Jeu (Fiche GDD Intégrée)**
 
@@ -110,37 +110,24 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-RELATIONNELLES-ICOM FMT-EX
    5.5.3 Classification Exhaustive des 10 Familles de Cycles Métier  
    5.5.4 Matrice Maîtresse de Coordination Globale  
    5.5.5 Protocole de Synchronisation Déterministe & Anti-Oscillation (R-51, R-66)  
-6. PARTITION V — RÉFÉRENTIELS CATALOGUES & ROADMAPS DE PRODUCTION  
-   8\. CATALOGUE CLASSIFIÉ DES 52 FEATURES (FEAT-01 À FEAT-52)  
+6. PARTITION V — RÉFÉRENTIELS CATALOGUES, NORMES NF/AFNOR, SKILLS & ROADMAPS (v2.12.0-MAITRE)  
+   8\. CATALOGUE CLASSIFIÉ DES 56 FEATURES (FEAT-01 À FEAT-56)  
    8.1 Domaine 1 : App Shell, UI Bento Biseauté, SVG & Audio (FEAT-01..FEAT-08)  
    8.2 Domaine 2 : Dossiers Exécutifs, PA & Oracle Gemini (FEAT-09..FEAT-16)  
    8.3 Domaine 3 : Gestion, Build Modulaire, Villes, Prêts & Marché (FEAT-17..FEAT-24)  
-   8.4 Domaine 4 : Supervision, Maintenance, Biomes, Atmosphère & Colons (FEAT-25..FEAT-32)  
-   8.5 Domaine 5 : Super-Alliance, Slots Planétaires, Drones, Cyber & Flottes (FEAT-33..FEAT-40)  
+   8.4 Domaine 4 : Supervision, Maintenance, 5 Divisions, Biomes & Colons (FEAT-25..FEAT-32)  
+   8.5 Domaine 5 : Super-Alliance, Diplomatie Planétaire, Drones, Cyber & Flottes (FEAT-33..FEAT-40)  
    8.6 Domaine 6 : Noyau Pur, Cloud SQL/Firebase, Dual-Adapter 3D & FinOps (FEAT-41..FEAT-48)  
-   8.7 Domaine 7 : Moteur Éthique Thomiste, Pyramide de Maslow & Pédagogie 6 Niveaux (FEAT-49..FEAT-52)  
-   9\. REGISTRE INTÉGRÉ DES 18 ARBITRAGES (AR-01 À AR-18)  
+   8.7 Domaine 7 : Éthique Thomiste, Maslow, Pédagogie 6 Niveaux, BioHealth & Église (FEAT-49..FEAT-56)  
+   9\. REGISTRE INTÉGRÉ DES 19 ARBITRAGES (AR-01 À AR-19)  
    10\. REGISTRE SOUVERAIN DES RÈGLES (R-01 À R-69)  
-   11\. ROADMAP DE PRODUCTION GLOBALE DU JEU (VAGUE 0 → VAGUE 5\)  
+   11\. ROADMAP DE PRODUCTION GLOBALE DU JEU (VAGUE 0 → VAGUE 5)  
    12\. SOUS-ROADMAP DES FEATURES EN COURS DE MISE À JOUR (FUP-PATTERN v1.0)  
    12.1 Cycle de Vie Normé en 7 Portes (P1\_BACKLOG → P7\_MERGED)  
    12.2 Gabarit Réutilisable FUP-PATTERN v1.0  
    12.3 File Active des 16 FUP (FUP-001 à FUP-016)  
-7. PARTITION V — RÉFÉRENTIELS CATALOGUES & ROADMAPS DE PRODUCTION  
-   8\. CATALOGUE CLASSIFIÉ DES 48 FEATURES (FEAT-01 À FEAT-48)  
-   8.1 Domaine 1 : App Shell, UI Bento Biseauté, SVG & Audio (FEAT-01..FEAT-08)  
-   8.2 Domaine 2 : Dossiers Exécutifs, PA & Oracle Gemini (FEAT-09..FEAT-16)  
-   8.3 Domaine 3 : Gestion, Build Modulaire, Villes, Prêts & Marché (FEAT-17..FEAT-24)  
-   8.4 Domaine 4 : Supervision, Maintenance, Biomes, Atmosphère & Colons (FEAT-25..FEAT-32)  
-   8.5 Domaine 5 : Super-Alliance, Slots Planétaires, Drones, Cyber & Flottes (FEAT-33..FEAT-40)  
-   8.6 Domaine 6 : Noyau Pur, Cloud SQL/Firebase, Dual-Adapter 3D & FinOps (FEAT-41..FEAT-48)  
-   9\. REGISTRE INTÉGRÉ DES 16 ARBITRAGES (AR-01 À AR-16)  
-   10\. REGISTRE SOUVERAIN DES RÈGLES (R-01 À R-69)  
-   11\. ROADMAP DE PRODUCTION GLOBALE DU JEU (VAGUE 0 → VAGUE 5\)  
-   12\. SOUS-ROADMAP DES FEATURES EN COURS DE MISE À JOUR (FUP-PATTERN v1.0)  
-   12.1 Cycle de Vie Normé en 7 Portes (P1\_BACKLOG → P7\_MERGED)  
-   12.2 Gabarit Réutilisable FUP-PATTERN v1.0  
-   12.3 File Active des 13 FUP (FUP-001 à FUP-013)  
+   13\. MATRICE DE CONFORMITÉ NF / AFNOR & DMT-SW (TRAÇABILITÉ EXIGENCES-TESTS)  
+   14\. ARCHITECTURE DES SKILLS MODULAIRES & VCS DOCUMENTAIRE ISOLÉ (DRIVE / FIRESTORE / BFF)  
 8. PARTITION VI — ANNEXES OPÉRATIONNELLES  
    A. ANNEXE A — SYSTEM INSTRUCTION MAÎTRE POUR GOOGLE AI STUDIO BUILD (PARTITION MAÎTRE VIERGE CLOUD UNIFIÉE)  
    A.1 Identité & Rôle d'Exécution  
@@ -939,16 +926,20 @@ Afin d'éviter toute redondance et garantir une mise à jour optimale, la struct
 | `FEAT-47` | **Gemini Free Tier Strict Governor** — Borne d'exécution API Gemini garantissant le respect des quotas gratuits. | `P1` · \[x\] OPT-06 | `R-68`, `R-69` | `Vague 1` |
 | `FEAT-48` | **Accélérateur C++17 Miroir** — Compilation WebAssembly / plugin natif Unity du noyau pur. | `P3` · \[x\] OPT-11 | `R-13`, `FEAT-41` | `Vague 5` |
 
-# **8.7 Domaine 7 : Moteur Éthique Thomiste, Pyramide de Maslow & Pédagogie 6 Niveaux (`FEAT-49`..`FEAT-52`)**
+# **8.7 Domaine 7 : Éthique Thomiste, Maslow, Pédagogie 6 Niveaux, BioHealth & Église (`FEAT-49`..`FEAT-56`)**
 
-| ID Feature | Nom & Description Technique | Priorité & Sélecteur | Règles & AR Liées | Vague |
+| ID Feature | Nom & Description Technique | Statut [OBSERVÉ] / [CIBLE] | Règles & AR Liées | Vague |
 | :---- | :---- | :---- | :---- | :---- |
-| `FEAT-49` | **Moteur Éthique Thomiste & Badges de Raisonnement** — Module d'étiquetage des choix (`THOMISTE_VERTU`, `MISERICORDE`, `HUMANISTE`, `EXISTENTIALISTE`, `PRAGMATIQUE`, `TECHNIQUE`, `DIPLOMATIQUE`...). | `P1` · \[x\] OPT-06 | `AR-17`, `AR-18` | `Vague 2/4` |
-| `FEAT-50` | **Pyramide de Maslow (5 Strates \+ Transcendance) & Psychologie Morale Colons** — Modèle de satisfaction et stades moraux Kohlberg. | `P1` · \[x\] OPT-05 | `AR-18` | `Vague 2` |
-| `FEAT-51` | **Onglet 6 Paramètres & Config — Contexte de Personnalité Utilisateur & Référentiel IA** — Panneau de personnalisation du profil et cadre philosophique. | `P1` · \[x\] OPT-06 | `AR-17` | `Vague 1/4` |
-| `FEAT-52` | **Échelle Pédagogique 6 Niveaux (Grâce → Très Négative) & Journal de Discernement** — Évaluation des fruits moraux et miroir réflexif. | `P1` · \[x\] OPT-06 | `AR-18` | `Vague 2/4` |
+| `FEAT-49` | **Moteur Éthique Thomiste & 11 Badges de Raisonnement** — Étiquetage `THOMISTE_VERTU`, `MISERICORDE`, `HUMANISTE`, `PRAGMATIQUE`, etc. | `[OBSERVÉ]` Implémenté `L0/L3/L7` | `AR-17`, `AR-18` | `Vague 2/4` |
+| `FEAT-50` | **Pyramide de Maslow (5 Strates + Transcendance) & Psychologie Morale Colons** — Strates et stades moraux intégrés aux colons. | `[OBSERVÉ]` Implémenté (`ColonistDetailModal`) | `AR-18` | `Vague 2` |
+| `FEAT-51` | **Onglet 6 Lecture Seule Paramètres & Référentiel IA** — Contexte utilisateur et cadre philosophique en lecture seule. | `[OBSERVÉ]` Implémenté (`EcclesiaDiscernmentCard`) | `AR-17` | `Vague 1/4` |
+| `FEAT-52` | **Échelle Pédagogique 6 Niveaux (`+3 Grâce` à `−2`) & Journal de Discernement** — Suivi réflexif non punitif des fruits moraux. | `[OBSERVÉ]` Implémenté (`bioclimate-health.ts`) | `AR-18` | `Vague 2/4` |
+| `FEAT-53` | **Simulateur Bioclimatique BioHealth & 5 Divisions Scientifiques** — `EXOSPHERE_0`, `THERMOSPHERE_1`, `MESOSPHERE_2`, `STRATOSPHERE_3`, `TROPOSPHERE_4` (`0.25·Air + 0.20·Sols + 0.20·Hydro + 0.20·Flore + 0.15·Faune − FreinP0`). | `[OBSERVÉ]` Implémenté (`bioclimate-health.ts`) | `R-39`, `AR-11` | `Vague 5.1` |
+| `FEAT-54` | **Plafond Catastrophes P0 (Max 2 par Cycle)** — Amortisseur déterministe garantissant l’équilibre du budget PA face aux aléas climatiques. | `[OBSERVÉ]` Implémenté (`cycle-orchestrator.ts`) | `R-32`, `R-53` | `Vague 5.1` |
+| `FEAT-55` | **Développement de l’Église Catholique sur Terre** — Axes Vie Pastorale, Œuvres Caritatives, Contemplation & Dialogue Science-Foi activés par Dossiers R-24. | `[OBSERVÉ]` Implémenté (`planetary-diplomacy.ts`) | `AR-19`, `R-24` | `Vague 5.1` |
+| `FEAT-56` | **Discernement de la Volonté du Seigneur & Liberté de Conscience Absolue** — Plancher `freedomOfConscienceScore = 100 %`, zéro coercition civile ou religieuse. | `[OBSERVÉ]` Implémenté (`AR-19`) | `AR-19`, `R-24` | `Vague 5.1` |
 
-# **9\. REGISTRE INTÉGRÉ DES 18 ARBITRAGES (`AR-01` À `AR-18`)**
+# **9\. REGISTRE INTÉGRÉ DES 19 ARBITRAGES (`AR-01` À `AR-19`)**
 
 | ID Arbitrage | Intitulé Exécutif | Décision Verrouillée & Impact Architectural | Règles, Options & Features Liées |
 | :---- | :---- | :---- | :---- |
@@ -962,16 +953,15 @@ Afin d'éviter toute redondance et garantir une mise à jour optimale, la struct
 | `AR-08` | **Engine DAG *New Vegas*** | Dialogue & événements résolus par arbres orientés acycliques et skill-checks. | `R-28`, `FEAT-13` |
 | `AR-09` | **Calculateur ΔP\_adapt** | Ajustement dynamique des probabilités de tirage d'événements selon la performance. | `R-69`, `FEAT-15`, `FEAT-16` |
 | `AR-10` | **Systèmes Drones & Cyber** | Unités autonomes à 4 rôles \+ datacenters de production de `Compute` pour la guerre cyber. | `R-41..49`, `OPT-07`, `FEAT-35..38` |
-| `AR-11` | **Atmosphère & 4 Paliers `P1→P4`** | Impact physique direct du climat sur la vitesse des PNJ et les coûts d'infrastructures. | `R-39`, `R-40`, `FEAT-26..29` |
+| `AR-11` | **5 Divisions Scientifiques & BioHealth (`P1→P4` migré)** | Remplacement progressif des anciens paliers statiques par les 5 Divisions (`EXOSPHERE_0..TROPOSPHERE_4`) et l'indicateur `BioHealth` couplé au climat/PNJ. | `R-39`, `R-40`, `FEAT-26..29`, `FEAT-53` |
 | `AR-12` | **Dual-Adapter 3D & Legal** | Double support Three.js / Unity 6 URP. Exclusion stricte de mods Cities II et SketchUp. | `R-15`, `OPT-02`, `FEAT-43..45` |
 | `AR-13` | **RAG SQL Vectoriel** | Recherche par similarité cosinus (768d) pour la persistance narrative long terme. | `R-11`, `FEAT-14` |
 | `AR-14` | **Supervision `C3`** | Dégradation continue des bâtiments nécessitant 3 niveaux de maintenance préventive. | `R-38`, `FEAT-25` |
 | `AR-15` | **Progression *Humankind*** | Système à 6 Ères chronologiques, Étoiles d'Ère et arbre d'expérience à 3 jauges. | `R-04`, `R-05`, `OPT-08`, `FEAT-23..24` |
-| `AR-16` | **Nomenclature Scientifique** | Interdiction formelle du terme flou « anomalie » au profit de termes techniques précis. | `R-50`, `FEAT-32` |
-
-| `AR-17` | Contexte de Personnalité & Référentiel de Raisonnement (Onglet 6 Paramètres) | Paramétrage explicite du profil utilisateur et du référentiel philosophique injectés en lecture seule dans Gemini \+ catalogues dédiés. | `R-68`, `OPT-06`, `FEAT-49`, `FEAT-51` |
-| :---- | :---- | :---- | :---- |
-| `AR-18` | **Éthique Thomiste, Pyramide de Maslow & Pédagogie Chrétienne à 6 Niveaux** | Intégration des badges philosophiques, des 5 strates de Maslow et de l'évaluation pédagogique en 6 niveaux (Grâce, Positive, Miséricorde, Ambiguë, Négative, Très Négative). | `R-28`, `R-39`, `FEAT-49`, `FEAT-50`, `FEAT-52` |
+| `AR-16` | **Nomenclature Scientifique** | Bannissement strict du lexique non scientifique (filtre `R-50`) au profit de termes techniques précis. | `R-50`, `FEAT-32` |
+| `AR-17` | **Contexte de Personnalité & Onglet 6 Lecture Seule** | Paramétrage du profil utilisateur et référentiel philosophique consultés en lecture seule sans micromanagement imposé. | `R-68`, `OPT-06`, `FEAT-49`, `FEAT-51` |
+| `AR-18` | **Éthique Thomiste, Pyramide de Maslow & Pédagogie Chrétienne 6 Niveaux** | Badges philosophiques, 5 strates Maslow + Transcendance et évaluation pédagogique `+3 Grâce` à `−2`. | `R-28`, `R-39`, `FEAT-49`, `FEAT-50`, `FEAT-52` |
+| `AR-19` | **Église Catholique & Liberté de Conscience Absolue (`100 %`)** | Progression des 4 axes ecclésiaux (`PASTORAL`, `CHARITY`, `CONTEMPLATION`, `DIALOGUE`) exclusivement par subsidiarité et Dossiers `R-24`, sans jamais réduire la liberté de conscience. | `R-24`, `FEAT-55`, `FEAT-56` |
 
 # **10\. REGISTRE SOUVERAIN DES RÈGLES (`R-01` À `R-69`)**
 
@@ -1123,9 +1113,27 @@ exit_test: "Description du test automatique ou du critère de validation de la p
 | `FUP-013` | `FEAT-03 / FEAT-41` Intégration 8 Modules Architecture src/ | `P2_SPEC_LOCK` | `Gemini-Argon` | `A0 / 6.2.15..22`, `R-02`, `R-12`, `R-53`, `R-69` | Validation ESLint L0..L8 et tests unitaires sur les 8 modules (Bridges, Parsers, Triggers, Dispatchers, Routers, Retrievers, Queues, Guardrails). |
 | `FUP-014` | Structure docs/ AI Studio, Sync Prioritaire Drive & Bus Inter-IA | `P2_SPEC_LOCK` | `Gemini-Argon` | `6.1, A.2, C., SPEC-SRC-DOC-EXW-001, BUS-EXW-001` | Création docs/SYSTEM\_INSTRUCTION\_LIVE.md, scripts/sync-drive-sot.mjs et miroir docs/inter-ia/ validés sur MSG-003. |
 
-| `FUP-015` | `FEAT-49 / FEAT-50` Moteur Éthique Thomiste & Maslow | `P2_SPEC_LOCK` | `Gemini-Krypton` | `A2.3 / A3.2`, `AR-18` | Validation Zod des schémas ethics-maslow et tests des 5 strates Maslow. |
-| :---- | :---- | :---- | :---- | :---- | :---- |
-| `FUP-016` | `FEAT-51 / FEAT-52` Onglet 6 & Journal 6 Niveaux | `P2_SPEC_LOCK` | `Gemini-Silicium` | `A1.3 / A5.3`, `AR-17`, `AR-18` | Persistance de l'Onglet 6 dans Firestore et rendu du Journal de Discernement. |
+| `FUP-015` | `FEAT-49 / FEAT-50` Moteur Éthique Thomiste & Maslow | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Krypton` | `A2.3 / A3.2`, `AR-18` | Validation Zod des schémas ethics-maslow et tests des 5 strates Maslow. |
+| `FUP-016` | `FEAT-51 / FEAT-52` Onglet 6 & Journal 6 Niveaux | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Silicium` | `A1.3 / A5.3`, `AR-17`, `AR-18` | Persistance de l'Onglet 6 dans Firestore et rendu du Journal de Discernement. |
+
+# **13\. MATRICE DE CONFORMITÉ NF / AFNOR & DMT-SW (TRAÇABILITÉ EXIGENCES-TESTS)**
+
+| Norme / Standard | Intitulé & Référentiel | Périmètre Vérifié `[OBSERVÉ]` | Preuve d'Audit & Automatisation |
+| :---- | :---- | :---- | :---- |
+| **DMT-SW** | **Dossier Technique Logiciel & Traçabilité Exigences-Tests** | Chaîne bidirectionnelle Exigences (`FEAT-01..56`, `R-01..69`) → Modules `src/` → Tests unitaires & Playwright. | `M0..M15`, `npm run exo:audit` (`17/17 PASS GO`), onglet `Conformité NF / AFNOR & DMT-SW` dans `BlueprintAtlasView.tsx`. |
+| **NF ISO/IEC/IEEE 42010** | **Description d’architecture des systèmes et logiciels** | Partitionnement strict en 9 couches `L0..L8`, graphe DSM sans cycle (`0` cycle Kahn) et séparation Sim/3D/BFF. | `eslint.config.mjs` (frontières par couche), `M13_SADT_Mapping.json`, `matrix-engine.ts`. |
+| **NF ISO/IEC 25010** | **Modèle de qualité produit & qualité en utilisation** | Déterminisme bit-à-bit `PCG32`, thème Bento `135deg` WCAG AA, cibles mobiles `≥ 44×44 px`, bouclier RAM WebKit `< 250 Mo`. | `tests/v0-determinism-360-ticks.test.ts`, `tests/safari-webkit.test.ts`, audit Playwright `1440×900` & `390×844`. |
+| **NF ISO/IEC/IEEE 29148** | **Ingénierie des exigences** | Arbitrages verrouillés `AR-01..AR-19`, options `OPT-01..OPT-12`, file active `FUP-001..016` et invariant souverain `R-24`. | Contrats Zod `src/contracts/*.schema.ts` + `DOC-EXW-ARCH-001` (`v2.12.0-MAITRE`). |
+| **NF Z67-100 / NF203 / NF552** | **Cahier de tests, Coffre-fort SHA-256 & Archivage pérenne** | Empreinte `SHA-256` à chaque tour de jeu et à chaque révision documentaire VCS non destructive (`LOCAL`, `REVERT`, `DRIVE_IMPORT`). | `src/core/hashing/state-hasher.ts`, `src/systems/governance/skills-vcs.engine.ts`, `tests/v5-unified-systems.test.ts`. |
+| **NF EN ISO 7573** | **Nomenclature des 7 classes d’artefacts** | Séparation formelle `FEAT`, `MOD`, `CMP`, `PLG`, `TLS`, `SCR`, `EXT` dans l’Atlas et le manifeste `M13`. | `BlueprintAtlasView.tsx`, `scripts/export-trifmt.ts`. |
+
+# **14\. ARCHITECTURE DES SKILLS MODULAIRES & VCS DOCUMENTAIRE ISOLÉ**
+
+La gouvernance documentaire et l’activation des capacités modulaires sont hébergées dans un atelier dédié (`DocsSkillsHubScreen.tsx`, accessible depuis le Menu Principal et les Paramètres) respectant une **séparation stricte** :
+
+1. **Registre des 9 Skills Modulaires Autonomes (`SKL-APP-01..03`, `SKL-GAM-01..03`, `SKL-ETH-01`, `SKL-NAR-01..02`)** : chaque skill possède son propre cycle SemVer, son commutateur `Actif / Inactif`, sa configuration JSON typée et référence sa documentation externe uniquement par identifiant `docId` en lecture seule.
+2. **Contrôle de Version Documentaire (VCS Docs)** : éditeur Markdown dédié, incrément SemVer (`patch` / `minor` / `major`), calcul d’empreinte `SHA-256` pure, historique complet des révisions, comparateur Diff ligne à ligne (`computeLineDiff`) et restauration non destructive (`source = REVERT`).
+3. **Pont Cloud Isolé Google Drive/Docs + Firestore** : import via Google Picker (`DRIVE_IMPORT`), écriture vers Google Drive/Docs systématiquement verrouillée par modale de confirmation explicite utilisateur, et miroir Firestore sécurisé par règles `ownerId` (`docEntries`, `revisions`, `skillRegistry`).
 
 # **A. ANNEXE A — SYSTEM INSTRUCTION MAÎTRE POUR GOOGLE AI STUDIO BUILD (PARTITION MAÎTRE VIERGE CLOUD UNIFIÉE)**
 

@@ -40,6 +40,6 @@ export const INTER_IA_BUS_MIRROR: readonly InterIaBusEnvelope[] = Object.freeze(
     to: 'Antigravity Hub / Production Swarm',
     status: 'DONE',
     summary:
-      'VCS Documentaire séparé (docs/drive-sovereign vs main), Hub Documentaire 3 Pôles, Dual Workflows (Piste A Drive/Docs vs Piste B Code/3D) et Pont Preview /api/swarm-bus déployés.',
+      'Hub Documentaire 3 Pôles, Gouvernance RBAC 3 pistes (APP / SKILLS / JEU) et Pyramide Multi-Agents (3 niveaux) synchronisés.',
   },
 ]);

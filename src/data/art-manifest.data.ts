@@ -2,7 +2,8 @@ import advCivicImg from '../assets/images/adv_civic_1795249063132.jpg';
 import advMntImg from '../assets/images/adv_mnt_1795249065642.jpg';
 import advBioImg from '../assets/images/adv_bio_1795249064029.jpg';
 import advPolImg from '../assets/images/adv_pol_1795249064111.jpg';
-import menuBgImg from '../assets/images/menu_bg_2050_1795249063743.jpg';
+import appIconImg from '../assets/images/app_icon_2050_1795508404595.jpg';
+import appThumbnailImg from '../assets/images/app_thumbnail_card_1795508405972.jpg';
 import era1Img from '../assets/images/era_1_pioneers_1795249093342.jpg';
 import era2Img from '../assets/images/era_2_federation_1795249063535.jpg';
 import era3Img from '../assets/images/era_3_symbiosis_1795249063292.jpg';
@@ -24,7 +25,9 @@ import colonistLucasImg from '../assets/images/colonist_lucas_1795326067575.jpg'
  * Centralized static ES manifest of the 20 V1 generated concept art assets & portraits.
  */
 export const ART_MANIFEST = {
-  menuBackground: menuBgImg,
+  appIcon: appIconImg,
+  appThumbnail: appThumbnailImg,
+  menuBackground: appThumbnailImg,
   advisors: {
     'adv-ges': advCivicImg,
     'adv-mnt': advMntImg,

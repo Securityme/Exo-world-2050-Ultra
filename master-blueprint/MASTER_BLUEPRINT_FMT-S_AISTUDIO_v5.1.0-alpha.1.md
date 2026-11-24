@@ -27,11 +27,12 @@
 - **M14 (SAVE-MIG)** [PASS] — Persistance, Auto-Migration v3.1→v5.1 & Export: Purge automatique des champs hérités, P13 Bêta et vérification d’intégrité.
 - **M15 (AUDIT-CI)** [PASS] — Audit Bloquant exo:audit, Fuzz 60t & Tri-Format DIR-01: Zéro Z0, pureté L2/L3, R-14, parité Tri-Format et export automatique.
 
-## MODULES SRC INDEXÉS (250)
+## MODULES SRC INDEXÉS (279)
 - [L7/A5.1] `src/App.tsx` @ 5.1.0-alpha.1
 - [L4/A5.3] `src/adapters/render-adapter.interface.ts` @ 5.1.0-alpha.1
 - [L4/A5.3] `src/adapters/scene-diff-projector.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/app/api/doc-governance.route.ts` @ 5.1.0-alpha.1
+- [L5/A4.3] `src/app/api/docs-vcs.route.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/app/api/health.route.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/app/api/oracle.route.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/app/api/routes.manifest.ts` @ 5.1.0-alpha.1
@@ -57,17 +58,32 @@
 - [L7/A5.1] `src/components/bento/NestedBadgeGroup.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/bento/ProfileAvatarFrame.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/bento/PromptSuggestionChips.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/events/ActionGatewayDrawer.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/events/DossierCard.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/events/EventsActionCommandCenter.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/events/OperationsQueuePanel.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/genesis/GenesisBiomeStep.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/genesis/GenesisColonyLaunchStep.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/genesis/GenesisGovernanceStep.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/genesis/PlanetLivePreview.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/genesis/SuggestionBubbleField.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/governance/DocRevisionTimelineDiff.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/governance/DocsVcsLibraryPanel.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/governance/ModularSkillsRegistryPanel.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/hud/HeaderDevDrawer.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/hud/HeaderNotificationCenter.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/hud/HeaderWeatherSuperWidget.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/AppPathAtlasPanel.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/AssignmentsTablePanel.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/world/BioHealthEcclesiaCards.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/CitizensSocietyPanel.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/ColonistDetailModal.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/world/ColonistPortraitAvatar.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/ColonistRosterCards.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/CombatHistoryViewer.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/CombatPhaseTimeline.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/ExternalPolitiesPanel.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/components/world/JournalArchivesSuite.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/MilitaryTheatersPanel.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/PaxScenarioMatrixModal.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/components/world/ResourceTrendProjectionChart.tsx` @ 5.1.0-alpha.1
@@ -106,6 +122,7 @@
 - [L0/A1.1] `src/contracts/nested-badges.schema.ts` @ 5.1.0-alpha.1
 - [L0/A1.1] `src/contracts/pa-dossiers.schema.ts` @ 5.1.0-alpha.1
 - [L0/A1.1] `src/contracts/render-bridge.schema.ts` @ 5.1.0-alpha.1
+- [L0/A1.1] `src/contracts/skills-vcs.schema.ts` @ 5.1.0-alpha.1
 - [L0/A1.1] `src/contracts/trigger-bus.schema.ts` @ 5.1.0-alpha.1
 - [L0/A1.1] `src/contracts/ui-theme.schema.ts` @ 5.1.0-alpha.1
 - [L0/A1.1] `src/contracts/user-context.schema.ts` @ 5.1.0-alpha.1
@@ -133,6 +150,7 @@
 - [L1/A1.1] `src/data/avatar-portraits.assets.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/beta-p13.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/blueprint-manifests.data.ts` @ 5.1.0-alpha.1
+- [L1/A1.1] `src/data/campaign-genesis.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/doc-governance.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/fallback-dossiers.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/honors.catalog.ts` @ 5.1.0-alpha.1
@@ -141,6 +159,8 @@
 - [L1/A1.1] `src/data/philosophy-ethics.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/prompt-suggestions.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/scientific-discoveries.catalog.ts` @ 5.1.0-alpha.1
+- [L1/A1.1] `src/data/ship-equipment.catalog.ts` @ 5.1.0-alpha.1
+- [L1/A1.1] `src/data/skills-vcs.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/ui-themes.catalog.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/ui-wallpapers.assets.ts` @ 5.1.0-alpha.1
 - [L1/A1.1] `src/data/v4-catalog.data.ts` @ 5.1.0-alpha.1
@@ -151,6 +171,7 @@
 - [L5/A4.3] `src/doc-sync/google-picker.service.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/doc-sync/project-docs.catalog.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/doc-sync/sot-manifest.ts` @ 5.1.0-alpha.1
+- [L4/A5.3] `src/engine3d/city-life.ts` @ 5.1.0-alpha.1
 - [L4/A5.3] `src/engine3d/isolated-inspector.scene.ts` @ 5.1.0-alpha.1
 - [L4/A5.3] `src/engine3d/planet-markers.ts` @ 5.1.0-alpha.1
 - [L4/A5.3] `src/engine3d/planet-weather-fx.ts` @ 5.1.0-alpha.1
@@ -174,6 +195,7 @@
 - [L6/A4.2] `src/hooks/use-viewport-layout.ts` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/interfaces/AuthScreen.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/interfaces/BriefingLobbyScreen.tsx` @ 5.1.0-alpha.1
+- [L7/A5.1] `src/interfaces/DocsSkillsHubScreen.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/interfaces/EntityWindowModal.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/interfaces/GameHud.tsx` @ 5.1.0-alpha.1
 - [L7/A5.1] `src/interfaces/GameViewport.tsx` @ 5.1.0-alpha.1
@@ -232,6 +254,7 @@
 - [L5/A4.3] `src/services/firebase/firebase-client.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/services/firebase/firestore-archives.service.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/services/governance/doc-governance.service.ts` @ 5.1.0-alpha.1
+- [L5/A4.3] `src/services/governance/docs-vcs.service.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/services/persistence/save-migration.service.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/services/queues/cloud-sync.queue.ts` @ 5.1.0-alpha.1
 - [L5/A4.3] `src/services/queues/oracle-request.queue.ts` @ 5.1.0-alpha.1
@@ -240,6 +263,7 @@
 - [L6/A4.2] `src/stores/meta-honors.store.ts` @ 5.1.0-alpha.1
 - [L6/A4.2] `src/stores/selection.atoms.ts` @ 5.1.0-alpha.1
 - [L6/A4.2] `src/stores/user-context.store.ts` @ 5.1.0-alpha.1
+- [L3/A3.1] `src/systems/biosphere-cabinet/bioclimate-health.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/biosphere-cabinet/terraformation-v4.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/biosphere/climate-ledger.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/biosphere/video-studio-catalog.ts` @ 5.1.0-alpha.1
@@ -251,6 +275,7 @@
 - [L3/A3.1] `src/systems/dossiers-pa/badge-taxonomy.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/dossiers-pa/dossier-subchoices.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/dossiers-pa/entity-markup.ts` @ 5.1.0-alpha.1
+- [L3/A3.1] `src/systems/dossiers-pa/event-action-taxonomy.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/dossiers-pa/genese-promises.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/dossiers-pa/pa-engine.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/dossiers-pa/pax-scenario-matrix.ts` @ 5.1.0-alpha.1
@@ -259,10 +284,14 @@
 - [L3/A3.1] `src/systems/economy-urban/finance-actions.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/economy-urban/resource-forecast.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/economy-urban/workforce-assignments.ts` @ 5.1.0-alpha.1
+- [L3/A3.1] `src/systems/fleet/ship-loadout.engine.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/geopolitics/humankind-progression.ts` @ 5.1.0-alpha.1
+- [L3/A3.1] `src/systems/geopolitics/planetary-diplomacy.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/governance/agent-hierarchy.engine.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/governance/doc-governance.engine.ts` @ 5.1.0-alpha.1
+- [L3/A3.1] `src/systems/governance/skills-vcs.engine.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/honors/honors-evaluator.ts` @ 5.1.0-alpha.1
+- [L3/A3.1] `src/systems/journal/archives-analytics.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/playtest/beta-p13-engine.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/playtest/playtest-6-turns.ts` @ 5.1.0-alpha.1
 - [L3/A3.1] `src/systems/playtest/resource-trend-projection.ts` @ 5.1.0-alpha.1

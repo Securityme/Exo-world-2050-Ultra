@@ -7,7 +7,9 @@ import { ThreeJsRenderAdapter } from '../engine3d/threejs-render.adapter.ts';
 import { useExoStore } from '../stores/game.store.ts';
 import {
   activeDossierIdAtom,
+  cameraFocusTargetAtom,
   hologramPreviewDistrictAtom,
+  inspectedColonistIdAtom,
   inspectedEntityAtom,
   selectedDistrictIdAtom,
   selectedTileAtom,
@@ -32,9 +34,11 @@ export function GameViewport() {
   const selectedTile = useAtomValue(selectedTileAtom);
   const hologramPreview = useAtomValue(hologramPreviewDistrictAtom);
   const overlayMode = useAtomValue(viewportOverlayModeAtom);
+  const cameraFocusTarget = useAtomValue(cameraFocusTargetAtom);
   const setSelectedTile = useSetAtom(selectedTileAtom);
   const setSelectedDistrict = useSetAtom(selectedDistrictIdAtom);
   const setInspectedEntity = useSetAtom(inspectedEntityAtom);
+  const setInspectedColonistId = useSetAtom(inspectedColonistIdAtom);
   const setActiveDossierId = useSetAtom(activeDossierIdAtom);
   const setToast = useSetAtom(toastNoticeAtom);
 
@@ -67,6 +71,8 @@ export function GameViewport() {
       } else if (evt.type === 'DISTRICT_CLICKED') {
         setSelectedDistrict(evt.districtId);
         setInspectedEntity({ kind: 'DISTRICT', districtId: evt.districtId });
+      } else if (evt.type === 'COLONIST_CLICKED') {
+        setInspectedColonistId(evt.colonistId);
       }
     };
     adapter.setOnGameEvent(onEvent);
@@ -115,6 +121,7 @@ export function GameViewport() {
     graphics.lowPowerMode,
     setActiveDossierId,
     setActiveSlot,
+    setInspectedColonistId,
     setInspectedEntity,
     setSelectedDistrict,
     setSelectedTile,
@@ -131,9 +138,10 @@ export function GameViewport() {
       overlayMode,
       themeAccentHex: activeThemeAccents.accentHex,
       themeAccent2Hex: activeThemeAccents.accent2Hex,
+      cameraFocusTarget,
     });
     adapter.applySceneDiff(diff);
-  }, [world, selectedTile, graphics.themeMode, hologramPreview, overlayMode, activeThemeAccents]);
+  }, [world, selectedTile, graphics.themeMode, hologramPreview, overlayMode, activeThemeAccents, cameraFocusTarget]);
 
   return (
     <div

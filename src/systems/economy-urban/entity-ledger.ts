@@ -2,6 +2,7 @@ import { ATMOSPHERE_CONSTANTS } from '../../config/atmosphere.constants.ts';
 import type { CityDistrictPacket } from '../../contracts/render-bridge.schema.ts';
 import type { EntityLedgerDelta } from '../../contracts/v4-systems.schema.ts';
 import type { WorldState } from '../../contracts/world-state.schema.ts';
+import { computeFleetTotals } from '../fleet/ship-loadout.engine.ts';
 
 /**
  * [L3] EXW.L3.ENTITY_LEDGER | v4.0.0-rc.1 | SADT A3.1
@@ -126,14 +127,19 @@ export function evaluateEntityLedger(
   const atmoSpec = ATMOSPHERE_CONSTANTS[state.atmosphereTier];
   const kitDemand = state.atmosphereTier === 'P4' ? 0 : Math.ceil(state.colonists.length * atmoSpec.kitsPerColonist);
   const upkeep = state.districts.reduce((acc, d) => acc + d.level * 8, 20);
+  const fleetTotals = computeFleetTotals(state.fleetShips ?? []);
   const fleetUpkeep = (state.fleetShips?.length ?? 0) * 6 + state.militaryRoster.reduce((a, u) => a + u.count, 0);
+  const fleetUtilityCredits = Math.round(fleetTotals.totalUtilityYield * 0.45);
+  const fleetUtilityMaterials = Math.round(fleetTotals.totalUtilityYield * 0.14);
+  const fleetUtilityCompute = Math.round(fleetTotals.totalUtilityYield * 0.12);
+  const gearToolBonus = ((state.colonistGear?.toolTier ?? 1) - 1) * 4;
 
   const energy = rows.reduce((a, r) => a + r.energyNet, 8);
-  const credits = rows.reduce((a, r) => a + r.creditsNet, 45) - upkeep - fleetUpkeep;
-  const materials = rows.reduce((a, r) => a + r.materialsNet, 6);
+  const credits = rows.reduce((a, r) => a + r.creditsNet, 45) + fleetUtilityCredits - upkeep - fleetUpkeep;
+  const materials = rows.reduce((a, r) => a + r.materialsNet, 6) + fleetUtilityMaterials + gearToolBonus;
   const water = rows.reduce((a, r) => a + r.waterNet, 4);
   const food = rows.reduce((a, r) => a + r.foodNet, 4) - Math.ceil(state.colonists.length * 1.2);
-  const compute = rows.reduce((a, r) => a + r.computeNet, state.datacenterTier * 4);
+  const compute = rows.reduce((a, r) => a + r.computeNet, state.datacenterTier * 4) + fleetUtilityCompute;
   const breathingKits = rows.reduce((a, r) => a + r.kitsNet, 0) - kitDemand;
   const electronics = rows.reduce((a, r) => a + r.electronicsNet, 2);
 

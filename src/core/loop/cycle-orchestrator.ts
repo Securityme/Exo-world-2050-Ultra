@@ -7,7 +7,26 @@ import type { ExecutiveDossier } from '../../contracts/pa-dossiers.schema.ts';
 import type { AtmosphereTier } from '../../contracts/render-bridge.schema.ts';
 import type { Advisor, WorldState } from '../../contracts/world-state.schema.ts';
 import { FALLBACK_DOSSIERS_CATALOG } from '../../data/fallback-dossiers.catalog.ts';
-import { ERAS_CATALOG, SUPERPOWERS_CATALOG } from '../../data/world.catalog.ts';
+import {
+  ERAS_CATALOG,
+  PLANET_BIOME_PROFILES_CATALOG,
+  SUPERPOWERS_CATALOG,
+  computePlanetBiomeDistribution,
+  resolvePlanetBiomeProfile,
+} from '../../data/world.catalog.ts';
+import {
+  COLONY_SPECIALIZATIONS_CATALOG,
+  DIFFICULTY_PRESETS_CATALOG,
+  GOVERNMENT_TYPES_CATALOG,
+  LANDING_SITES_CATALOG,
+  RESOURCE_ABUNDANCE_CATALOG,
+} from '../../data/campaign-genesis.catalog.ts';
+import type {
+  PlanetBiomeProfile,
+  PlanetClimatePreset,
+  PlanetReliefPreset,
+} from '../../contracts/render-bridge.schema.ts';
+import type { BioHealthReport } from '../../contracts/skills-vcs.schema.ts';
 import { collectDueTriggers, enqueueTriggerEvent } from '../bus/trigger-bus.ts';
 import { applyPaAccumulationCap } from '../dispatchers/dossier.dispatcher.ts';
 import { appendChronicleHook, evaluateMilestonesHook } from '../dispatchers/event-hook.dispatcher.ts';
@@ -30,6 +49,20 @@ export interface InitialCampaignConfig {
   readonly superpowerId: string;
   readonly doctrineId: string;
   readonly rivalCount: number;
+  readonly biomeId?: PlanetBiomeProfile;
+  readonly oceanCoveragePct?: number;
+  readonly relief?: PlanetReliefPreset;
+  readonly climate?: PlanetClimatePreset;
+  readonly planetName?: string;
+  readonly governmentTypeId?: string;
+  readonly leaderName?: string;
+  readonly capitalName?: string;
+  readonly fleetName?: string;
+  readonly landingSiteId?: string;
+  readonly startingSpecializationId?: string;
+  readonly difficultyPreset?: 'EXPLORATEUR' | 'COMMANDANT' | 'STRATEGE';
+  readonly resourceAbundance?: 'SOBRE' | 'EQUILIBRE' | 'ABONDANT';
+  readonly initialDiplomaticTension?: 'DETENDUE' | 'EQUILIBREE' | 'TENDUE';
 }
 
 const SEASONS: readonly WorldState['season'][] = ['PRINTEMPS', 'ETE', 'AUTOMNE', 'HIVER'];
@@ -166,6 +199,24 @@ export function createInitialWorldState(config: InitialCampaignConfig): WorldSta
   const prng = new Pcg32(config.worldSeed);
   const playerPower =
     SUPERPOWERS_CATALOG.find((s) => s.id === config.superpowerId) ?? SUPERPOWERS_CATALOG[0]!;
+  const biomeSpec = resolvePlanetBiomeProfile(config.biomeId ?? PLANET_BIOME_PROFILES_CATALOG[0]?.id);
+  const oceanPct = config.oceanCoveragePct ?? biomeSpec.defaultOceanPct;
+  const relief = config.relief ?? biomeSpec.defaultRelief;
+  const climate = config.climate ?? biomeSpec.defaultClimate;
+  const govSpec =
+    GOVERNMENT_TYPES_CATALOG.find((g) => g.id === config.governmentTypeId) ?? GOVERNMENT_TYPES_CATALOG[0]!;
+  const landingSpec =
+    LANDING_SITES_CATALOG.find((l) => l.id === config.landingSiteId) ?? LANDING_SITES_CATALOG[0]!;
+  const specDef =
+    COLONY_SPECIALIZATIONS_CATALOG.find((s) => s.id === config.startingSpecializationId) ??
+    COLONY_SPECIALIZATIONS_CATALOG[0]!;
+  const diffSpec =
+    DIFFICULTY_PRESETS_CATALOG.find((d) => d.id === config.difficultyPreset) ?? DIFFICULTY_PRESETS_CATALOG[1]!;
+  const abundSpec =
+    RESOURCE_ABUNDANCE_CATALOG.find((a) => a.id === config.resourceAbundance) ?? RESOURCE_ABUNDANCE_CATALOG[1]!;
+  const tension = config.initialDiplomaticTension ?? 'EQUILIBREE';
+  const tensionRelationShift = tension === 'DETENDUE' ? 14 : tension === 'TENDUE' ? -18 : 0;
+
   const rivalTemplates = SUPERPOWERS_CATALOG.filter((s) => s.id !== playerPower.id).slice(
     0,
     Math.max(1, Math.min(5, config.rivalCount)),
@@ -178,24 +229,48 @@ export function createInitialWorldState(config: InitialCampaignConfig): WorldSta
     colorHex: tpl.colorHex,
     era: 1,
     eraStars: 1 + (idx % 2),
-    humankindScore: 110 + idx * 14,
-    economyIndex: 100 + idx * 8,
-    militaryPower: 95 + idx * 10,
-    computeDefense: 32 + idx * 7,
-    relationWithPlayer: idx === 0 ? 35 : -10 + idx * 8,
-    isAlliedPair: idx === 0,
+    humankindScore: Math.round((110 + idx * 14) * diffSpec.rivalStrengthMult),
+    economyIndex: Math.round((100 + idx * 8) * diffSpec.rivalStrengthMult),
+    militaryPower: Math.round((95 + idx * 10) * diffSpec.rivalStrengthMult),
+    computeDefense: Math.round((32 + idx * 7) * diffSpec.rivalStrengthMult),
+    relationWithPlayer: Math.max(-100, Math.min(100, (idx === 0 ? 35 : -10 + idx * 8) + tensionRelationShift)),
+    isAlliedPair: idx === 0 && tension !== 'TENDUE',
     controlledTiles: 6 + (idx % 3),
     paralyzedCycles: 0,
   }));
 
   const capturedTiles = [10, 11, 12, 13, 18, 19, 20, 21];
-  const rivalTiles = [24, 25, 31, 32, 38, 39, 44, 45, 51, 52, 58, 59];
+  if (!capturedTiles.includes(landingSpec.tileIndex)) {
+    capturedTiles.push(landingSpec.tileIndex);
+  }
+  const rivalTiles = [24, 25, 31, 32, 38, 39, 44, 45, 51, 52, 58, 59].filter(
+    (t) => !capturedTiles.includes(t),
+  );
 
   const initialDossiers: ExecutiveDossier[] = FALLBACK_DOSSIERS_CATALOG.slice(0, 4).map((d, i) => ({
     ...d,
     id: `init-${d.code}-${i}`,
-    tileIndex: (12 + i * 9) % 72,
+    tileIndex: (landingSpec.tileIndex + i * 9) % 72,
   }));
+
+  const biomeDelta = biomeSpec.startingDelta;
+  const specCredits = specDef.id === 'DIPLOMATIE_COMMERCE' ? 220 : 0;
+  const specMaterials = specDef.id === 'INGENIERIE_INDUSTRIELLE' ? 45 : 0;
+  const specEnergy = specDef.id === 'INGENIERIE_INDUSTRIELLE' ? 20 : 0;
+  const specFood = specDef.id === 'BIOSCIENCES_AGRO' ? 25 : 0;
+  const specKits = (specDef.id === 'BIOSCIENCES_AGRO' ? 20 : 0) + (govSpec.id === 'REPUBLIQUE_SOLAIRE' ? 12 : 0);
+  const specCompute = (specDef.id === 'CYBER_ORBITAL' ? 30 : 0) + (govSpec.id === 'CONSORTIUM_TECHNOCRATIQUE' ? 25 : 0);
+  const specElec = (specDef.id === 'CYBER_ORBITAL' ? 20 : 0) + (govSpec.id === 'CONSORTIUM_TECHNOCRATIQUE' ? 15 : 0);
+  const specAtmo = (specDef.id === 'BIOSCIENCES_AGRO' ? 3 : 0) + (govSpec.id === 'REPUBLIQUE_SOLAIRE' ? 2 : 0);
+  const baseCredits = Math.round((1250 + govSpec.creditsDelta + specCredits) * diffSpec.creditsMult);
+  const initialAtmoProgress = Math.min(48, 18 + (biomeDelta.atmosphereProgress ?? 0) + specAtmo);
+  const initialAtmoTier = resolveTierPure(initialAtmoProgress);
+  const initialGeneralRegen = PA_CONSTANTS.GENERAL_BASE_REGEN + (govSpec.paBonus ? 1 : 0);
+
+  const planetName = (config.planetName ?? '').trim() || 'Nouvelle-Aurore';
+  const leaderName = (config.leaderName ?? '').trim() || 'Hélène Vance';
+  const capitalName = (config.capitalName ?? '').trim() || 'Port-Lumière';
+  const fleetName = (config.fleetName ?? '').trim() || 'Armada Aurore';
 
   const draft: WorldState = {
     campaignId: config.campaignId,
@@ -217,23 +292,23 @@ export function createInitialWorldState(config: InitialCampaignConfig): WorldSta
     activeScale: 2,
     activeSlotIndex: 1,
     unlockedSlots: 1,
-    atmosphereTier: 'P1',
-    atmosphereProgress: 18,
+    atmosphereTier: initialAtmoTier,
+    atmosphereProgress: initialAtmoProgress,
     biomeStabilityCycles: 1,
     weatherState: 'CLEAR',
     resources: {
-      credits: 1250,
-      energy: 180,
-      materials: 160,
-      water: 120,
-      food: 115,
-      electronics: 85,
+      credits: baseCredits,
+      energy: Math.round((180 + (biomeDelta.energy ?? 0) + landingSpec.energyDelta + specEnergy) * abundSpec.multiplier),
+      materials: Math.round((160 + (biomeDelta.materials ?? 0) + landingSpec.materialsDelta + specMaterials + (govSpec.id === 'SYNDICAT_MARCHAND' ? 25 : govSpec.id === 'PROTECTORAT_STRATEGIQUE' ? 30 : 0)) * abundSpec.multiplier),
+      water: Math.round((120 + (biomeDelta.water ?? 0) + landingSpec.waterDelta) * abundSpec.multiplier),
+      food: Math.round((115 + (biomeDelta.food ?? 0) + landingSpec.foodDelta + specFood) * abundSpec.multiplier),
+      electronics: 85 + specElec,
       orbitalFuel: 45,
-      compute: 75,
-      breathingKits: 60,
+      compute: 75 + (biomeDelta.compute ?? 0) + specCompute,
+      breathingKits: 60 + (biomeDelta.breathingKits ?? 0) + specKits,
       helium3: 15,
       rareEarths: 20,
-      galacticInfluence: 10,
+      galacticInfluence: 10 + (specDef.id === 'DIPLOMATIE_COMMERCE' ? 12 : 0),
     },
     marketPrices: {
       materials: 12,
@@ -249,17 +324,17 @@ export function createInitialWorldState(config: InitialCampaignConfig): WorldSta
       solvencyRating: 'AA',
       loans: [],
     },
-    approval: 72,
+    approval: Math.max(40, Math.min(95, 72 + govSpec.approvalDelta)),
     referendumActive: false,
     superAllianceRank: 3,
-    superAllianceTrust: 64,
-    superAllianceDirective: 'Stabiliser le palier atmosphérique P2 et sécuriser 12 secteurs géodésiques.',
+    superAllianceTrust: Math.min(95, 64 + (govSpec.id === 'CONSEIL_CIVIQUE' ? 5 : 0)),
+    superAllianceDirective: `Déployer ${capitalName} sur ${planetName} et stabiliser la biosphère.`,
     transporterTier: 1,
     datacenterTier: 1,
     pa: {
-      general: PA_CONSTANTS.GENERAL_BASE_REGEN,
-      generalRegen: PA_CONSTANTS.GENERAL_BASE_REGEN,
-      generalCap: Math.floor(PA_CONSTANTS.GENERAL_BASE_REGEN * PA_CONSTANTS.ACCUMULATION_CAP_FACTOR),
+      general: initialGeneralRegen,
+      generalRegen: initialGeneralRegen,
+      generalCap: Math.floor(initialGeneralRegen * PA_CONSTANTS.ACCUMULATION_CAP_FACTOR),
       subPa: { PA_GES: 3, PA_MNT: 3, PA_BIO: 3, PA_POL: 3 },
       subPaRegen: { PA_GES: 3, PA_MNT: 3, PA_BIO: 3, PA_POL: 3 },
     },
@@ -351,8 +426,8 @@ export function createInitialWorldState(config: InitialCampaignConfig): WorldSta
         cycle: 0,
         tick: 0,
         category: 'ERA',
-        title: `Fondation de ${playerPower.name}`,
-        detail: `Déploiement initial sur Colonie principale · Centre de commandement (Graine ${config.worldSeed}).`,
+        title: `Fondation de ${capitalName} (${planetName})`,
+        detail: `${leaderName} (${govSpec.name}) déploie ${fleetName} sur ${landingSpec.name} · Biome ${biomeSpec.name} (Graine ${config.worldSeed}).`,
         stateHash: 'genesis',
       },
     ],
@@ -364,6 +439,57 @@ export function createInitialWorldState(config: InitialCampaignConfig): WorldSta
     achievements: ['PREMIERE_FONDATION'],
     adaptiveDeltaP: 0,
     stateHash: '',
+    planetProfile: {
+      biomeId: biomeSpec.id,
+      name: planetName,
+      oceanCoveragePct: oceanPct,
+      relief,
+      climate,
+      biomeDistribution: [...computePlanetBiomeDistribution(biomeSpec.id, oceanPct, relief, climate, config.worldSeed)],
+    },
+    planetaryDiplomacy: {
+      influenceScore: tension === 'DETENDUE' ? 42 : tension === 'TENDUE' ? 24 : 32,
+      treaties: [],
+    },
+    bioHealth: {
+      airScore: Math.round(initialAtmoProgress * 0.9),
+      soilFertility: 54,
+      hydroScore: Math.round(25 + oceanPct * 0.55),
+      floraIndex: 42,
+      faunaIndex: 38,
+      catastropheDrag: 0,
+      compositeBioHealth: Math.round(0.25 * (initialAtmoProgress * 0.9) + 0.2 * 54 + 0.2 * (25 + oceanPct * 0.55) + 0.2 * 42 + 0.15 * 38),
+      edenStreak: 0,
+      activeDivision: initialAtmoTier === 'P4' ? 'STRATOSPHERE_3' : initialAtmoTier === 'P3' ? 'MESOSPHERE_2' : initialAtmoTier === 'P2' ? 'THERMOSPHERE_1' : 'EXOSPHERE_0',
+    },
+    ecclesiaState: {
+      pastoralAxis: 52,
+      charityAxis: 58,
+      contemplationAxis: 48,
+      dialogueAxis: 55,
+      freedomOfConscienceScore: 100,
+      lastDiscernmentGrade: 2,
+    },
+    settlementProfile: {
+      governmentTypeId: govSpec.id,
+      leaderName,
+      capitalName,
+      fleetName,
+      landingSiteId: landingSpec.id,
+      startingSpecializationId: specDef.id,
+      difficultyPreset: diffSpec.id,
+      resourceAbundance: abundSpec.id,
+      initialDiplomaticTension: tension,
+    },
+    eventChainQueue: [
+      {
+        chainId: 'chain-coastal-charter',
+        step: 1,
+        totalSteps: 3,
+        title: `Charte d’établissement de ${capitalName}`,
+        nextTriggerCycle: 2,
+      },
+    ],
   };
 
   return { ...draft, stateHash: computeStateHash(draft) };
@@ -647,8 +773,68 @@ function commitCycleBoundary(baseState: WorldState): WorldState {
     });
   }
 
+  // Step 10: Planetary Diplomacy Treaties + BioHealth (FEAT-53) + Multi-turn Event Chain
+  const currentDip = state.planetaryDiplomacy ?? { influenceScore: 30, treaties: [] };
+  let treatyCredits = 0;
+  let treatyCompute = 0;
+  const steppedTreaties = currentDip.treaties
+    .map((t) => {
+      if (t.kind === 'MARITIME_TRADE') treatyCredits += 38;
+      else if (t.kind === 'SCIENCE_SHARE') treatyCompute += 12;
+      else if (t.kind === 'NON_AGGRESSION') treatyCredits += 10;
+      else if (t.kind === 'PLANETARY_SUMMIT') {
+        treatyCredits += 20;
+        treatyCompute += 6;
+      }
+      return { ...t, remainingCycles: Math.max(0, t.remainingCycles - 1) };
+    })
+    .filter((t) => t.remainingCycles > 0);
+
+  const oceanPct = state.planetProfile?.oceanCoveragePct ?? 45;
+  const activeP0Count = nextDossiers.filter((d) => d.dossierClass === 'P0').length;
+  const catDrag = Math.min(40, activeP0Count * 6 + (state.weatherState === 'DUST_STORM' ? 5 : 0));
+  const airS = Math.min(100, Math.round(nextAtmoProgress * 0.88 + bioDist.length * 4));
+  const soilS = Math.min(100, Math.round(32 + Math.min(40, preMilestoneDraft.resources.food * 0.18) + bioDist.length * 4));
+  const hydroS = Math.min(100, Math.round(20 + oceanPct * 0.55 + Math.min(25, preMilestoneDraft.resources.water * 0.14)));
+  const floraS = Math.min(100, Math.round((state.terra?.bio ?? 18) * 0.7 + bioDist.length * 7 + airS * 0.22));
+  const faunaS = Math.min(100, Math.round(floraS * 0.55 + hydroS * 0.35 + state.biomeStabilityCycles * 2));
+  const compBio = Math.max(0, Math.min(100, Math.round(0.25 * airS + 0.2 * soilS + 0.2 * hydroS + 0.2 * floraS + 0.15 * faunaS - catDrag)));
+  const activeDiv: BioHealthReport['activeDivision'] =
+    nextAtmoTier === 'P4' && nextAtmoProgress >= 90
+      ? 'TROPOSPHERE_4'
+      : nextAtmoTier === 'P4' || nextAtmoProgress >= 75
+        ? 'STRATOSPHERE_3'
+        : nextAtmoTier === 'P3' || nextAtmoProgress >= 50
+          ? 'MESOSPHERE_2'
+          : nextAtmoTier === 'P2' || nextAtmoProgress >= 25
+            ? 'THERMOSPHERE_1'
+            : 'EXOSPHERE_0';
+
+  const nextBioHealth: BioHealthReport = {
+    airScore: airS,
+    soilFertility: soilS,
+    hydroScore: hydroS,
+    floraIndex: floraS,
+    faunaIndex: faunaS,
+    catastropheDrag: catDrag,
+    compositeBioHealth: compBio,
+    edenStreak: compBio >= 80 ? (state.bioHealth?.edenStreak ?? 0) + 1 : 0,
+    activeDivision: activeDiv,
+  };
+
+  const nextChainQueue = (state.eventChainQueue ?? []).map((entry) =>
+    entry.nextTriggerCycle <= nextCycle && entry.step < entry.totalSteps
+      ? { ...entry, step: entry.step + 1, nextTriggerCycle: nextCycle + 3 }
+      : entry,
+  );
+
   const draft: WorldState = {
     ...preMilestoneDraft,
+    resources: {
+      ...preMilestoneDraft.resources,
+      credits: preMilestoneDraft.resources.credits + treatyCredits,
+      compute: preMilestoneDraft.resources.compute + treatyCompute,
+    },
     prngState: prng.getStateNumber(),
     cycle: nextCycle,
     year,
@@ -695,6 +881,12 @@ function commitCycleBoundary(baseState: WorldState): WorldState {
     },
     achievements: nextAchievements,
     chronicle: nextChronicle,
+    planetaryDiplomacy: {
+      influenceScore: Math.max(0, Math.min(100, currentDip.influenceScore + (steppedTreaties.length > 0 ? 1 : 0))),
+      treaties: steppedTreaties,
+    },
+    bioHealth: nextBioHealth,
+    eventChainQueue: nextChainQueue,
   };
 
   return { ...draft, stateHash: computeStateHash(draft) };

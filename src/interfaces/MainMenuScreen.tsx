@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import {
   Award,
+  BookMarked,
   Compass,
   FolderOpen,
   Monitor,
@@ -207,6 +208,15 @@ export function MainMenuScreen() {
             >
               <Settings className="h-3.5 w-3.5 exo-accent-text" />
               <span>Paramètres</span>
+            </button>
+            <button
+              type="button"
+              data-testid="main-menu-docs-skills-btn"
+              onClick={() => setSubscreen('DOCS_SKILLS_HUB')}
+              className="exo-bento-card inline-flex min-h-[44px] items-center justify-center gap-2 px-3.5 py-2 text-xs font-semibold transition whitespace-nowrap"
+            >
+              <BookMarked className="h-3.5 w-3.5 exo-accent-2-text" />
+              <span>Docs, VCS &amp; Skills</span>
             </button>
             <button
               type="button"

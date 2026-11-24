@@ -26,7 +26,7 @@ export const NestedBadgeLevelSchema = z.object({
 
 export const StackedBadgeTripletSchema = z.object({
   id: z.string(),
-  kind: z.enum(['PROVENANCE', 'ETHICS', 'GAMEPLAY']),
+  kind: z.enum(['PROVENANCE', 'ETHICS', 'GAMEPLAY', 'SUBCHOICE']),
   master: NestedBadgeLevelSchema,
   level1: NestedBadgeLevelSchema,
   level2: NestedBadgeLevelSchema,

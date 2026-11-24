@@ -19,7 +19,24 @@ import {
   getThemePreset,
   UI_THEME_STORAGE_KEY,
 } from '../data/ui-themes.catalog.ts';
-import { INITIAL_FLEET_SHIPS, resolveSuperpowerV4 } from '../data/v4-catalog.data.ts';
+import type {
+  PlanetBiomeId,
+  PlanetClimateId,
+  PlanetReliefId,
+} from '../data/world.catalog.ts';
+import { PLANET_BIOME_PROFILES_CATALOG } from '../data/world.catalog.ts';
+import {
+  COLONY_SPECIALIZATIONS_CATALOG,
+  GOVERNMENT_TYPES_CATALOG,
+  LANDING_SITES_CATALOG,
+  SUGGESTION_LEXICON_BANKS,
+} from '../data/campaign-genesis.catalog.ts';
+import {
+  AI_PERSONALITIES_CATALOG,
+  INITIAL_FLEET_SHIPS,
+  resolveSuperpowerV4,
+  SUPERPOWERS_V4_CATALOG,
+} from '../data/v4-catalog.data.ts';
 import { resolveDeterministicCombat } from '../systems/combat-conquest/combat-engine.ts';
 import { createDefaultHkProgress } from '../systems/geopolitics/humankind-progression.ts';
 import { ensureZeroPaOption } from '../systems/turn-orchestration/turn-gate-v4.ts';
@@ -63,6 +80,21 @@ export interface DraftCampaignConfig {
   aiAdaptability: boolean;
   enabledExtensions: string[];
   skipGeneseAct0: boolean;
+  biomeId: PlanetBiomeId;
+  oceanCoveragePct: number;
+  relief: PlanetReliefId;
+  climate: PlanetClimateId;
+  planetName: string;
+  governmentTypeId: string;
+  leaderName: string;
+  capitalName: string;
+  fleetName: string;
+  landingSiteId: string;
+  startingSpecializationId: string;
+  rivalCount: number;
+  difficultyPreset: 'EXPLORATEUR' | 'COMMANDANT' | 'STRATEGE';
+  resourceAbundance: 'SOBRE' | 'EQUILIBRE' | 'ABONDANT';
+  initialDiplomaticTension: 'DETENDUE' | 'EQUILIBREE' | 'TENDUE';
 }
 
 export interface ExoStoreState {
@@ -85,6 +117,7 @@ export interface ExoStoreState {
   setActiveScale: (scale: CameraScale) => void;
   setActiveSlot: (slotIndex: number) => void;
   updateDraftConfig: (patch: Partial<DraftCampaignConfig>) => void;
+  randomizeDraftCampaign: () => void;
   startNewCampaign: () => void;
   resumeCampaign: () => boolean;
   loadCampaignState: (loaded: WorldState) => void;
@@ -158,7 +191,12 @@ function hydrateV4World(base: WorldState, cfg?: Partial<DraftCampaignConfig>): W
       nextArrivalCycle: 4,
       completedCalEventIds: [],
     },
-    fleetShips: base.fleetShips ?? [...INITIAL_FLEET_SHIPS],
+    colonistGear: base.colonistGear ?? { outfitTier: 1, toolTier: 1, weaponTier: 1 },
+    fleetShips: (base.fleetShips ?? INITIAL_FLEET_SHIPS).map((ship) => ({
+      ...ship,
+      maxSlots: ship.maxSlots ?? 4,
+      loadout: Array.isArray(ship.loadout) ? [...ship.loadout] : [],
+    })),
     livingCatalog: base.livingCatalog ?? { recentCodes: [], lastThreeTurnsCodes: [], totalGenerated: 0 },
     lastTurnSummary: base.lastTurnSummary ?? null,
     turn_snapshots:
@@ -268,6 +306,21 @@ export const useExoStore = create<ExoStoreState>((set, get) => ({
     aiAdaptability: true,
     enabledExtensions: ['GENESE_2050', 'HK_STARS', 'FP_WORKFORCE', 'GEMINI_4T'],
     skipGeneseAct0: false,
+    biomeId: 'ARCHIPEL_EMERAUDE',
+    oceanCoveragePct: 72,
+    relief: 'EQUILIBRE',
+    climate: 'TROPICAL',
+    planetName: 'Nouvelle-Aurore',
+    governmentTypeId: 'REPUBLIQUE_SOLAIRE',
+    leaderName: 'Hélène Vance',
+    capitalName: 'Port-Lumière',
+    fleetName: 'Armada Aurore',
+    landingSiteId: 'BAIE_AUBE',
+    startingSpecializationId: 'BIOSCIENCES_AGRO',
+    rivalCount: 5,
+    difficultyPreset: 'COMMANDANT',
+    resourceAbundance: 'EQUILIBRE',
+    initialDiplomaticTension: 'EQUILIBREE',
   },
   audio: {
     muted: false, // Active by default on first user gesture (V1 user lock)
@@ -329,6 +382,47 @@ export const useExoStore = create<ExoStoreState>((set, get) => ({
   updateDraftConfig: (patch) =>
     set((s) => ({ draftConfig: { ...s.draftConfig, ...patch } })),
 
+  randomizeDraftCampaign: () => {
+    const pick = <T,>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)]!;
+    const biome = pick(PLANET_BIOME_PROFILES_CATALOG);
+    const sp = pick(SUPERPOWERS_V4_CATALOG);
+    const gov = pick(GOVERNMENT_TYPES_CATALOG);
+    const site = pick(LANDING_SITES_CATALOG);
+    const spec = pick(COLONY_SPECIALIZATIONS_CATALOG);
+    const ai = pick(AI_PERSONALITIES_CATALOG);
+    const doctrines = ['SOLARPUNK', 'SCIENTIFIC', 'FEDERAL', 'CORPORATE', 'SECURITY'] as const;
+    const difficulties = ['EXPLORATEUR', 'COMMANDANT', 'STRATEGE'] as const;
+    const abundances = ['SOBRE', 'EQUILIBRE', 'ABONDANT'] as const;
+    const tensions = ['DETENDUE', 'EQUILIBREE', 'TENDUE'] as const;
+    const seed = Math.floor(10_000_000 + Math.random() * 89_000_000);
+    const oceanJitter = Math.max(0, Math.min(90, biome.defaultOceanPct + Math.floor(Math.random() * 13) - 6));
+
+    set((s) => ({
+      draftConfig: {
+        ...s.draftConfig,
+        worldSeed: seed,
+        biomeId: biome.id,
+        oceanCoveragePct: biome.hasOcean ? oceanJitter : Math.min(25, oceanJitter),
+        relief: biome.defaultRelief,
+        climate: biome.defaultClimate,
+        superpowerId: sp.id,
+        doctrineId: pick(doctrines),
+        governmentTypeId: gov.id,
+        landingSiteId: site.id,
+        startingSpecializationId: spec.id,
+        aiPersonality: ai.id,
+        planetName: pick(SUGGESTION_LEXICON_BANKS.PLANET).value,
+        capitalName: pick(SUGGESTION_LEXICON_BANKS.CAPITAL).value,
+        leaderName: pick(SUGGESTION_LEXICON_BANKS.LEADER).value,
+        fleetName: pick(SUGGESTION_LEXICON_BANKS.FLEET).value,
+        rivalCount: 3 + Math.floor(Math.random() * 3),
+        difficultyPreset: pick(difficulties),
+        resourceAbundance: pick(abundances),
+        initialDiplomaticTension: pick(tensions),
+      },
+    }));
+  },
+
   startNewCampaign: () => {
     const { draftConfig } = get();
     const sp = resolveSuperpowerV4(draftConfig.superpowerId);
@@ -337,7 +431,21 @@ export const useExoStore = create<ExoStoreState>((set, get) => ({
       worldSeed: draftConfig.worldSeed,
       superpowerId: sp.legacyCatalogId,
       doctrineId: draftConfig.doctrineId,
-      rivalCount: 5,
+      rivalCount: draftConfig.rivalCount,
+      biomeId: draftConfig.biomeId,
+      oceanCoveragePct: draftConfig.oceanCoveragePct,
+      relief: draftConfig.relief,
+      climate: draftConfig.climate,
+      planetName: draftConfig.planetName,
+      governmentTypeId: draftConfig.governmentTypeId,
+      leaderName: draftConfig.leaderName,
+      capitalName: draftConfig.capitalName,
+      fleetName: draftConfig.fleetName,
+      landingSiteId: draftConfig.landingSiteId,
+      startingSpecializationId: draftConfig.startingSpecializationId,
+      difficultyPreset: draftConfig.difficultyPreset,
+      resourceAbundance: draftConfig.resourceAbundance,
+      initialDiplomaticTension: draftConfig.initialDiplomaticTension,
     });
     const fresh = hydrateV4World({ ...base, superpowerId: sp.id }, draftConfig);
     saveLocalCampaign(fresh);

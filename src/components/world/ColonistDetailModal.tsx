@@ -5,6 +5,8 @@ import {
   Box,
   Building2,
   CheckCircle2,
+  Coffee,
+  Compass,
   HeartPulse,
   Maximize2,
   RotateCw,
@@ -14,9 +16,14 @@ import {
   X,
 } from 'lucide-react';
 import { getColonistPortrait } from '../../data/art-manifest.data.ts';
-import { handleAssignColonistToDistrict } from '../../pipelines/game-actions.pipeline.ts';
+import { ColonistPortraitAvatar } from './ColonistPortraitAvatar.tsx';
+import {
+  handleAssignColonistToDistrict,
+  handleGenerateActionEvent,
+} from '../../pipelines/game-actions.pipeline.ts';
 import { useExoStore } from '../../stores/game.store.ts';
 import {
+  activeDossierIdAtom,
   activeSubscreenAtom,
   inspectedColonistIdAtom,
   isolated3DModalAtom,
@@ -42,6 +49,7 @@ export function ColonistDetailModal() {
   const world = useExoStore((s) => s.world);
   const setIsolated3D = useSetAtom(isolated3DModalAtom);
   const setSubscreen = useSetAtom(activeSubscreenAtom);
+  const setActiveDossierId = useSetAtom(activeDossierIdAtom);
   const setToast = useSetAtom(toastNoticeAtom);
   const setQuestUi = useSetAtom(questUiMilestonesAtom);
   const [portraitZoomOpen, setPortraitZoomOpen] = useState(false);
@@ -71,6 +79,18 @@ export function ColonistDetailModal() {
   const burnout = colonist.fatigue >= 80;
   const xp = colonist.xp ?? 45;
   const xpPct = Math.min(100, xp % 100);
+  const maslowStratum =
+    health < 45 || colonist.fatigue > 85
+      ? 'SURVIE'
+      : happiness < 50
+        ? 'SÉCURITÉ'
+        : colonist.morale < 72
+          ? 'APPARTENANCE'
+          : (colonist.level ?? 1) < 2
+            ? 'ESTIME'
+            : (colonist.level ?? 1) < 3
+              ? 'RÉALISATION'
+              : 'TRANSCENDANCE';
 
   const stats: readonly { label: string; val: number; color: string }[] = [
     { label: 'Santé', val: health, color: 'bg-emerald-500' },
@@ -94,12 +114,13 @@ export function ColonistDetailModal() {
               data-testid="colonist-portrait-zoom-btn"
               onClick={() => setPortraitZoomOpen(true)}
               title="Cliquer pour agrandir le portrait et inspecter le modèle 3D"
-              className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border exo-accent-border shadow-sm"
+              className="group relative shrink-0 overflow-hidden rounded-xl shadow-sm"
             >
-              <img
-                src={portraitUrl}
-                alt={colonist.name}
-                className="h-full w-full object-cover transition group-hover:scale-105"
+              <ColonistPortraitAvatar
+                name={colonist.name}
+                specialty={colonist.specialty}
+                imageUrl={portraitUrl}
+                size="md"
               />
               <span className="absolute right-1 bottom-1 rounded bg-black/65 p-0.5 text-white">
                 <Maximize2 className="h-3 w-3" />
@@ -109,6 +130,9 @@ export function ColonistDetailModal() {
               <div className="flex flex-wrap items-center gap-1.5">
                 <span className="rounded border exo-accent-border bg-[var(--exo-accent-soft)] px-1.5 py-0.5 font-mono text-[10px] font-bold exo-accent-text">
                   Niv. {colonist.level ?? 1} · {formatSpecialtyLabel(colonist.specialty)}
+                </span>
+                <span className="rounded border border-cyan-400/50 bg-cyan-500/12 px-1.5 py-0.5 font-mono text-[10px] font-bold text-cyan-700 dark:text-cyan-200">
+                  Maslow : {maslowStratum}
                 </span>
                 {burnout && (
                   <span className="inline-flex items-center gap-1 rounded bg-rose-600 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
@@ -155,10 +179,11 @@ export function ColonistDetailModal() {
                 </button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <img
-                  src={portraitUrl}
-                  alt={colonist.name}
-                  className="h-56 w-full rounded-xl border exo-accent-border object-cover"
+                <ColonistPortraitAvatar
+                  name={colonist.name}
+                  specialty={colonist.specialty}
+                  imageUrl={portraitUrl}
+                  size="lg"
                 />
                 <div className="exo-surface-sub flex flex-col items-center justify-between rounded-xl border exo-accent-border p-3">
                   <div className="font-mono text-[10px] uppercase exo-accent-text">
@@ -228,20 +253,45 @@ export function ColonistDetailModal() {
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-xs">
-            {[
-              { icon: Shield, label: 'Tenue Protect.', tier: colonist.gear?.outfitTier ?? 1 },
-              { icon: Wrench, label: 'Outillage', tier: colonist.gear?.toolTier ?? 1 },
-              { icon: HeartPulse, label: 'Défense Perso.', tier: colonist.gear?.weaponTier ?? 1 },
-            ].map((g) => {
+            {(
+              [
+                { slot: 'outfitTier', icon: Shield, label: 'Tenue Protect.', tier: colonist.gear?.outfitTier ?? 1 },
+                { slot: 'toolTier', icon: Wrench, label: 'Outillage', tier: colonist.gear?.toolTier ?? 1 },
+                { slot: 'weaponTier', icon: HeartPulse, label: 'Défense Perso.', tier: colonist.gear?.weaponTier ?? 1 },
+              ] as const
+            ).map((g) => {
               const Icon = g.icon;
+              const maxed = g.tier >= 3;
               return (
-                <div key={g.label} className="exo-surface-sub flex items-center gap-2 rounded-xl p-2.5">
+                <button
+                  key={g.label}
+                  type="button"
+                  disabled={maxed}
+                  title={maxed ? 'Palier maximal T3 atteint' : `Améliorer ${g.label} vers T${g.tier + 1} via Événements (R-24)`}
+                  onClick={() => {
+                    const [err, dossier] = handleGenerateActionEvent({
+                      kind: 'UPGRADE_COLONIST_GEAR',
+                      gearSlot: g.slot,
+                      colonistId: colonist.id,
+                    });
+                    if (err || !dossier) {
+                      setToast({ id: Date.now(), tone: 'error', text: err?.message ?? 'Action indisponible.' });
+                      return;
+                    }
+                    setColonistId(null);
+                    setSubscreen('EVENTS_HUB');
+                    setActiveDossierId(dossier.id);
+                  }}
+                  className="exo-surface-sub flex items-center gap-2 rounded-xl border exo-accent-border p-2.5 text-left transition hover:border-[var(--exo-accent)] disabled:opacity-65"
+                >
                   <Icon className="h-4 w-4 shrink-0 exo-accent-2-text" />
                   <div className="min-w-0">
                     <div className="truncate text-[10px] exo-muted-text">{g.label}</div>
-                    <div className="font-mono text-xs font-bold text-[var(--exo-text)]">Équip. T{g.tier}</div>
+                    <div className="font-mono text-xs font-bold text-[var(--exo-text)]">
+                      Équip. T{g.tier}{!maxed ? ' ↑' : ''}
+                    </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -308,6 +358,52 @@ export function ColonistDetailModal() {
                 </button>
               )}
             </div>
+          </div>
+          {/* Quick R-24 Colonist Decisions */}
+          <div className="grid gap-2 sm:grid-cols-2">
+            <button
+              type="button"
+              data-testid="colonist-rest-action-btn"
+              onClick={() => {
+                const [err, dossier] = handleGenerateActionEvent({
+                  kind: 'REST_COLONIST',
+                  colonistId: colonist.id,
+                });
+                if (err || !dossier) {
+                  setToast({ id: Date.now(), tone: 'error', text: err?.message ?? 'Action indisponible.' });
+                  return;
+                }
+                setColonistId(null);
+                setSubscreen('EVENTS_HUB');
+                setActiveDossierId(dossier.id);
+              }}
+              className="exo-accent-chip inline-flex min-h-[42px] items-center justify-center gap-2 px-3 font-mono text-xs font-bold"
+            >
+              <Coffee className="h-4 w-4 text-emerald-400" />
+              <span>Accorder Repos (Dossier R-24)</span>
+            </button>
+            <button
+              type="button"
+              data-testid="colonist-mission-action-btn"
+              onClick={() => {
+                const [err, dossier] = handleGenerateActionEvent({
+                  kind: 'DISPATCH_COLONIST_MISSION',
+                  colonistId: colonist.id,
+                  missionFocus: 'RECON_BIOME',
+                });
+                if (err || !dossier) {
+                  setToast({ id: Date.now(), tone: 'error', text: err?.message ?? 'Action indisponible.' });
+                  return;
+                }
+                setColonistId(null);
+                setSubscreen('EVENTS_HUB');
+                setActiveDossierId(dossier.id);
+              }}
+              className="exo-accent-btn inline-flex min-h-[42px] items-center justify-center gap-2 px-3 font-mono text-xs font-bold"
+            >
+              <Compass className="h-4 w-4" />
+              <span>Mission de Terrain (R-24)</span>
+            </button>
           </div>
         </div>
       </div>

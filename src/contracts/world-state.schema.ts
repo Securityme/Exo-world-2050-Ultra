@@ -2,7 +2,14 @@ import { z } from 'zod';
 import { PaBudgetSchema, ExecutiveDossierSchema } from './pa-dossiers.schema.ts';
 import { TriggerBusEventSchema } from './trigger-bus.schema.ts';
 import { CombatReportSchema, MilitaryUnitStackSchema } from './combat-units.schema.ts';
-import { AtmosphereTierSchema, CameraScaleSchema, CityDistrictPacketSchema } from './render-bridge.schema.ts';
+import {
+  AtmosphereTierSchema,
+  CameraScaleSchema,
+  CityDistrictPacketSchema,
+  PlanetBiomeProfileSchema,
+  PlanetClimatePresetSchema,
+  PlanetReliefPresetSchema,
+} from './render-bridge.schema.ts';
 import {
   AiPersonaSchema,
   BinarySpectraSchema,
@@ -16,6 +23,13 @@ import {
   TurnSnapshotSchema,
   TurnSummaryReportSchema,
 } from './v4-systems.schema.ts';
+import {
+  BioHealthReportSchema,
+  EcclesiaStateSchema,
+  EventChainQueueEntrySchema,
+  PlanetaryDiplomacyStateSchema,
+  SettlementProfileSchema,
+} from './skills-vcs.schema.ts';
 
 /**
  * [L0] FUP-010 / FUP-012 | MC-00 | SADT A0
@@ -90,6 +104,22 @@ export const DroneAllocationSchema = z.object({
   attack: z.number().int().min(0),
   recon: z.number().int().min(0),
   reassigningCooldown: z.number().int().min(0),
+});
+
+export const PlanetBiomeShareSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  pct: z.number().min(0).max(100),
+  colorHex: z.string(),
+});
+
+export const PlanetWorldProfileSchema = z.object({
+  biomeId: PlanetBiomeProfileSchema,
+  name: z.string(),
+  oceanCoveragePct: z.number().min(0).max(95),
+  relief: PlanetReliefPresetSchema,
+  climate: PlanetClimatePresetSchema,
+  biomeDistribution: z.array(PlanetBiomeShareSchema),
 });
 
 export const WorldStateSchema = z.object({
@@ -180,11 +210,18 @@ export const WorldStateSchema = z.object({
   hk: HkProgressSchema.optional(),
   genese: GeneseStateSchema.optional(),
   fleetShips: z.array(FleetShipSchema).optional(),
+  colonistGear: ColonistGearSchema.optional(),
   livingCatalog: LivingCatalogStateSchema.optional(),
   lastTurnSummary: TurnSummaryReportSchema.nullable().optional(),
   turn_snapshots: z.array(TurnSnapshotSchema).optional(),
   enabledExtensions: z.array(z.string()).optional(),
   claimedQuestIds: z.array(z.string()).optional(),
+  planetProfile: PlanetWorldProfileSchema.optional(),
+  planetaryDiplomacy: PlanetaryDiplomacyStateSchema.optional(),
+  bioHealth: BioHealthReportSchema.optional(),
+  ecclesiaState: EcclesiaStateSchema.optional(),
+  settlementProfile: SettlementProfileSchema.optional(),
+  eventChainQueue: z.array(EventChainQueueEntrySchema).optional(),
 });
 
 export type Advisor = z.infer<typeof AdvisorSchema>;
@@ -193,4 +230,6 @@ export type Loan = z.infer<typeof LoanSchema>;
 export type RivalPower = z.infer<typeof RivalPowerSchema>;
 export type ChronicleEntry = z.infer<typeof ChronicleEntrySchema>;
 export type DroneAllocation = z.infer<typeof DroneAllocationSchema>;
+export type PlanetBiomeShare = z.infer<typeof PlanetBiomeShareSchema>;
+export type PlanetWorldProfile = z.infer<typeof PlanetWorldProfileSchema>;
 export type WorldState = z.infer<typeof WorldStateSchema>;

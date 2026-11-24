@@ -26,6 +26,19 @@ import {
   getEffectiveOptionsForDossier,
   getSubChoicesForOption,
 } from './dossier-subchoices.ts';
+import {
+  commissionShipPure,
+  computeFleetTotals,
+  installShipModulePure,
+  refitShipPure,
+  startResearchPure,
+  upgradeColonistGearPure,
+} from '../fleet/ship-loadout.engine.ts';
+import { executeDiplomaticInitiativePure } from './event-action-taxonomy.ts';
+import {
+  executeEcclesiaDiscernmentPure,
+  executeSignPlanetaryTreatyPure,
+} from '../geopolitics/planetary-diplomacy.ts';
 
 function applyActionPayloadPure(
   state: WorldState,
@@ -67,8 +80,76 @@ function applyActionPayloadPure(
       if (e || !next) return err(e?.code ?? 'EXW_ERR_FINANCE_LIMIT', e?.message ?? 'Recrutement refusé.');
       return ok({ nextState: next, note: `+3 unités ${payload.unitClass} Niv.${payload.level} déployées.` });
     }
+    case 'EQUIP_SHIP_MODULE':
+      return installShipModulePure(state, payload.shipId, payload.moduleId);
+    case 'REFIT_SHIP':
+      return refitShipPure(state, payload.shipId, payload.mode);
+    case 'COMMISSION_SHIP':
+      return commissionShipPure(state, payload.shipClass, payload.customName);
+    case 'UPGRADE_COLONIST_GEAR':
+      return upgradeColonistGearPure(state, payload.gearSlot, payload.colonistId);
+    case 'START_RESEARCH':
+      return startResearchPure(state, payload.techId);
+    case 'DIPLOMATIC_INITIATIVE':
+      return executeDiplomaticInitiativePure(state, payload.mode, payload.rivalId);
+    case 'SIGN_PLANETARY_TREATY':
+      return executeSignPlanetaryTreatyPure(state, payload.treatyKind, payload.rivalId);
+    case 'ECCLESIA_DISCERNMENT':
+      return executeEcclesiaDiscernmentPure(state, payload.axis);
+    case 'DISPATCH_COLONIST_MISSION': {
+      const target = state.colonists.find((c) => c.id === payload.colonistId);
+      if (!target) return err('EXW_ERR_SCHEMA', 'Citoyen introuvable.');
+      const nextColonists = state.colonists.map((c) =>
+        c.id === target.id
+          ? {
+              ...c,
+              fatigue: Math.min(95, c.fatigue + 14),
+              morale: Math.min(100, c.morale + 4),
+              xp: (c.xp ?? 0) + 28,
+            }
+          : c,
+      );
+      const bonusMaterials = payload.missionFocus === 'MAINTENANCE_FIELD' ? 18 : 0;
+      const bonusCompute = payload.missionFocus === 'RECON_BIOME' ? 16 : 0;
+      const bonusCredits = payload.missionFocus === 'DIPLOMACY_ENVOY' ? 55 : 0;
+      return ok({
+        nextState: {
+          ...state,
+          colonists: nextColonists,
+          resources: {
+            ...state.resources,
+            materials: state.resources.materials + bonusMaterials,
+            compute: state.resources.compute + bonusCompute,
+            credits: state.resources.credits + bonusCredits,
+          },
+          xp: { ...state.xp, cabinet: state.xp.cabinet + 12 },
+        },
+        note: `${target.name} envoyé en mission (${payload.missionFocus}) — +28 XP citoyen.`,
+      });
+    }
+    case 'REST_COLONIST': {
+      const target = state.colonists.find((c) => c.id === payload.colonistId);
+      if (!target) return err('EXW_ERR_SCHEMA', 'Citoyen introuvable.');
+      const nextColonists = state.colonists.map((c) =>
+        c.id === target.id
+          ? {
+              ...c,
+              fatigue: Math.max(4, c.fatigue - 28),
+              morale: Math.min(100, c.morale + 10),
+              happiness: Math.min(100, (c.happiness ?? 72) + 8),
+            }
+          : c,
+      );
+      return ok({
+        nextState: { ...state, colonists: nextColonists },
+        note: `${target.name} mis au repos (-28 % Fatigue · +10 Moral).`,
+      });
+    }
     case 'LAUNCH_COMBAT': {
       const rival = state.rivals[0];
+      const fleetTotals = computeFleetTotals(state.fleetShips ?? []);
+      const gearWeaponTier = state.colonistGear?.weaponTier ?? 1;
+      const effectiveOrbitalSupport = Math.min(5, Math.max(1, state.era + fleetTotals.orbitalSupportBonus));
       const [cErr, report] = resolveDeterministicCombat(
         {
           orderId: `ord-${state.cycle}-${payload.targetTileIndex}-${state.tick}`,
@@ -79,7 +160,9 @@ function applyActionPayloadPure(
           atmosphereTier: state.atmosphereTier,
           attackerComputeSurplus: state.resources.compute,
           defenderComputeDefense: rival?.computeDefense ?? 30,
-          orbitalSupportLevel: Math.min(5, state.era),
+          orbitalSupportLevel: effectiveOrbitalSupport,
+          fleetFirepowerBonus: fleetTotals.totalFirepower + (gearWeaponTier - 1) * 14,
+          fleetDefenseBonus: fleetTotals.totalDefense + (gearWeaponTier - 1) * 10,
           attackers: state.militaryRoster,
           defenders: [
             {

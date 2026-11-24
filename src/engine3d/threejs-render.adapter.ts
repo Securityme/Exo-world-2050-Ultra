@@ -11,9 +11,18 @@ import type {
   SceneDiffPacket,
   ViewportOverlayMode,
 } from '../contracts/render-bridge.schema.ts';
+import {
+  syncCityColonistActors,
+  updateCityLifeFrame,
+  type DistrictPatrolTarget,
+} from './city-life.ts';
 import { animateSectorMarkers, applySectorMarkerStates } from './planet-markers.ts';
 import { animatePlanetWeatherFx, updatePlanetWeatherFx } from './planet-weather-fx.ts';
-import { buildDistrictMesh, buildDroneUnit } from './procedural-models.ts';
+import {
+  buildDistrictMesh,
+  buildDroneUnit,
+  type DroneVisualRole,
+} from './procedural-models.ts';
 import {
   createAtmosphereHaloMaterial,
   createAtmosphereLimbMaterial,
@@ -74,16 +83,25 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
   private currentOverlayMode: ViewportOverlayMode = 'STANDARD';
   private currentThemeAccentNum = 0xfb7185;
   private lastSelectedTileIndex: number | null = null;
+  private lastFocusNonce = -1;
   private districtSignature = '';
+  private districtPatrolTargets: DistrictPatrolTarget[] = [];
   private droneCountRendered = -1;
+  private readonly noonSunColor = new THREE.Color(0xfff6e5);
+  private readonly goldenSunColor = new THREE.Color(0xffb47d);
 
   private yaw = 0.55;
+  private targetYaw: number | null = null;
   private pitch = 0.26;
   private dist = 8.4;
   private targetDist = 8.4;
   private targetPitch = 0.26;
+  private targetX = 0;
   private targetY = 0;
+  private targetZ = 0;
+  private currentTargetX = 0;
   private currentTargetY = 0;
+  private currentTargetZ = 0;
   private cameraShake = 0;
 
   private isPointerDown = false;
@@ -261,7 +279,10 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       const preset = SCALE_CAMERA_PRESETS[packet.activeScale];
       this.targetDist = preset.dist;
       this.targetPitch = preset.pitch;
+      this.targetX = 0;
       this.targetY = preset.targetY;
+      this.targetZ = 0;
+      this.targetYaw = null;
       this.cameraShake = 0.06;
       if (this.hoverHalo) this.hoverHalo.visible = false;
       this.syncCameraDataset();
@@ -281,7 +302,12 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
 
     const season = packet.season ?? 'PRINTEMPS';
     const progressBucket = Math.floor((packet.atmosphereProgress ?? 0) / 10);
-    const nextVisualKey = `${packet.atmosphereTier}::${season}::${packet.activeSlotIndex}::${packet.weatherState}::${progressBucket}`;
+    const biomeKey = packet.planetBiomeProfile ?? 'DEFAULT';
+    const oceanKey = Math.round(packet.oceanCoveragePct ?? -1);
+    const reliefKey = packet.planetRelief ?? 'EQUILIBRE';
+    const climateKey = packet.planetClimate ?? 'TEMPERE';
+    const seedKey = packet.worldSeed ?? 2050;
+    const nextVisualKey = `${packet.atmosphereTier}::${season}::${packet.activeSlotIndex}::${packet.weatherState}::${progressBucket}::${biomeKey}::${oceanKey}::${reliefKey}::${climateKey}::${seedKey}`;
     if (packet.atmosphereTier !== this.currentTier || nextVisualKey !== this.planetVisualKey) {
       this.currentTier = packet.atmosphereTier;
       this.currentAtmoProgress = packet.atmosphereProgress ?? 0;
@@ -292,10 +318,16 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
           season,
           weatherState: packet.weatherState,
           slotIndex: packet.activeSlotIndex,
+          worldSeed: packet.worldSeed,
+          biomeProfile: packet.planetBiomeProfile,
+          oceanCoveragePct: packet.oceanCoveragePct,
+          planetRelief: packet.planetRelief,
+          planetClimate: packet.planetClimate,
         },
         isLight,
         this.currentAtmoProgress,
       );
+      this.cityNodes.waterBayMesh.visible = (packet.oceanCoveragePct ?? 50) > 4;
     }
 
     if (packet.themeAccentHex) {
@@ -311,7 +343,6 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       }
     }
 
-    // Update orbital slots unlock state (Scale 1 untouched)
     this.spaceNodes.slotMeshes.forEach((mesh, idx) => {
       const slotNum = idx + 1;
       const mat = mesh.material as THREE.MeshStandardMaterial;
@@ -328,7 +359,6 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     this.currentOverlayMode = overlayMode;
     this.lastSelectedTileIndex = packet.selectedTileIndex;
 
-    // Update 72 planet astrometric sector beacons & animated weather/telemetry overlay
     applySectorMarkerStates(this.planetNodes.tileMarkers, {
       selectedTileIndex: packet.selectedTileIndex,
       capturedSet: new Set(packet.capturedTiles),
@@ -345,26 +375,50 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       capturedTiles: packet.capturedTiles,
       rivalTiles: packet.rivalTiles,
       tileDirections: this.planetNodes.tileDirections,
+      diplomaticArcs: packet.diplomaticArcs,
     });
 
     rebuildDossierPins(this.planetNodes, packet.activeDossierPins);
 
-    // Rebuild city districts when structural diff or overlayMode changes
+    // Sync clickable Scale 3 colonists to canonical WorldState.colonists
+    if (packet.colonists) {
+      syncCityColonistActors(this.cityNodes.pedestriansGroup, packet.colonists);
+    }
+
+    // Rebuild city districts onto orthogonal waterfront blocks
     const sig = `${overlayMode}:${this.currentThemeAccentNum}::` + packet.districts
       .map((d) => `${d.id}:${d.level}:${d.modulesCount}:${Math.round(d.integrity / 10)}`)
       .join('|');
     if (sig !== this.districtSignature) {
       this.districtSignature = sig;
       this.clearGroup(this.cityNodes.districtsGroup);
+      this.districtPatrolTargets = [];
       for (const dist of packet.districts) {
         const mesh = buildDistrictMesh(dist);
-        mesh.position.set(dist.gridX * 2.55, 0, dist.gridZ * 2.55);
+        const wx = dist.gridX * 3.1 - 0.6;
+        const wz = dist.gridZ * 3.1 - 0.6;
+        mesh.position.set(wx, 0, wz);
+        this.districtPatrolTargets.push({
+          id: dist.id,
+          x: wx,
+          z: wz,
+          inspectY: 1.95 + dist.level * 0.48,
+        });
         if (overlayMode !== 'STANDARD') {
           const wearScore = Math.max(0, Math.min(100, (100 - dist.integrity) + dist.level * 10));
           const maintHex = wearScore >= 55 ? 0xf43f5e : wearScore >= 32 ? 0xf59e0b : 0x10b981;
           const logisticsHex =
             dist.kind === 'ENERGY' || dist.kind === 'INDUSTRY' ? 0x10b981 : this.currentThemeAccentNum;
-          const tintHex = overlayMode === 'MAINTENANCE' ? maintHex : logisticsHex;
+          const tacticalHex = dist.kind === 'COMMAND' || dist.kind === 'SPACEPORT' ? 0x38bdf8 : 0xf59e0b;
+          const bioHex = dist.kind === 'BIOPARK' || dist.kind === 'HABITAT' ? 0x10b981 : 0x2dd4bf;
+          const tintHex =
+            overlayMode === 'MAINTENANCE'
+              ? maintHex
+              : overlayMode === 'TACTICAL'
+                ? tacticalHex
+                : overlayMode === 'BIOSPHERE'
+                  ? bioHex
+                  : logisticsHex;
           mesh.traverse((child) => {
             if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
               child.material.emissive.setHex(tintHex);
@@ -376,13 +430,63 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       }
     }
 
-    // Update autonomous patrolling shuttles/drones (capped visually to 12 for crisp perf)
+    // Apply requested camera focus target (auto scale-jump + spherical/district/colonist focus)
+    if (packet.cameraFocusTarget && packet.cameraFocusTarget.focusNonce !== this.lastFocusNonce) {
+      this.lastFocusNonce = packet.cameraFocusTarget.focusNonce;
+      const focus = packet.cameraFocusTarget;
+      if (focus.targetType === 'TILE' && typeof focus.tileIndex === 'number') {
+        const dir = this.planetNodes.tileDirections[focus.tileIndex];
+        if (dir) {
+          this.targetX = 0;
+          this.targetY = 0;
+          this.targetZ = 0;
+          this.targetYaw = Math.atan2(dir.x, dir.z);
+          this.targetPitch = Math.asin(THREE.MathUtils.clamp(dir.y, -0.88, 0.88));
+          this.targetDist = 5.9;
+          this.syncCameraDataset();
+        }
+      } else if (focus.targetType === 'SLOT' && typeof focus.slotIndex === 'number') {
+        const slotMesh = this.spaceNodes.slotMeshes[focus.slotIndex - 1];
+        if (slotMesh) {
+          this.targetX = slotMesh.position.x;
+          this.targetY = slotMesh.position.y;
+          this.targetZ = slotMesh.position.z;
+          this.targetDist = 16.5;
+          this.targetPitch = 0.52;
+          this.syncCameraDataset();
+        }
+      } else if (focus.targetType === 'DISTRICT' && focus.districtId) {
+        const match = this.districtPatrolTargets.find((d) => d.id === focus.districtId);
+        if (match) {
+          this.targetX = match.x;
+          this.targetY = 0.9;
+          this.targetZ = match.z;
+          this.targetDist = 7.4;
+          this.targetPitch = 0.54;
+          this.syncCameraDataset();
+        }
+      } else if (focus.targetType === 'COLONIST' && focus.colonistId) {
+        const actor = this.cityNodes.pedestriansGroup.children.find(
+          (c) => c.userData.colonistId === focus.colonistId,
+        );
+        if (actor) {
+          this.targetX = actor.position.x;
+          this.targetY = 0.45;
+          this.targetZ = actor.position.z;
+          this.targetDist = 5.8;
+          this.targetPitch = 0.46;
+          this.syncCameraDataset();
+        }
+      }
+    }
+
     const visualDrones = Math.min(12, Math.max(3, Math.round(packet.droneCount / 3)));
     if (visualDrones !== this.droneCountRendered) {
       this.droneCountRendered = visualDrones;
       this.clearGroup(this.cityNodes.dronesGroup);
+      const roles: readonly DroneVisualRole[] = ['RECON', 'LOGISTICS', 'PATROL'];
       for (let i = 0; i < visualDrones; i++) {
-        const d = buildDroneUnit();
+        const d = buildDroneUnit(roles[i % roles.length] ?? 'RECON');
         d.userData = {
           orbitPhase: (i / visualDrones) * Math.PI * 2,
           orbitR: 3.1 + (i % 3) * 1.55,
@@ -402,7 +506,7 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     this.heldKeys.clear();
     if (this.scene) {
       this.scene.traverse((obj) => {
-        if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
+        if (obj instanceof THREE.Mesh || obj instanceof THREE.Points || obj instanceof THREE.Line) {
           obj.geometry.dispose();
           const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
           for (const m of mats) {
@@ -536,12 +640,12 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
 
     const gMat = this.cityNodes.groundMesh.material as THREE.MeshStandardMaterial;
     gMat.map?.dispose();
-    gMat.map = createCityGroundTexture(tier);
+    gMat.map = createCityGroundTexture(tier, opts.biomeProfile);
     gMat.needsUpdate = true;
 
     const hMat = this.cityNodes.horizonMesh.material as THREE.MeshStandardMaterial;
     hMat.map?.dispose();
-    hMat.map = createCityHorizonTexture(tier);
+    hMat.map = createCityHorizonTexture(tier, opts.biomeProfile);
     hMat.needsUpdate = true;
 
     if (this.cityNodes.skyDomeMesh.material instanceof THREE.Material) {
@@ -775,23 +879,27 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     this.pointerNdc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     this.raycaster.setFromCamera(this.pointerNdc, this.camera);
 
-    const activeGroup =
+    const targets: THREE.Object3D[] =
       this.currentScale === 1
-        ? this.spaceNodes?.group
+        ? (this.spaceNodes?.group.children ?? [])
         : this.currentScale === 2
-          ? this.planetNodes?.group
-          : this.cityNodes?.districtsGroup;
-    if (!activeGroup) {
+          ? (this.planetNodes?.group.children ?? [])
+          : [
+              ...(this.cityNodes?.pedestriansGroup.children ?? []),
+              ...(this.cityNodes?.districtsGroup.children ?? []),
+            ];
+    if (targets.length === 0) {
       this.hoverHalo.visible = false;
       return;
     }
 
-    const hits = this.raycaster.intersectObjects(activeGroup.children, true);
+    const hits = this.raycaster.intersectObjects(targets, true);
     for (const hit of hits) {
       let cur: THREE.Object3D | null = hit.object;
       while (cur) {
         const data = cur.userData as Record<string, unknown>;
         if (
+          data.interactable === 'COLONIST' ||
           data.interactable === 'DOSSIER_PIN' ||
           data.interactable === 'TILE' ||
           data.interactable === 'SLOT' ||
@@ -800,7 +908,11 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
           dom.style.cursor = 'pointer';
           cur.getWorldPosition(this.scratchVec3);
           this.hoverHalo.position.copy(this.scratchVec3);
-          if (data.interactable === 'DISTRICT') {
+          if (data.interactable === 'COLONIST') {
+            this.hoverHalo.position.y = 0.04;
+            this.hoverHalo.rotation.set(Math.PI / 2, 0, 0);
+            this.hoverHalo.scale.setScalar(0.22);
+          } else if (data.interactable === 'DISTRICT') {
             this.hoverHalo.position.y = 0.22;
             this.hoverHalo.rotation.set(Math.PI / 2, 0, 0);
             this.hoverHalo.scale.setScalar(1.25);
@@ -832,6 +944,22 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     this.pointerNdc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
     this.pointerNdc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     this.raycaster.setFromCamera(this.pointerNdc, this.camera);
+
+    if (this.currentScale === 3 && this.cityNodes) {
+      const citizenHits = this.raycaster.intersectObjects(this.cityNodes.pedestriansGroup.children, true);
+      for (const hit of citizenHits) {
+        let cur: THREE.Object3D | null = hit.object;
+        while (cur) {
+          const data = cur.userData as Record<string, unknown>;
+          if (data.interactable === 'COLONIST' && typeof data.colonistId === 'string') {
+            this.cameraShake = 0.025;
+            this.onGameEvent({ type: 'COLONIST_CLICKED', colonistId: data.colonistId });
+            return;
+          }
+          cur = cur.parent;
+        }
+      }
+    }
 
     const activeGroup =
       this.currentScale === 1
@@ -947,14 +1075,25 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
         userControlling = true;
       }
 
-      if (!userControlling) {
+      if (userControlling) {
+        this.targetYaw = null;
+      } else if (this.targetYaw !== null) {
+        // Shortest angular delta toward focused spherical entity
+        const deltaYaw = Math.atan2(Math.sin(this.targetYaw - this.yaw), Math.cos(this.targetYaw - this.yaw));
+        this.yaw += deltaYaw * Math.min(1, dt * 6.5);
+        if (Math.abs(deltaYaw) < 0.015) {
+          this.targetYaw = null;
+        }
+      } else {
         this.yaw += dt * (this.currentScale === 2 ? 0.08 : 0.045);
       }
 
       // Frame-rate-independent exponential damping
       this.dist = THREE.MathUtils.damp(this.dist, this.targetDist, 6.5, dt);
       this.pitch = THREE.MathUtils.damp(this.pitch, this.targetPitch, 6.5, dt);
+      this.currentTargetX = THREE.MathUtils.damp(this.currentTargetX, this.targetX, 6.5, dt);
       this.currentTargetY = THREE.MathUtils.damp(this.currentTargetY, this.targetY, 6.5, dt);
+      this.currentTargetZ = THREE.MathUtils.damp(this.currentTargetZ, this.targetZ, 6.5, dt);
       this.cameraShake = THREE.MathUtils.damp(this.cameraShake, 0, 12, dt);
 
       const shakeX = this.cameraShake > 0.001 ? Math.sin(t * 48) * this.cameraShake : 0;
@@ -963,11 +1102,11 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       const aspectScale =
         this.camera.aspect < 0.85 ? 1 + (0.85 - this.camera.aspect) * 0.95 : 1;
       const effDist = this.dist * aspectScale;
-      const cx = Math.sin(this.yaw) * Math.cos(this.pitch) * effDist + shakeX;
-      const cy = Math.sin(this.pitch) * effDist + this.currentTargetY + shakeY;
-      const cz = Math.cos(this.yaw) * Math.cos(this.pitch) * effDist;
+      const cx = this.currentTargetX + Math.sin(this.yaw) * Math.cos(this.pitch) * effDist + shakeX;
+      const cy = this.currentTargetY + Math.sin(this.pitch) * effDist + shakeY;
+      const cz = this.currentTargetZ + Math.cos(this.yaw) * Math.cos(this.pitch) * effDist;
       this.camera.position.set(cx, cy, cz);
-      this.camera.lookAt(0, this.currentTargetY, 0);
+      this.camera.lookAt(this.currentTargetX, this.currentTargetY, this.currentTargetZ);
 
       if (this.planetNodes && this.planetNodes.group.visible) {
         this.planetNodes.cloudsMesh.rotation.y = t * 0.032;
@@ -1017,51 +1156,23 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       }
 
       if (this.cityNodes && this.cityNodes.group.visible) {
-        this.cityNodes.dronesGroup.children.forEach((drone, idx) => {
-          const phase = Number(drone.userData.orbitPhase ?? 0);
-          const r = Number(drone.userData.orbitR ?? 3.5);
-          const baseY = Number(drone.userData.orbitY ?? 2.6);
-          const a = t * 0.48 + phase;
-          drone.position.set(
-            Math.cos(a) * r,
-            baseY + Math.sin(t * 1.8 + idx) * 0.18,
-            Math.sin(a) * r,
-          );
-          drone.rotation.y = -a;
-        });
+        updateCityLifeFrame(this.cityNodes, t, this.districtPatrolTargets);
 
-        // Living Dual Maglev Shuttles (Civil inner + Military Freight outer counter-flow)
-        this.cityNodes.shuttlesGroup.children.forEach((shuttle) => {
-          const phase = Number(shuttle.userData.orbitPhase ?? 0);
-          const r = Number(shuttle.userData.orbitR ?? 6.2);
-          const baseY = Number(shuttle.userData.orbitY ?? 0.74);
-          const spd = Number(shuttle.userData.speed ?? 0.38);
-          const a = t * spd + phase;
-          shuttle.position.set(Math.cos(a) * r, baseY, Math.sin(a) * r);
-          shuttle.rotation.y = spd >= 0 ? -a : -a + Math.PI;
-        });
-
-        // OpenRW-style Citizen Waypoint Walkers gliding along promenades
-        this.cityNodes.pedestriansGroup.children.forEach((walker, idx) => {
-          const phase = Number(walker.userData.orbitPhase ?? 0);
-          const r = Number(walker.userData.orbitR ?? 4.5);
-          const spd = Number(walker.userData.speed ?? 0.16);
-          const a = t * spd + phase;
-          walker.position.set(
-            Math.cos(a) * r,
-            0.13 + Math.abs(Math.sin(t * 5.2 + idx)) * 0.04,
-            Math.sin(a) * r,
-          );
-        });
-
-        // Subtle Solar Day/Night directional arc in Scale 3 + Rayleigh/Mie Open-Sky Shader Sync
+        // Dynamic Solar Day / Golden-Hour / Twilight arc in Scale 3 + Rayleigh/Mie Open-Sky Shader Sync
         if (this.keyLight) {
           const sunAngle = t * 0.06 + 0.6;
+          const sunElevation = Math.sin(sunAngle); // -1..1
+          const dayMix = Math.max(0, Math.min(1, (sunElevation + 0.35) / 1.35));
           this.keyLight.position.set(
             Math.cos(sunAngle) * 18,
-            13 + Math.sin(sunAngle) * 8,
+            13 + sunElevation * 8,
             Math.sin(sunAngle) * 14,
           );
+          this.keyLight.color.copy(this.goldenSunColor).lerp(this.noonSunColor, dayMix);
+          const baseIntensity = this.currentLightTheme ? 1.85 : 1.45;
+          this.keyLight.intensity = baseIntensity + dayMix * 0.55;
+          this.cityNodes.streetlampMat.emissiveIntensity = 0.45 + (1 - dayMix) * 1.25;
+
           const skyMat = this.cityNodes.skyDomeMesh.material;
           if (skyMat instanceof THREE.ShaderMaterial) {
             if (skyMat.uniforms.uSunDir?.value instanceof THREE.Vector3) {
@@ -1073,30 +1184,13 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
           }
         }
 
-        // Animated emissive Maglev rail pulses & Solarpunk pollen/atmospheric motes
+        // Animated emissive Maglev rail pulses, water pond shimmer & Solarpunk atmospheric motes
         this.cityNodes.civilRailTex.offset.x = -(t * 0.48) % 1;
         this.cityNodes.freightRailTex.offset.x = (t * 0.32) % 1;
+        this.cityNodes.pondNormalMap.offset.x = (t * 0.045) % 1;
+        this.cityNodes.pondNormalMap.offset.y = (t * 0.028) % 1;
         this.cityNodes.atmoMotes.rotation.y = t * 0.04;
         this.cityNodes.atmoMotes.position.y = Math.sin(t * 0.9) * 0.08;
-
-        this.cityNodes.wildlifeGroup.children.forEach((bird, idx) => {
-          const phase = Number(bird.userData.orbitPhase ?? 0);
-          const r = Number(bird.userData.orbitR ?? 7);
-          const baseY = Number(bird.userData.orbitY ?? 3.2);
-          const spd = Number(bird.userData.speed ?? 0.3);
-          const a = t * spd + phase;
-          bird.position.set(
-            Math.cos(a) * r,
-            baseY + Math.sin(t * 1.4 + idx) * 0.25,
-            Math.sin(a) * r,
-          );
-          bird.rotation.y = -a;
-          const flap = Math.sin(t * 6.5 + idx * 1.3) * 0.38;
-          const lw = bird.getObjectByName('leftWing');
-          const rw = bird.getObjectByName('rightWing');
-          if (lw) lw.rotation.z = flap;
-          if (rw) rw.rotation.z = -flap;
-        });
 
         this.cityNodes.windRotors.forEach((rotor, idx) => {
           rotor.rotation.z = -t * (1.2 + (idx % 3) * 0.25);

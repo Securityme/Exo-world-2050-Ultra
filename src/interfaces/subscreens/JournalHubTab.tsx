@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSetAtom } from 'jotai';
-import { BarChart3, ClipboardCheck, Download, FileJson, GitCompare, History, PlayCircle } from 'lucide-react';
-import { RoadmapPlaceholderCard } from '../../components/RoadmapPlaceholderCard.tsx';
+import { BarChart3, ClipboardCheck, FileJson, History, PlayCircle } from 'lucide-react';
+import { JournalArchivesSuite } from '../../components/world/JournalArchivesSuite.tsx';
 import { SUPERPOWERS_CATALOG } from '../../data/world.catalog.ts';
 import { useExoStore } from '../../stores/game.store.ts';
 import { toastNoticeAtom } from '../../stores/selection.atoms.ts';
@@ -14,8 +14,8 @@ type JournalSubTab = 'CHRONICLE' | 'PLAYTEST_6T' | 'BETA_P13' | 'DIGEST';
 
 /**
  * [L7] Primary Game Tab 3 — Journal
- * Sovereign Chronicle, Local & Cloud Saves, JSON Campaign Digest Export,
- * and clearly tagged upcoming archive/replay modules.
+ * Sovereign Chronicle, Local & Cloud Saves, JSON/CSV/HTML Campaign Digest Exports,
+ * Interactive Timeline Replay & Multi-Campaign Comparator.
  */
 export function JournalHubTab() {
   const [subTab, setSubTab] = useState<JournalSubTab>('CHRONICLE');
@@ -65,7 +65,11 @@ export function JournalHubTab() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
+        <nav
+          role="tablist"
+          aria-label="Sections du journal"
+          className="exo-window-tabs-rail flex shrink-0 flex-nowrap gap-1.5 overflow-x-auto sm:flex-wrap sm:overflow-visible"
+        >
           {tabs.map((item) => {
             const Icon = item.icon;
             const active = subTab === item.id;
@@ -73,24 +77,24 @@ export function JournalHubTab() {
               <button
                 key={item.id}
                 type="button"
+                role="tab"
+                aria-selected={active}
                 onClick={() => setSubTab(item.id)}
-                className={`inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl border px-3.5 text-xs font-semibold transition whitespace-nowrap ${
-                  active
-                    ? 'border-rose-500 bg-rose-500/15 text-rose-800 dark:border-rose-400 dark:bg-rose-500/25 dark:text-rose-100'
-                    : 'border-rose-200 bg-white/85 text-[#1f1224] hover:border-rose-400 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200'
+                className={`inline-flex min-h-[44px] shrink-0 items-center gap-2 px-3.5 text-[13px] font-bold transition whitespace-nowrap ${
+                  active ? 'exo-window-tab-active' : 'exo-window-tab'
                 }`}
               >
-                <Icon className="h-3.5 w-3.5 text-rose-600 dark:text-rose-300" />
+                <Icon className={`h-4 w-4 shrink-0 ${active ? 'text-current' : 'exo-accent-text'}`} />
                 <span>{item.label}</span>
               </button>
             );
           })}
-        </div>
+        </nav>
 
         <button
           type="button"
           onClick={onExportJson}
-          className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-rose-300 bg-rose-50 px-3 text-xs font-semibold text-rose-800 hover:border-rose-500 dark:border-rose-700 dark:bg-rose-950/60 dark:text-rose-100"
+          className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-rose-300 bg-rose-50 px-3 text-xs font-semibold text-rose-800 hover:border-rose-500 dark:border-rose-700 dark:bg-rose-950/60 dark:text-rose-100 whitespace-nowrap"
         >
           <FileJson className="h-3.5 w-3.5 text-rose-600 dark:text-rose-300" />
           <span>Exporter JSON</span>
@@ -109,14 +113,14 @@ export function JournalHubTab() {
               <div className="mt-1 truncate font-display text-sm font-bold text-[#1f1224] dark:text-rose-50">
                 {superpower?.code ?? world.superpowerId} · Ère {world.era}
               </div>
-              <div className="font-mono text-[11px] text-rose-700 dark:text-rose-300">
+              <div className="font-mono text-[11px] tabular-nums text-rose-700 dark:text-rose-300">
                 Cycle {world.cycle} ({world.year})
               </div>
             </div>
 
             <div className="rounded-xl border border-rose-200/90 bg-white/85 p-3 dark:border-rose-900/60 dark:bg-[#190d1f]">
               <div className="font-mono text-[10px] uppercase text-rose-900/65 dark:text-rose-200/70">Territoire</div>
-              <div className="mt-1 font-display text-sm font-bold text-[#1f1224] dark:text-rose-50">
+              <div className="mt-1 font-display text-sm font-bold tabular-nums text-[#1f1224] dark:text-rose-50">
                 {world.capturedTiles.length} / 72 secteurs
               </div>
               <div className="font-mono text-[11px] text-emerald-700 dark:text-emerald-300">
@@ -126,7 +130,7 @@ export function JournalHubTab() {
 
             <div className="rounded-xl border border-rose-200/90 bg-white/85 p-3 dark:border-rose-900/60 dark:bg-[#190d1f]">
               <div className="font-mono text-[10px] uppercase text-rose-900/65 dark:text-rose-200/70">Économie</div>
-              <div className="mt-1 font-display text-sm font-bold text-[#1f1224] dark:text-rose-50">
+              <div className="mt-1 font-display text-sm font-bold tabular-nums text-[#1f1224] dark:text-rose-50">
                 {world.resources.credits} Crédits
               </div>
               <div className="font-mono text-[11px] text-amber-700 dark:text-amber-300">
@@ -136,7 +140,7 @@ export function JournalHubTab() {
 
             <div className="rounded-xl border border-rose-200/90 bg-white/85 p-3 dark:border-rose-900/60 dark:bg-[#190d1f]">
               <div className="font-mono text-[10px] uppercase text-rose-900/65 dark:text-rose-200/70">Rapports</div>
-              <div className="mt-1 font-display text-sm font-bold text-[#1f1224] dark:text-rose-50">
+              <div className="mt-1 font-display text-sm font-bold tabular-nums text-[#1f1224] dark:text-rose-50">
                 {world.chronicle.length} entrées
               </div>
               <div className="font-mono text-[11px] text-rose-700 dark:text-rose-300">
@@ -146,10 +150,10 @@ export function JournalHubTab() {
           </div>
 
           <div className="rounded-xl border border-rose-200/90 bg-white/85 p-3.5 dark:border-rose-900/60 dark:bg-[#190d1f]">
-            <div className="mb-2 font-display text-xs font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300">
-              Inventaire Stratégique Instantané
+            <div className="mb-2 font-display text-xs font-bold text-rose-700 dark:text-rose-300">
+              Inventaire stratégique instantané
             </div>
-            <div className="grid grid-cols-3 gap-2 font-mono text-[11px] sm:grid-cols-6">
+            <div className="grid grid-cols-3 gap-2 font-mono text-[11px] tabular-nums sm:grid-cols-6">
               {[
                 { label: 'Énergie', value: world.resources.energy },
                 { label: 'Calcul', value: world.resources.compute },
@@ -169,29 +173,7 @@ export function JournalHubTab() {
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <RoadmapPlaceholderCard
-              title="Frise Chronologique & Replay"
-              description="Visualisation cycle par cycle de l'évolution atmosphérique, territoriale et budgétaire de votre civilisation."
-              status="En cours de développement"
-              icon={PlayCircle}
-              milestone="Phase Journal v1.2"
-            />
-            <RoadmapPlaceholderCard
-              title="Export PDF / CSV Mis en Page"
-              description="Génération de rapports souverains illustrés prêts à imprimer ou partager depuis l'historique complet."
-              status="À implanter"
-              icon={Download}
-              milestone="Phase Archives v1.3"
-            />
-            <RoadmapPlaceholderCard
-              title="Comparateur de Campagnes"
-              description="Superposez les courbes de score, de croissance économique et de terraformation entre vos parties sauvegardées."
-              status="Mise à jour prévue"
-              icon={GitCompare}
-              milestone="Phase Statistiques v1.4"
-            />
-          </div>
+          <JournalArchivesSuite world={world} />
         </div>
       )}
     </div>

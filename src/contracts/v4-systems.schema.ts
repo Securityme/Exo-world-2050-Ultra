@@ -110,6 +110,19 @@ export const ColonistGearSchema = z.object({
   weaponTier: z.union([z.literal(1), z.literal(2), z.literal(3)]).default(1),
 });
 
+export const ShipModuleSlotSchema = z.enum(['WEAPON', 'DEFENSE', 'PROPULSION', 'UTILITY']);
+
+export const ShipInstalledModuleSchema = z.object({
+  id: z.string().min(2).max(64),
+  slot: ShipModuleSlotSchema,
+  name: z.string().min(2).max(90),
+  tier: z.union([z.literal(1), z.literal(2), z.literal(3)]).default(1),
+  firepower: z.number().min(0).default(0),
+  defense: z.number().min(0).default(0),
+  speed: z.number().min(0).default(0),
+  utilityYield: z.number().min(0).default(0),
+});
+
 export const FleetShipSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -117,6 +130,8 @@ export const FleetShipSchema = z.object({
   level: z.number().int().min(1).max(5).default(1),
   integrity: z.number().min(0).max(100).default(100),
   assignedRole: z.enum(['ORBIT_PATROL', 'RESOURCE_HAUL', 'RECON', 'TERRA_SEED']),
+  maxSlots: z.number().int().min(2).max(6).default(4),
+  loadout: z.array(ShipInstalledModuleSchema).default([]),
 });
 
 export const LivingCatalogStateSchema = z.object({
@@ -193,6 +208,8 @@ export type HkStarDomain = z.infer<typeof HkStarDomainSchema>;
 export type HkProgress = z.infer<typeof HkProgressSchema>;
 export type GeneseState = z.infer<typeof GeneseStateSchema>;
 export type ColonistGear = z.infer<typeof ColonistGearSchema>;
+export type ShipModuleSlot = z.infer<typeof ShipModuleSlotSchema>;
+export type ShipInstalledModule = z.infer<typeof ShipInstalledModuleSchema>;
 export type FleetShip = z.infer<typeof FleetShipSchema>;
 export type LivingCatalogState = z.infer<typeof LivingCatalogStateSchema>;
 export type EntityLedgerDelta = z.infer<typeof EntityLedgerDeltaSchema>;
