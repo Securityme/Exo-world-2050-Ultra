@@ -88,6 +88,13 @@ export function generateActionEventDossier(
         tileIndex: 12,
         expiresInCycles: 2,
         scientificTag: 'Urbanisme · Extension',
+        selectionBudget: {
+          mode: 'BUDGETED_MULTI',
+          maxSelections: 2,
+          paBudgetCap: 2,
+          creditsBudgetCap: 350,
+          requireColonistOnBundle: false,
+        },
         options: [
           {
             id: `opt-graft-std-${idSuffix}`,
@@ -126,6 +133,22 @@ export function generateActionEventDossier(
             subPaDomain: 'PA_BIO',
             subPaCost: 1,
             effects: { ...ZERO_EFFECTS, water: 15, breathingKits: 6, atmosphereDelta: 3, xpCiv: 18 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-graft-expert-${idSuffix}`,
+            label: 'Ingénierie modulaire avancée (Ingénieur Niv.2+)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Un ingénieur de niveau 2+ intègre un noyau haute efficience (+20 Élec., +12% État, +55 Cr économisés).',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_MNT',
+            subPaCost: 1,
+            unlockConditions: {
+              requiredColonistSpecialty: 'ENGINEERING',
+              minColonistLevel: 2,
+              minSkillThreshold: { attribute: 'engineering', level: 12 },
+            },
+            effects: { ...ZERO_EFFECTS, credits: 55, electronics: 20, maintenanceDelta: 12, xpCiv: 28, xpCabinet: 22 },
             actionPayload: request,
           },
           {
@@ -402,6 +425,22 @@ export function generateActionEventDossier(
             subPaDomain: 'PA_MNT',
             subPaCost: 1,
             effects: { ...ZERO_EFFECTS, maintenanceDelta: 8, energy: 10, xpCiv: 12 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-cyb-specialist-${idSuffix}`,
+            label: 'Intrusion quantique ciblée (Cybernéticien Niv.2+)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Mobilise un cybernéticien Niv.2+ : siphon de données (+30 Calcul, +25 Élec., +75 Cr).',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_POL',
+            subPaCost: 1,
+            unlockConditions: {
+              requiredColonistSpecialty: 'CYBERNETICS',
+              minColonistLevel: 2,
+              minSkillThreshold: { attribute: 'cyber', level: 11 },
+            },
+            effects: { ...ZERO_EFFECTS, credits: 75, electronics: 25, compute: 30, xpCabinet: 25, xpCiv: 22 },
             actionPayload: request,
           },
           {
@@ -865,6 +904,13 @@ export function generateActionEventDossier(
         tileIndex: 17,
         expiresInCycles: 2,
         scientificTag: `Recherche · ${tech.domain}`,
+        selectionBudget: {
+          mode: 'BUDGETED_MULTI',
+          maxSelections: 2,
+          paBudgetCap: 2,
+          creditsBudgetCap: 250,
+          requireColonistOnBundle: false,
+        },
         options: [
           {
             id: `opt-tech-std-${idSuffix}`,
@@ -897,6 +943,22 @@ export function generateActionEventDossier(
             subPaDomain: 'PA_MNT',
             subPaCost: 1,
             effects: { ...ZERO_EFFECTS, electronics: 12, energy: 10, xpCabinet: 15, xpCiv: 16 },
+            actionPayload: request,
+          },
+          {
+            id: `opt-tech-fellow-${idSuffix}`,
+            label: 'Chaire de recherche avancée (Coéquipier Exobiologie)',
+            doctrineTag: 'SCIENTIFIC',
+            description: 'Affecte un chercheur dédié : +28 Calcul, +4% Atmosphère et +22 XP Cabinet.',
+            paGeneralCost: 0,
+            subPaDomain: 'PA_BIO',
+            subPaCost: 1,
+            unlockConditions: {
+              requiredColonistSpecialty: 'EXOBIOLOGY',
+              minColonistLevel: 1,
+              minSkillThreshold: { attribute: 'ecology', level: 11 },
+            },
+            effects: { ...ZERO_EFFECTS, compute: 28, atmosphereDelta: 4, xpCabinet: 22, xpCiv: 24 },
             actionPayload: request,
           },
           {

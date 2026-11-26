@@ -5,15 +5,17 @@ import {
 import type { WorldState } from '../contracts/world-state.schema.ts';
 import { resolveSuperpowerV4 } from '../data/v4-catalog.data.ts';
 import { getNoRep3tExcludedCodes } from '../systems/dossiers-pa/genese-promises.ts';
+import { buildCombinatorialScenarioBrief } from '../systems/turn-orchestration/scenario-combinator.ts';
 
 /**
- * [L5] EXW.L5.TURN_EVENTS_4T | v4.0.0-rc.1 | SADT A4.1
+ * [L5] EXW.L5.TURN_EVENTS_4T | v5.2.0 | SADT A4.1
  * Client bridge to server-side POST /api/gemini/generate-turn-events (4-Tier Cascade).
- * Never stores or exposes API keys on the client.
+ * Sends a live combinatorial brief (Era/Sub-Era/Branch, Quests, World Tensions, Entity Matrix).
  */
 export async function requestTurnEvents4T(world: WorldState): Promise<TurnEvents4TResponse> {
   const sp = resolveSuperpowerV4(world.superpowerId);
   const excludedCodes = Array.from(getNoRep3tExcludedCodes(world.livingCatalog));
+  const combinatorialBrief = buildCombinatorialScenarioBrief(world);
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), 7000);
 
@@ -34,6 +36,7 @@ export async function requestTurnEvents4T(world: WorldState): Promise<TurnEvents
         approval: world.approval,
         credits: world.resources.credits,
         excludedCodes,
+        combinatorialBrief,
       }),
     });
     if (!res.ok) {

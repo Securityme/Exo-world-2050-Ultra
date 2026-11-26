@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @source not "../docs";
-@source not "../master-blueprint";
 @source not "../.aistudio";
 @source not "../tests";
 @source not "../scripts";

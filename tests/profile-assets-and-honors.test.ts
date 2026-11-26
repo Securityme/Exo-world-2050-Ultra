@@ -112,7 +112,13 @@ test('evaluateMetaShowcaseFromWorld unlocks economy, science, biosphere, and dip
   assert.equal(unlockedBadgeIds.has('badge-solar-treasurer'), true);
 });
 
-test('All 10 Showcase 3D PBR assets construct multi-part THREE.Group hierarchies (>= 6 meshes each)', () => {
+import {
+  buildUnity6UrpExportBundle,
+  Unity6UrpRenderAdapter,
+} from '../src/bridges/render-unity.bridge.ts';
+import { parseUnityToGameEvent } from '../src/parsers/unity-bridge.parser.ts';
+
+test('All 10 Showcase 3D assets expose Unity 6 URP Prefabs, Shader Graphs, LODs & Three.js web preview', () => {
   assert.equal(SHOWCASE_3D_ASSETS_CATALOG.length, 10);
   for (const spec of SHOWCASE_3D_ASSETS_CATALOG) {
     const group = buildShowcaseAssetById(spec.id);
@@ -125,6 +131,17 @@ test('All 10 Showcase 3D PBR assets construct multi-part THREE.Group hierarchies
       stats.triangleCount >= 100,
       `Expected >= 100 triangles for ${spec.id}, got ${stats.triangleCount}`,
     );
-    assert.ok(spec.unityPrefabId.startsWith('Prefabs/'));
+    assert.ok(spec.unityPrefabPath.startsWith('Assets/Prefabs/'));
+    assert.ok(spec.unityShaderGraph.endsWith('.shadergraph'));
+    assert.ok(spec.sceneAssetKey.startsWith('Assets3D/'));
   }
+
+  const adapter = new Unity6UrpRenderAdapter();
+  assert.equal(adapter.engineTarget, 'UNITY_6_URP');
+  const bundle = buildUnity6UrpExportBundle();
+  assert.ok(bundle.csharpScript.includes('ExoWorldBridge'));
+  assert.ok(bundle.jslibScript.includes('ExoNotifyHostEvent'));
+  const [evErr, ev] = parseUnityToGameEvent('{"type":"TILE_SELECTED","tileIndex":14}');
+  assert.equal(evErr, null);
+  assert.equal(ev?.type, 'TILE_SELECTED');
 });

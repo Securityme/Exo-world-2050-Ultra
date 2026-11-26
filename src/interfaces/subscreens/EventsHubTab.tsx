@@ -7,19 +7,24 @@ import {
   FileText,
   Filter,
   Globe,
+  Plus,
   RefreshCw,
   Rocket,
   Search,
   Sparkles,
+  Wand2,
 } from 'lucide-react';
 import { DossierCard } from '../../components/events/DossierCard.tsx';
 import { EventsActionCommandCenter } from '../../components/events/EventsActionCommandCenter.tsx';
 import { OperationsQueuePanel } from '../../components/events/OperationsQueuePanel.tsx';
+import { PaTurnProgressHeader } from '../../components/events/PaTurnProgressHeader.tsx';
 import { PaxScenarioMatrixModal } from '../../components/world/PaxScenarioMatrixModal.tsx';
 import { useOracleDossierMutation } from '../../hooks/use-oracle-query.ts';
 import {
   handleCommitEndOfTurn,
+  handleDrawAstralisBonusEvent,
   handleGenerateActionEvent,
+  handleMagicWandResolveAndChain,
 } from '../../pipelines/game-actions.pipeline.ts';
 import { requestTurnEvents4T } from '../../pipelines/turn-events-4t.pipeline.ts';
 import { useExoStore } from '../../stores/game.store.ts';
@@ -39,8 +44,10 @@ import {
   turnSummaryModalOpenAtom,
 } from '../../stores/selection.atoms.ts';
 import { useUserContextStore } from '../../stores/user-context.store.ts';
+import { getAstralisEventHand } from '../../systems/dossiers-pa/magic-wand-astralis.ts';
 import { computeFleetTotals } from '../../systems/fleet/ship-loadout.engine.ts';
 import { rankDossiersByAiContext } from '../../systems/turn-orchestration/gemini-cost-ledger.ts';
+import { buildCombinatorialScenarioBrief } from '../../systems/turn-orchestration/scenario-combinator.ts';
 import { ensureZeroPaOption, evaluateTurnGateM7 } from '../../systems/turn-orchestration/turn-gate-v4.ts';
 import { GeopoliticsTab } from './GeopoliticsTab.tsx';
 
@@ -87,6 +94,9 @@ export function EventsHubTab() {
   const p0Count = world.activeDossiers.filter((d) => d.dossierClass === 'P0').length;
   const turnGate = useMemo(() => evaluateTurnGateM7(world), [world]);
   const fleetTotals = useMemo(() => computeFleetTotals(world.fleetShips ?? []), [world.fleetShips]);
+  const astralisHand = useMemo(() => getAstralisEventHand(world), [world]);
+  const comboBrief = useMemo(() => buildCombinatorialScenarioBrief(world), [world]);
+  const [wandSalt, setWandSalt] = useState(1);
 
   const rankedDossiers = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -162,7 +172,7 @@ export function EventsHubTab() {
     setLatest4T(res);
     setLoading4T(false);
     if (res.dossiers.length > 0) {
-      const merged = [...res.dossiers.map(ensureZeroPaOption), ...world.activeDossiers].slice(0, 5);
+      const merged = [...res.dossiers.map(ensureZeroPaOption), ...world.activeDossiers].slice(0, 7);
       setWorld({ ...world, activeDossiers: merged });
       setToast({
         id: Date.now(),
@@ -172,6 +182,53 @@ export function EventsHubTab() {
     } else {
       setToast({ id: Date.now(), tone: 'warn', text: res.errorMessage ?? 'Repli local actif.' });
     }
+  };
+
+  const onQuickMagicWand = () => {
+    const firstPlayable = astralisHand.cards.find((s) => s.playable);
+    if (!firstPlayable) {
+      setToast({
+        id: Date.now(),
+        tone: 'warn',
+        text: 'Aucun événement finançable dans la main courante.',
+      });
+      return;
+    }
+    const nextSalt = wandSalt + 1;
+    setWandSalt(nextSalt);
+    const [err, outcome] = handleMagicWandResolveAndChain(firstPlayable.dossier.id, nextSalt);
+    if (err || !outcome) {
+      setToast({ id: Date.now(), tone: 'warn', text: err?.message ?? 'Baguette Magique indisponible.' });
+      return;
+    }
+    if (outcome.nextDossier) {
+      setToast({
+        id: Date.now(),
+        tone: 'success',
+        text: `Baguette Magique : ${outcome.pickedLabel} → Suivant ouvert : « ${outcome.nextDossier.title} »`,
+      });
+      setActiveDossierId(outcome.nextDossier.id);
+    } else {
+      setToast({
+        id: Date.now(),
+        tone: 'success',
+        text: `Baguette Magique : ${outcome.pickedLabel} · Tous les événements jouables traités.`,
+      });
+    }
+  };
+
+  const onDrawBonusCard = () => {
+    const [err, drawn] = handleDrawAstralisBonusEvent();
+    if (err || !drawn) {
+      setToast({ id: Date.now(), tone: 'warn', text: err?.message ?? 'Pioche indisponible.' });
+      return;
+    }
+    setToast({
+      id: Date.now(),
+      tone: 'info',
+      text: `Événement bonus assemblé : « ${drawn.title} ».`,
+    });
+    setActiveDossierId(drawn.id);
   };
 
   const onAdvanceTurnFromHub = async () => {
@@ -275,6 +332,57 @@ export function EventsHubTab() {
             <Clock className="h-3 w-3 text-rose-600 dark:text-rose-300" />
             Tour {world.cycle} · {world.season}
           </span>
+        </div>
+      </div>
+
+      {/* Whole-Turn PA Consumption Header & Astralis 7-Card Hand Deck */}
+      <PaTurnProgressHeader mode="turn" world={world} />
+
+      <div
+        data-testid="events-astralis-deck-bar"
+        className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-slate-200 bg-slate-50/90 px-3.5 py-2.5 text-xs dark:border-slate-800 dark:bg-slate-900/75"
+      >
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+          <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+            Main Astralis {astralisHand.cards.length}/{astralisHand.handLimit}
+          </span>
+          <span className="text-slate-400" aria-hidden="true">·</span>
+          <span className="font-mono text-[11px] tabular-nums text-emerald-700 dark:text-emerald-300">
+            {astralisHand.playableCount} jouable{astralisHand.playableCount > 1 ? 's' : ''}
+          </span>
+          <span className="text-slate-400" aria-hidden="true">·</span>
+          <span className="truncate text-[11px] text-slate-600 dark:text-slate-300">
+            {comboBrief.subEraCode} · {comboBrief.branchLabel} · {comboBrief.worldTensions[0]}
+          </span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {astralisHand.playableCount > 0 && (
+            <button
+              type="button"
+              data-testid="hub-magic-wand-btn"
+              onClick={onQuickMagicWand}
+              className="inline-flex min-h-[34px] items-center gap-1.5 rounded-lg bg-amber-500 px-3 font-mono text-[11px] font-bold text-slate-950 shadow-xs transition hover:bg-amber-400 whitespace-nowrap"
+            >
+              <Wand2 className="h-3.5 w-3.5" />
+              <span>Baguette Magique (Enchaîner)</span>
+            </button>
+          )}
+          <button
+            type="button"
+            data-testid="hub-draw-bonus-btn"
+            disabled={!astralisHand.canDrawBonusCard}
+            onClick={onDrawBonusCard}
+            title={
+              astralisHand.canDrawBonusCard
+                ? `Pioche un nouvel événement combinatoire (PA & ressources suffisants · ${astralisHand.bonusDrawsRemaining} rest.)`
+                : 'Pioche indisponible (main pleine, quota atteint ou PA/ressources insuffisants)'
+            }
+            className="inline-flex min-h-[34px] items-center gap-1 rounded-lg border border-sky-400/75 bg-sky-500/12 px-2.5 font-mono text-[11px] font-bold text-sky-900 hover:bg-sky-500/20 disabled:cursor-not-allowed disabled:opacity-45 dark:border-sky-600 dark:text-sky-200 whitespace-nowrap"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Piocher bonus ({astralisHand.bonusDrawsRemaining})</span>
+          </button>
         </div>
       </div>
 

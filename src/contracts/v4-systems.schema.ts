@@ -75,6 +75,22 @@ export const HkStarDomainSchema = z.enum([
   'SCIENTIST',
 ]);
 
+export const EraBranchIdSchema = z.enum([
+  'BIOSPHERE',
+  'INDUSTRY',
+  'CIVIC',
+  'FRONTIER',
+]);
+
+export const EraSpecializationRecordSchema = z.object({
+  era: z.number().int().min(1).max(8),
+  subEra: z.number().int().min(1).max(3),
+  branchId: EraBranchIdSchema,
+  specializationId: z.string(),
+  title: z.string(),
+  bonusSummary: z.string(),
+});
+
 export const HkProgressSchema = z.object({
   fame: z.number().int().min(0).default(120),
   starsByDomain: z.object({
@@ -87,6 +103,10 @@ export const HkProgressSchema = z.object({
     SCIENTIST: z.number().int().min(0).max(3).default(0),
   }),
   eraAdvanceReady: z.boolean().default(false),
+  subEra: z.number().int().min(1).max(3).default(1),
+  activeBranchId: EraBranchIdSchema.default('BIOSPHERE'),
+  subEraAdvanceReady: z.boolean().default(false),
+  chosenSpecializations: z.array(EraSpecializationRecordSchema).default([]),
   transcendedCount: z.number().int().min(0).default(0),
   activeDoctrines: z.array(z.string()).default(['DOC_SOLAR_CHARTER']),
   unlockedTechIds: z.array(z.string()).default(['tech-e1-solar-grid']),
@@ -164,6 +184,7 @@ export const TurnSummaryReportSchema = z.object({
   fameEarnedThisTurn: z.number().int(),
   totalFame: z.number().int(),
   eraAdvanceReady: z.boolean(),
+  subEraAdvanceReady: z.boolean().optional(),
   promisesResolved: z.array(z.object({ title: z.string(), status: z.enum(['KEPT', 'BROKEN']) })),
   arrivalNotice: z.string().nullable(),
   calEventNotice: z.string().nullable(),
@@ -194,7 +215,7 @@ export const TurnSnapshotSchema = z.object({
   cycle: z.number().int().nonnegative(),
   year: z.number().int(),
   season: z.string(),
-  era: z.number().int().min(1).max(6),
+  era: z.number().int().min(1).max(8),
   stateHash: z.string(),
   combatReports: z.array(CombatReportSchema),
 });
@@ -205,6 +226,8 @@ export type BinarySpectra = z.infer<typeof BinarySpectraSchema>;
 export type TerraformationV4 = z.infer<typeof TerraformationV4Schema>;
 export type PromiseRecord = z.infer<typeof PromiseRecordSchema>;
 export type HkStarDomain = z.infer<typeof HkStarDomainSchema>;
+export type EraBranchId = z.infer<typeof EraBranchIdSchema>;
+export type EraSpecializationRecord = z.infer<typeof EraSpecializationRecordSchema>;
 export type HkProgress = z.infer<typeof HkProgressSchema>;
 export type GeneseState = z.infer<typeof GeneseStateSchema>;
 export type ColonistGear = z.infer<typeof ColonistGearSchema>;

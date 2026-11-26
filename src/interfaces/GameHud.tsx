@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  Cloud,
+  CloudOff,
   Coins,
   Compass,
   Cpu,
@@ -15,10 +17,12 @@ import {
   EyeOff,
   Globe2,
   Hammer,
+  HeartPulse,
   HelpCircle,
   Lock,
   Pause,
   Radio,
+  RefreshCw,
   Settings,
   Sparkles,
   User,
@@ -44,13 +48,16 @@ import {
   fipRadioService,
   type FipStationId,
 } from '../services/audio/fip-radio.service.ts';
+import { useCloudAutoSaveStore } from '../stores/cloud-autosave.store.ts';
 import { useExoStore } from '../stores/game.store.ts';
 import {
   activeDossierIdAtom,
   activeInvestigationDossierIdAtom,
   activeSubscreenAtom,
   dockCollapsedAtom,
+  eraAdvanceModalOpenAtom,
   hudHiddenAtom,
+  inspectedColonistIdAtom,
   inspectedDossierIdsAtom,
   latestTurnEvents4TAtom,
   questUiMilestonesAtom,
@@ -63,6 +70,12 @@ import {
   tutorialOpenAtom,
   viewportOverlayModeAtom,
 } from '../stores/selection.atoms.ts';
+import { formatSubEraLetter, MAX_MACRO_ERA } from '../data/eras-specializations.data.ts';
+import {
+  findLowestMoraleColonist,
+  getColonistMoraleTone,
+} from '../systems/biosphere-cabinet/colonist-quick-access.ts';
+import { computeTurnPaProgress } from '../systems/dossiers-pa/pa-progress.ts';
 import {
   computeResourceForecast,
   type ResourceMetricItem,
@@ -157,6 +170,11 @@ export function GameHud() {
   const setActiveScale = useExoStore((s) => s.setActiveScale);
   const updateAudio = useExoStore((s) => s.updateAudio);
   const { isMobile } = useViewportLayout();
+  const cloudStatus = useCloudAutoSaveStore((s) => s.status);
+  const cloudConfig = useCloudAutoSaveStore((s) => s.config);
+  const cloudAuthenticated = useCloudAutoSaveStore((s) => s.authenticated);
+  const cloudLastSyncedCycle = useCloudAutoSaveStore((s) => s.lastSyncedCycle);
+  const cloudOutboxCount = useCloudAutoSaveStore((s) => s.outbox.length);
 
   const selectedTile = useAtomValue(selectedTileAtom);
   const [ribbonCollapsed, setRibbonCollapsed] = useAtom(dockCollapsedAtom);
@@ -176,9 +194,26 @@ export function GameHud() {
   const [inspectedDossierIds, setInspectedDossierIds] = useAtom(inspectedDossierIdsAtom);
   const [returnContext, setReturnContext] = useAtom(returnEventContextAtom);
   const setTurnSummaryOpen = useSetAtom(turnSummaryModalOpenAtom);
+  const setEraModalOpen = useSetAtom(eraAdvanceModalOpenAtom);
   const setLatestTurnEvents4T = useSetAtom(latestTurnEvents4TAtom);
   const setTurnEventsLoading = useSetAtom(turnEventsLoadingAtom);
   const setQuestUi = useSetAtom(questUiMilestonesAtom);
+  const setInspectedColonistId = useSetAtom(inspectedColonistIdAtom);
+
+  const lowestMoraleColonist = useMemo(
+    () => findLowestMoraleColonist(world.colonists),
+    [world.colonists],
+  );
+  const lowestMoraleTone = lowestMoraleColonist
+    ? getColonistMoraleTone(lowestMoraleColonist.morale)
+    : 'healthy';
+  const lowestMoraleDistrictName = useMemo(() => {
+    if (!lowestMoraleColonist?.assignedDistrictId) return 'Non affecté';
+    return (
+      world.districts.find((d) => d.id === lowestMoraleColonist.assignedDistrictId)?.name ??
+      lowestMoraleColonist.assignedDistrictId
+    );
+  }, [lowestMoraleColonist, world.districts]);
 
   const activeSlotSpec =
     PLANETARY_SLOTS_CATALOG.find((s) => s.slotIndex === world.activeSlotIndex) ??
@@ -188,6 +223,9 @@ export function GameHud() {
 
   const forecast = useMemo(() => computeResourceForecast(world), [world]);
   const turnGate = useMemo(() => evaluateTurnGateM7(world), [world]);
+  const turnPa = useMemo(() => computeTurnPaProgress(world), [world]);
+  const subEraLetter = formatSubEraLetter(world.hk?.subEra ?? 1);
+  const specializationReady = Boolean(world.hk?.subEraAdvanceReady || world.hk?.eraAdvanceReady);
   const atmoStatus = useMemo(
     () =>
       formatAtmosphereStatusBadge({
@@ -355,16 +393,23 @@ export function GameHud() {
           <div className="flex min-w-0 w-full items-center justify-between gap-2 leading-tight font-mono-num">
             <div className="flex min-w-0 flex-1 flex-col">
               <div className="flex items-center gap-1 text-[10px]">
-                <span className="font-display font-bold tracking-wide exo-accent-2-text whitespace-nowrap">
-                  ÈRE {world.era}/6 · {world.eraStars}★
-                </span>
+                <button
+                  type="button"
+                  data-testid="hud-era-btn-mobile"
+                  onClick={() => setEraModalOpen(true)}
+                  className={`font-display font-bold tracking-wide whitespace-nowrap ${
+                    specializationReady ? 'text-amber-500 underline' : 'exo-accent-2-text'
+                  }`}
+                >
+                  ÈRE {world.era}.{subEraLetter}/{MAX_MACRO_ERA} · {world.eraStars}★
+                </button>
                 <span aria-hidden="true" className="exo-muted-text opacity-50">·</span>
                 <span className="font-medium whitespace-nowrap">
                   T{world.cycle}
                 </span>
                 <span aria-hidden="true" className="exo-muted-text opacity-50">·</span>
                 <span className="font-semibold exo-accent-text whitespace-nowrap">
-                  PA {world.pa.general}/{world.pa.generalCap}
+                  PA {world.pa.general}/{world.pa.generalCap} ({turnPa.spentPct}%)
                 </span>
               </div>
               <div className="flex items-center gap-1.5 text-[10px]">
@@ -380,9 +425,33 @@ export function GameHud() {
           </div>
         ) : (
           <div className="flex min-w-0 flex-1 items-center gap-x-1.5 overflow-hidden font-mono-num text-[11px]">
-            <span className="font-display font-bold tracking-wide exo-accent-2-text whitespace-nowrap">
-              ÈRE {world.era}/6 · {world.eraStars}★
-            </span>
+            <ExoTooltip
+              title={`Feuille de route · Ère ${world.era}.${subEraLetter} / ${MAX_MACRO_ERA}`}
+              formula={`Branche ${world.hk?.activeBranchId ?? 'BIOSPHERE'} · ${world.eraStars}★ · 4 Spécialisations par palier`}
+              body="Cliquez pour ouvrir les 8 Macro-Ères, vos sous-échelles adaptées à la branche choisie et sélectionner parmi 4 spécialisations."
+              accent="amber"
+              align="left"
+            >
+              <button
+                type="button"
+                data-testid="hud-era-btn"
+                onClick={() => setEraModalOpen(true)}
+                className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-display font-bold tracking-wide transition whitespace-nowrap ${
+                  specializationReady
+                    ? 'bg-amber-500/20 text-amber-700 ring-1 ring-amber-500/50 dark:text-amber-300'
+                    : 'exo-accent-2-text hover:bg-black/5 dark:hover:bg-white/10'
+                }`}
+              >
+                <span>
+                  ÈRE {world.era}.{subEraLetter}/{MAX_MACRO_ERA} · {world.eraStars}★
+                </span>
+                {specializationReady && (
+                  <span className="font-mono text-[9.5px] font-bold text-emerald-700 dark:text-emerald-300">
+                    +SPEC
+                  </span>
+                )}
+              </button>
+            </ExoTooltip>
             <span aria-hidden="true" className="hidden exo-muted-text opacity-50 2xl:inline">·</span>
             <span className="hidden items-center gap-0.5 font-semibold exo-accent-2-text 2xl:inline-flex whitespace-nowrap">
               <Award className="h-3 w-3" />
@@ -410,14 +479,33 @@ export function GameHud() {
             </span>
             <span aria-hidden="true" className="exo-muted-text opacity-50">·</span>
             <ExoTooltip
-              title="PA Général & 4 Sous-PA Conseillers (R-26)"
-              formula={`Général ${world.pa.general}/${world.pa.generalCap} · G:${world.pa.subPa.PA_GES} T:${world.pa.subPa.PA_MNT} C:${world.pa.subPa.PA_BIO} P:${world.pa.subPa.PA_POL}`}
-              body="Fongibilité asymétrique : le PA Général peut compenser n’importe quel Sous-PA manquant (plafond 150 %), jamais l’inverse."
+              title="Progression PA du tour & 4 Sous-PA Conseillers (R-26)"
+              formula={`Tour : ${turnPa.totalSpent}/${turnPa.totalCap} consommés (${turnPa.spentPct}%) · Besoin min. événements : ${turnPa.projectedMinPa} PA`}
+              body={`Général ${world.pa.general}/${world.pa.generalCap} · G:${world.pa.subPa.PA_GES} T:${world.pa.subPa.PA_MNT} C:${world.pa.subPa.PA_BIO} P:${world.pa.subPa.PA_POL}. Le PA Général peut compenser tout Sous-PA manquant.`}
               accent="cyan"
             >
-              <span className="cursor-help font-semibold exo-accent-text whitespace-nowrap">
-                PA {world.pa.general}/{world.pa.generalCap}
-              </span>
+              <button
+                type="button"
+                data-testid="hud-pa-progress-btn"
+                onClick={() => setSubscreen('EVENTS_HUB')}
+                className="inline-flex items-center gap-1.5 rounded-md px-1 py-0.5 hover:bg-black/5 dark:hover:bg-white/10 whitespace-nowrap"
+              >
+                <span className="font-semibold exo-accent-text">
+                  PA {world.pa.general}/{world.pa.generalCap}
+                </span>
+                <span
+                  aria-label={`Progression PA consommés : ${turnPa.spentPct}%`}
+                  className="hidden h-1.5 w-12 overflow-hidden rounded-full bg-slate-300/70 dark:bg-slate-700 sm:inline-block"
+                >
+                  <span
+                    className="block h-full bg-amber-500 transition-[width]"
+                    style={{ width: `${turnPa.spentPct}%` }}
+                  />
+                </span>
+                <span className="hidden font-mono text-[10px] exo-muted-text xl:inline">
+                  {turnPa.spentPct}%
+                </span>
+              </button>
             </ExoTooltip>
             <span className="hidden text-[10.5px] exo-muted-text 2xl:inline whitespace-nowrap">
               ({world.pa.subPa.PA_GES}G · {world.pa.subPa.PA_MNT}T · {world.pa.subPa.PA_BIO}C · {world.pa.subPa.PA_POL}P)
@@ -488,7 +576,69 @@ export function GameHud() {
             </>
           )}
 
-          {/* Header: Centre de notifications + Studio Contexte 3D + Tutoriel + Masquer 100% */}
+          {/* Header: Sauvegarde Auto Cloud + Centre de notifications + Studio Contexte 3D + Tutoriel + Masquer 100% */}
+          <ExoTooltip
+            title="Sauvegarde Auto Cloud (Tour par tour)"
+            formula={
+              !cloudConfig.enabled
+                ? 'Auto-Save Cloud désactivée'
+                : cloudStatus === 'SAVING'
+                  ? 'Synchronisation Firestore en cours…'
+                  : cloudStatus === 'SYNCED' && cloudLastSyncedCycle !== null
+                    ? `Synchronisé · Tour T${cloudLastSyncedCycle}`
+                    : cloudOutboxCount > 0
+                      ? `${cloudOutboxCount} tour(s) en file d’attente locale`
+                      : cloudAuthenticated
+                        ? 'Prêt · Sauvegarde automatique à chaque tour'
+                        : 'Mode local · Connectez Google pour synchroniser'
+            }
+            body="Ouvre le Journal des sauvegardes pour gérer la sauvegarde automatique Cloud, la file hors-ligne et l’historique tour par tour (retour arrière)."
+            accent={
+              cloudStatus === 'SYNCED'
+                ? 'emerald'
+                : cloudStatus === 'ERROR'
+                  ? 'coral'
+                  : cloudOutboxCount > 0
+                    ? 'amber'
+                    : 'cyan'
+            }
+          >
+            <button
+              type="button"
+              data-testid="hud-cloud-autosave-btn"
+              onClick={() => setSubscreen('JOURNAL_HUB')}
+              aria-label="Ouvrir la sauvegarde automatique Cloud"
+              className={`inline-flex h-8 items-center justify-center gap-1 px-2 font-mono text-[10.5px] font-semibold transition sm:h-9 whitespace-nowrap ${
+                cloudStatus === 'SYNCED'
+                  ? 'rounded-lg border border-emerald-500/50 bg-emerald-500/12 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300'
+                  : cloudStatus === 'ERROR'
+                    ? 'rounded-lg border border-rose-500/60 bg-rose-500/12 text-rose-700 hover:bg-rose-500/20 dark:text-rose-300'
+                    : cloudOutboxCount > 0
+                      ? 'rounded-lg border border-amber-500/60 bg-amber-500/12 text-amber-800 hover:bg-amber-500/20 dark:text-amber-200'
+                      : 'exo-accent-chip'
+              }`}
+            >
+              {cloudStatus === 'SAVING' ? (
+                <RefreshCw className="h-3.5 w-3.5 animate-spin text-cyan-500 dark:text-cyan-300" />
+              ) : !cloudConfig.enabled || (!cloudAuthenticated && cloudOutboxCount > 0) ? (
+                <CloudOff className="h-3.5 w-3.5" />
+              ) : (
+                <Cloud className="h-3.5 w-3.5" />
+              )}
+              <span className="hidden xl:inline">
+                {cloudStatus === 'SAVING'
+                  ? 'Sync…'
+                  : cloudStatus === 'SYNCED' && cloudLastSyncedCycle !== null
+                    ? `Cloud T${cloudLastSyncedCycle}`
+                    : cloudOutboxCount > 0
+                      ? `File (${cloudOutboxCount})`
+                      : !cloudConfig.enabled
+                        ? 'Cloud Off'
+                        : 'Cloud Auto'}
+              </span>
+            </button>
+          </ExoTooltip>
+
           <HeaderNotificationCenter />
           <HeaderDevDrawer />
 
@@ -738,6 +888,65 @@ export function GameHud() {
                 <Compass className="h-3.5 w-3.5 shrink-0 exo-accent-text" />
                 <span className="truncate">{forecast.nextActionHint}</span>
               </button>
+
+              {lowestMoraleColonist && (
+                <ExoTooltip
+                  title={`Accès Rapide — ${lowestMoraleColonist.name}`}
+                  formula={`Moral ${Math.round(lowestMoraleColonist.morale)} % · Fatigue ${Math.round(lowestMoraleColonist.fatigue)} % · ${lowestMoraleColonist.specialty}`}
+                  body={`Ouvre directement le dossier RPG du colon au moral le plus bas (${lowestMoraleDistrictName}) pour ajuster son affectation ou lui accorder du repos.`}
+                  accent={
+                    lowestMoraleTone === 'critical'
+                      ? 'coral'
+                      : lowestMoraleTone === 'warning'
+                        ? 'amber'
+                        : 'emerald'
+                  }
+                  position="top"
+                  align="left"
+                >
+                  <button
+                    type="button"
+                    data-testid="hud-quick-access-lowest-morale-btn"
+                    onClick={() => {
+                      setInspectedColonistId(lowestMoraleColonist.id);
+                      fipRadioService.playUiCue('CLICK');
+                    }}
+                    aria-label={`Accès Rapide : ouvrir le dossier de ${lowestMoraleColonist.name} (moral ${Math.round(lowestMoraleColonist.morale)} %)`}
+                    className={`inline-flex min-h-[34px] shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[10.5px] font-bold transition whitespace-nowrap ${
+                      lowestMoraleTone === 'critical'
+                        ? 'border-rose-500/85 bg-rose-500/18 text-rose-800 hover:bg-rose-500/28 dark:text-rose-200'
+                        : lowestMoraleTone === 'warning'
+                          ? 'border-amber-500/75 bg-amber-500/15 text-amber-900 hover:bg-amber-500/25 dark:text-amber-200'
+                          : 'exo-accent-chip hover:opacity-90'
+                    }`}
+                  >
+                    <HeartPulse
+                      className={`h-3.5 w-3.5 shrink-0 ${
+                        lowestMoraleTone === 'critical'
+                          ? 'text-rose-500 dark:text-rose-300'
+                          : lowestMoraleTone === 'warning'
+                            ? 'text-amber-600 dark:text-amber-300'
+                            : 'text-emerald-600 dark:text-emerald-300'
+                      }`}
+                    />
+                    <span>Accès Rapide</span>
+                    <span className="hidden sm:inline opacity-80">
+                      · {lowestMoraleColonist.name.split(' ')[0]}
+                    </span>
+                    <span
+                      className={`rounded px-1 py-0.5 font-mono-num text-[10px] ${
+                        lowestMoraleTone === 'critical'
+                          ? 'bg-rose-600 text-white'
+                          : lowestMoraleTone === 'warning'
+                            ? 'bg-amber-500/25 text-amber-950 dark:text-amber-100'
+                            : 'bg-emerald-500/20 text-emerald-900 dark:text-emerald-200'
+                      }`}
+                    >
+                      {Math.round(lowestMoraleColonist.morale)}%
+                    </span>
+                  </button>
+                </ExoTooltip>
+              )}
 
               {!isMobile && (
                 <span className="exo-surface-sub hidden rounded-md px-2 py-1 font-mono-num text-[10.5px] font-medium exo-muted-text xl:inline-flex whitespace-nowrap">

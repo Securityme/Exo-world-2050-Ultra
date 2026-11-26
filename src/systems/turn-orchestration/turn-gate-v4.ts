@@ -245,6 +245,7 @@ export function commitEndOfTurnV4(
     victoryReason,
     referendumActive: nextApproval < 30,
     finance: { ...state.finance, solvencyRating },
+    bonusEventDrawsThisCycle: 0,
   };
 
   const stateHash = computeStateHash(nextDraft);
@@ -269,6 +270,7 @@ export function commitEndOfTurnV4(
     fameEarnedThisTurn: hkRes.fameEarnedThisTurn + promRes.calFameBonus,
     totalFame: nextDraft.hk?.fame ?? 0,
     eraAdvanceReady: hkRes.hk.eraAdvanceReady,
+    subEraAdvanceReady: hkRes.hk.subEraAdvanceReady,
     promisesResolved: [...promRes.resolved],
     arrivalNotice: promRes.arrivalNotice,
     calEventNotice: promRes.calEventNotice,

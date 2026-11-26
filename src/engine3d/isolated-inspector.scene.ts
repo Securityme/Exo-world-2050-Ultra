@@ -202,8 +202,11 @@ export class IsolatedInspectorScene {
   private isSoftwareGl = false;
   private isDisposed = false;
   private yaw = 0.68;
+  private targetYaw = 0.68;
   private pitch = 0.36;
+  private targetPitch = 0.36;
   private dist = 4.2;
+  private targetDist = 4.2;
   private targetY = 0.85;
   private wireframeMode = false;
   private autoRotate = false;
@@ -407,8 +410,8 @@ export class IsolatedInspectorScene {
   }
 
   public resetView(): void {
-    this.yaw = 0.68;
-    this.pitch = 0.36;
+    this.targetYaw = 0.68;
+    this.targetPitch = 0.36;
     this.requestRender();
   }
 
@@ -456,9 +459,13 @@ export class IsolatedInspectorScene {
     const step = this.isSoftwareGl ? 0.08 : 0.014;
     this.autoRotateTimer = window.setInterval(() => {
       if (this.isDisposed || !this.autoRotate || this.isDragging) return;
-      this.yaw += step;
+      this.targetYaw += step;
       if (this.holoArcGroup) {
-        this.holoArcGroup.rotation.y -= step * 0.45;
+        this.holoArcGroup.rotation.y -= step * 0.55;
+        const inner = this.holoArcGroup.children[0];
+        const outer = this.holoArcGroup.children[1];
+        if (inner) inner.rotation.z += step * 0.32;
+        if (outer) outer.rotation.z -= step * 0.24;
       }
       this.requestRender();
     }, intervalMs);
@@ -474,6 +481,7 @@ export class IsolatedInspectorScene {
       const mesh = buildShowcaseAssetById(spec.id);
       this.subjectGroup.add(mesh);
       this.dist = spec.recommendedDistance;
+      this.targetDist = spec.recommendedDistance;
       this.targetY = spec.targetY;
       if (this.wireframeMode) {
         this.setWireframe(true);
@@ -505,6 +513,7 @@ export class IsolatedInspectorScene {
 
       this.subjectGroup.add(mesh);
       this.dist = 5.4;
+      this.targetDist = 5.4;
       this.targetY = 0.72;
       return;
     }
@@ -543,6 +552,7 @@ export class IsolatedInspectorScene {
       this.subjectGroup?.add(obj);
     });
     this.dist = 7.8;
+    this.targetDist = 7.8;
     this.targetY = 0.7;
   }
 
@@ -556,8 +566,8 @@ export class IsolatedInspectorScene {
       if (!this.isDragging || this.isDisposed) return;
       const dx = e.clientX - this.lastX;
       const dy = e.clientY - this.lastY;
-      this.yaw -= dx * 0.01;
-      this.pitch = Math.max(0.14, Math.min(1.25, this.pitch + dy * 0.008));
+      this.targetYaw -= dx * 0.01;
+      this.targetPitch = Math.max(0.14, Math.min(1.25, this.targetPitch + dy * 0.008));
       this.lastX = e.clientX;
       this.lastY = e.clientY;
       this.requestRender();
@@ -571,7 +581,7 @@ export class IsolatedInspectorScene {
       'wheel',
       (e) => {
         e.preventDefault();
-        this.dist = Math.max(2.2, Math.min(12.5, this.dist + e.deltaY * 0.005));
+        this.targetDist = Math.max(2.2, Math.min(12.5, this.targetDist + e.deltaY * 0.005));
         this.requestRender();
       },
       { passive: false },
@@ -579,7 +589,7 @@ export class IsolatedInspectorScene {
   }
 
   public rotateStep(deltaYaw: number): void {
-    this.yaw += deltaYaw;
+    this.targetYaw += deltaYaw;
     this.requestRender();
   }
 
@@ -589,12 +599,29 @@ export class IsolatedInspectorScene {
     const draw = () => {
       this.renderPending = false;
       if (this.isDisposed || !this.renderer || !this.scene || !this.camera) return;
+      if (this.isSoftwareGl) {
+        this.yaw = this.targetYaw;
+        this.pitch = this.targetPitch;
+        this.dist = this.targetDist;
+      } else {
+        this.yaw = THREE.MathUtils.damp(this.yaw, this.targetYaw, 11, 0.016);
+        this.pitch = THREE.MathUtils.damp(this.pitch, this.targetPitch, 11, 0.016);
+        this.dist = THREE.MathUtils.damp(this.dist, this.targetDist, 11, 0.016);
+      }
       const cx = Math.sin(this.yaw) * Math.cos(this.pitch) * this.dist;
       const cy = Math.sin(this.pitch) * this.dist + this.targetY;
       const cz = Math.cos(this.yaw) * Math.cos(this.pitch) * this.dist;
       this.camera.position.set(cx, cy, cz);
       this.camera.lookAt(0, this.targetY, 0);
       this.renderer.render(this.scene, this.camera);
+      if (
+        !this.isSoftwareGl &&
+        (Math.abs(this.yaw - this.targetYaw) > 0.002 ||
+          Math.abs(this.pitch - this.targetPitch) > 0.002 ||
+          Math.abs(this.dist - this.targetDist) > 0.005)
+      ) {
+        this.requestRender();
+      }
     };
     if (this.isSoftwareGl) {
       setTimeout(() => {

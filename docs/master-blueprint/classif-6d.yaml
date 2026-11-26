@@ -1,0 +1,65 @@
+# NORM-EXW v3.0 — Classification Multi-Dimensionnelle (XSC-CUBE 6D ⊥ G-CUBE 5D)
+# SSoT: docs/master-blueprint/classif-6d.yaml (Zéro collision N/D/P)
+normSemver: "NORM-EXW-3.0.0"
+blueprintId: "DOC-EXW-ARCH-001"
+docSemver: "2.14.0-MAITRE"
+totalFmtMCap: 19000
+
+nodes:
+  - inode: "K0://PIV-0-EXOW-ROOT"
+    iec_81346: "=A0-DOC_ROOT+EXOW_ROOT"
+    xsc_cube_6d:
+      axe_1_doc:   { depth: "V0", d_restant: 6, part: "PART-I", pivot: "PIV-0", h_active: ["H0", "H1"] }
+      axe_2_taxo:  { ref: ["MAD", "MBE"], class_iso7573: ["MOD", "SCR"], archetypes: ["ARCH-TOC-7PIVOTS", "ARCH-TOC-TENSOR-6D"], instances: ["M0-META", "MC-00"] }
+      axe_3_arch:  { layers: ["L0", "L5", "L8"], fs4x_slice: "shared-kernel/root", truth_rank: "R-09:L0" }
+      axe_4_gov:   { holon: "C1.Q1.W-", ring: 3, ap_gate: "AP-4", trl: 6, gemma: "F2", tri_lock: [1, 1, 1], semver_mode: "CASCADE" }
+      axe_5_org:   { laniakea: "LAN://O0:GRAND-ATTRACTEUR/O1:TEAMWORKER", filament: "FIL://SSOT-ROOT", skill_bridge: "EXW-COMP-01<->AG-SKL-01" }
+      axe_6_llm:   { zoom: "Z1", mode_dprof: "ULTRA_DENSE", fmt_m_cap: 1100, posture: "NORMATIF", hbdi: "A+B", disc: "C+D", enn: "1w9", temp: 0.05, thinking: "HIGH" }
+
+  - inode: "K0://PIV-3-S04-ATMO-BIO"
+    iec_81346: "=A3.2-MOD_BIO+S2_BIOCLIMATE"
+    xsc_cube_6d:
+      axe_1_doc:   { depth: "V2", d_restant: 4, part: "PART-III", pivot: "PIV-3", h_active: ["H1", "H2", "H3"] }
+      axe_2_taxo:  { ref: ["GDD", "DAT"], class_iso7573: ["FEAT", "MOD"], archetypes: ["ARCH-ORTHO-4Q", "ARCH-ZWICKY"], instances: ["MAT-D1D5", "SM-02"] }
+      axe_3_arch:  { layers: ["L0", "L1", "L3", "L4"], fs4x_slice: "slices/S2-bioclimate", truth_rank: "R-09:L0" }
+      axe_4_gov:   { holon: "C2.Q2.W-", ring: 3, ap_gate: "AP-4", trl: 6, gemma: "F2", tri_lock: [1, 1, 0], semver_mode: "BULLE" }
+      axe_5_org:   { laniakea: "LAN://O2:MB2-HYDRO/O3:KRYPTON", filament: "FIL://BIO-OPENSKY", skill_bridge: "EXW-COMP-01<->AG-SKL-01" }
+      axe_6_llm:   { zoom: "Z1", mode_dprof: "MATRICIEL->ULTRA_DENSE", fmt_m_cap: 1600, posture: "ACTIF_NORMATIF", hbdi: "A+B", disc: "C+D", enn: "5w6", temp: 0.10, thinking: "HIGH" }
+    g_cube_overlay:
+      g1_spatial:  ["S-2", "S-3"]
+      g2_temporal: ["T1/GL-1", "T2/GL-2", "CYC-03"]
+      g3_atmo:     ["ATMO-D1", "ATMO-D2", "ATMO-D3", "ATMO-D4", "ATMO-D5"]
+      g4_decision: ["PRIO-P0:CAT_BIO"]
+      g5_ethics:   ["ECOLOGIQUE", "BIEN_COMMUN"]
+
+  - inode: "K0://PIV-4-S06-DECISION-FUP018"
+    iec_81346: "=A2.1-MOD_DOSSIERS+S4_DECISION"
+    xsc_cube_6d:
+      axe_1_doc:   { depth: "V2", d_restant: 4, part: "PART-III", pivot: "PIV-4", h_active: ["H1", "H2", "H3"] }
+      axe_2_taxo:  { ref: ["GDD", "MBE", "DAT"], class_iso7573: ["FEAT", "MOD", "CMP"], archetypes: ["ARCH-ICOM", "ARCH-KARNAUGH"], instances: ["SM-01", "M7-KRN"] }
+      axe_3_arch:  { layers: ["L0", "L2", "L3", "L7"], fs4x_slice: "slices/S4-decision", truth_rank: "R-09:L0" }
+      axe_4_gov:   { holon: "C1.Q1.W-", ring: 3, ap_gate: "AP-2", trl: 7, gemma: "F1", tri_lock: [1, 1, 1], semver_mode: "BULLE" }
+      axe_5_org:   { laniakea: "LAN://O2:MB2-HYDRO/O3:HYDROGENE", filament: "FIL://GDD-DEC", skill_bridge: "EXW-COMP-02<->AG-SKL-03" }
+      axe_6_llm:   { zoom: "Z1", mode_dprof: "MATRICIEL", fmt_m_cap: 2200, posture: "DETERMINISTE", hbdi: "A+B", disc: "C+D", enn: "5w6", temp: 0.08, thinking: "HIGH" }
+    g_cube_overlay:
+      g1_spatial:  ["S-0", "S-1", "S-3"]
+      g2_temporal: ["T1/GL-1", "CYC-05"]
+      g3_atmo:     []
+      g4_decision: ["PRIO-P0", "C1", "C2", "C3", "C4", "C5", "PA"]
+      g5_ethics:   ["THOMISTE_VERTU", "SUBSIDIAIRE"]
+
+  - inode: "K0://PIV-6-S10-UNITY6-URP-3D"
+    iec_81346: "=A5.3-PLG_UNITY6+S6_SHELL_3D"
+    xsc_cube_6d:
+      axe_1_doc:   { depth: "V2", d_restant: 4, part: "PART-IV", pivot: "PIV-6", h_active: ["H2", "H3"] }
+      axe_2_taxo:  { ref: ["DAT", "DMT-SW"], class_iso7573: ["MOD", "CMP", "PLG"], archetypes: ["ARCH-BIPARTITE"], instances: ["SM-05", "M10-RND"] }
+      axe_3_arch:  { layers: ["L0", "L4", "L6", "L7"], fs4x_slice: "slices/S6-shell-3d", truth_rank: "R-09:L0" }
+      axe_4_gov:   { holon: "C2.Q3.W+", ring: 2, ap_gate: "AP-2", trl: 6, gemma: "F2", tri_lock: [1, 1, 0], semver_mode: "BULLE" }
+      axe_5_org:   { laniakea: "LAN://O2:MB3-NEON/O3:UNITY_URP", filament: "FIL://3D-UNITY6", skill_bridge: "EXW-COMP-04<->AG-SKL-07" }
+      axe_6_llm:   { zoom: "Z2", mode_dprof: "STANDARD", fmt_m_cap: 1200, posture: "PERF_UX", hbdi: "D+B", disc: "C+I", enn: "3w4", temp: 0.15, thinking: "MEDIUM" }
+    g_cube_overlay:
+      g1_spatial:  ["S-0", "S-1", "S-3"]
+      g2_temporal: ["T0/GL-0"]
+      g3_atmo:     ["ATMO-D1", "ATMO-D2", "ATMO-D3", "ATMO-D4", "ATMO-D5"]
+      g4_decision: []
+      g5_ethics:   []

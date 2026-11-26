@@ -1,5 +1,5 @@
 /**
- * [L0] Barrel exports for all 4 Wave 0 Result-pattern parsers.
+ * [L0] Barrel exports for Wave 0 Result-pattern parsers (including Unity 6 URP Bridge).
  */
 export * from './zod-boundary.parser.ts';
 export * from './gemini-dualpass.parser.ts';

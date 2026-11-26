@@ -76,7 +76,7 @@ export const RivalPowerSchema = z.object({
   name: z.string(),
   code: z.string(),
   colorHex: z.string(),
-  era: z.number().int().min(1).max(6),
+  era: z.number().int().min(1).max(8),
   eraStars: z.number().int().min(0),
   humankindScore: z.number().int().min(0),
   economyIndex: z.number().min(0),
@@ -134,7 +134,7 @@ export const WorldStateSchema = z.object({
   year: z.number().int().min(2050),
   month: z.number().int().min(1).max(12),
   season: z.enum(['PRINTEMPS', 'ETE', 'AUTOMNE', 'HIVER']),
-  era: z.number().int().min(1).max(6),
+  era: z.number().int().min(1).max(8),
   eraStars: z.number().int().min(0),
   mode: z.enum(['CAMPAIGN', 'INFINITE_SANDBOX']),
   victoryState: z.enum(['ACTIVE', 'VICTORY', 'DEFEAT']),
@@ -222,6 +222,7 @@ export const WorldStateSchema = z.object({
   ecclesiaState: EcclesiaStateSchema.optional(),
   settlementProfile: SettlementProfileSchema.optional(),
   eventChainQueue: z.array(EventChainQueueEntrySchema).optional(),
+  bonusEventDrawsThisCycle: z.number().int().min(0).max(12).optional(),
 });
 
 export type Advisor = z.infer<typeof AdvisorSchema>;

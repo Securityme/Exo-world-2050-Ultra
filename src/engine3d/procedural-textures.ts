@@ -821,8 +821,9 @@ export function createAtmosphereLimbMaterial(
   return new THREE.ShaderMaterial({
     uniforms: {
       uColor: { value: new THREE.Color(div.haloHex) },
-      uSunDir: { value: new THREE.Vector3(0.65, 0.55, 0.52).normalize() },
-      uOpacity: { value: 0.34 + div.scatteringDensity * 0.36 },
+      uMieColor: { value: new THREE.Color(div.mieHex) },
+      uSunDir: { value: new THREE.Vector3(17, 9, 11).normalize() },
+      uOpacity: { value: 0.22 + div.scatteringDensity * 0.26 },
     },
     vertexShader: `
       varying vec3 vNormal;
@@ -838,6 +839,7 @@ export function createAtmosphereLimbMaterial(
     `,
     fragmentShader: `
       uniform vec3 uColor;
+      uniform vec3 uMieColor;
       uniform vec3 uSunDir;
       uniform float uOpacity;
       varying vec3 vNormal;
@@ -845,10 +847,13 @@ export function createAtmosphereLimbMaterial(
       varying vec3 vWorldNormal;
       void main() {
         float ndv = clamp(dot(-vNormal, vViewDir), 0.0, 1.0);
-        float outerFeather = smoothstep(0.0, 0.36, ndv);
-        float rim = pow(ndv, 2.35) * outerFeather;
-        float daySide = smoothstep(-0.35, 0.65, dot(vWorldNormal, normalize(uSunDir)));
-        gl_FragColor = vec4(uColor, rim * uOpacity * (0.22 + 0.78 * daySide));
+        float outerFeather = smoothstep(0.0, 0.44, ndv);
+        float rim = pow(ndv, 3.4) * outerFeather;
+        float sunDot = dot(vWorldNormal, normalize(uSunDir));
+        float daySide = smoothstep(-0.28, 0.65, sunDot);
+        float twilight = pow(clamp(1.0 - abs(sunDot), 0.0, 1.0), 2.8);
+        vec3 scatterCol = mix(uColor, uMieColor, twilight * 0.48);
+        gl_FragColor = vec4(scatterCol, rim * uOpacity * (0.14 + 0.86 * daySide));
       }
     `,
     transparent: true,
@@ -886,122 +891,162 @@ export function createCityGroundTexture(
 
     const stoneBase =
       tier === 'P1'
-        ? '#e5d6cb'
+        ? '#8c7e74'
         : tier === 'P2'
-          ? '#e8e2e6'
+          ? '#7f8791'
           : tier === 'P3'
-            ? '#eaf1ec'
-            : '#eff6f1';
+            ? '#748c82'
+            : '#6f8e80';
     const outerEarth =
       biomeTint ??
       (tier === 'P1'
-        ? '#b8856c'
+        ? '#735847'
         : tier === 'P2'
-          ? '#8f98a2'
+          ? '#57626e'
           : tier === 'P3'
-            ? '#68a684'
-            : '#4eae82');
+            ? '#46735b'
+            : '#377355');
     const gardenColor =
       biomeProfile === 'BIOSPHERE_FONGIQUE'
-        ? 'rgba(139, 92, 246, 0.34)'
+        ? 'rgba(109, 76, 186, 0.56)'
         : biomeProfile === 'CANYONS_OCRES'
-          ? 'rgba(180, 118, 56, 0.34)'
+          ? 'rgba(146, 94, 48, 0.52)'
           : tier === 'P1'
-            ? 'rgba(128, 146, 94, 0.42)'
-            : 'rgba(34, 168, 108, 0.48)';
+            ? 'rgba(72, 108, 66, 0.58)'
+            : 'rgba(28, 124, 78, 0.64)';
 
-    // Organic landmass gradient (anchored NW/center, curving down to SE bay)
+    // Organic coastal topography gradient (terrace hills NW -> urban basin -> SE harbor)
     const landGrad = ctx.createLinearGradient(0, 0, size, size);
     landGrad.addColorStop(0, outerEarth);
-    landGrad.addColorStop(0.28, stoneBase);
+    landGrad.addColorStop(0.24, stoneBase);
     landGrad.addColorStop(0.68, stoneBase);
     landGrad.addColorStop(1, outerEarth);
     ctx.fillStyle = landGrad;
     ctx.fillRect(0, 0, size, size);
 
-    // Natural mineral grain speckles
-    for (let i = 0; i < 820; i++) {
+    // Subtle mineral / asphalt / travertine urban soil variation
+    for (let i = 0; i < 950; i++) {
       const rx = hash2D(i * 1.7, 3.1, 41) * size;
       const ry = hash2D(5.3, i * 2.1, 97) * size;
-      const rad = 2 + hash2D(i, i * 0.7, 13) * 5;
-      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.09)' : 'rgba(65,50,62,0.06)';
+      const rad = 3 + hash2D(i, i * 0.7, 13) * 8;
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(255,248,240,0.06)' : 'rgba(22,26,38,0.09)';
       ctx.beginPath();
       ctx.arc(rx, ry, rad, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Orthogonal green coastal parks & terraced botanical blocks
-    const blockCoords = [150, 310, 470, 630];
-    ctx.fillStyle = gardenColor;
-    for (const bx of blockCoords) {
-      for (const bz of blockCoords) {
-        if (bx > 550 && bz > 550) continue; // Keep open for SE harbor quay
-        ctx.fillRect(bx - 56, bz - 56, 112, 112);
-      }
-    }
-
-    // Orthogonal paved Solarpunk boulevard grid (North-South & East-West avenues)
-    const avenueLines = [230, 390, 550, 710];
-    for (const pos of avenueLines) {
-      // East-West avenue
-      ctx.fillStyle = 'rgba(248, 245, 247, 0.92)';
-      ctx.fillRect(96, pos - 16, 760, 32);
-      ctx.strokeStyle = 'rgba(0, 210, 235, 0.34)';
-      ctx.lineWidth = 2;
+    // Organic neighborhood plazas & terraced parks (irregular polygons, neither circles nor grid squares)
+    const parkPolygons: readonly (readonly [number, number])[][] = [
+      [[110, 140], [295, 118], [320, 250], [160, 290]],
+      [[380, 135], [585, 165], [540, 315], [365, 275]],
+      [[635, 180], [820, 220], [790, 395], [610, 360]],
+      [[145, 360], [335, 340], [360, 520], [180, 560]],
+      [[420, 385], [610, 410], [570, 585], [395, 550]],
+      [[240, 740], [490, 795], [460, 910], [190, 865]],
+    ];
+    for (const poly of parkPolygons) {
+      ctx.fillStyle = gardenColor;
       ctx.beginPath();
-      ctx.moveTo(104, pos);
-      ctx.lineTo(840, pos);
-      ctx.stroke();
-
-      // North-South avenue
-      ctx.fillStyle = 'rgba(248, 245, 247, 0.92)';
-      ctx.fillRect(pos - 16, 96, 32, 760);
-      ctx.strokeStyle = 'rgba(225, 29, 72, 0.28)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(pos, 104);
-      ctx.lineTo(pos, 840);
+      poly.forEach(([px, py], idx) => (idx === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)));
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(215, 206, 196, 0.35)';
+      ctx.lineWidth = 4;
       ctx.stroke();
     }
 
-    // Diagonal urban river canal meandering from WNW (90, 680) into SE Harbor Bay (760, 760)
+    // Realistic organic curving arterial boulevards & hillside collector streets (dark slate asphalt + stone sidewalks)
+    const drawCurvedRoad = (
+      pts: readonly [number, number, number, number, number, number, number, number],
+      width: number,
+      laneAccent: string,
+    ) => {
+      const [x0, y0, cx1, cy1, cx2, cy2, x1, y1] = pts;
+      ctx.save();
+      ctx.lineCap = 'round';
+      // Pale travertine pedestrian sidewalks
+      ctx.strokeStyle = 'rgba(218, 210, 202, 0.78)';
+      ctx.lineWidth = width + 14;
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x1, y1);
+      ctx.stroke();
+
+      // Realistic urban slate asphalt roadway
+      ctx.strokeStyle = '#333b48';
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x1, y1);
+      ctx.stroke();
+
+      // Subtle dashed lane divider / solar transit strip
+      ctx.setLineDash([12, 14]);
+      ctx.strokeStyle = laneAccent;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x1, y1);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    // Main sweeping W-to-NE ridge arterial
+    drawCurvedRoad([42, 335, 285, 275, 565, 375, 920, 290], 26, 'rgba(248, 250, 252, 0.55)');
+    // Coastal waterfront corniche curving naturally above the bay
+    drawCurvedRoad([85, 575, 345, 515, 585, 620, 885, 540], 24, 'rgba(56, 189, 248, 0.55)');
+    // NNW-to-S valley avenue crossing the river via bridge
+    drawCurvedRoad([350, 52, 395, 290, 320, 560, 425, 945], 24, 'rgba(248, 250, 252, 0.52)');
+    // Eastern harbor connector avenue
+    drawCurvedRoad([635, 65, 590, 285, 680, 480, 610, 745], 20, 'rgba(251, 191, 36, 0.5)');
+    // Western neighborhood hillside street
+    drawCurvedRoad([165, 110, 125, 310, 225, 495, 175, 815], 16, 'rgba(226, 232, 240, 0.42)');
+
+    // Diagonal meandering urban river canal & landscaped stone embankments flowing into SE Harbor Bay
     ctx.save();
     ctx.lineCap = 'round';
-    ctx.strokeStyle = 'rgba(226, 216, 200, 0.9)';
-    ctx.lineWidth = 54;
+    ctx.strokeStyle = 'rgba(182, 175, 165, 0.92)';
+    ctx.lineWidth = 62;
     ctx.beginPath();
-    ctx.moveTo(64, 650);
-    ctx.bezierCurveTo(280, 630, 480, 730, 790, 770);
+    ctx.moveTo(48, 665);
+    ctx.bezierCurveTo(265, 615, 465, 745, 795, 768);
     ctx.stroke();
 
-    ctx.strokeStyle = biomeProfile === 'VOLCANIQUE_BASALTE' ? '#0e7490' : '#0284c7';
-    ctx.lineWidth = 36;
+    ctx.strokeStyle = biomeProfile === 'VOLCANIQUE_BASALTE' ? '#0e7490' : '#0369a1';
+    ctx.lineWidth = 42;
     ctx.beginPath();
-    ctx.moveTo(64, 650);
-    ctx.bezierCurveTo(280, 630, 480, 730, 790, 770);
+    ctx.moveTo(48, 665);
+    ctx.bezierCurveTo(265, 615, 465, 745, 795, 768);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(125, 211, 252, 0.35)';
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.moveTo(54, 662);
+    ctx.bezierCurveTo(265, 612, 465, 742, 790, 765);
     ctx.stroke();
     ctx.restore();
 
-    // SE Coastal Harbor Bay & Shoreline Seawall Promenade
+    // SE Coastal Harbor Bay & Organic Granite Seawall Promenade
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(size, 620);
-    ctx.bezierCurveTo(860, 640, 740, 740, 620, size);
+    ctx.moveTo(size, 595);
+    ctx.bezierCurveTo(855, 625, 735, 730, 595, size);
     ctx.lineTo(size, size);
     ctx.closePath();
-    const bayGrad = ctx.createLinearGradient(680, 680, size, size);
-    bayGrad.addColorStop(0, '#38bdf8');
-    bayGrad.addColorStop(0.35, '#0284c7');
-    bayGrad.addColorStop(1, '#0c4a6e');
+    const bayGrad = ctx.createLinearGradient(660, 660, size, size);
+    bayGrad.addColorStop(0, '#0284c7');
+    bayGrad.addColorStop(0.45, '#0369a1');
+    bayGrad.addColorStop(1, '#082f49');
     ctx.fillStyle = bayGrad;
     ctx.fill();
 
-    // Stone coastal seawall quay rim
-    ctx.strokeStyle = '#f8eef3';
-    ctx.lineWidth = 22;
+    // Granite seawall quay & harbor promenade
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 24;
     ctx.beginPath();
-    ctx.moveTo(size, 620);
-    ctx.bezierCurveTo(860, 640, 740, 740, 620, size);
+    ctx.moveTo(size, 595);
+    ctx.bezierCurveTo(855, 625, 735, 730, 595, size);
     ctx.stroke();
 
     ctx.strokeStyle = 'rgba(0, 240, 255, 0.52)';

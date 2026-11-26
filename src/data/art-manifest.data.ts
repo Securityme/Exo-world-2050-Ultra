@@ -47,6 +47,8 @@ export const ART_MANIFEST = {
     4: era4Img,
     5: era5Img,
     6: era6Img,
+    7: era5Img,
+    8: era6Img,
   } as Record<number, string>,
   emblems: {
     'sp-uea': emblemUeaImg,
@@ -93,7 +95,7 @@ export function getColonistPortrait(colonistId: string, specialty?: string): str
 }
 
 export function getEraBanner(era: number): string {
-  return ART_MANIFEST.eras[Math.max(1, Math.min(6, era))] ?? era1Img;
+  return ART_MANIFEST.eras[Math.max(1, Math.min(8, era))] ?? era1Img;
 }
 
 export function getSuperpowerEmblem(superpowerId: string): string {

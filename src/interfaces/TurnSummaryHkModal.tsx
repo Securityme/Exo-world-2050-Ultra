@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import {
   AlertTriangle,
   Award,
@@ -13,37 +13,42 @@ import {
 } from 'lucide-react';
 import { getEraBanner } from '../data/art-manifest.data.ts';
 import {
-  COMMON_DOCTRINES_CATALOG,
+  ERA_BRANCHES,
+  formatSubEraLetter,
+  getSpecializationsForStep,
+  getSubEraScaleTitle,
+  MAX_MACRO_ERA,
+} from '../data/eras-specializations.data.ts';
+import {
   HK_STAR_DOMAINS,
   resolveSuperpowerV4,
 } from '../data/v4-catalog.data.ts';
-import { handleManualEraAdvance } from '../pipelines/game-actions.pipeline.ts';
+import { handleApplySpecializationAdvance } from '../pipelines/game-actions.pipeline.ts';
 import { useExoStore } from '../stores/game.store.ts';
 import { useMetaHonorsStore } from '../stores/meta-honors.store.ts';
 import {
+  eraAdvanceModalOpenAtom,
   latestTurnEvents4TAtom,
+  toastNoticeAtom,
   turnEventsLoadingAtom,
   turnSummaryModalOpenAtom,
 } from '../stores/selection.atoms.ts';
 import { buildTurnGroupedChoiceSummary } from '../systems/turn-orchestration/gemini-cost-ledger.ts';
 
 /**
- * [L7] EXW.L7.TURN_SUMMARY_HK | v4.0.0-rc.1 | SADT A5.1
- * Humankind End-of-Turn Summary Modal:
- * - Net Entity Resource Ledger + shortages & auto-shed warnings
- * - 7 Star Domains (T1/T2/T3) + Fame gained
- * - Promises resolved, Colonist Arrivals & Fixed CalEvents
- * - Transparent Gemini 4T pre-generation status (T1..T4)
- * - Manual Era Advance selector (Evolutive Faction Identity vs Transcendence +10% Fame)
+ * [L7] EXW.L7.TURN_SUMMARY_HK | v5.2.0 | SADT A5.1
+ * Humankind End-of-Turn Summary Modal with 8 Macro-Eras, Sub-Eras (.a/.b/.c) & 4 Specializations picker.
  */
 export function TurnSummaryHkModal() {
   const [open, setOpen] = useAtom(turnSummaryModalOpenAtom);
+  const setEraModalOpen = useSetAtom(eraAdvanceModalOpenAtom);
+  const setToast = useSetAtom(toastNoticeAtom);
   const [liveStatus] = useAtom(latestTurnEvents4TAtom);
   const [loadingLive] = useAtom(turnEventsLoadingAtom);
   const world = useExoStore((s) => s.world);
   const geminiLedger = useMetaHonorsStore((s) => s.geminiLedger);
   const turnChoiceLog = useMetaHonorsStore((s) => s.turnChoiceLog);
-  const [selectedDoctrineId, setSelectedDoctrineId] = useState<string>(COMMON_DOCTRINES_CATALOG[0]!.id);
+  const [selectedSpecId, setSelectedSpecId] = useState<string>('');
   const [showEraPicker, setShowEraPicker] = useState(false);
 
   if (!open || !world.lastTurnSummary) return null;
@@ -52,7 +57,17 @@ export function TurnSummaryHkModal() {
   const groupedDigest = buildTurnGroupedChoiceSummary(Math.max(0, summary.cycleCompleted - 1), turnChoiceLog);
   const hk = world.hk;
   const sp = resolveSuperpowerV4(world.superpowerId);
-  const nextEraIdentity = sp.eraIdentities.find((e) => e.era === world.era + 1);
+  const currentSubEra = (hk?.subEra ?? 1) as 1 | 2 | 3;
+  const activeBranch = hk?.activeBranchId ?? 'BIOSPHERE';
+  const subEraTitle = getSubEraScaleTitle(world.era, currentSubEra, activeBranch);
+  const isMacroReady = summary.eraAdvanceReady && world.era < MAX_MACRO_ERA;
+  const isSubReady = Boolean(summary.subEraAdvanceReady) && currentSubEra < 3;
+  const pickerTargetEra = isMacroReady ? Math.min(MAX_MACRO_ERA, world.era + 1) : world.era;
+  const pickerTargetSubEra: 1 | 2 | 3 = isMacroReady ? 1 : (Math.min(3, currentSubEra + 1) as 1 | 2 | 3);
+  const stepSpecs = getSpecializationsForStep(pickerTargetEra, pickerTargetSubEra);
+  const effectiveSpecId = stepSpecs.some((s) => s.id === selectedSpecId)
+    ? selectedSpecId
+    : stepSpecs[0]?.id ?? '';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d0612]/80 p-3 sm:p-6">
@@ -71,7 +86,7 @@ export function TurnSummaryHkModal() {
                 Bilan Humankind · Tour {summary.cycleCompleted} · {summary.season} {summary.year}
               </div>
               <h2 className="font-display text-xl font-bold text-white">
-                {hk?.factionEraTitle ?? sp.name} · Ère {world.era}
+                {hk?.factionEraTitle ?? sp.name} · Ère {world.era}.{formatSubEraLetter(currentSubEra)}/{MAX_MACRO_ERA} — {subEraTitle}
               </h2>
             </div>
             <button
@@ -194,63 +209,131 @@ export function TurnSummaryHkModal() {
             </div>
           )}
 
-          {/* Manual Era Advance Picker when >=7 Stars */}
-          {summary.eraAdvanceReady && (
+          {/* Manual Sub-Era / Macro-Era 4-Specializations Picker */}
+          {(isMacroReady || isSubReady) && (
             <div className="rounded-xl border border-amber-400 bg-amber-50/85 p-3.5 dark:border-amber-600/70 dark:bg-amber-950/40">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-amber-950 dark:text-amber-100">
                   <Crown className="h-4.5 w-4.5 text-amber-600 dark:text-amber-300" />
-                  <span>Passage vers l’Ère {world.era + 1} disponible (ou restez pour accumuler la Gloire)</span>
+                  <span>
+                    {isMacroReady
+                      ? `Passage vers l’Ère ${pickerTargetEra}.a disponible — 4 Spécialisations à choisir`
+                      : `Palier Sous-Ère ${pickerTargetEra}.${formatSubEraLetter(pickerTargetSubEra)} débloqué — 4 Spécialisations disponibles`}
+                  </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowEraPicker((v) => !v)}
-                  className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-500"
-                >
-                  {showEraPicker ? 'Masquer' : 'Choisir Évolution / Transcendance'}
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowEraPicker((v) => !v)}
+                    className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-500"
+                  >
+                    {showEraPicker ? 'Masquer' : 'Choisir parmi 4 Spécialisations'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      setEraModalOpen(true);
+                    }}
+                    className="rounded-lg border border-amber-500/70 bg-white/80 px-2.5 py-1.5 text-xs font-semibold text-amber-950 hover:bg-white dark:bg-slate-900 dark:text-amber-200"
+                  >
+                    Frise 8 Ères
+                  </button>
+                </div>
               </div>
 
               {showEraPicker && (
                 <div className="mt-3 space-y-2.5 border-t border-amber-300/70 pt-3 dark:border-amber-700/60">
                   <div className="grid gap-2 sm:grid-cols-2">
-                    {COMMON_DOCTRINES_CATALOG.map((doc) => (
+                    {stepSpecs.map((spec) => (
                       <button
-                        key={doc.id}
+                        key={spec.id}
                         type="button"
-                        onClick={() => setSelectedDoctrineId(doc.id)}
-                        className={`rounded-lg border p-2 text-left text-xs ${
-                          selectedDoctrineId === doc.id
-                            ? 'border-rose-500 bg-white dark:bg-rose-950/60'
-                            : 'border-amber-300/60 bg-white/60 dark:bg-black/20'
+                        onClick={() => setSelectedSpecId(spec.id)}
+                        className={`rounded-lg border p-2.5 text-left text-xs transition ${
+                          effectiveSpecId === spec.id
+                            ? 'border-rose-500 bg-white ring-1 ring-rose-400/50 dark:bg-rose-950/60'
+                            : 'border-amber-300/60 bg-white/60 hover:border-amber-400 dark:bg-black/20'
                         }`}
                       >
-                        <div className="font-bold text-[#1f1224] dark:text-rose-50">{doc.name}</div>
-                        <div className="text-[11px] text-rose-900/70 dark:text-rose-200/75">{doc.bonus}</div>
+                        <div className={`text-[10px] font-bold ${ERA_BRANCHES[spec.branchId].accentClass}`}>
+                          {ERA_BRANCHES[spec.branchId].shortLabel}
+                        </div>
+                        <div className="mt-0.5 font-bold text-[#1f1224] dark:text-rose-50">{spec.title}</div>
+                        <div className="text-[11px] text-rose-900/75 dark:text-rose-200/80">{spec.tagline}</div>
+                        <div className="mt-1 font-mono text-[10.5px] font-semibold text-emerald-700 dark:text-emerald-300">
+                          {spec.bonusSummary}
+                        </div>
                       </button>
                     ))}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleManualEraAdvance('EVOLVE', nextEraIdentity?.evolutiveDoctrineId ?? selectedDoctrineId);
-                        setShowEraPicker(false);
-                      }}
-                      className="rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-rose-500"
-                    >
-                      Évoluer → {nextEraIdentity?.factionName ?? `Ère ${world.era + 1}`}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleManualEraAdvance('TRANSCEND', selectedDoctrineId);
-                        setShowEraPicker(false);
-                      }}
-                      className="rounded-xl border border-amber-500 bg-amber-500/20 px-3.5 py-2 text-xs font-bold text-amber-950 dark:text-amber-100"
-                    >
-                      Transcender (+10% Gloire cumulatif)
-                    </button>
+                    {isSubReady && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const [err] = handleApplySpecializationAdvance({
+                            kind: 'SUB_ERA',
+                            specializationId: effectiveSpecId,
+                          });
+                          if (!err) {
+                            setShowEraPicker(false);
+                            setToast({
+                              id: Date.now(),
+                              tone: 'success',
+                              text: `Sous-Ère ${world.era}.${formatSubEraLetter(currentSubEra + 1)} activée.`,
+                            });
+                          }
+                        }}
+                        className="rounded-xl bg-amber-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-amber-500"
+                      >
+                        Activer Sous-Ère {world.era}.{formatSubEraLetter(currentSubEra + 1)}
+                      </button>
+                    )}
+                    {isMacroReady && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const [err] = handleApplySpecializationAdvance({
+                              kind: 'EVOLVE',
+                              specializationId: effectiveSpecId,
+                            });
+                            if (!err) {
+                              setShowEraPicker(false);
+                              setToast({
+                                id: Date.now(),
+                                tone: 'success',
+                                text: `Passage en Ère ${world.era + 1}.a validé.`,
+                              });
+                            }
+                          }}
+                          className="rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-rose-500"
+                        >
+                          Évoluer → Ère {world.era + 1}.a
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const [err] = handleApplySpecializationAdvance({
+                              kind: 'TRANSCEND',
+                              specializationId: effectiveSpecId,
+                            });
+                            if (!err) {
+                              setShowEraPicker(false);
+                              setToast({
+                                id: Date.now(),
+                                tone: 'success',
+                                text: `Transcendance Ère ${world.era + 1}.a (+10% Gloire) activée.`,
+                              });
+                            }
+                          }}
+                          className="rounded-xl border border-amber-500 bg-amber-500/20 px-3.5 py-2 text-xs font-bold text-amber-950 dark:text-amber-100"
+                        >
+                          Transcender (+10% Gloire cumulatif)
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               )}

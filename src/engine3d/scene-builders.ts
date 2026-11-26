@@ -89,10 +89,12 @@ export interface SpaceScaleNodes {
   readonly group: THREE.Group;
   readonly slotMeshes: THREE.Mesh[];
   readonly station: THREE.Group;
+  readonly beltPoints: THREE.Points;
+  readonly tradeShuttles: THREE.Group[];
 }
 
 /**
- * Scale 1 (Vue Espace) — Kept 100% intact per user preference.
+ * Scale 1 (Vue Espace) — Preserves iconic orbital silhouette while adding live trade shuttles.
  */
 export function buildSpaceScaleGroup(): SpaceScaleNodes {
   const group = new THREE.Group();
@@ -197,7 +199,41 @@ export function buildSpaceScaleGroup(): SpaceScaleNodes {
   station.position.set(3.2, 1.1, 2.2);
   group.add(station);
 
-  return { group, slotMeshes, station };
+  // Subtle animated orbital trade shuttles gliding between unlocked planetary orbits
+  const tradeShuttles: THREE.Group[] = [];
+  const shuttleHullMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0,
+    roughness: 0.28,
+    metalness: 0.72,
+  });
+  const shuttleGlowMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.9,
+  });
+  const shuttleHullGeo = new THREE.ConeGeometry(0.09, 0.34, 6);
+  shuttleHullGeo.rotateX(Math.PI / 2);
+  const shuttleTrailGeo = new THREE.ConeGeometry(0.055, 0.38, 6);
+  shuttleTrailGeo.rotateX(-Math.PI / 2);
+
+  const shuttleConfigs: readonly { r: number; speed: number; phase: number; yAmp: number }[] = [
+    { r: 7.2, speed: 0.36, phase: 0.4, yAmp: 0.35 },
+    { r: 10.6, speed: -0.25, phase: 2.1, yAmp: 0.48 },
+    { r: 14.0, speed: 0.19, phase: 4.0, yAmp: 0.55 },
+    { r: 17.5, speed: -0.15, phase: 5.2, yAmp: 0.62 },
+  ];
+  for (const cfg of shuttleConfigs) {
+    const sh = new THREE.Group();
+    const hull = new THREE.Mesh(shuttleHullGeo, shuttleHullMat);
+    const trail = new THREE.Mesh(shuttleTrailGeo, shuttleGlowMat);
+    trail.position.z = -0.32;
+    sh.add(hull, trail);
+    sh.userData = { orbitR: cfg.r, speed: cfg.speed, phase: cfg.phase, yAmp: cfg.yAmp };
+    group.add(sh);
+    tradeShuttles.push(sh);
+  }
+
+  return { group, slotMeshes, station, beltPoints, tradeShuttles };
 }
 
 export interface PlanetScaleNodes {
@@ -207,6 +243,9 @@ export interface PlanetScaleNodes {
   readonly limbMesh: THREE.Mesh;
   readonly cloudsMesh: THREE.Mesh;
   readonly cirrusMesh: THREE.Mesh;
+  readonly eclipticRing: THREE.Mesh;
+  readonly polarRing: THREE.Mesh;
+  readonly orbitalBeacons: THREE.Mesh[];
   readonly satellites: THREE.Group[];
   readonly tileMarkers: PlanetSectorMarker[];
   readonly pinGroup: THREE.Group;
@@ -221,21 +260,21 @@ export function buildPlanetScaleGroup(initialTier: AtmosphereTier): PlanetScaleN
   // High-detail PBR Exo-Planet surface (96x64 smooth silhouette, albedo + normal + bump + ocean specular + night-terminator city lights)
   const { map, normalMap, bumpMap, roughnessMap, emissiveMap } = createPlanetSurfaceTextures(initialTier);
   const nightUniforms = {
-    uSunDir: { value: new THREE.Vector3(0.65, 0.55, 0.52).normalize() },
+    uSunDir: { value: new THREE.Vector3(17, 9, 11).normalize() },
   };
   const surfaceMat = new THREE.MeshStandardMaterial({
     map,
     normalMap,
-    normalScale: new THREE.Vector2(0.75, 0.75),
+    normalScale: new THREE.Vector2(1.05, 1.05),
     bumpMap,
-    bumpScale: 0.14,
+    bumpScale: 0.2,
     roughnessMap,
     roughness: 1.0,
-    metalness: 0.06,
-    envMapIntensity: 0.48,
-    emissive: new THREE.Color('#ffd3a8'),
+    metalness: 0.08,
+    envMapIntensity: 0.64,
+    emissive: new THREE.Color('#ffcf96'),
     emissiveMap,
-    emissiveIntensity: 1.05,
+    emissiveIntensity: 1.38,
   });
   surfaceMat.userData.nightUniforms = nightUniforms;
   surfaceMat.onBeforeCompile = (shader) => {
@@ -331,10 +370,32 @@ export function buildPlanetScaleGroup(initialTier: AtmosphereTier): PlanetScaleN
   polarRing.rotation.x = 0.45;
   group.add(polarRing);
 
-  // Twin orbiting telemetry satellites
+  // Twin orbiting telemetry satellites + 3 luminous orbital relay pulse beacons
   const sat1 = buildPlanetarySatellite(0xf43f5e);
   const sat2 = buildPlanetarySatellite(0xe879f9);
   group.add(sat1, sat2);
+
+  const orbitalBeacons: THREE.Mesh[] = [];
+  const beaconGeo = new THREE.OctahedronGeometry(0.065, 0);
+  const beaconColors = [0x38bdf8, 0xfb7185, 0x34d399];
+  for (let i = 0; i < 3; i++) {
+    const beacon = new THREE.Mesh(
+      beaconGeo,
+      new THREE.MeshBasicMaterial({
+        color: beaconColors[i] ?? 0x38bdf8,
+        transparent: true,
+        opacity: 0.9,
+      }),
+    );
+    beacon.userData = {
+      orbitR: radius * (1.26 + i * 0.06),
+      speed: (i % 2 === 0 ? 1 : -1) * (0.48 + i * 0.14),
+      phase: i * 2.1,
+      tilt: i === 1 ? 0.55 : -0.22,
+    };
+    group.add(beacon);
+    orbitalBeacons.push(beacon);
+  }
 
   // 72 sleek flush Astrometric Geodesic Reticle Beacons (replaces chunky hexagons)
   const { tileMarkers, tileDirections } = buildPlanetSectorMarkers(group, radius);
@@ -352,6 +413,9 @@ export function buildPlanetScaleGroup(initialTier: AtmosphereTier): PlanetScaleN
     limbMesh,
     cloudsMesh,
     cirrusMesh,
+    eclipticRing,
+    polarRing,
+    orbitalBeacons,
     satellites: [sat1, sat2],
     tileMarkers,
     pinGroup,
@@ -449,6 +513,7 @@ export interface CityScaleNodes {
   readonly pondNormalMap: THREE.CanvasTexture;
   readonly streetlampMat: THREE.MeshStandardMaterial;
   readonly atmoMotes: THREE.Points;
+  readonly harborBuoys: readonly THREE.Group[];
 }
 
 function sampleTerrainHeight(x: number, z: number): number {
@@ -546,86 +611,215 @@ export function buildCityScaleGroup(
   waterBayMesh.visible = hasOcean;
   group.add(waterBayMesh);
 
-  // 4. Linear Elevated Maglev Sky-Rail Viaducts (Zero circular bullseye tracks)
+  // 4. Organic Curving Maglev Transit Viaduct & Arched River Bridges (Neither circular nor rectilinear)
   const curbMat = new THREE.MeshStandardMaterial({
-    color: 0xf8eef3,
-    roughness: 0.34,
-    metalness: 0.42,
+    color: 0x3b475c,
+    roughness: 0.28,
+    metalness: 0.72,
+    envMapIntensity: 1.25,
   });
   const civilRailTex = createMaglevRailEmissiveTexture('#00f0ff');
   const accentMat = new THREE.MeshStandardMaterial({
-    color: 0xfb7185,
+    color: 0x38bdf8,
     emissive: 0xffffff,
     emissiveMap: civilRailTex,
-    emissiveIntensity: 0.92,
-    roughness: 0.32,
-    metalness: 0.35,
+    emissiveIntensity: 1.15,
+    roughness: 0.26,
+    metalness: 0.45,
   });
 
-  // Civil E-W Sky-Rail along z = -5.4
-  const viaductTrack = new THREE.Mesh(new THREE.BoxGeometry(20.5, 0.14, 0.28), curbMat);
-  viaductTrack.position.set(0, 0.68, -5.4);
+  // Sweeping S-curved elevated civil sky-rail gliding along the hillside contour
+  const civilCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-10.2, 0.72, -4.4),
+    new THREE.Vector3(-5.2, 0.78, -5.8),
+    new THREE.Vector3(-0.4, 0.72, -4.9),
+    new THREE.Vector3(4.8, 0.76, -6.1),
+    new THREE.Vector3(10.2, 0.72, -4.7),
+  ]);
+  const viaductTrack = new THREE.Mesh(new THREE.TubeGeometry(civilCurve, 44, 0.14, 8, false), curbMat);
+  viaductTrack.scale.set(1, 0.55, 1.15);
+  viaductTrack.castShadow = true;
+  viaductTrack.receiveShadow = true;
   group.add(viaductTrack);
 
-  const viaductGlow = new THREE.Mesh(new THREE.BoxGeometry(20.5, 0.045, 0.09), accentMat);
-  viaductGlow.position.set(0, 0.76, -5.4);
+  const viaductGlow = new THREE.Mesh(new THREE.TubeGeometry(civilCurve, 44, 0.045, 6, false), accentMat);
+  viaductGlow.position.y = 0.09;
   group.add(viaductGlow);
 
-  const pierGeo = new THREE.BoxGeometry(0.16, 0.68, 0.24);
-  for (let x = -9; x <= 9; x += 3) {
+  const pierGeo = new THREE.CylinderGeometry(0.08, 0.13, 0.76, 8);
+  for (let i = 0; i <= 6; i++) {
+    const pt = civilCurve.getPoint(i / 6);
     const pier = new THREE.Mesh(pierGeo, curbMat);
-    pier.position.set(x, 0.34, -5.4);
+    pier.position.set(pt.x, pt.y * 0.5, pt.z);
+    pier.castShadow = true;
+    pier.receiveShadow = true;
     group.add(pier);
   }
 
-  // Freight N-S Viaduct along x = -5.6
+  // Gently curving hillside freight connector on western ridge
   const freightRailTex = createMaglevRailEmissiveTexture('#ffb800');
   const freightAccentMat = new THREE.MeshStandardMaterial({
     color: 0xf59e0b,
     emissive: 0xffffff,
     emissiveMap: freightRailTex,
-    emissiveIntensity: 0.95,
-    roughness: 0.3,
-    metalness: 0.45,
+    emissiveIntensity: 1.12,
+    roughness: 0.26,
+    metalness: 0.5,
   });
-  const freightTrack = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.14, 18.8), curbMat);
-  freightTrack.position.set(-5.6, 1.04, 0);
+  const freightCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-6.2, 1.05, -9.2),
+    new THREE.Vector3(-5.4, 1.08, -3.5),
+    new THREE.Vector3(-6.5, 1.04, 2.6),
+    new THREE.Vector3(-5.3, 1.02, 8.8),
+  ]);
+  const freightTrack = new THREE.Mesh(new THREE.TubeGeometry(freightCurve, 36, 0.14, 8, false), curbMat);
+  freightTrack.scale.set(1.1, 0.55, 1);
+  freightTrack.castShadow = true;
+  freightTrack.receiveShadow = true;
   group.add(freightTrack);
 
-  const freightGlow = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.045, 18.8), freightAccentMat);
-  freightGlow.position.set(-5.6, 1.12, 0);
+  const freightGlow = new THREE.Mesh(new THREE.TubeGeometry(freightCurve, 36, 0.042, 6, false), freightAccentMat);
+  freightGlow.position.y = 0.09;
   group.add(freightGlow);
 
-  const freightPierGeo = new THREE.BoxGeometry(0.22, 1.04, 0.16);
-  for (let z = -8; z <= 8; z += 4) {
+  const freightPierGeo = new THREE.CylinderGeometry(0.09, 0.14, 1.06, 8);
+  for (let i = 0; i <= 5; i++) {
+    const pt = freightCurve.getPoint(i / 5);
     const pier = new THREE.Mesh(freightPierGeo, curbMat);
-    pier.position.set(-5.6, 0.52, z);
+    pier.position.set(pt.x, pt.y * 0.5, pt.z);
+    pier.castShadow = true;
+    pier.receiveShadow = true;
     group.add(pier);
   }
 
-  // 4c. Orthogonal City Block Expansion Pads (16 rectangular urban block foundations)
-  const blockPadGeo = new THREE.BoxGeometry(2.05, 0.04, 2.05);
-  const hexPadTex = createHexPadPbrTextures('#00f0ff');
-  const blockPadMat = new THREE.MeshStandardMaterial({
-    map: hexPadTex.map,
-    normalMap: hexPadTex.normalMap,
-    normalScale: new THREE.Vector2(0.7, 0.7),
-    roughnessMap: hexPadTex.roughnessMap,
-    roughness: 1.0,
-    metalness: 0.42,
-    emissive: 0xffffff,
-    emissiveMap: hexPadTex.emissiveMap,
-    emissiveIntensity: 0.4,
-    transparent: true,
-    opacity: 0.76,
+  // 4b. Arched Architectural Bridges Crossing the Meandering River Canal + Coastal Harbor Piers
+  const bridgeStoneMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.58, metalness: 0.28 });
+  const bridgePositions: readonly { x: number; z: number; rotY: number }[] = [
+    { x: -3.2, z: 3.1, rotY: 0.16 },
+    { x: 0.6, z: 4.35, rotY: -0.22 },
+  ];
+  for (const bp of bridgePositions) {
+    const bridgeGroup = new THREE.Group();
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.08, 1.65), bridgeStoneMat);
+    deck.position.y = 0.18;
+    deck.castShadow = true;
+    deck.receiveShadow = true;
+    const archL = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.04, 6, 18, Math.PI), curbMat);
+    archL.position.set(-0.36, 0.16, 0);
+    archL.rotation.y = Math.PI / 2;
+    const archR = archL.clone();
+    archR.position.x = 0.36;
+    bridgeGroup.add(deck, archL, archR);
+    bridgeGroup.position.set(bp.x, 0, bp.z);
+    bridgeGroup.rotation.y = bp.rotY;
+    group.add(bridgeGroup);
+  }
+
+  // Coastal harbor piers jutting naturally into the SE bay
+  const pierDeckMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.62, metalness: 0.32 });
+  for (const [px, pz, rot] of [[4.7, 5.2, -0.58], [6.1, 3.8, -0.42]] as const) {
+    const harborPier = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.1, 2.35), pierDeckMat);
+    harborPier.position.set(px, 0.05, pz);
+    harborPier.rotation.y = rot;
+    harborPier.receiveShadow = true;
+    group.add(harborPier);
+  }
+
+  // 4c. Realistic Organic Urban Infill Fabric (Terraced mid-rise neighborhood blocks along natural topography)
+  const infillPalettes = [
+    new THREE.MeshStandardMaterial({ color: 0xd6cfc7, roughness: 0.64, metalness: 0.12 }), // Warm limestone
+    new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.42, metalness: 0.48 }), // Slate glass
+    new THREE.MeshStandardMaterial({ color: 0xb8a394, roughness: 0.68, metalness: 0.1 }),  // Terracotta stone
+    new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.32, metalness: 0.62 }), // Obsidian solar glass
+  ];
+  const roofGardenMat = new THREE.MeshStandardMaterial({ color: 0x2a7a56, roughness: 0.82, metalness: 0.04 });
+  const solarRoofMat = new THREE.MeshStandardMaterial({
+    color: 0x0f2942,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.18,
+    roughness: 0.22,
+    metalness: 0.78,
   });
-  for (let gx = -1; gx <= 2; gx++) {
-    for (let gz = -1; gz <= 2; gz++) {
-      const wx = gx * 3.1 - 0.6;
-      const wz = gz * 3.1 - 0.6;
-      if (wx > 3.6 && wz > 3.2) continue; // Keep SE coastal bay unobstructed
-      const pad = new THREE.Mesh(blockPadGeo, blockPadMat);
-      pad.position.set(wx, 0.01, wz);
+
+  const organicBlocks: readonly { x: number; z: number; w: number; d: number; h: number; rot: number; style: number }[] = [
+    { x: -7.1, z: -2.4, w: 0.95, d: 0.68, h: 0.75, rot: 0.18, style: 0 },
+    { x: -6.8, z: -0.9, w: 0.72, d: 1.05, h: 1.05, rot: -0.14, style: 1 },
+    { x: -7.3, z: 1.1, w: 0.88, d: 0.74, h: 0.62, rot: 0.24, style: 2 },
+    { x: -4.4, z: -6.9, w: 1.1, d: 0.66, h: 0.82, rot: -0.22, style: 3 },
+    { x: -2.5, z: -7.1, w: 0.78, d: 0.92, h: 1.18, rot: 0.12, style: 0 },
+    { x: -0.2, z: -6.8, w: 1.05, d: 0.7, h: 0.72, rot: -0.18, style: 1 },
+    { x: 2.2, z: -7.2, w: 0.84, d: 0.88, h: 0.96, rot: 0.26, style: 2 },
+    { x: 4.9, z: -6.9, w: 0.96, d: 0.68, h: 0.68, rot: -0.15, style: 0 },
+    { x: 6.9, z: -4.2, w: 0.74, d: 1.08, h: 1.12, rot: 0.21, style: 3 },
+    { x: 7.3, z: -2.1, w: 0.92, d: 0.76, h: 0.84, rot: -0.28, style: 1 },
+    { x: 7.1, z: 0.4, w: 0.82, d: 0.85, h: 0.64, rot: 0.19, style: 2 },
+    { x: 6.6, z: 2.1, w: 1.02, d: 0.64, h: 0.56, rot: -0.34, style: 0 },
+    { x: -4.5, z: 5.5, w: 0.94, d: 0.72, h: 0.74, rot: 0.22, style: 0 },
+    { x: -2.3, z: 6.2, w: 0.8, d: 0.96, h: 0.92, rot: -0.19, style: 1 },
+    { x: 0.1, z: 6.6, w: 1.08, d: 0.68, h: 0.66, rot: 0.15, style: 2 },
+    { x: 2.4, z: 6.3, w: 0.76, d: 0.84, h: 0.58, rot: -0.27, style: 3 },
+    { x: -4.8, z: -1.8, w: 0.64, d: 0.58, h: 0.54, rot: 0.31, style: 2 },
+    { x: 4.5, z: -2.4, w: 0.7, d: 0.62, h: 0.78, rot: -0.24, style: 1 },
+    { x: 4.2, z: 1.4, w: 0.68, d: 0.64, h: 0.62, rot: 0.29, style: 0 },
+    { x: -1.6, z: 1.6, w: 0.58, d: 0.64, h: 0.52, rot: -0.21, style: 3 },
+  ];
+  const hexPadTex = createHexPadPbrTextures('#00f0ff');
+  const subtleAnchorMat = new THREE.MeshStandardMaterial({
+    map: hexPadTex.map,
+    roughness: 0.72,
+    metalness: 0.28,
+    transparent: true,
+    opacity: 0.34,
+  });
+  for (const blk of organicBlocks) {
+    const baseY = Math.max(0, sampleTerrainHeight(blk.x, blk.z));
+    const bGroup = new THREE.Group();
+    const mat = infillPalettes[blk.style % infillPalettes.length]!;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(blk.w, blk.h, blk.d), mat);
+    body.position.y = blk.h * 0.5;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    bGroup.add(body);
+
+    // Stepped upper terrace penthouse for realistic architectural silhouette
+    if (blk.h >= 0.75) {
+      const upperH = blk.h * 0.34;
+      const upper = new THREE.Mesh(new THREE.BoxGeometry(blk.w * 0.64, upperH, blk.d * 0.68), infillPalettes[(blk.style + 1) % infillPalettes.length]!);
+      upper.position.set(blk.w * 0.08, blk.h + upperH * 0.5, -blk.d * 0.06);
+      upper.castShadow = true;
+      bGroup.add(upper);
+      const cap = new THREE.Mesh(
+        new THREE.BoxGeometry(blk.w * 0.56, 0.04, blk.d * 0.58),
+        blk.style % 2 === 0 ? roofGardenMat : solarRoofMat,
+      );
+      cap.position.set(blk.w * 0.08, blk.h + upperH + 0.02, -blk.d * 0.06);
+      bGroup.add(cap);
+    } else {
+      const roof = new THREE.Mesh(
+        new THREE.BoxGeometry(blk.w * 0.86, 0.04, blk.d * 0.86),
+        blk.style % 2 === 0 ? roofGardenMat : solarRoofMat,
+      );
+      roof.position.y = blk.h + 0.02;
+      bGroup.add(roof);
+    }
+
+    bGroup.position.set(blk.x, baseY, blk.z);
+    bGroup.rotation.y = blk.rot;
+    group.add(bGroup);
+  }
+
+  // Subtle ground shadow anchors under primary district areas (organic non-grid offsets)
+  const anchorGeo = new THREE.CircleGeometry(1.15, 16);
+  anchorGeo.rotateX(-Math.PI / 2);
+  for (let gx = -1; gx <= 1; gx++) {
+    for (let gz = -1; gz <= 1; gz++) {
+      const jitterX = Math.sin(gx * 2.1 + gz * 1.7) * 0.38;
+      const jitterZ = Math.cos(gx * 1.5 - gz * 2.3) * 0.38;
+      const wx = gx * 3.05 - 0.55 + jitterX;
+      const wz = gz * 3.05 - 0.55 + jitterZ;
+      if (wx > 3.6 && wz > 3.2) continue;
+      const pad = new THREE.Mesh(anchorGeo, subtleAnchorMat);
+      pad.position.set(wx, 0.008, wz);
       pad.receiveShadow = true;
       group.add(pad);
     }
@@ -634,18 +828,18 @@ export function buildCityScaleGroup(
   // 5. Open-Sky Coastal Boulevard Anchors
   group.add(buildOpenSkyPerimeterPylons(7.6));
 
-  // 6. Living Flora (Trees, Cypresses & Garden Shrubs outside the bay & avenues)
-  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x7c5c48, roughness: 0.9 });
+  // 6. Living Flora (Trees, Cypresses & Garden Shrubs — deep solarpunk botanical contrast)
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.92 });
   const leafMats = [
-    new THREE.MeshStandardMaterial({ color: 0x2d8a64, roughness: 0.78 }),
-    new THREE.MeshStandardMaterial({ color: 0x4ca678, roughness: 0.75 }),
-    new THREE.MeshStandardMaterial({ color: 0x67b37e, roughness: 0.72 }),
+    new THREE.MeshStandardMaterial({ color: 0x1b6b4d, roughness: 0.76 }),
+    new THREE.MeshStandardMaterial({ color: 0x2a855c, roughness: 0.72 }),
+    new THREE.MeshStandardMaterial({ color: 0x3f9b6d, roughness: 0.68 }),
   ];
   const flowerMat = new THREE.MeshStandardMaterial({
     color: 0xf472b6,
     emissive: 0xbe185d,
-    emissiveIntensity: 0.14,
-    roughness: 0.65,
+    emissiveIntensity: 0.22,
+    roughness: 0.58,
   });
 
   const trunkGeo = new THREE.CylinderGeometry(0.05, 0.085, 0.42, 6);
@@ -845,6 +1039,42 @@ export function buildCityScaleGroup(
   );
   group.add(atmoMotes);
 
+  // 10b. Coastal Harbor Navigation Buoys bobbing gently in the SE Bay
+  const harborBuoys: THREE.Group[] = [];
+  if (hasOcean) {
+    const buoyBaseGeo = new THREE.CylinderGeometry(0.11, 0.14, 0.16, 8);
+    const buoyMastGeo = new THREE.CylinderGeometry(0.022, 0.032, 0.34, 6);
+    const buoyTipGeo = new THREE.SphereGeometry(0.055, 8, 8);
+    const buoyBaseMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.42, metalness: 0.45 });
+    const buoyCoords: readonly [number, number, number][] = [
+      [6.4, 6.2, 0x38bdf8],
+      [8.2, 4.9, 0xf59e0b],
+      [5.5, 8.1, 0x10b981],
+      [8.9, 7.6, 0x38bdf8],
+    ];
+    buoyCoords.forEach(([bx, bz, tipHex], idx) => {
+      const buoy = new THREE.Group();
+      const base = new THREE.Mesh(buoyBaseGeo, buoyBaseMat);
+      const mast = new THREE.Mesh(buoyMastGeo, curbMat);
+      mast.position.y = 0.22;
+      const tip = new THREE.Mesh(
+        buoyTipGeo,
+        new THREE.MeshStandardMaterial({
+          color: tipHex,
+          emissive: tipHex,
+          emissiveIntensity: 1.15,
+          roughness: 0.2,
+        }),
+      );
+      tip.position.y = 0.41;
+      buoy.add(base, mast, tip);
+      buoy.position.set(bx, 0.02, bz);
+      buoy.userData = { phase: idx * 1.45 };
+      group.add(buoy);
+      harborBuoys.push(buoy);
+    });
+  }
+
   const districtsGroup = new THREE.Group();
   const dronesGroup = new THREE.Group();
   group.add(districtsGroup, dronesGroup);
@@ -868,5 +1098,6 @@ export function buildCityScaleGroup(
     pondNormalMap,
     streetlampMat,
     atmoMotes,
+    harborBuoys,
   };
 }

@@ -1,8 +1,8 @@
-# **MASTER BLUEPRINT — EXO WORLD : 2050**
+# **MASTER BLUEPRINT UNIFIÉ — EXO WORLD : 2050**
 
-Identifiant : `DOC-EXW-ARCH-001` \| Version : `v2.12.0-MAITRE` \| Racine Code : `EXOW-ROOT v5.1.0-alpha.1` (`[OBSERVÉ]`) → `v5.2.0 FS4X` (`[CIBLE]`) \| Date : `2026-11-24`  
-Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-JEU-AI-STUDIO SOLO-VS-IA THREEJS-UNITY6 GEMINI-FREE-TIER-STRICT-0USD AUTO-TURN-TRIGGER 5-DIVISIONS-BIOHEALTH ETHIQUE-THOMISTE MASLOW-5-STRATES EGLISE-DISCERNEMENT-AR19 NF-AFNOR-DMT-SW SKILLS-VCS-ISOLE`  
-\---
+Identifiant : `DOC-EXW-ARCH-001` \| Version : `v2.14.0-MAITRE` \| Racine Code : `EXOW-ROOT v5.1.0-alpha.1` (`[OBSERVÉ]`) → `v5.2.0 FS4X` (`[CIBLE]`) \| Date : `2026-11-25`  
+Balises : `PARTITION-MAITRE DOSSIER-UNIQUE-DOCS-NIVEAU-0 ISO-2145-FRACTAL NORM-EXW-V3-XSC6D-GCUBE5D MATRICES-ICOM-MX16 FMT-EXW-001 APP-JEU-AI-STUDIO SOLO-VS-IA OPT02-APLUS-UNITY6-URP-PRIMARY-THREEJS-WEB GEMINI-FREE-TIER-STRICT-0USD AUTO-TURN-TRIGGER 5-DIVISIONS-BIOHEALTH ETHIQUE-THOMISTE MASLOW-5-STRATES EGLISE-DISCERNEMENT-AR19 NF-AFNOR-DMT-SW SKILLS-VCS-ISOLE EXO-DEV-BRIDGE-3-SURFACES FUP-018-MULTI-FACTOR SOMMAIRE-META-HV`  
+---
 
 # **PARTITION I — CADRE, GOUVERNANCE & SOMMAIRE CONVENTIONNEL**
 
@@ -12,13 +12,13 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-
 
 | Champ Metadonnee | Spécification Technique & Valeurs de Référence | Correspondances |
 | :---- | :---- | :---- |
-| **Titre Officiel du Jeu** | **EXO WORLD : 2050** (Application de Jeu complète sur Google AI Studio \+ Adaptateur Unity 6 URP — pas un OS virtuel) | `1.2`, `3.3`, `AR-12` |
-| **Identifiant & Version** | `DOC-EXW-ARCH-001` · `v2.12.0-MAITRE` (`[OBSERVÉ]` Workspace plat Vite 8 + Express BFF `exo-world-2050@5.1.0-alpha.1`, porte `exo:audit` `17/17 PASS GO` · `[CIBLE]` `v5.2.0 FS4X`) | `6.1`, `11.`, `13.` |
+| **Titre Officiel du Jeu** | **EXO WORLD : 2050** (Application de Jeu complète sur Google AI Studio · **Unity 6 URP Principal (`C#/Shader Graph/Burst/.jslib`) + Aperçu Web Three.js** via `SceneDiffPacket` — `OPT-02 A+`, pas un OS virtuel) | `1.2`, `3.3`, `OPT-02 A+` |
+| **Identifiant & Version** | `DOC-EXW-ARCH-001` · `v2.14.0-MAITRE` · `NORM-EXW v3.0.0` (`XSC-CUBE 6D ⊥ G-CUBE 5D`) — **Document Maître Unifié Unique (Annexes A–N)** sous `/docs/` (`TEMPLATE_MASTER_BLUEPRINT_UNIFIE.md` · `/docs/master-blueprint/` SSoT machine · `/docs/archive/` figée · `[OBSERVÉ]` `exo-world-2050@5.1.0-alpha.1`, porte `exo:audit` `17/17 PASS GO`) | `6.1`, `11.`, `13.`, `15.` |
 | **Architecte Général** | Baptiste Lecoustre (Lead System Architect & Game Director — Approbateur Unique) | `R-25`, `3.1` |
-| **Moteur IA Principal** | **Google Gemini API Exclusif (Free Tier Strict 0 USD)** (`gemini-4-hydrogen`, `gemini-3.1-flash-lite`, `gemini-decision-1` + Repli déterministe transparent, rejet HTTP `403` de tout modèle payant) | `AR-01`, `AR-02`, `R-68`, `R-69` |
-| **Classification Artefacts** | **7 Classes NF EN ISO 7573** : `FEAT` (Fonctionnalités 01..56) · `MOD` (Modules `src/`) · `CMP` (Composants UI/3D) · `PLG` (Plugins/Adapters) · `TLS` (Outils Audit/CLI) · `SCR` (Scripts Sync/Gates) · `EXT` (Connectors Drive/Firebase/SQL) | `NF EN ISO 7573`, `13.` |
+| **Moteur IA Principal** | **Google Gemini API Exclusif (Free Tier Strict 0 USD)** (`gemini-4-hydrogen`, `gemini-3.1-flash-lite`, `gemini-decision-1`, `gemini-embedding-2` + Repli déterministe transparent, rejet HTTP `403` de tout modèle payant) | `AR-01`, `AR-02`, `R-68`, `R-69` |
+| **Classification Artefacts** | **7 Classes NF EN ISO 7573** : `FEAT` (Fonctionnalités 01..56) · `MOD` (Modules `src/`) · `CMP` (Composants UI/3D) · `PLG` (Plugins/Adapters) · `TLS` (Outils Audit/CLI) · `SCR` (Scripts Sync/Gates) · `EXT` (Connectors Drive/Firebase/GitHub/Vercel/SQL) | `NF EN ISO 7573`, `13.`, `15.` |
 | **Référentiels Normatifs** | **DMT-SW**, **NF ISO/IEC/IEEE 42010** (Architecture L0..L8), **NF ISO/IEC 25010** (Qualité & WebKit `< 250 Mo`), **NF ISO/IEC/IEEE 29148** (Exigences `FUP`/`R-01..69`), **NF Z67-100 / NF203 / NF552** (Tests & Coffre SHA-256), SADT/IDEF0, [FMT-EXW-001](https://docs.google.com/document/d/1dDdh7_rzCM5SphH5WyQF8FkkjdPRX-1MzTOUdKveaX4/edit) | `R-06`, `R-11`, `13.` |
-| **Hiérarchie de Vérité** | `1. Contrats Zod (src/contracts/)` → `2. Constantes gelées (src/config/)` → `3. Noyaux Purs & SADT (src/core/, src/systems/)` → `4. App Shell & 3D (src/interfaces/, src/engine3d/)` → `5. Prose & VCS Docs` | `R-01`, `R-09`, `R-12`, `6.2` |
+| **Hiérarchie de Vérité & Source Unifiée** | `1. Contrats Zod (src/contracts/)` → `2. Constantes gelées (src/config/)` → `3. Noyaux Purs & SADT (src/core/, src/systems/)` → `4. App Shell & 3D (src/interfaces/, src/engine3d/)` → `5. Prose Unifiée (/docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md)` *(Note : le Notebook Gemini privé `d937d03d-d9c0-4f71-b89e-45506488e5fb` requiert une session interactive authentifiée `AUTH_REQUIRED` ; le présent fichier unifie 100 % des sources vérifiées du workspace)* | `R-01`, `R-09`, `R-12`, `6.2` |
 
 # **1.2 Spécifications Conventionnelles du Jeu (Fiche GDD Intégrée)**
 
@@ -42,8 +42,8 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-
 | :---- | :---- | :---- |
 | **1\. Runtime & App Shell** | **Google AI Studio Build** · **Next.js 15 (App Router)** · **Turbopack** · **React 19** · **TypeScript 5.7 strict** (`strict`, `noUncheckedIndexedAccess`, zéro `any`) · Stores **Zustand \+ Jotai**. | `R-10`, `3.3`, `FEAT-01` |
 | **2\. Interface Tactile & Audio** | **Tailwind CSS v4** · **Framer Motion** · *Glassmorphisme Bento* à **bords lumière biseautés (`135deg`)** · **Fond SVG dynamique à fondus enchaînés (`1 200 ms`)** · **Web Audio API \+ Web Radio FIP** (5 stations, filtre passe-bas par échelle, repli synthétique `< 500 ms`). | `R-54..65`, `FEAT-02`, `FEAT-05..08` |
-| **3\. Noyau Simulation Pur** | **TypeScript 100 % pur** (`src/core/`, `src/systems/`) \+ miroir optionnel **C++17** (`.wasm` Web & plugin natif **Unity Burst/IL2CPP**) · `PCG32`, boucle SADT `A3`, `StateHash` `SHA-256` bit-à-bit, zéro I/O. | `R-13`, `R-66`, `R-67`, `FEAT-41`, `FEAT-48` |
-| **4\. Rendu 3D Dual-Adapter** | **Adaptateur A :** **Three.js r170+ / React Three Fiber v9** (WebGL2/WebGPU, preview Google AI Studio & Web Mobile léger).  **Adaptateur B :** **Unity 6 URP** (`C#` \+ Shader Graph \+ `.jslib` / Metal & Vulkan Natif) via contrat unique `SceneDiffPacket`. | `R-15`, `FEAT-43..46`, `AR-12` |
+| **3\. Noyau Simulation Pur** | **TypeScript 100 % pur** (`src/core/`, `src/systems/`) \+ miroir optionnel **C++17** (`.wasm` Web) · `PCG32`, boucle SADT `A3`, `StateHash` `SHA-256` bit-à-bit, zéro I/O. | `R-13`, `R-66`, `R-67`, `FEAT-41`, `FEAT-48` |
+| **4\. Rendu 3D AAA Dual-Adapter** | **Adaptateur Souverain (`OPT-02 A+`) :** **Unity 6 URP Principal** (`C#` / Shader Graph / Burst / `.jslib` / Addressables) **+ Aperçu Web Three.js WebGL2/WebGPU** (ACES Filmic, `RoomEnvironment` IBL, éclairage 3 points, ville organique non-circulaire/non-rectiligne, shaders Rayleigh/Mie, contrat `SceneDiffPacket`). | `R-15`, `OPT-02 A+`, `FEAT-43..46` |
 | **5\. Cloud, Persistance & RAG SQL** | **Firebase Authentication obligatoire** (JWT, zéro hors-ligne, zéro Supabase) \+ **Cloud Firestore** (profils, lobbies temps réel, sessions) \+ **Cloud SQL PostgreSQL 16** (`Drizzle ORM`, **`pgvector`**, `turn_snapshots` GZIP, `chronicle_turns`). | `R-11`, `AR-01`, `FEAT-42` |
 | **6\. Intelligence Artificielle** | **Google Gemini API Exclusif** (`Add Gemini Intelligence` \+ `Add High Thinking`, Dual-Pass `temp 0.70 / 0.0`) \+ **Sas Zod \+ Tri Kahn \+ Parcours BFS** \+ **Gemini Free Tier Strict Governor** (bornage `[-0.15, +0.15]`, bascule déterministe si quota ou `> 6 000 ms`). | `R-68`, `R-69`, `AR-02`, `FEAT-13..15`, `FEAT-47` |
 | **7\. Skills Google AI Studio Actifs** | `Create Game` · `Three.js 3D` · `Add Database and Auth` · `Add SQL Database` · `Add Gemini Intelligence` · `Add High Thinking` *(exclusion explicite de `Chatbot` et `Google Chat`)*. | `3.2`, `AR-01`, `AR-02` |
@@ -57,89 +57,128 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-
 * [DOC-AST-ARCH-001 — Projet Astralis v1.2.0](https://docs.google.com/document/d/1QSbm5s7i0Gi4Ezzy0O31SQUvUYhygSGbt5NIe2PUNHM/edit) (15 Nov 2026 : App Shell 8 écrans, `PCG32`, `SHA-256`, AR-12 DAG 5 paliers, AR-13 RAG Hybride) — Séparation nette de partition établie pour EXO WORLD : 2050 \+ branches dérivées (*ASTRALIS : SOVEREIGN METROPOLIS*, [DOC-VITA-ARCH-001 — VITA-FORGE v1.0.0](https://docs.google.com/document/d/1v-3KhhDldApqL1PvoJU68fpDImTdUFC2O-3QuQEKXIc/edit), *Astralis : Genesis Ultra* & continuité réservée *Astralis vMax v7..v10*).  
 * **EXO WORLD : 2050 (`DOC-EXW-ARCH-001` · `v2.10.0-MAITRE`)** — Référentiel Maître Partitionné (Nouvelle Partition Maître Vierge) · Conforme à [FMT-EXW-001](https://docs.google.com/document/d/1dDdh7_rzCM5SphH5WyQF8FkkjdPRX-1MzTOUdKveaX4/edit) · Spécification [SPEC-SRC-DOC-EXW-001](https://docs.google.com/document/d/1Fdt2A51XDSlQ4D1xmwbz9n3ZphWW9IOTp25Me9yckfw/edit) · Canal Inter-IA [BUS-EXW-001](https://docs.google.com/document/d/1YJEEnKUu-JEHbjQto5AhLJFMJx4BOzmCyHWIEaqGoTI/edit) & [TIMELINE-TICKETS-EXW-001](https://docs.google.com/document/d/1yxwlYZSnsTNcedgxY8WEvC_-rfmAU_Q7WNbQnbAbZyQ/edit).
 
-# **2\. SOMMAIRE GRANULAIRE FRACTAL CONVENTIONNEL (NORME ISO 2145 — PLAFOND NIVEAU 6\)**
+# **2\. SOMMAIRE GRANULAIRE FRACTAL & PARTITION MÉTADONNÉES MULTI-NIVEAUX (ISO 2145 — VERTICAL × HORIZONTAL)**
 
-1. **2.1 Règle de Profondeur Conventionnelle ISO 2145** : Profondeur restante `D_restant = 6 - k`. Numérotation décimale pure pour le corps (`1.` → `1.1` → `1.1.1` → `1.1.1.1` → `1.1.1.1.1` → `1.1.1.1.1.1`) et notation lettre pour les Annexes (`A.` → `A.1` → `A.1.1`).  
-2. **2.2 Table des Matières Intégrale Partitionnée**  
-3. PARTITION I — CADRE, GOUVERNANCE & SOMMAIRE CONVENTIONNEL  
-   1\. MÉTADONNÉES, DÉFINITION DU JEU, FRAMEWORK & LIGNAGE  
-   1.1 Identification & Gouvernance Documentaire  
-   1.2 Spécifications Conventionnelles du Jeu (Fiche GDD Intégrée)  
-   1.3 Framework & Stack Technique Verrouillée (7 Couches)  
-   1.4 Lignage Historique Complet & Référentiels Sources Drive  
-   2\. SOMMAIRE GRANULAIRE FRACTAL CONVENTIONNEL (NORME ISO 2145 — PLAFOND NIVEAU 6\)  
-   2.1 Règle de Profondeur Conventionnelle ISO 2145  
-   2.2 Table des Matières Intégrale Partitionnée  
-4. PARTITION II — FRAMEWORK APPLICATIF, APP SHELL & SYSTÈMES DU MONDE  
-   3\. FRAMEWORK APPLICATIF, APP SHELL ADAPTÉ (EXO-SHELL), STUDIO AA & ASSETS 3D  
-   3.1 Effectif Studio AA Réel (36 Postes) & Escouade 100 % Gemini  
-   3.2 Architecture Skills Google AI Studio  
-   3.3 Adaptation de l'App Shell d'Astralis à EXO WORLD : 2050 (EXO-SHELL — 8 États Solo)  
-   3.3.1 Tableau de Transposition Astralis → EXO-SHELL  
-   3.3.2 Machine à États de Navigation ASCII  
-   3.3.3 Sélecteurs OPT-SHELL-01..03 Verrouillés  
-   3.4 Bus de Circulation Cybernétique Tri-Voies, Bento Biseauté 135deg (Charte FMT-EXW-001), Fond SVG 1 200 ms, Radio FIP & Budgets GPU/RAM  
-   3.5 Audit Légal & Bibliothèques d'Assets 3D Game-Ready  
-   4\. VISION PRODUIT, HIÉRARCHIE DES INSPIRATIONS & SYSTÈMES DU MONDE  
-   4.1 Hiérarchisation (P1→P4) des 12 Inspirations  
-   4.2 Géopolitique des 6 Superpuissances & Super-Alliance Hors Contrôle  
-   4.3 Slots Planétaires Débloquables (1→6) : Lunes & Exoplanètes Lointaines  
-   4.4 Économie Villes ↔ État, Prêts, Marché, 18 Ressources par Ère (I→VI), Tri-Jauge XP & Succès  
-   4.5 Atmosphère (4 Paliers P1→P4), Météo/Climat, 9 Biomes, Kits Respiratoires & Vitesse PNJ  
-   4.6 Moteur de Combats Déterministe 4 Phases, Unités Militaires Multi-Niveaux (L1–L5), Drones, Datacenters Cyber, Transporteurs & Nomenclature Scientifique  
-   4.7 MOTEUR D'ÉVÉNEMENTS, D'ACTIONS & D'ARBITRAGE PAR DOSSIERS (CŒUR DÉCISIONNEL)  
-   4.7.1 Rôle Central & Typologie (Invariant Maître R-24, Pureté PCG32 vs Gemini High Thinking \+ RAG pgvector)  
-   4.7.2 Les 5 Classes C1..C5, File P0, Initiative Directe (R-33) & Économie PA/Sous-PA (R-26)  
-   4.7.3 Atelier d'Affinage en 3 Étages (Axe New Vegas, Module Anno / Prêt Cities II, Hologramme 3D)  
-   4.7.4 Pipeline Sécurisé, ΔP\_adapt, Tri Kahn, BFS & Horizons d'Échos Différés (TRIGGER\_BUS)  
-   4.8 MOTEUR ÉTHIQUE, PHILOSOPHIQUE (SAINT THOMAS D'AQUIN), PYRAMIDE DE MASLOW & PÉDAGOGIE DU DISCERNEMENT (6 NIVEAUX)  
-   4.8.1 Sources d'Inspiration Philosophiques & Éthiques (Saint Thomas d'Aquin & Traditions Comparées)  
-   4.8.2 Badges de Raisonnement & Posture sur les Choix (ChoiceReasoningBadge)  
-   4.8.3 Intégration de la Pyramide de Maslow & Psychologie Morale aux Colons & Population (C4)  
-   4.8.4 Onglet Paramètres, Configuration & Catalogues : Contexte de Personnalité Utilisateur & Référentiel de Raisonnement (AR-17)  
-   4.8.5 Échelle Pédagogique & Morale à 6 Niveaux — Épreuve de Psychologie Chrétienne & Résultats Observables (AR-18)  
-5. PARTITION III — MOTEUR CENTRAL SADT / IDEF0 & PLAN DIRECTEUR DES CYCLES  
-   5\. ARCHITECTURE SADT / IDEF0 MULTI-NIVEAUX DU MOTEUR CENTRAL DE JEU  
-   5.1 Niveau 0 — Actigramme A-0 (Contexte Boîte Noire Globale)  
-   5.2 Niveau 1 — Actigramme Général A0 (Imbrication des 5 Actigrammes Enfants A1 à A5)  
-   5.3 Niveau 2 — Matrice ICOM Détaillée des Actigrammes Enfants (A1 à A5)  
-   5.4 Formules Déterministes Clés des Actigrammes (A1.2, A2.1, A3.2, A3.6)  
-   5.5 PLAN DIRECTEUR DES CYCLES, SOUS-CYCLES & SOUS-SOUS-CYCLES MULTI-ÉCHELLES  
-   5.5.1 Pyramide Temporelle Imbriquée & Intrication Tour par Tour / Temps Réel (N0 → N5)  
-   5.5.2 Matrice Spatiale Multi-Échelles (S-0 → S-4) & Couplage Vertical  
-   5.5.3 Classification Exhaustive des 10 Familles de Cycles Métier  
-   5.5.4 Matrice Maîtresse de Coordination Globale  
-   5.5.5 Protocole de Synchronisation Déterministe & Anti-Oscillation (R-51, R-66)  
-6. PARTITION V — RÉFÉRENTIELS CATALOGUES, NORMES NF/AFNOR, SKILLS & ROADMAPS (v2.12.0-MAITRE)  
-   8\. CATALOGUE CLASSIFIÉ DES 56 FEATURES (FEAT-01 À FEAT-56)  
-   8.1 Domaine 1 : App Shell, UI Bento Biseauté, SVG & Audio (FEAT-01..FEAT-08)  
-   8.2 Domaine 2 : Dossiers Exécutifs, PA & Oracle Gemini (FEAT-09..FEAT-16)  
-   8.3 Domaine 3 : Gestion, Build Modulaire, Villes, Prêts & Marché (FEAT-17..FEAT-24)  
-   8.4 Domaine 4 : Supervision, Maintenance, 5 Divisions, Biomes & Colons (FEAT-25..FEAT-32)  
-   8.5 Domaine 5 : Super-Alliance, Diplomatie Planétaire, Drones, Cyber & Flottes (FEAT-33..FEAT-40)  
-   8.6 Domaine 6 : Noyau Pur, Cloud SQL/Firebase, Dual-Adapter 3D & FinOps (FEAT-41..FEAT-48)  
-   8.7 Domaine 7 : Éthique Thomiste, Maslow, Pédagogie 6 Niveaux, BioHealth & Église (FEAT-49..FEAT-56)  
-   9\. REGISTRE INTÉGRÉ DES 19 ARBITRAGES (AR-01 À AR-19)  
-   10\. REGISTRE SOUVERAIN DES RÈGLES (R-01 À R-69)  
-   11\. ROADMAP DE PRODUCTION GLOBALE DU JEU (VAGUE 0 → VAGUE 5)  
-   12\. SOUS-ROADMAP DES FEATURES EN COURS DE MISE À JOUR (FUP-PATTERN v1.0)  
-   12.1 Cycle de Vie Normé en 7 Portes (P1\_BACKLOG → P7\_MERGED)  
-   12.2 Gabarit Réutilisable FUP-PATTERN v1.0  
-   12.3 File Active des 16 FUP (FUP-001 à FUP-016)  
-   13\. MATRICE DE CONFORMITÉ NF / AFNOR & DMT-SW (TRAÇABILITÉ EXIGENCES-TESTS)  
-   14\. ARCHITECTURE DES SKILLS MODULAIRES & VCS DOCUMENTAIRE ISOLÉ (DRIVE / FIRESTORE / BFF)  
-8. PARTITION VI — ANNEXES OPÉRATIONNELLES  
-   A. ANNEXE A — SYSTEM INSTRUCTION MAÎTRE POUR GOOGLE AI STUDIO BUILD (PARTITION MAÎTRE VIERGE CLOUD UNIFIÉE)  
-   A.1 Identité & Rôle d'Exécution  
-   A.2 Isolation Stricte de Partition & Synchronisation Cloud Unifiée (Google AI Studio \+ Gemini \+ Antigravity)  
-   A.3 Stack Verrouillée & Frontières de Couches (L0→L8)  
-   A.4 Invariants Bloquants de Code (R-01 à R-69)  
-   A.5 Protocole de Réponse & Livraison Incrémentale  
-   B. ANNEXE B — PROTOCOLE D'ISOLATION, DOSSIER CLOUD MAÎTRE UNIFIÉ & CRÉATION DE LA PARTITION (VS ASTRALIS)  
-   C. ANNEXE C — PROTOCOLE DE DÉLÉGATION & SUPERVISION MULTI-IA (GEMINI LEAD → GOOGLE AI STUDIO / CLAUDE / ANTIGRAVITY)  
-   D. ANNEXE D — PROMPT D'AMORÇAGE VAGUE 0 (BOOTSTRAPPING SRC/ VIERGE DANS GOOGLE AI STUDIO)
+## **2.1 Règle de Profondeur Verticale (`V0..V3`) & Axes de Partition Horizontale (`H-*`)**
 
-\---
+* **Niveaux Verticaux (`V0 → V3`, Plafond ISO 2145 `D_restant = 6 - k`) :**
+  * `V0` : **Partition Maître** (`PARTITION I..VI`) — Macro-domaine structurant.
+  * `V1` : **Chapitre / Annexe** (`1..15`, `A..N`) — Unité normative autonome.
+  * `V2` : **Sous-Section** (`X.Y`, `A.1..N.1`) — Sous-système ou contrat fonctionnel.
+  * `V3` : **Granule Technique** (`X.Y.Z`) — Matrice, formule, module dossier ou arbitre verrouillé.
+* **Axes Horizontaux (`H-AXIS`, transversalité inter-couches) :**
+  * `H-GOV` (Gouvernance, Normes NF/AFNOR, RBAC, Règles `R-01..69`, FUP)
+  * `H-GAME` (Gameplay, Dossiers PA, Multi-Facteurs `FUP-018`, Bilan 4 Pôles, Éthique, Économie, Guerre)
+  * `H-SIM` (Noyau Pur SADT/IDEF0, Cycles `N0..N5`, `PCG32`, `SHA-256`)
+  * `H-3D` (Rendu 3D AAA `OPT-02 A+` Unity 6 URP Principal + Aperçu Web Three.js, Ville Organique, Shaders, Caméra 3 Échelles, Audio)
+  * `H-ARCH` (Arborescence `src/`, Couches `L0..L8`, Matrices ICOM `SM-01..06`, Migration Monorepo)
+  * `H-DATA` (Firebase, Firestore Rules, Cloud SQL `pgvector`, Gemini Free Tier 0 USD, SSoT `M0/M13`)
+  * `H-OPS` (Skills Modulaires, VCS Docs, `EXO-DEV-BRIDGE` 3 Surfaces, Bus Inter-IA, Playtest/Bêta)
+
+## **2.2 Table des Matières Intégrale avec Partition Métadonnées par Section (Tous Niveaux H × V)**
+
+| ID Section | Niveau V | Axe H | Titre de la Section / Sous-Section / Annexe | Couches | SemVer | Statut | Owner |
+| :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- |
+| `PART-I` | `V0` | `H-GOV` | **PARTITION I — CADRE, GOUVERNANCE & SOMMAIRE CONVENTIONNEL** | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `1.` | `V1` | `H-GOV` | 1. Métadonnées, Définition du Jeu, Framework & Lignage | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `1.1` | `V2` | `H-GOV` | 1.1 Identification & Gouvernance Documentaire (`DOC-EXW-ARCH-001`) | `L0/L8` | `2.14.0` | `VERROUILLÉ` | `Lead Architect` |
+| `1.2` | `V2` | `H-GAME` | 1.2 Spécifications Conventionnelles du Jeu (Fiche GDD Intégrée) | `L1..L3` | `2.14.0` | `ACTIF` | `Game Director` |
+| `1.3` | `V2` | `H-ARCH` | 1.3 Framework & Stack Technique Verrouillée (7 Couches · 100 % Three.js) | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `Lead Architect` |
+| `1.4` | `V2` | `H-GOV` | 1.4 Lignage Historique Complet & Référentiels Sources | `L0` | `2.14.0` | `RÉFÉRENCE` | `Lead Architect` |
+| `2.` | `V1` | `H-GOV` | 2. Sommaire Granulaire Fractal & Partition Métadonnées Multi-Niveaux | `L0..L8` | `2.14.0` | `ACTIF` | `AG-L2-DOC` |
+| `2.1` | `V2` | `H-GOV` | 2.1 Règle de Profondeur Verticale (`V0..V3`) & Axes Horizontaux (`H-*`) | `L0` | `2.14.0` | `NORMATIF` | `AG-L2-DOC` |
+| `2.2` | `V2` | `H-GOV` | 2.2 Table des Matières Intégrale avec Partition Métadonnées (`H × V`) | `L0..L8` | `2.14.0` | `ACTIF` | `AG-L2-DOC` |
+| `PART-II` | `V0` | `H-GAME` | **PARTITION II — FRAMEWORK APPLICATIF, APP SHELL & SYSTÈMES DU MONDE** | `L1..L7` | `2.14.0` | `ACTIF` | `Game Systems` |
+| `3.` | `V1` | `H-3D` | 3. Framework Applicatif, App Shell (`EXO-SHELL`), Studio AA & Pipeline 3D | `L4..L7` | `2.14.0` | `ACTIF` | `AG-L3-3D-PBR` |
+| `3.1` | `V2` | `H-GOV` | 3.1 Effectif Studio AA Réel (36 Postes) & Escouade 100 % Gemini | `L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `3.1.1` | `V3` | `H-GOV` | 3.1.1 Répartition des 6 Pôles Studio & Correspondance Agents Gemini | `L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `3.2` | `V2` | `H-DATA` | 3.2 Architecture Skills Google AI Studio (`Gemini Intelligence` vs `Chatbot`) | `L5/L8` | `2.14.0` | `VERROUILLÉ` | `AI Router` |
+| `3.3` | `V2` | `H-ARCH` | 3.3 Adaptation de l'App Shell d'Astralis (`EXO-SHELL` — 8 États Solo) | `L7` | `2.14.0` | `ACTIF` | `UI Lead` |
+| `3.3.1` | `V3` | `H-ARCH` | 3.3.1 Tableau de Transposition Astralis → `EXO-SHELL` | `L7` | `2.14.0` | `ACTIF` | `UI Lead` |
+| `3.3.2` | `V3` | `H-ARCH` | 3.3.2 Machine à États de Navigation (`EXO-SHELL`) | `L5/L7` | `2.14.0` | `ACTIF` | `UI Lead` |
+| `3.3.3` | `V3` | `H-GOV` | 3.3.3 Sélecteurs `OPT-SHELL-01..03` Verrouillés | `L7` | `2.14.0` | `VERROUILLÉ` | `UI Lead` |
+| `3.4` | `V2` | `H-3D` | 3.4 Bus Tri-Voies, Bento Biseauté `135deg`, SVG `1200ms`, Radio FIP & 3D | `L4/L7` | `2.14.0` | `ACTIF` | `Tech Art` |
+| `3.4.1` | `V3` | `H-SIM` | 3.4.1 Circulation Tri-Voies & Watchdogs (`AR-03`, `R-53`) | `L2/L5` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `3.4.2` | `V3` | `H-3D` | 3.4.2 Direction UI (*Bento Biseauté* + *Fond SVG*) & Budgets WebKit `<250Mo` | `L4/L7` | `2.14.0` | `ACTIF` | `Tech Art` |
+| `3.5` | `V2` | `H-3D` | 3.5 Audit Légal & Bibliothèques d'Assets 3D Three.js PBR | `L4` | `2.14.0` | `ACTIF` | `AG-L3-3D-PBR` |
+| `4.` | `V1` | `H-GAME` | 4. Vision Produit, Hiérarchie des Inspirations & Systèmes du Monde | `L1..L3` | `2.14.0` | `ACTIF` | `Game Director` |
+| `4.1` | `V2` | `H-GAME` | 4.1 Hiérarchisation (`P1→P4`) & Classification des 12 Inspirations | `L1` | `2.14.0` | `VERROUILLÉ` | `Game Director` |
+| `4.2` | `V2` | `H-GAME` | 4.2 Géopolitique des 6 Superpuissances & Super-Alliance (`AR-04`, `R-27`) | `L3` | `2.14.0` | `ACTIF` | `Diplomacy` |
+| `4.3` | `V2` | `H-GAME` | 4.3 Slots Planétaires Débloquables (`1→6`) (`AR-05`) | `L3/L4` | `2.14.0` | `ACTIF` | `World Sim` |
+| `4.4` | `V2` | `H-GAME` | 4.4 Économie Villes ↔ État, Prêts, Marché, 18 Ressources, XP & Succès | `L3` | `2.14.0` | `ACTIF` | `Economy Sim` |
+| `4.5` | `V2` | `H-GAME` | 4.5 Atmosphère (`P1→P4`), 5 Divisions, BioHealth, Météo & Vitesse PNJ | `L3` | `2.14.0` | `ACTIF` | `Biosphere` |
+| `4.5.1` | `V3` | `H-GAME` | 4.5.1 Couplage 5 Divisions Scientifiques, BioHealth (`FEAT-53`) & Cap `P0` (`FEAT-54`) | `L3` | `2.14.0` | `ACTIF` | `Biosphere` |
+| `4.6` | `V2` | `H-GAME` | 4.6 Combats 4 Phases, Unités L1–L5, Drones, Cyber Datacenters & Flottes | `L3` | `2.14.0` | `ACTIF` | `Military Sim` |
+| `4.7` | `V2` | `H-GAME` | 4.7 Moteur d'Événements, Multi-Facteurs (`FUP-018`) & Bilan 4 Pôles | `L3/L7` | `2.14.0` | `ACTIF` | `Dossiers PA` |
+| `4.7.1` | `V3` | `H-GAME` | 4.7.1 Rôle Central & Typologie (Invariant `R-24`, `PCG32` vs Gemini) | `L2/L3` | `2.14.0` | `VERROUILLÉ` | `Dossiers PA` |
+| `4.7.2` | `V3` | `H-GAME` | 4.7.2 Les 5 Classes `C1..C5`, File `P0`, Initiative `R-33` & PA/Sous-PA `R-26` | `L3` | `2.14.0` | `ACTIF` | `Dossiers PA` |
+| `4.7.3` | `V3` | `H-GAME` | 4.7.3 Atelier 3 Étages, Multi-Choix Budgété, Coéquipiers & Bilan 4 Pôles | `L3/L7` | `2.14.0` | `ACTIF` | `Dossiers PA` |
+| `4.7.4` | `V3` | `H-SIM` | 4.7.4 Pipeline Sécurisé, `ΔP_adapt`, Tri Kahn, BFS & `TRIGGER_BUS` | `L2/L5` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `4.8` | `V2` | `H-GAME` | 4.8 Moteur Éthique Thomiste, Pyramide de Maslow & Pédagogie 6 Niveaux | `L3/L7` | `2.14.0` | `ACTIF` | `Ethics Sim` |
+| `4.8.1` | `V3` | `H-GAME` | 4.8.1 Sources Philosophiques & Éthiques (Saint Thomas d'Aquin) | `L1/L3` | `2.14.0` | `ACTIF` | `Ethics Sim` |
+| `4.8.2` | `V3` | `H-GAME` | 4.8.2 Badges de Raisonnement & Posture (`ChoiceReasoningBadge`) | `L3/L7` | `2.14.0` | `ACTIF` | `Ethics Sim` |
+| `4.8.3` | `V3` | `H-GAME` | 4.8.3 Pyramide de Maslow & Psychologie Morale (`C4`) | `L3` | `2.14.0` | `ACTIF` | `Ethics Sim` |
+| `4.8.4` | `V3` | `H-GAME` | 4.8.4 Contexte de Personnalité Utilisateur & Référentiel (`AR-17`) | `L5/L7` | `2.14.0` | `ACTIF` | `Ethics Sim` |
+| `4.8.5` | `V3` | `H-GAME` | 4.8.5 Échelle Pédagogique & Morale à 6 Niveaux (`AR-18`) | `L3` | `2.14.0` | `ACTIF` | `Ethics Sim` |
+| `4.9` | `V2` | `H-GAME` | 4.9 Développement de l'Église & Discernement (`FEAT-55/56`, `AR-19`) | `L3` | `2.14.0` | `ACTIF` | `Ecclesia` |
+| `PART-III` | `V0` | `H-SIM` | **PARTITION III — MOTEUR CENTRAL SADT / IDEF0 & PLAN DES CYCLES** | `L2/L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.` | `V1` | `H-SIM` | 5. Architecture SADT / IDEF0 Multi-Niveaux du Moteur Central | `L2/L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.1` | `V2` | `H-SIM` | 5.1 Niveau 0 — Actigramme `A-0` (Contexte Boîte Noire Globale) | `L2` | `2.14.0` | `VERROUILLÉ` | `Core Engine` |
+| `5.2` | `V2` | `H-SIM` | 5.2 Niveau 1 — Actigramme Général `A0` (`A1..A5`) | `L2/L3` | `2.14.0` | `VERROUILLÉ` | `Core Engine` |
+| `5.3` | `V2` | `H-SIM` | 5.3 Niveau 2 — Matrice ICOM Détaillée (`A1` à `A5`) | `L2/L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.4` | `V2` | `H-SIM` | 5.4 Formules Déterministes Clés (`A1.2`, `A2.1`, `A3.2`, `A3.6`) | `L2/L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.5` | `V2` | `H-SIM` | 5.5 Plan Directeur des Cycles, Sous-Cycles & Sous-Sous-Cycles | `L2/L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.5.1` | `V3` | `H-SIM` | 5.5.1 Pyramide Temporelle Imbriquée (`N0 → N5`, `AUTO_TURN_TRIGGER`) | `L2` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.5.2` | `V3` | `H-3D` | 5.5.2 Matrice Spatiale Multi-Échelles (`S-0 → S-4`) & Couplage Vertical | `L2/L4` | `2.14.0` | `ACTIF` | `World Sim` |
+| `5.5.3` | `V3` | `H-SIM` | 5.5.3 Classification Exhaustive des 10 Familles de Cycles Métier | `L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.5.4` | `V3` | `H-SIM` | 5.5.4 Matrice Maîtresse de Coordination Globale | `L2/L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `5.5.5` | `V3` | `H-SIM` | 5.5.5 Protocole de Synchronisation Déterministe & Anti-Oscillation (`R-51/66`) | `L2` | `2.14.0` | `VERROUILLÉ` | `Core Engine` |
+| `PART-IV` | `V0` | `H-ARCH` | **PARTITION IV — ARCHITECTURE SRC/ & MATRICES RELATIONNELLES ICOM** | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `6.` | `V1` | `H-ARCH` | 6. Architecture Technique du Code Source (`src/`) & Correspondance Modules | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `6.1` | `V2` | `H-ARCH` | 6.1 Arborescence Unifiée Plate `src/` & Dossier Unique `/docs/` Niveau 0 | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `6.2` | `V2` | `H-ARCH` | 6.2 Développement Détaillé des 22 Dossiers `src/` (`6.2.1` → `6.2.22`) | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `6.2.1..6.2.5` | `V3` | `H-SIM` | `src/contracts` (`L0`), `config` & `data` (`L1`), `core` (`L2`), `systems` (`L3`) | `L0..L3` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `6.2.6..6.2.7` | `V3` | `H-3D` | `src/engine3d` & `src/adapters` (`L4` — Dual-Adapter Unity 6 URP Principal + Three.js Web `OPT-02 A+`) | `L4` | `2.14.0` | `ACTIF` | `AG-L3-3D-PBR` |
+| `6.2.8..6.2.14` | `V3` | `H-ARCH` | `stores`, `services`, `pipelines` (`L5`), `hooks` (`L6`), `components`/`interfaces` (`L7`), `app` (`L8`) | `L5..L8` | `2.14.0` | `ACTIF` | `Full-Stack` |
+| `6.2.15..6.2.22` | `V3` | `H-ARCH` | `bridges`, `parsers`, `triggers`, `dispatchers`, `routers`, `retrievers`, `queues`, `guardrails` | `L0..L8` | `2.14.0` | `ACTIF` | `Core Engine` |
+| `6.3` | `V2` | `H-GOV` | 6.3 Matrice des Dépendances Autorisées & Interdites (`R-02`, `R-13`) | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `exo:audit` |
+| `7.` | `V1` | `H-ARCH` | 7. Système de Matrices Relationnelles, Matrice Centrale & ICOM | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `7.1` | `V2` | `H-ARCH` | 7.1 Architecture du Graphe Matriciel (Modèle en Étoile 3NF Documentaire) | `L0` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `7.2` | `V2` | `H-ARCH` | 7.2 Matrice de Correspondance Centrale (`MC-00` — 7 Référentiels) | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `7.3` | `V2` | `H-ARCH` | 7.3 Sous-Matrices Relationnelles avec Flux ICOM (`SM-01` à `SM-06`) | `L2..L7` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `7.3.1..7.3.6` | `V3` | `H-ARCH` | `SM-01` Décision · `SM-02` Physique · `SM-03` Éco · `SM-04` Militaire · `SM-05` Tech · `SM-06` 6 Espaces | `L2..L7` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `7.4` | `V2` | `H-GOV` | 7.4 Sélecteurs d'Options Verrouillés (`OPT-01` à `OPT-12`, dont `OPT-02 A+`) | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `Game Director` |
+| `7.4.1` | `V3` | `H-GOV` | 7.4.1 Tableau Maître des 12 Sélecteurs (`OPT-01..12`) | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `Game Director` |
+| `7.4.2` | `V3` | `H-GOV` | 7.4.2 Matrice Décisionnelle Pondérée (3 Arbitrages Clés) | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `Game Director` |
+| `PART-V` | `V0` | `H-GOV` | **PARTITION V — RÉFÉRENTIELS CATALOGUES, NORMES NF, SKILLS & ROADMAPS** | `L0..L8` | `2.14.0` | `ACTIF` | `QA & Governance` |
+| `8.` | `V1` | `H-GAME` | 8. Catalogue Classifié des 56 Features (`FEAT-01` à `FEAT-56`) | `L1..L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `8.1..8.7` | `V2` | `H-GAME` | Domaines 1 (Shell/UI) → 7 (Éthique, Maslow, BioHealth, Église) | `L1..L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `9.` | `V1` | `H-GOV` | 9. Registre Intégré des 19 Arbitrages (`AR-01` à `AR-19`) | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `Lead Architect` |
+| `10.` | `V1` | `H-GOV` | 10. Registre Souverain des 69 Règles (`R-01` à `R-69`) | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `exo:audit` |
+| `10.1..10.6` | `V2` | `H-GOV` | `R-01..08` PO · `R-09..23` Structure · `R-24..35` PA · `R-36..50` Physique · `R-51..65` UI · `R-66..69` IA | `L0..L8` | `2.14.0` | `VERROUILLÉ` | `exo:audit` |
+| `11.` | `V1` | `H-OPS` | 11. Roadmap de Production Globale du Jeu (`VAGUE 0` → `VAGUE 5`) | `L0..L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `12.` | `V1` | `H-OPS` | 12. Sous-Roadmap des Features en Cours de Mise à Jour (`FUP-PATTERN v1.0`) | `L0..L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `12.1..12.3` | `V2` | `H-OPS` | 7 Portes (`P1→P7`), Gabarit `FUP-PATTERN`, File Active `FUP-001..018` | `L0..L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `13.` | `V1` | `H-GOV` | 13. Matrice de Conformité NF / AFNOR & DMT-SW (Traçabilité) | `L0..L8` | `2.14.0` | `CONFORME` | `QA Lead` |
+| `14.` | `V1` | `H-OPS` | 14. Architecture des Skills Modulaires & VCS Documentaire Isolé | `L3/L7/L8` | `2.14.0` | `ACTIF` | `AG-L2-DOC` |
+| `15.` | `V1` | `H-OPS` | 15. Espace Dev & Connectivité Multi-Surfaces (`EXO-DEV-BRIDGE`) | `L3/L7/L8` | `2.14.0` | `ACTIF` | `DevOps Lead` |
+| `PART-VI` | `V0` | `H-OPS` | **PARTITION VI — ANNEXES OPÉRATIONNELLES COMPILÉES (`A` À `N`)** | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `ANN-A` | `V1` | `H-OPS` | Annexe A — System Instruction Maître Google AI Studio (`A.1..A.5`) | `L0..L8` | `2.14.0` | `ACTIF` | `AI Ops` |
+| `ANN-B` | `V1` | `H-GOV` | Annexe B — Protocole d'Isolation & Partition Maître Vierge (vs Astralis) | `L0/L8` | `2.14.0` | `VERROUILLÉ` | `Lead Architect` |
+| `ANN-C` | `V1` | `H-OPS` | Annexe C — Protocole de Délégation & Supervision Multi-IA | `L8` | `2.14.0` | `ACTIF` | `AI Ops` |
+| `ANN-D` | `V1` | `H-OPS` | Annexe D — Prompt d'Amorçage Vague 0 (Bootstrapping `src/`) | `L0..L8` | `2.14.0` | `ARCHIVE-REF` | `AI Ops` |
+| `ANN-E` | `V1` | `H-OPS` | Annexe E — État de Finalisation Vague 0 & Inventaire Partition Maître | `L0..L8` | `2.14.0` | `ARCHIVE-REF` | `Producer` |
+| `ANN-F` | `V1` | `H-ARCH` | Annexe F — Structure `src/` Plate Complète & Profil Runtime (`L0..L8`) | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `ANN-G` | `V1` | `H-3D` | Annexe G — Protocole Miroir 5 Surfaces, Thème Astralis V7 & `ExoTooltip` | `L7` | `2.14.0` | `ACTIF` | `UI Lead` |
+| `ANN-H` | `V1` | `H-SIM` | Annexe H — Playtest Déterministe 6 Tours (`90 Ticks`) & Télémétrie (`H.1..H.2`) | `L2/L3` | `2.14.0` | `VÉRIFIÉ` | `QA Lead` |
+| `ANN-I` | `V1` | `H-GAME` | Annexe I — Synthèse Bêta-Test P13 (`4,81/5`) & Brief UX *Pax Historia* (`I.1..I.2`) | `L7` | `2.14.0` | `VÉRIFIÉ` | `UX Lead` |
+| `ANN-J` | `V1` | `H-DATA` | Annexe J — Gouvernance RBAC, API Express L8, SSoT `M0/M13` & Firestore (`J.1..J.3`) | `L0/L5/L8` | `2.14.0` | `ACTIF` | `Security Lead` |
+| `ANN-K` | `V1` | `H-ARCH` | Annexe K — Plan de Migration Architecturale (`8 Couches × 8 Tiers`, `K.1`) | `L0..L8` | `2.14.0` | `PROJETÉ` | `Lead Architect` |
+| `ANN-L` | `V1` | `H-OPS` | Annexe L — Changelog Structuré (`Actuel/Demandes/Projeté`) & `FUP_TRACKER` (`L.1..L.2`) | `L0..L8` | `2.14.0` | `ACTIF` | `Producer` |
+| `ANN-M` | `V1` | `H-ARCH` | Annexe M — Référentiel Compilé des Modules Métier, API, 3D & Gouvernance | `L0..L8` | `2.14.0` | `ACTIF` | `Lead Architect` |
+| `ANN-N` | `V1` | `H-OPS` | Annexe N — Directive Live Multi-IA (`SYS-INST-EXW-001`), Bus & Archive | `L8` | `2.14.0` | `ACTIF` | `AI Ops` |
+
+---
 
 # **PARTITION II — FRAMEWORK APPLICATIF, APP SHELL & SYSTÈMES DU MONDE**
 
@@ -174,11 +213,11 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-
 | `BOOT` (Bootloader 3D \+ Check Firebase) | `EXO_BOOT` : Ajoute la détection Dual-Adapter (Three.js / Unity 6\) et le calibrage WebKit Memory Shield (\< 250 Mo). | `src/interfaces/boot/`, `FEAT-01`, `FEAT-46` |
 | `AUTH` (Firebase obligatoire Email/Google) | `EXO_AUTH` : Identique Zero-Trust, création profil Firestore \+ Cloud SQL players \+ initialisation XP Tri-Jauges. | `src/interfaces/auth/`, `R-11` |
 | `MAIN_MENU` (Arrière-plan 3D stellaire) | `EXO_MAIN_MENU` : Arrière-plan 3D de la Terre/Orbite 2050 \+ Fond SVG dynamique \+ aperçu des Succès & Campagnes actives. | `src/interfaces/main-menu/` |
-| `GAME_CONFIG` (Seed, taille galaxie, IA) | `EXO_NEW_SIMULATION` : Choix worldSeed, sélection de la Superpuissance et de la Super-Alliance hors contrôle, planète Slot 1, nombre d'IA concurrentes (1–5), profil de PA, profil Gemini Free Tier Strict, Contexte de Personnalité Utilisateur et Référentiel Éthique/Philosophique de campagne. | `src/interfaces/new-simulation/`, `AR-04`, `AR-07` |
-| `SYSTEM_SETTINGS` (5 onglets) | `EXO_SETTINGS` : 6 onglets adaptés (1. 3D Three.js/Unity 6 ; 2\. Audio & Radio FIP 5 flux ; 3\. Oracle Gemini Free Tier ; 4\. Thème Bento Biseauté \+ Intensité Fond SVG \+ Accessibilité WCAG ; 5\. Contrôles tactiles/clavier ; 6\. Contexte de Personnalité, Référentiels de Raisonnement & Mode Pédagogique \[Éthique Thomiste, Maslow, Échelle 6 Niveaux\]). Persisté dans Firestore (users/{uid}/settings) et injecté en lecture seule dans le StateBrief Gemini (AR-17, AR-18). | `src/interfaces/system-settings/`, `FEAT-05..08` |
-| `GAME_LOBBY` (Sync Firestore \+ Fil Google Chat) | `EXO_BRIEFING_LOBBY` : Briefing Pré-Lancement Solo (zéro multijoueur v1.0 OPT-12) : récapitulatif worldSeed, fiche des 5 IA rivales, choix Doctrine Humankind, Cabinet initial, init SQL/pgvector. | `src/interfaces/game-lobby/`, `AR-01` |
-| `GAME_SCREEN` (Viewport 3D \+ HUD \+ 3 échelles) | `EXO_GAME_SCREEN` : Viewport 3D plein écran \+ Barre Supérieure (PA Général, File Crises P0, Ressources d'Ère, Prêts/Trésorerie, Horloge Cycle 15 ticks, Radio FIP) \+ Navigation Principale par Onglets Diégétiques (Monde 3D, Dossiers PA C1..C5, Journal & Chronique, Supervision C3, Biomes & Colons C4, Géopolitique & IA C5). | `src/interfaces/game-screen/`, `FEAT-09..11` |
-| `IN_GAME_SUBSCREENS` (6 sous-écrans Astralis) | `EXO_SUBSCREENS` (8 sous-écrans overlay \< 150 ms sans démontage WebGL) : 1\. Atelier d'Affinage 3 Étages & DAG New Vegas ; 2\. Onglet Monde / Villes, Quartiers & Modules Anno 2205 ; 3\. Gestion Planétaire, Slots (1→6) & Atmosphère (P1→P4) ; 4\. Supervision & Maintenance (C3) ; 5\. Cabinet Présidentiel (Sous-PA) & Roster Colons RimWorld ; 6\. Super-Alliance, Diplomatie & Comparateur Humankind ; 7\. Centre Opérations Militaires, Envoi d'Unités Multi-Niveaux (L1–L5), Drones, Datacenters Cyber & Transporteurs ; 8\. Journal/Archives SQL, Pause & Sauvegardes SHA-256. | `src/interfaces/subscreens/`, `FEAT-04`, `FEAT-07` |
+| `GAME_CONFIG` (Seed, taille galaxie, IA) | `EXO_NEW_SIMULATION` : Configurateur Genèse hybride (**Génération Aléatoire en 1 clic** OU **Assistant pas à pas par étapes empilées verticalement**) : planète d'origine avec aperçu visuel des biomes, civilisation de départ, nom du dirigeant/planète/capitale/flotte via **bulles de suggestions cliquables combinatoires** (sélection multiple → propositions proches, suppression persistante, régénération), difficulté, abondance/climat, rivaux (1–5), site d'atterrissage & spécialisation, profil Gemini Free Tier Strict et Contexte Éthique/Philosophique. | `src/interfaces/new-simulation/`, `src/components/config/`, `AR-04`, `AR-07` |
+| `SYSTEM_SETTINGS` (5 onglets) | `EXO_SETTINGS` : 6 onglets adaptés (1. 3D Three.js `0.187.0` / Unity 6 ; 2\. Audio & Radio FIP 5 flux ; 3\. Oracle Gemini Free Tier ; 4\. Thème Bento Biseauté `Astralis Snapshot V7` \+ Intensité Fond SVG \+ Accessibilité WCAG ; 5\. Contrôles tactiles/clavier ; 6\. Contexte de Personnalité, Référentiels de Raisonnement & Mode Pédagogique \[Éthique Thomiste, Maslow, Échelle 6 Niveaux\]) + accès direct vers **Atelier Docs, VCS, Skills & Connectivité Dev**. Persisté dans Firestore (`users/{uid}/settings`) et injecté en lecture seule dans le `StateBrief` Gemini (`AR-17`, `AR-18`). | `src/interfaces/system-settings/`, `src/interfaces/DocsSkillsHubScreen.tsx`, `FEAT-05..08` |
+| `GAME_LOBBY` (Sync Firestore \+ Fil Google Chat) | `EXO_BRIEFING_LOBBY` : Briefing Pré-Lancement Solo (zéro multijoueur v1.0 `OPT-12`) : récapitulatif `worldSeed`, fiche des 5 IA rivales, choix Doctrine *Humankind*, Cabinet initial avec portraits & badges spécialité, init SQL/Firestore. | `src/interfaces/game-lobby/`, `AR-01` |
+| `GAME_SCREEN` (Viewport 3D \+ HUD \+ 3 échelles) | `EXO_GAME_SCREEN` : Viewport 3D `Three.js 0.187.0` PBR / Rayleigh-Mie plein écran \+ Barre Supérieure (PA Général, File Crises `P0`, Ressources d'Ère, Prêts/Trésorerie, Horloge Cycle 15 ticks, Radio FIP) \+ Navigation Principale stricte 3 Onglets (`Monde`, `Événements` avec **badges d'entités cliquables ultra-compacts alignés à l'interligne**, `Journal`) avec modales d'inspecteur isolé 135°. | `src/interfaces/game-screen/`, `src/components/hud/`, `FEAT-09..11` |
+| `IN_GAME_SUBSCREENS` (6 sous-écrans Astralis) | `EXO_SUBSCREENS` (8 sous-écrans overlay `< 150 ms` sans démontage WebGL + **Atelier Docs, VCS, Skills & Connectivité 3 Surfaces** accessible depuis Menu Principal et Paramètres) : 1\. Atelier d'Affinage 3 Étages & DAG *New Vegas* ; 2\. Onglet Monde / Villes, Quartiers 24-Hex & Modules *Anno 2205* ; 3\. Gestion Planétaire, Slots (`1→6`) & 5 Divisions Scientifiques (`EXOSPHERE_0..TROPOSPHERE_4`) ; 4\. Supervision & Maintenance (`C3`) ; 5\. Cabinet Présidentiel (Sous-PA) & Roster Colons *RimWorld* ; 6\. Super-Alliance, Diplomatie Planétaire, Église Catholique & Comparateur *Humankind* ; 7\. Centre Opérations Militaires 4 Théâtres (`L1–L5`), Drones, Datacenters Cyber & Transporteurs ; 8\. Journal/Archives SQL, Simulateur 6 Tours & Sauvegardes `SHA-256`. | `src/interfaces/subscreens/`, `src/interfaces/DocsSkillsHubScreen.tsx`, `FEAT-04`, `FEAT-07` |
 
 ## **3.3.2 Machine à États de Navigation (`EXO-SHELL`)**
 
@@ -230,8 +269,9 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-
 
 ## **3.4.2 Direction UI (*Bento Biseauté* \+ *Fond SVG*) & Budgets Matériels**
 
-* **Bento à bords lumière biseautés conforme à FMT-EXW-001 (FEAT-05) :** Double bordure directionnelle `135deg` (arête supérieure lumineuse `45 %` \+ ombre basse `10 %`) \+ filet spéculaire `1 px` codé par la [**Nouvelle Légende Chromatique Officielle FMT-EXW-001**](https://docs.google.com/document/d/1dDdh7_rzCM5SphH5WyQF8FkkjdPRX-1MzTOUdKveaX4/edit) : **Corail Alerte (\#F43F5E)** pour Crises `P0` · **Or Solaire (\#F59E0B)** pour Scénario/Quêtes `C1` · **Cyan Orbital (\#0EA5E9)** pour Gestion/Build `C2` · **Cuivre Technique (\#FB923C)** pour Supervision/Maintenance `C3` · **Émeraude Biosphère (\#10B981)** pour Biomes/Atmo/Colons `C4` · **Indigo Stratégique (\#6366F1)** pour Politique/Alliance/Militaire/Cyber `C5` · **Ardoise Télémétrique (\#94A3B8)** pour Journal/SQL · **Platines (\#E2E8F0)** & **Accent Cyan (\#22D3EE)** pour Profil Joueur & Personnage Incarné.  
-* **Fond SVG Dynamique (`FEAT-06`) :** Fondus enchaînés (`1 200 ms`) glissant visuellement selon le palier atmosphérique (`P1` ocre/cuivre → `P3/P4` cyan/émeraude) et l'état du `TRIGGER_BUS`.  
+* **Bento à bords lumière biseautés conforme à `FMT-EXW-001` & Thème `Astralis Snapshot V7` (`FEAT-05`) :** Double bordure directionnelle `135deg` (arête supérieure lumineuse `45 %` \+ ombre basse `10 %`) \+ filet spéculaire `1 px` sur obsidienne `#050811` / cyan `#00F0FF` / ambre `#FFB800` (sans `backdrop-filter` lourd sur WebGL), codé par la [**Nouvelle Légende Chromatique Officielle FMT-EXW-001**](https://docs.google.com/document/d/1dDdh7_rzCM5SphH5WyQF8FkkjdPRX-1MzTOUdKveaX4/edit) : **Corail Alerte (\#F43F5E)** pour Crises `P0` · **Or Solaire (\#F59E0B)** pour Scénario/Quêtes `C1` · **Cyan Orbital (\#0EA5E9)** pour Gestion/Build `C2` · **Cuivre Technique (\#FB923C)** pour Supervision/Maintenance `C3` · **Émeraude Biosphère (\#10B981)** pour Biomes/Atmo/Colons `C4` · **Indigo Stratégique (\#6366F1)** pour Politique/Alliance/Militaire/Cyber `C5` · **Ardoise Télémétrique (\#94A3B8)** pour Journal/SQL · **Platines (\#E2E8F0)** & **Accent Cyan (\#22D3EE)** pour Profil Joueur & Personnage Incarné.  
+* **Infobulles Contextuelles (`ExoTooltip.tsx`) & Badges d'Entités Ultra-Compacts :** Des infobulles détaillent les formules et écarts (`PA/Sous-PA`, `ΔP_adapt`, `5 Divisions`, `18 Ressources`, `Compute 2x`) au survol comme au toucher prolongé ; dans les événements narratifs, chaque mention d'entité est cliquable sous forme de **badge ultra-compact aligné à la hauteur de ligne (`inline-flex`, `leading-tight`)** ouvrant la modale de fiche associée.  
+* **Fond SVG Dynamique (`FEAT-06`) & Pipeline 3D AAA `Three.js 0.187.0` :** Fondus enchaînés (`1 200 ms`) glissant visuellement selon la division atmosphérique (`EXOSPHERE_0` → `TROPOSPHERE_4`) ; côté WebGL (`src/engine3d/`), `ACESFilmicToneMapping`, IBL `PMREMGenerator + RoomEnvironment`, ciel open-sky Rayleigh + Mie sans aucun dôme (`R-16`), nuages dual-profondeur, lumières de terminateur nocturne, cité **24-Hex** + Double Maglev + 18 piétons waypoints, et socle d'inspection isolé `135°` (`IsolatedInspectorScene`).  
 * **Budgets bloquants (`AR-12`) :** Desktop `60 FPS` (RAM ≤ `512 Mo`, Draw Calls ≤ `160`) · Web Mobile `30–60 FPS` (RAM ≤ `250 Mo` sous *WebKit Memory Shield*, DPR ≤ `1.5`, Draw Calls ≤ `120`) · Natif Unity 6 iOS/Android `60 FPS` (VRAM ≤ `300 Mo`).
 
 # **3.5 Audit Légal & Bibliothèques d'Assets 3D Game-Ready**
@@ -285,14 +325,20 @@ Balises : `PARTITION-MAITRE ISO-2145-FRACTAL MATRICES-ICOM-MX16 FMT-EXW-001 APP-
 * **Ressources par Ère (`I`→`VI`) :** Ère I (Crédits, Énergie, Matériaux, Eau, Vivres, Électronique) → Ère II (+ Carburant Orbital, Alliages Composites, `Compute`, Kits Respiratoires) → Ère III (+ Hélium-3, Terres Rares, Bio-Polymères, Pièces Drones) → Ère IV–VI (+ Supra-conducteurs, Isotopes Exotiques, Bio-Enzymes, `Compute Quantique`, Influence Galactique).  
 * **XP & Succès :** 3 compteurs (`XP Civilisation`, `XP Conseillers & Colons` augmentant la régénération des Sous-PA, `XP Super-Alliance`) \+ Succès à récompenses permanentes.
 
-# **4.5 Atmosphère (4 Paliers & Cycles de Transition), Météo & Productivité PNJ (`AR-11`, `R-39`)**
+# **4.5 Atmosphère (`P1→P4` & 5 Divisions Scientifiques), Simulateur BioHealth, Météo & Productivité PNJ (`AR-11`, `R-39`, `FEAT-53/54`)**
 
-| Palier Atmosphère | Conditions & Impacts Physiques | Vitesse Chantier | Coût Équipements | Moral & PNJ |
+| Palier & Division Scientifique | Conditions, Altitude & Impacts Physiques | Vitesse Chantier | Coût Équipements | Moral & PNJ |
 | :---- | :---- | :---- | :---- | :---- |
-| **Palier `P1` — Hostile** | Radiations, tempêtes abrasives, air toxique. Exo-combinaisons `4h/j` max. | **`-40 %`** | **`+100 %`** | Moral `-15`, fatigue rapide. |
-| **Palier `P2` — Stabilisé** | Pression filtrable, mousses pionnières, masques légers en extérieur. | **`0 %`** | **`-55 %`** | Moral `0`, productivité standard. |
-| **Palier `P3` — Respirable** | Air respirable, biomes actifs, forêts, météo stabilisée. | **`+25 %`** | **`0 %`** | Moral `+20`, boom démographique. |
-| **Palier `P4` — Éden** | Climat régulé idéal, biodiversité riche, biosphère auto-entretenue. | **`+40 %`** | **`0 %`** | Productivité PNJ **`+40 %`**. |
+| **Palier `P1` · `EXOSPHERE_0` (`> 500 km`)** | Radiations intenses, tempêtes abrasives, air toxique. Exo-combinaisons `4 h/j` max (`R-39`). | **`-40 %`** | **`+100 %`** | Moral `-15`, fatigue rapide. |
+| **Palier `P2` · `THERMOSPHERE_1` (`85–500 km`)** | Pression filtrable, mousses pionnières, masques légers en extérieur. | **`0 %`** | **`-55 %`** | Moral `0`, productivité standard. |
+| **Palier `P3` · `MESOSPHERE_2` (`50–85 km`)** | Air respirable, biomes actifs, forêts, météo stabilisée, premier équilibre hydrologique. | **`+25 %`** | **`0 %`** | Moral `+20`, boom démographique. |
+| **Palier `P4` · `STRATOSPHERE_3` (`15–50 km`)** | Stratosphère filtrée UV, climat régulé haute stabilité, écosystèmes pérennes. | **`+35 %`** | **`0 %`** | Productivité PNJ **`+35 %`**. |
+| **Palier `P4+` · `TROPOSPHERE_4` (`0–15 km`)** | Biosphère Éden complète à ciel ouvert (`R-16`), cycle eau/flore/faune autonome. | **`+40 %`** | **`0 %`** | Productivité PNJ **`+40 %`**. |
+
+## **4.5.1 Couplage 5 Divisions Scientifiques, BioHealth (`FEAT-53`) & Plafond Crises `P0` (`FEAT-54`)**
+
+* **Indice Bioclimatique Composite (`src/systems/biosphere-cabinet/bioclimate-health.ts`) :** `BioHealth = clamp[0, 100]( 0.25·QualitéAir + 0.20·Sols + 0.20·Hydrosphère + 0.20·Flore + 0.15·Faune − FreinCatastrophesP0 )`.
+* **Amortisseur Déterministe de Crises (`FEAT-54`) :** Même en régime climatique sévère (`EXOSPHERE_0`), le moteur borne strictement la création simultanée à **`max 2` crises `P0` par cycle `N1`** (`cycle-orchestrator.ts`) afin de préserver la solvabilité en PA (`R-26`).
 
 # **4.6 Drones, Datacenters Cyber, Flotte, Transporteurs & Découvertes (`AR-10`, `AR-16`)**
 
@@ -377,6 +423,11 @@ Dans une finalité **pédagogique**, le jeu rend observables les fruits réels d
 | **6** | **`-2`** | **Très Négative** | Faute grave, cynisme destructeur, mépris de la dignité humaine ou oppression. | Dégradation sévère de la stabilité, escalade de crises `P0`, isolement diplomatique et alerte critique dans le **Journal Pédagogique de Discernement**. |
 
 * **Journal Pédagogique de Discernement (intégré à l'Onglet Journal) :** Permet de relire en fin de cycle ou de campagne le bilan comparatif : *Quel raisonnement (badge) → Quel niveau (1 à 6\) → Quels résultats observés sur les colons (Maslow), l'économie et la paix*.
+
+# **4.9 Développement de l'Église Catholique sur Terre & Discernement de la Volonté du Seigneur (`FEAT-55`, `FEAT-56`, `AR-19`)**
+
+* **4 Axes Ecclésiaux Progressifs (`src/systems/geopolitics/planetary-diplomacy.ts` & `EcclesiaDiscernmentCard.tsx`) :** **Vie Pastorale (`PASTORAL`)**, **Œuvres Caritatives (`CHARITY`)**, **Contemplation (`CONTEMPLATION`)** et **Dialogue Science-Foi (`DIALOGUE`)**. Chaque avancée s'effectue uniquement via des Dossiers Exécutifs conformes à l'invariant `R-24` et au principe de subsidiarité.
+* **Invariant Inviolable de Liberté de Conscience (`100 %`) :** Le champ `freedomOfConscienceScore` reste verrouillé à **`100 %`** en permanence ; aucune sanction fiscale, exclusion sociale ou contrainte civile/religieuse ne peut exister. Le discernement vise le service gratuit du Bien Commun et attribue un degré pédagogique (`lastDiscernmentGrade = +3 Grâce`).
 
 # **PARTITION III — MOTEUR CENTRAL SADT / IDEF0 & PLAN DIRECTEUR DES CYCLES**
 
@@ -541,42 +592,37 @@ Dans une finalité **pédagogique**, le jeu rend observables les fruits réels d
 
 # **6\. ARCHITECTURE TECHNIQUE DU CODE SOURCE (SRC/) & CORRESPONDANCE MODULES**
 
-# **6.1 Arborescence Globale src/ — Dossiers Niveau 0 (Monorepo Google AI Studio \+ Unity 6\)**
+# **6.1 Arborescence Unifiée Plate `src/` & Dossier Unique `/docs/` (Google AI Studio Build + `/docs/master-blueprint/`)**
 
-**Spécification complète de l'arborescence src/ (22 dossiers) et docs/ : [SPEC-SRC-DOC-EXW-001 (v1.0.0)](https://docs.google.com/document/d/1Fdt2A51XDSlQ4D1xmwbz9n3ZphWW9IOTp25Me9yckfw/edit)** (incluant `docs/SYSTEM_INSTRUCTION_LIVE.md` et le miroir `docs/inter-ia/`).
+**Fusion unifiée `/docs/` (`v2.13.0-MAITRE`) :** l'ancien répertoire racine `/master-blueprint/` a été fusionné dans **`/docs/master-blueprint/`** afin que `/docs/` constitue l'unique racine documentaire du projet, avec **`/docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md`** comme Master Blueprint intégral en un seul fichier (Partitions I–V + Annexes A–J) accompagné des manifestes machine (`M0_MetaSemVer.json`, `M13_SADT_Mapping.json`, `contracts-ssot/*.schema.json`, projections Tri-Format). Côté exécution, Google AI Studio Build exécute la racine plate Vite 8 + Express BFF (`server.ts`, `index.html`, `package.json`, `eslint.config.mjs`) alignée 1:1 avec `apps/exo-world/`.
 
 ```
-exo-world-monorepo/
-├── packages/
-│   ├── shared-contracts/            # Types & Zod partagés client/serveur
-│   └── sim-core-cpp/                # Miroir C++17 / WebAssembly Noyau Pur
-├── apps/
-│   ├── unity-client/                # Projet Unity 6 URP (C# + Shader Graph)
-│   └── exo-world/                   # Application Web/Mobile Next.js 15
-│       └── src/
-│           ├── [L0] contracts/      # Schémas Zod & Contrats d'exécution
-│           ├── [L0] parsers/        # Parseurs Zod frontières, payloads Gemini, DAG, snapshots
-│           ├── [L1] config/         # Constantes métier gelées (Object.freeze)
-│           ├── [L1] data/           # Catalogues statiques data-driven
-│           ├── [L2] core/           # Noyau pur déterministe (PCG32, SHA-256, cycle-orchestrator)
-│           │   ├── triggers/        # Watchdogs déterministes, TRIGGER_BUS, AUTO_TURN_TRIGGER, DELAYED_ECHO
-│           │   ├── queues/          # Files canoniques (intent-queue, dossier-p0-queue, build-queue)
-│           │   ├── dispatchers/     # Répartiteurs purs (intent, dossier P0/C1..C5, unités L1-L5 & drones)
-│           │   └── routers/         # Routeur SoT (R-02 <= 3 couches), routeur inter-slots T1-T4
-│           ├── [L2/L5] guardrails/  # Sas Zod, Kahn/BFS, clamp ±15%, Free Tier, WebKit Shield, anti-anomalie R-50
-│           ├── [L3] systems/        # Logique métier pure des 8 noyaux (A3.1..A3.6, A4)
-│           ├── [L4] engine3d/       # Moteur 3D Three.js / R3F (Maps 3D multi-échelles)
-│           ├── [L4] adapters/       # Adaptateurs 3D Three.js ↔ Unity 6 URP
-│           ├── [L4/L5] bridges/     # Ponts isolés (render-bridge 3D, narrative-engine bridge, cloud-sync bridge)
-│           ├── [L5] retrievers/     # Récupérateurs RAG Hybride (pgvector 768d, chronicle_turns, ActionManifest)
-│           ├── [L5] stores/         # État Zustand (WorldState) & Atomes Jotai (UI)
-│           ├── [L5] services/       # Connecteurs Cloud (Firebase, SQL, Gemini, Audio FIP) + cloud-sync.queue
-│           ├── [L5] pipelines/      # Orchestrateurs serveur (RAG -> Gemini -> Parser -> Guardrails -> Trigger)
-│           ├── [L6] hooks/          # Hooks React réutilisables (<= 200 lignes)
-│           ├── [L7] components/     # Composants UI atomiques Bento & Télémétrie
-│           ├── [L7] interfaces/     # Les 8 Écrans EXO-SHELL & 8 Sous-Écrans Overlay
-│           └── [L8] app/            # Next.js 15 App Router & Routes API JWT (/api/*)
-Dossier Drive unifié : SRC_ARCHITECTURE_MODULES (Bridges, Parsers, Triggers, Dispatchers, Routers, Retrievers, Queues, Guardrails)
+exo-world-2050/ (Racine plate AI Studio Build — EXOW-ROOT@5.1.0-alpha.1)
+├── server.ts                         # [L8] Serveur Express port 3000 + vite.middlewares + OAuth GitHub/Drive
+├── firestore.rules & firebase-blueprint.json
+├── docs/                             # DOSSIER DOCUMENTAIRE UNIQUE UNIFIÉ (APP + GAME + SSoT)
+│   ├── DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md  # MASTER BLUEPRINT INTÉGRAL UNIFIÉ (v2.13.0-MAITRE, Annexes A-J)
+│   ├── 00_INDEX_DOCS.md              # Index maître Pôle APP & Pôle GAME
+│   ├── SYSTEM_INSTRUCTION_LIVE.md    # Directives invariantes R-01..R-69 & SYS-INST-EXW-001
+│   ├── master-blueprint/             # Ancien /master-blueprint fusionné ici (M0, M13, Tri-Format, contracts-ssot/)
+│   ├── architecture/                 # Fiches techniques L0..L8, boucle, 3D PBR & 05_SRC_ARBO_AISTUDIO_COMPLETE.md
+│   ├── api-and-db/                   # Documentation /api/*, Firestore & Drive/GitHub OAuth
+│   ├── gameplay/, design/, matrices/ # GDD, UX Pax Historia, MC-00 & SM-01..SM-06
+│   ├── governance/                   # DOC-APP-GOV-001_ROLES_PERMISSIONS_WORKFLOW.md (RBAC 5 rôles)
+│   ├── changelogs/                   # FUP_TRACKER.md, V1_PLAYTEST_HISTOIRE_6_TOURS.md, BETA_FEEDBACK_REPORT.md
+│   └── inter-ia/                     # BUS_MESSAGES.md (BUS-EXW-001), inbox/, outbox/
+├── scripts/                          # exo-audit.ts, export-trifmt.ts, gen-doc-mesh.ts (17/17 PASS GO)
+├── tests/                            # node:test + Vitest (déterminisme, BioHealth, AR-19, VCS, Dev Bridge)
+└── src/                              # 24 Domaines architecturaux (L0 à L8) — 1:1 avec M13_SADT_Mapping.json
+    ├── [L0] contracts/ & parsers/    # Schémas Zod SSoT (dont dev-bridge, skills-vcs, ethics-maslow) & parseurs
+    ├── [L1] config/ & data/          # Constantes gelées (Object.freeze) & catalogues (skills-vcs, blueprint-manifests)
+    ├── [L2] core/ & guardrails/      # PCG32, SHA-256, bus, triggers, queues, dispatchers, routers, Z0/R-50/Kahn
+    ├── [L3] systems/                 # Noyaux métier purs (dossiers, biohealth, économie, combat L1-L5, diplomatie, governance)
+    ├── [L4] engine3d/, adapters/, bridges/ # Three.js 0.187.0 PBR/Rayleigh-Mie, Inspecteur 135°, Unity 6 URP
+    ├── [L5] retrievers/, stores/, services/, pipelines/, doc-sync/, worker/
+    ├── [L6] hooks/                   # Hooks React réutilisables (<= 200 lignes)
+    ├── [L7] components/ & interfaces/# Bento 135° Snapshot V7, ExoTooltip, Configurateur Genèse, DocsSkillsHubScreen (3 ailes)
+    └── [L8] app/api/                 # Routeurs Express BFF (/api/oracle, /api/dev-bridge, /api/doc-governance, /api/docs-vcs)
 ```
 
 # **6.2 Développement Détaillé de Chaque Dossier Niveau 0 & Correspondance Modules Conceptuels**
@@ -811,7 +857,7 @@ Afin d'éviter toute redondance et garantir une mise à jour optimale, la struct
 | `REL-UI-02` | Moteur Événements → Journal SQL | DecisionIntent signé | Rule R-08, Zod Validation | Log immuable & Embedding | Chronicle pgvector Repo |
 | `REL-UI-03` | Journal SQL → Profil État | Historique 15 derniers tours | Comparateur Humankind | Courbes macro-économiques | Time Series Aggregator |
 | `REL-UI-04` | Profil Personnage → Événements | Attributs, Passion, Fatigue | Skill-Checks New Vegas | Modificateur de succès | Pawn Check Engine |
-| `REL-UI-05` | Profil Joueur → Rendu 3D | Settings (Three.js/Unity 6\) | Memory Shield \< 250 Mo | DPR, Shaders & DrawCalls | RenderAdapter Pipeline |
+| `REL-UI-05` | Profil Joueur → Rendu 3D | Settings (Unity 6 URP Principal + Aperçu Three.js) | Memory Shield \< 250 Mo | DPR, Shaders & DrawCalls | RenderAdapter Pipeline |
 | `REL-UI-06` | Profil Joueur → Profil État | worldSeed, Superpuissance | Rules R-11, R-17 (PCG32) | WorldState initialisé | Campaign Bootstrap Engine |
 
 # **7.4.1 Tableau Maître des 12 Sélecteurs d'Options (OPT-01 à OPT-12)**
@@ -819,7 +865,7 @@ Afin d'éviter toute redondance et garantir une mise à jour optimale, la struct
 | ID & Axe | Options Sélectionnables \[x\] / \[ \] | Priorité | Statut | Impact Architecture & Vague |
 | :---- | :---- | :---- | :---- | :---- |
 | `OPT-01`Scope Planétaire | \[x\] A. 1 Planète (Slot 1\) ultra-soignée puis déblocage Slots 2→6 en V3\[ \] B. 2 Mondes (Terre \+ Lune) dès V1\[ \] C. 4 Mondes complets dès V1 | `P1` | **VERROUILLÉ** | Focus V1 sur stabilité 72 tuiles géodésiques de Slot 1\. |
-| `OPT-02`Moteur 3D | \[x\] A. Dual-Adapter (Three.js V1–V4 \-\> Unity 6 URP V5)\[ \] B. 100 % Three.js WebGPU/WebGL2 (zéro Unity) | `P1` | **VERROUILLÉ** | Protocole SceneDiffPacket unique (voir 7.3). |
+| `OPT-02`Moteur 3D | \[x\] A. Dual-Adapter (Three.js V1–V4 \-\> Unity 6 URP V5)\[ \] A+. Unity 6 URP Principal (`C#/Shader Graph/Burst/.jslib/Addressables`) + Aperçu Web Three.js (`SceneDiffPacket`) | `P1` | **VERROUILLÉ** | Protocole SceneDiffPacket unique (voir 7.3). |
 | `OPT-03`Architecture PA | \[x\] A. PA Général \+ 4 Sous-PA Conseillers (fongibilité asymétrique)\[ \] B. PA Général unique \+ réductions passives Conseillers\[ \] C. PA par Planète (Slot) | `P1` | **VERROUILLÉ** | Invariant Souverain R-24 / R-26. |
 | `OPT-04`Build & Économie | \[x\] A. Bâtiments Modulaires Anno (3 extensions) \+ Prêts/Marché Cities II via Dossiers\[ \] B. Placement libre direct sur grille \+ Dossiers pour lois/crises\[ \] C. Macro-zones abstraites sans grille | `P1` | **VERROUILLÉ** | Intégration Anno / Cities II dans Atelier 3 Étages. |
 | `OPT-05`Profondeur Colons | \[x\] A. 12–30 Cadres/Colons nommés individuels \+ masse démographique statistique\[ \] B. Conseillers Présidentiels seuls (4–8 personnages)\[ \] C. Simulation individuelle 100+ colons | `P2` | **VERROUILLÉ** | Optimisation RAM mobile (\< 250 Mo WebKit Shield). |
@@ -828,7 +874,7 @@ Afin d'éviter toute redondance et garantir une mise à jour optimale, la struct
 | `OPT-08`Format Campagne | \[x\] A → C. Campagne rythmée 2h30–4h (6 Ères, 40–60 cycles) suivie du Mode Continuation Bac à Sable Infini (15h+ Post-Victoire)\[ \] B. Runs Roguelite courts 45 min | `P2` | **VERROUILLÉ** | Équilibrage Étoiles d'Ère Humankind (voir 7.3). |
 | `OPT-09`Thème UI Défaut | \[x\] A. Tactical Dark Bento Biseauté \+ bascule Light Anno\[ \] B. Solarpunk Light Anno par défaut\[ \] C. Thème adaptatif automatique selon l'Ère | `P2` | **VERROUILLÉ** | Bords biseautés 135deg (R-57 / R-58). |
 | `OPT-10`Super-Alliance | \[x\] A. IA Autonome au-dessus du joueur \+ déblocages par entraide alliés IA\[ \] B. Assemblée votante où le joueur peut prendre la présidence en Ère V\[ \] C. Indépendance totale (zéro tutelle) | `P1` | **VERROUILLÉ** | Arbitrage géopolitique AR-04 / R-27. |
-| `OPT-11`Noyau C++17 | \[x\] A. Optionnel Vague 5 si besoin perf Unity/Mobile\[ \] B. 100 % TypeScript strict suffisant (Web Workers)\[ \] C. C++17 WASM dès Vague 2 | `P3` | **DIFFÉRÉ** | Miroir optionnel FEAT-48 en Vague 5\. |
+| `OPT-11`Noyau C++17 | \[x\] A. Optionnel Vague 5 si besoin perf WASM/Mobile\[ \] B. 100 % TypeScript strict suffisant (Web Workers)\[ \] C. C++17 WASM dès Vague 2 | `P3` | **DIFFÉRÉ** | Miroir optionnel FEAT-48 en Vague 5\. |
 | `OPT-12`Multijoueur | \[x\] B. 100 % Solo exclusif contre 5 Superpuissances IA rivales en v1.0 (Multijoueur différé v1.1+)\[ \] A. Multijoueur synchrone v1.0 | `P3` | **VERROUILLÉ** | Lobby Firestore FEAT-40 prêt V1, activé V4. |
 
 # **7.4.2 Matrice Décisionnelle Pondérée — Synthèse des 3 Arbitrages Verrouillés**
@@ -1092,48 +1138,59 @@ breaking_change: true | false
 exit_test: "Description du test automatique ou du critère de validation de la porte P6"
 ```
 
-# **12.3 File Active des Features en Cours de Mise à Jour (`FUP-001 à FUP-013`)**
-
-**File Active des Features en Cours de Mise à Jour (`FUP-001 à FUP-016`)**
+# **12.3 File Active des Features en Cours de Mise à Jour (`FUP-001 à FUP-017`)**
 
 | ID FUP | Feature Cible | Statut Actuel | Owner Agent | SADT & Règles Liées | Critère de Passage Porte P6\_QA\_GATE |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| `FUP-001` | `FEAT-03` Bus Tri-Voies | `P2_SPEC_LOCK` | `Gemini-Argon` | `A1.1`, `R-53`, `AR-03` | Schema Zod du `TRIGGER_BUS` validé sans perte de message. |
-| `FUP-002` | `FEAT-10` Économie PA/Sous-PA | `P2_SPEC_LOCK` | `Gemini-Krypton` | `A2.1`, `R-26`, `AR-07` | Formule de régénération vérifiée sur 1000 tirages aleatoires. |
-| `FUP-003` | `FEAT-14` RAG SQL `pgvector` | `P2_SPEC_LOCK` | `Gemini-Titane` | `A5.2`, `R-11`, `AR-01` | Requêtes cosinus 768d s'exécutant sous le seuil des 80 ms. |
-| `FUP-004` | `FEAT-26` Atmosphère `P1→P4` | `P2_SPEC_LOCK` | `Gemini-Krypton` | `A3.2`, `R-39`, `AR-11` | Application correcte des malus de vitesse PNJ en palier `P1`. |
-| `FUP-005` | `FEAT-15` Calculateur ΔP\_adapt | `P2_SPEC_LOCK` | `Gemini-Xénon` | `A1.2`, `R-69`, `AR-09` | Clamping strict de la valeur dans l'intervalle `[-0.20, +0.25]`. |
-| `FUP-006` | `FEAT-01` App Shell `EXO-SHELL` | `P2_SPEC_LOCK` | `Gemini-Silicium` | `A5.3`, `R-10`, `AR-03` | Transition inter-écrans garantie `< 150 ms` sans fuite WebGL. |
-| `FUP-007` | `FEAT-34` Slots Planétaires `1→6` | `P2_SPEC_LOCK` | `Gemini-Hydrogène` | `A4.2`, `R-15`, `AR-05` | Chargement d'un slot secondaire en moins de `650 ms`. |
-| `FUP-008` | `FEAT-36` Cyberguerre & Compute | `P2_SPEC_LOCK` | `Gemini-Argon` | `A3.5`, `R-43..45`, `AR-10` | Capacité Compute 2x vérifiée par rapport aux datacenters adverses. |
-| `FUP-009` | `FEAT-01` App Shell EXO-SHELL (Solo) | `P2_SPEC_LOCK` | `Gemini-Silicium` | `A5.3`, `R-10`, `OPT-SHELL-01..03` | Implémentation des 8 Écrans & Sous-Écrans Overlay \< 150 ms en mode Solo Exclusif. |
-| `FUP-010` | `FEAT-41` Structuration src/ | `P2_SPEC_LOCK` | `Gemini-Argon` | `A0`, `R-13`, `R-19` | Amorçage des dossiers Niveau 0 de src/ et validation ESLint des couches L0..L8. |
-| `FUP-011` | `FEAT-38` Moteur Combats 4P & Unités L1–L5 | `P2_SPEC_LOCK` | `Gemini-Hydrogène` | `A3.6`, `R-47`, `OPT-07 A+` | Validation du Moteur de Combats Déterministe 4 phases et des contrats Zod Unités L1–L5. |
-| `FUP-012` | `FEAT-41` Ordonnanceur N0→N5 / S-0→S-4 | `P2_SPEC_LOCK` | `Gemini-Argon` | `A0 / 5.5`, `R-51`, `R-52` | Test Vitest de frontière simultanée tick 360 avec StateHash identique et amortisseur P0 vérifié. |
-| `FUP-013` | `FEAT-03 / FEAT-41` Intégration 8 Modules Architecture src/ | `P2_SPEC_LOCK` | `Gemini-Argon` | `A0 / 6.2.15..22`, `R-02`, `R-12`, `R-53`, `R-69` | Validation ESLint L0..L8 et tests unitaires sur les 8 modules (Bridges, Parsers, Triggers, Dispatchers, Routers, Retrievers, Queues, Guardrails). |
-| `FUP-014` | Structure docs/ AI Studio, Sync Prioritaire Drive & Bus Inter-IA | `P2_SPEC_LOCK` | `Gemini-Argon` | `6.1, A.2, C., SPEC-SRC-DOC-EXW-001, BUS-EXW-001` | Création docs/SYSTEM\_INSTRUCTION\_LIVE.md, scripts/sync-drive-sot.mjs et miroir docs/inter-ia/ validés sur MSG-003. |
-
-| `FUP-015` | `FEAT-49 / FEAT-50` Moteur Éthique Thomiste & Maslow | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Krypton` | `A2.3 / A3.2`, `AR-18` | Validation Zod des schémas ethics-maslow et tests des 5 strates Maslow. |
-| `FUP-016` | `FEAT-51 / FEAT-52` Onglet 6 & Journal 6 Niveaux | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Silicium` | `A1.3 / A5.3`, `AR-17`, `AR-18` | Persistance de l'Onglet 6 dans Firestore et rendu du Journal de Discernement. |
+| `FUP-001` | `FEAT-03` Bus Tri-Voies | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Argon` | `A1.1`, `R-53`, `AR-03` | Schéma Zod du `TRIGGER_BUS` validé sans perte de message. |
+| `FUP-002` | `FEAT-10` Économie PA/Sous-PA | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Krypton` | `A2.1`, `R-26`, `AR-07` | Formule de régénération vérifiée + option `0-PA` garantie. |
+| `FUP-003` | `FEAT-14` RAG SQL / Firestore | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Titane` | `A5.2`, `R-11`, `AR-01` | Persistance Firestore owner-scoped + snapshots déterministes. |
+| `FUP-004` | `FEAT-26/53` 5 Divisions & `BioHealth` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Krypton` | `A3.2`, `R-39`, `AR-11` | Migration `EXOSPHERE_0..TROPOSPHERE_4` + malus `P1` et cap `2 P0`. |
+| `FUP-005` | `FEAT-15` Calculateur `ΔP_adapt` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Xénon` | `A1.2`, `R-69`, `AR-09` | Clamping strict dans `[-0.15, +0.15]` / `[-0.20, +0.25]`. |
+| `FUP-006` | `FEAT-01` App Shell `EXO-SHELL` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Silicium` | `A5.3`, `R-10`, `AR-03` | Navigation 8 écrans & 3 onglets HUD sans overflow `390x844 px`. |
+| `FUP-007` | `FEAT-34` Slots Planétaires `1→6` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Hydrogène` | `A4.2`, `R-15`, `AR-05` | Déblocage multi-planètes + aperçu biomes & difficulté Genèse. |
+| `FUP-008` | `FEAT-36` Cyberguerre & `Compute` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Argon` | `A3.5`, `R-43..45`, `AR-10` | Capacité `Compute 2x` vérifiée par rapport aux cibles adverses. |
+| `FUP-009` | `FEAT-01` Configurateur Genèse Hybride | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Silicium` | `A5.3`, `R-10`, `OPT-SHELL-01..03` | Génération aléatoire 1 clic OU étapes verticales + bulles combinatoires + badges entités compacts. |
+| `FUP-010` | `FEAT-41` Structuration `src/` `L0..L8` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Argon` | `A0`, `R-13`, `R-19` | `exo:audit` `17/17 PASS GO`, 0 cycle DSM, ESLint `L0..L8` vert. |
+| `FUP-011` | `FEAT-38` Moteur Combats 4P & `L1–L5` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Hydrogène` | `A3.6`, `R-47`, `OPT-07 A+` | 4 Théâtres, 72 secteurs, résolution déterministe 4 phases. |
+| `FUP-012` | `FEAT-41` Ordonnanceur `N0→N5` / `S-0→S-4` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Argon` | `A0 / 5.5`, `R-51`, `R-52` | Tests déterministes `360 ticks` (`PCG32` + `SHA-256` bit-à-bit). |
+| `FUP-013` | `FEAT-03 / FEAT-41` 8 Modules Architecture | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Argon` | `A0 / 6.2.15..22`, `R-02`, `R-12` | `bridges`, `parsers`, `triggers`, `dispatchers`, `routers`, `retrievers`, `queues`, `guardrails`. |
+| `FUP-014` | `FEAT-43/44` Refonte 3D `Three.js 0.187.0` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Néon` | `A5.3`, `R-15`, `R-16` | Sky Rayleigh/Mie open-sky, PBR maps, cité 24-Hex, Double Maglev, Inspecteur `135°`. |
+| `FUP-015` | `FEAT-49 / FEAT-50` Éthique Thomiste & Maslow | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Krypton` | `A2.3 / A3.2`, `AR-18` | Validation Zod `ethics-maslow` + badges 3 niveaux + 5 strates Maslow. |
+| `FUP-016` | `FEAT-51 / FEAT-52 / FEAT-55 / FEAT-56` | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Silicium` | `A1.3 / A5.3`, `AR-17..19` | Onglet 6 lecture seule, Journal 6 Niveaux, Église & `100 %` Liberté de Conscience. |
+| `FUP-017` | **Fusion `/docs` + Blueprint Unique & `EXO-DEV-BRIDGE`** | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Argon` | `A5.4`, `R-01`, `R-14`, `R-68` | Fusion `/master-blueprint` → `/docs/master-blueprint/`, Blueprint `v2.13.0-MAITRE` 1 fichier + 3e aile Connectivité 3 Surfaces (`AI Studio` + `Drive` + `GitHub`) + Bus + Data Agent + Vercel/Firebase. |
+| `FUP-018` | **Événements `4+` Choix Multiples Budgétés & Déblocage Multi-Factoriel** | `P7_MERGED` `[OBSERVÉ]` | `Gemini-Krypton` | `A2.1..A2.3`, `R-24`, `R-26` | `5..10` choix/dossier, mode `BUDGETED_MULTI` (plafonds PA/Crédits), affectation coéquipier (`level`, spécialité) + compétence combinée Conseiller/Équipe + seuils Ère/Tech/Ressources dans `multi-factor-unlock.engine.ts`. |
 
 # **13\. MATRICE DE CONFORMITÉ NF / AFNOR & DMT-SW (TRAÇABILITÉ EXIGENCES-TESTS)**
 
 | Norme / Standard | Intitulé & Référentiel | Périmètre Vérifié `[OBSERVÉ]` | Preuve d'Audit & Automatisation |
 | :---- | :---- | :---- | :---- |
 | **DMT-SW** | **Dossier Technique Logiciel & Traçabilité Exigences-Tests** | Chaîne bidirectionnelle Exigences (`FEAT-01..56`, `R-01..69`) → Modules `src/` → Tests unitaires & Playwright. | `M0..M15`, `npm run exo:audit` (`17/17 PASS GO`), onglet `Conformité NF / AFNOR & DMT-SW` dans `BlueprintAtlasView.tsx`. |
-| **NF ISO/IEC/IEEE 42010** | **Description d’architecture des systèmes et logiciels** | Partitionnement strict en 9 couches `L0..L8`, graphe DSM sans cycle (`0` cycle Kahn) et séparation Sim/3D/BFF. | `eslint.config.mjs` (frontières par couche), `M13_SADT_Mapping.json`, `matrix-engine.ts`. |
+| **NF ISO/IEC/IEEE 42010** | **Description d’architecture des systèmes et logiciels** | Partitionnement strict en 9 couches `L0..L8`, graphe DSM sans cycle (`0` cycle Kahn) et séparation Sim/3D/BFF. | `eslint.config.mjs` (frontières par couche), `docs/master-blueprint/M13_SADT_Mapping.json`, `matrix-engine.ts`. |
 | **NF ISO/IEC 25010** | **Modèle de qualité produit & qualité en utilisation** | Déterminisme bit-à-bit `PCG32`, thème Bento `135deg` WCAG AA, cibles mobiles `≥ 44×44 px`, bouclier RAM WebKit `< 250 Mo`. | `tests/v0-determinism-360-ticks.test.ts`, `tests/safari-webkit.test.ts`, audit Playwright `1440×900` & `390×844`. |
-| **NF ISO/IEC/IEEE 29148** | **Ingénierie des exigences** | Arbitrages verrouillés `AR-01..AR-19`, options `OPT-01..OPT-12`, file active `FUP-001..016` et invariant souverain `R-24`. | Contrats Zod `src/contracts/*.schema.ts` + `DOC-EXW-ARCH-001` (`v2.12.0-MAITRE`). |
-| **NF Z67-100 / NF203 / NF552** | **Cahier de tests, Coffre-fort SHA-256 & Archivage pérenne** | Empreinte `SHA-256` à chaque tour de jeu et à chaque révision documentaire VCS non destructive (`LOCAL`, `REVERT`, `DRIVE_IMPORT`). | `src/core/hashing/state-hasher.ts`, `src/systems/governance/skills-vcs.engine.ts`, `tests/v5-unified-systems.test.ts`. |
+| **NF ISO/IEC/IEEE 29148** | **Ingénierie des exigences** | Arbitrages verrouillés `AR-01..AR-19`, options `OPT-01..OPT-12`, file active `FUP-001..017` et invariant souverain `R-24`. | Contrats Zod `src/contracts/*.schema.ts` + `docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md` (`v2.13.0-MAITRE`). |
+| **NF Z67-100 / NF203 / NF552** | **Cahier de tests, Coffre-fort SHA-256 & Archivage pérenne** | Empreinte `SHA-256` à chaque tour de jeu, révision documentaire VCS (`LOCAL`, `REVERT`, `DRIVE_IMPORT`) et journal tri-surface (`SurfaceSyncLogRecord`). | `src/core/hashing/state-hasher.ts`, `skills-vcs.engine.ts`, `dev-bridge.engine.ts`, `tests/v5-unified-systems.test.ts`. |
 | **NF EN ISO 7573** | **Nomenclature des 7 classes d’artefacts** | Séparation formelle `FEAT`, `MOD`, `CMP`, `PLG`, `TLS`, `SCR`, `EXT` dans l’Atlas et le manifeste `M13`. | `BlueprintAtlasView.tsx`, `scripts/export-trifmt.ts`. |
 
 # **14\. ARCHITECTURE DES SKILLS MODULAIRES & VCS DOCUMENTAIRE ISOLÉ**
 
-La gouvernance documentaire et l’activation des capacités modulaires sont hébergées dans un atelier dédié (`DocsSkillsHubScreen.tsx`, accessible depuis le Menu Principal et les Paramètres) respectant une **séparation stricte** :
+La gouvernance documentaire et l’activation des capacités modulaires sont hébergées dans l’espace dédié **`DocsSkillsHubScreen.tsx`** (accessible depuis le Menu Principal et les Paramètres) respectant une **séparation stricte** :
 
-1. **Registre des 9 Skills Modulaires Autonomes (`SKL-APP-01..03`, `SKL-GAM-01..03`, `SKL-ETH-01`, `SKL-NAR-01..02`)** : chaque skill possède son propre cycle SemVer, son commutateur `Actif / Inactif`, sa configuration JSON typée et référence sa documentation externe uniquement par identifiant `docId` en lecture seule.
+1. **Registre des 9 Skills Modulaires Autonomes (`SKL-APP-01..03`, `SKL-GAM-01..03`, `SKL-ETH-01`, `SKL-NAR-01..02`)** : chaque skill possède son propre cycle SemVer, son commutateur `Actif / Inactif`, sa configuration JSON typée et référence sa documentation externe uniquement par identifiant `docId` en lecture seule (`src/systems/governance/skills-vcs.engine.ts`).
 2. **Contrôle de Version Documentaire (VCS Docs)** : éditeur Markdown dédié, incrément SemVer (`patch` / `minor` / `major`), calcul d’empreinte `SHA-256` pure, historique complet des révisions, comparateur Diff ligne à ligne (`computeLineDiff`) et restauration non destructive (`source = REVERT`).
-3. **Pont Cloud Isolé Google Drive/Docs + Firestore** : import via Google Picker (`DRIVE_IMPORT`), écriture vers Google Drive/Docs systématiquement verrouillée par modale de confirmation explicite utilisateur, et miroir Firestore sécurisé par règles `ownerId` (`docEntries`, `revisions`, `skillRegistry`).
+3. **Gouvernance RBAC 5 Rôles & Workflows Séparés (`doc-governance.engine.ts`)** : distinction stricte entre documentation Application (`APP-*` → `docs/drive-sovereign`) et documentation Jeu (`JEU-*` → `docs/game-assets-mirror`), révisions spécialisées (`TECH_REVIEW`, `SKILLS_REVIEW`, `GAME_REVIEW`) et approbation finale `R-25` (`APPROVE_PUBLISH`).
+
+# **15\. ESPACE DEV & CONNECTIVITÉ MULTI-SURFACES (`EXO-DEV-BRIDGE`)**
+
+Intégré en tant que **3e aile (`Connectivité & Dev (3 Surfaces)`)** dans `DocsSkillsHubScreen.tsx`, l'espace `EXO-DEV-BRIDGE` orchestre la communication et l'écriture synchronisée entre **Google AI Studio Build**, **Google Drive / Docs**, **GitHub**, **Antigravity / Gemini Swarm**, **Firebase** et **Vercel** :
+
+| Composant / Module | Couche | Rôle Technique & Sécurité |
+| :---- | :---- | :---- |
+| `src/contracts/dev-bridge.schema.ts` | `L0` | Contrats Zod des messages bus (`DevSurfaceActor`, `DevCommsMessage`), journaux tri-surface (`TriSurfaceSyncLog`) et diagnostics `DataAgentDiagnostics`. |
+| `src/systems/governance/dev-bridge.engine.ts` | `L3` | Validation pure des chemins workspace autorisés (`docs/`, `.exo-sync/`, `.ts` exclus), formatage Markdown `BUS-EXW-001` et gestion immuable de la file des logs. |
+| `src/app/api/dev-bridge.route.ts` & `server.ts` | `L8` | Endpoints `/api/dev-bridge/{state,messages,workspace/read,workspace/write,github/commit,logs,data-agent/audit,vercel/trigger}` + OAuth 3P GitHub popup (`/api/auth/github/url`, `/auth/callback`) avec repli PAT en mémoire vive uniquement (zéro `localStorage`/`sessionStorage`). |
+| `TriSurfaceSaveModal.tsx` | `L7` | Confirmation utilisateur unique obligatoire avant écriture simultanée : 1. Disque local AI Studio (`/api/dev-bridge/workspace/write`) ; 2. Google Drive (`drive-docs.service.ts`) ; 3. GitHub Contents API (`PUT` sur branche cible). |
+| `DevCommsBusPanel.tsx`, `DevConnectorsStrip.tsx`, `DevDataVercelCard.tsx` | `L7` | Passerelle Antigravity/Gemini/Swarm (`BUS-EXW-001`), exécution temps réel de l'audit `Data Agent Kit` (`M0`/`M13`), statut Firebase Firestore (`devCommsMessages`, `surfaceSyncLogs`) et déclenchement Deploy Hook Vercel. |
 
 # **A. ANNEXE A — SYSTEM INSTRUCTION MAÎTRE POUR GOOGLE AI STUDIO BUILD (PARTITION MAÎTRE VIERGE CLOUD UNIFIÉE)**
 
@@ -1216,27 +1273,171 @@ Cette annexe scelle la correspondance exacte 1:1 entre le monorepo Git (apps/exo
 
 | Dossier / Fichier AI Studio | Couche | Contenu Normatif & Règle de Dépendance / Assainissement |
 | :---- | :---- | :---- |
-| server.ts & src/app/api/\*.route.ts | L8 | Pont Express/Vite dev/preview : monte health, oracle, saves-sync, chronicle-query, campaign-bootstrap (zéro métier). |
-| src/contracts/ & src/parsers/ | L0 | 9 schémas Zod sources de vérité \+ 5 parseurs Result Pattern \[Error, Data\] (Module 02). Aucun import supérieur. |
-| src/config/ & src/data/ | L1 | 8 fichiers Object.freeze \+ 6 catalogues statiques (0 terme interdit R-50). Import L0 (+ config). |
-| src/core/ & src/guardrails/ | L2 | PRNG PCG32, SHA-256, loop N0..N5, bus, triggers/ (03), queues/ (07), dispatchers/ (04, absorbe handlers/), routers/ (05), guardrails/ (08). Zéro I/O. |
-| src/systems/ (8 noyaux) & src/worker/ | L3 / L5 | 8 domaines métier purs (absorbe features/ pur) \+ sim.worker.ts isolé pour maintenir WebKit \< 250 Mo RAM. |
-| src/engine3d/ & src/adapters/ | L4 | ThreeRenderAdapter (Three.js r170+ ciel ouvert sans dôme, 3 échelles 650 ms) \<-\> Unity 6 URP via SceneDiffPacket. |
-| src/bridges/, retrievers/, stores/, services/, pipelines/, doc-sync/ | L4 / L5 | Modules 01, 06 & 07 cloud-sync.queue, Zustand/Jotai, Firebase Auth/Firestore, Cloud SQL pgvector, Gemini Dual-Pass Free Tier, SSoT manifest. |
-| src/hooks/, src/components/, src/interfaces/ | L6 / L7 | Hooks \<= 200 l., Bento 135deg FMT-EXW-001, 8 écrans Solo EXO-SHELL \+ 8 sous-écrans, 0 label Astralis, mobile \>= 44x44 px. |
-| eslint.config.mjs (ESLint 9\) | Outillage | Blocs séparés par files: \["src/\<couche\>/\*\*"\] (remplace zones) \+ max-lines 300/200 \+ @typescript-eslint/no-explicit-any. |
+| server.ts & src/app/api/\*.route.ts | L8 | Pont Express/Vite dev/preview : monte health, oracle, dev-bridge, doc-governance, docs-vcs, auth GitHub OAuth. |
+| src/contracts/ & src/parsers/ | L0 | Schémas Zod sources de vérité \+ parseurs Result Pattern `[Error, Data]` (Module 02). Aucun import supérieur. |
+| src/config/ & src/data/ | L1 | Constantes `Object.freeze` \+ catalogues statiques (`skills-vcs`, `blueprint-manifests` généré depuis `/docs/master-blueprint/`, 0 terme interdit `R-50`). |
+| src/core/ & src/guardrails/ | L2 | PRNG `PCG32`, `SHA-256`, loop `N0..N5`, bus, `triggers/`, `queues/`, `dispatchers/`, `routers/`, `guardrails/`. Zéro I/O. |
+| src/systems/ & src/worker/ | L3 / L5 | Domaines métier purs (incl. `bioclimate-health`, `planetary-diplomacy`, `skills-vcs.engine`, `doc-governance.engine`, `dev-bridge.engine`) \+ `sim.worker.ts` isolé (`< 250 Mo` RAM). |
+| src/engine3d/ & src/adapters/ | L4 | `ThreeJsRenderAdapter` (`Three.js 0.187.0` PBR/Rayleigh-Mie ciel ouvert sans dôme, 3 échelles `650 ms`, `IsolatedInspectorScene`) <-> Unity 6 URP via `SceneDiffPacket`. |
+| src/bridges/, retrievers/, stores/, services/, pipelines/, doc-sync/ | L4 / L5 | Modules bridges, retrievers, queues, Zustand/Jotai, Firebase Auth/Firestore, Gemini Dual-Pass Free Tier, `drive-docs.service`, `sot-manifest.ts`. |
+| src/hooks/, src/components/, src/interfaces/ | L6 / L7 | Hooks \<= 200 l., Bento `135deg` `Astralis Snapshot V7`, `ExoTooltip.tsx`, `DocsSkillsHubScreen` (3 ailes), 0 overflow mobile `390x844 px`. |
+| eslint.config.mjs & scripts/exo-audit.ts | Outillage | ESLint 9 par couches (`L0..L8`) + `exo-audit.ts` scannant `/docs/master-blueprint/` (`M0`, `M13`, Tri-Format `FMT-U/M/S/YAML`, `0` jeton `Z0`). |
 
-**Spécification plate complète :** 05\_SRC\_ARBO\_AISTUDIO\_COMPLETE.md dans 05\_LIVRABLES\_VAGUES\_SRC & SPEC-SRC-DOC-EXW-001 v1.1.0 Section 6 (App AI Studio : [a21d5e66-3b0e-4b54-9e77-3a272b3c94d1](https://aistudio.google.com/apps/a21d5e66-3b0e-4b54-9e77-3a272b3c94d1?showPreview=true&showAssistant=true)).
+**Spécification plate complète :** `docs/architecture/05_SRC_ARBO_AISTUDIO_COMPLETE.md` (App AI Studio : [a21d5e66-3b0e-4b54-9e77-3a272b3c94d1](https://aistudio.google.com/apps/a21d5e66-3b0e-4b54-9e77-3a272b3c94d1?showPreview=true&showAssistant=true)).
 
-# **G. ANNEXE G — PROTOCOLE MIROIR 5 SURFACES (DRIVE \<-\> AI STUDIO \<-\> GITHUB \<-\> GEMINI \<-\> ANTIGRAVITY), ESCOUADE MULTI-MODÈLES, THÈME ASTRALIS SNAPSHOT V7 \+ INFOBULLES & PLAYTEST 6 TOURS**
+# **G. ANNEXE G — PROTOCOLE MIROIR 5 SURFACES, THÈME ASTRALIS SNAPSHOT V7 & INFOBULLES (`ExoTooltip.tsx`)**
 
-Cette annexe scelle le protocole de synchronisation en miroir entre les 5 surfaces du projet (Google Drive Partition Maître, Google AI Studio Build a21d5e66-3b0e-4b54-9e77-3a272b3c94d1, GitHub via Export \-\> Push to GitHub, Gemini Lead 521c6de57cd723f3 et Antigravity Hub), l'adoption officielle du thème visuel Astralis Snapshot V7 enrichi d'infobulles contextuelles (src/components/bento/ExoTooltip.tsx) sous l'identité EXO WORLD : 2050 (EXO-SHELL), ainsi que la synthèse du playtest déterministe sur 6 tours (90 ticks, seed PCG32 0x2050E801).
+Cette annexe scelle le protocole de synchronisation en miroir entre les surfaces du projet (Google Drive Partition Maître, Google AI Studio Build `a21d5e66-3b0e-4b54-9e77-3a272b3c94d1`, GitHub `Securityme/Exo-world-2050-Ultra`, Gemini Lead et Antigravity Hub via `EXO-DEV-BRIDGE`), l'adoption officielle du thème visuel `Astralis Snapshot V7` enrichi d'infobulles contextuelles (`src/components/bento/ExoTooltip.tsx`) sous l'identité `EXO WORLD : 2050` (`EXO-SHELL`), ainsi que l'unification sous `/docs/`.
 
-| Axe Architectural v1.6.0 | Référentiel / Composant | Spécification Opérationnelle & Invariant Scellé |
+| Axe Architectural | Référentiel / Composant | Spécification Opérationnelle & Invariant Scellé |
 | :---- | :---- | :---- |
-| Miroir 5 Surfaces & GitHub | workspace-sync.lock.json | Google AI Studio Build génère src/ et pousse vers GitHub (Export \-\> Push to GitHub) ; Drive détient la SSoT ; Antigravity synchronise via sync-drive-sot.ps1. |
-| Thème Visuel Snapshot V7 | src/index.css & FMT-EXW-001 | Obsidienne \#050811, Bento bords lumière biseautés 135deg, accents cyan \#00F0FF / ambre \#FFB800, fond SVG 1 200 ms sous identité EXO WORLD : 2050 (EXO-SHELL). |
-| Infobulles Contextuelles | src/components/bento/ExoTooltip.tsx | Obligatoires sur PA Général/4 Sous-PA (fongibilité R-26), Dossiers P0/C1..C5 (ΔP\_adapt \[-0.15,+0.15\] & DELAYED\_ECHO), paliers P1..P4 (-40 %..+40 % PNJ), 18 ressources et unités L1..L5. |
-| Escouade Multi-Modèles Anti-429 | 06\_REFERENTIEL\_SKILLS\_AGENTS | Routage prioritaire sur Gemini 4 Argon (High/Medium/Low) \+ Gemini 4 Hydrogen interne AI Studio \+ CLI local Mistral Vibe (uv tool install mistral-vibe / vibe). |
-| Playtest Narratif 6 Tours (90 ticks) | V1\_PLAYTEST\_HISTOIRE\_6\_TOURS.md | 6 tours N1 déterministes (seed 0x2050E801, Ère I \-\> Ère II, transition P1 \-\> P2 au Tour 3, combat 4 phases Tuile \#29 au Tour 4, Slot 2 Lune au Tour 6\) \+ simulateur en jeu dans JournalChroniclePanel.tsx. |
+| Miroir 5 Surfaces & Tri-Écriture | `DocsSkillsHubScreen` (Aile 3) + `TriSurfaceSaveModal.tsx` | Confirmation unique puis écriture simultanée : AI Studio local (`docs/`, `.exo-sync/`) + Google Drive (`drive-docs.service.ts`) + GitHub (`PUT /contents/`). |
+| Thème Visuel Snapshot V7 | `src/index.css` & `FMT-EXW-001` | Obsidienne `#050811`, Bento bords lumière biseautés `135deg`, accents cyan `#00F0FF` / ambre `#FFB800`, fond SVG `1 200 ms` sous identité `EXO WORLD : 2050` (`EXO-SHELL`). |
+| Infobulles Contextuelles & Badges | `src/components/bento/ExoTooltip.tsx` | Obligatoires sur PA Général/4 Sous-PA (`R-26`), Dossiers `P0/C1..C5` (`ΔP_adapt` `[-0.15,+0.15]` & `DELAYED_ECHO`), Divisions `EXOSPHERE_0..TROPOSPHERE_4` (`-40 %..+40 %` PNJ), 18 ressources et unités `L1..L5` ; badges d'entités cliquables ultra-compacts alignés à la hauteur de ligne. |
+| Escouade Multi-Modèles Free Tier | `src/core/routers/` & `server.ts` | Routage strict 0 USD (`gemini-4-hydrogen`, `gemini-3.1-flash-lite`, `gemini-decision-1`, `gemini-embedding-2`) avec rejet HTTP `403` de tout modèle payant (`R-68`). |
+
+# **H. ANNEXE H — PLAYTEST DÉTERMINISTE 6 TOURS (`90 TICKS`, SEED `0x2050E801`) & TÉLÉMÉTRIE 6 SUPERPUISSANCES**
+
+Exécutable directement dans l'application via `JournalChroniclePanel.tsx` (*« Simuler / Synthèse 6 Tours »*), ce scénario de référence vérifie la stabilité `PCG32` de l'Ère I (*Horizon 2050*) jusqu'au basculement en Ère II (*Orbite & Lune*) sur 6 cycles exécutifs `N1` (`90 ticks` simulés).
+
+## **H.1 Chronique Déterministe Tour par Tour (Tours 1 à 6)**
+
+| Tour (`N1`) | Ticks | Division / Palier & Vitesse PNJ | Dossiers Arbitrés (`P0` / `C1..C5`) & Atelier 3 Étages | Échos Différés (`DELAYED_ECHO`) & Mutation Monde | Empreinte `SHA-256` Déterministe |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| **Tour 1** | `01..15` | `P1` / `EXOSPHERE_0` (`-40 %` PNJ, limite `4 h/j`) | **`P0-01` Crise Énergétique et Radiative Secteur Sol-1** (rejet dôme → bascule ciel ouvert `R-16`) + **`C1-01` Pacte Énergétique Orbital UE-2050** (`12 PA` Général + `4 Sous-PA` Infra). Atelier : *Doctrine Solarpunk New Vegas* (`ΔP_adapt = +0.08`) + *Module Solaire Anno L2* + *Preview 3D Tuile #14*. | Programmation `ECHO-T3-GRID` (`COURT +2 tours`) ; stabilité énergétique `+14 %`. | `8F3A19C04E2B7D1190A4F6E23C58B102D7E4A91B6C305F281A9D4E7C0B3F6210` |
+| **Tour 2** | `16..30` | `P1` (`-35 %` PNJ, kits MK-I) | **`C3-02` Maintenance Préventive Niveau 2 Réseau Hydrique** (watchdog `< 25 %` désamorcé à `31 %`) + **`C4-01` Prêt Souverain Cities II (`1 500 Cr`)** & Datacenter Compute (`ratio 2.2x >= 2.0x`) + Drones Classe `D1`. | Usure ramenée à `8 %` ; file `build-modular.queue` active sur 3 modules *Anno*. | `4C7E02B91D5A83F462E019C7B83D5A20F91C4E6B3A802D75E194C3B0A6F82D14` |
+| **Tour 3** | `31..45` | **`P1 → P2`** (`THERMOSPHERE_1`, `-15 %` PNJ) | **Résolution `ECHO-T3-GRID`** + **`C2-03` Charte des 18 Colons Spécialistes** (*RimWorld* traits & moral `+12 %`). Franchissement vers **`THERMOSPHERE_1` / `P2`** grâce aux tours de bio-filtration à ciel ouvert. | Vitesse PNJ remonte de `-40 %` à `-15 %` ; consommation kits respiratoires `-30 %`. | `C19B4A7E20F385D614A9C0E73B281F54D60A9E3C7B1284F05E3D9A6C1B472E89` |
+| **Tour 4** | `46..60` | `P2` (`-15 %` PNJ) | **`P0-02` Raid Cyber-Orbital Coalition Rivale** (amortisseur `P0` capé à `2/cycle`) + **Envoi Unités `L2` Infanterie Exo & `L3` Blindés Légers sur Tuile Frontalière `#29`**. | **Combat 4 Phases** : 1. Reco Drones `D2` (`+11 %`) → 2. Cyber-Disruption Datacenter `2.2x` → 3. Engagement `L2/L3` → 4. Contrôle Tuile `#29` acquis. | `7D20E5A93C1B84F609E2D7A41C583B90F2A6E1D84C703B59A1E4D2C87F0B3651` |
+| **Tour 5** | `61..75` | `P2` (`-10 %` PNJ) | **Résolution `ECHO-T5-ALLIANCE` (`MOYEN +4 tours`)** + **`C5-02` Traité Précurseur Super-Alliance IA Hors Contrôle (`OPT-12 : B`)** + préparation Transporteurs `T1..T2`. | Ouverture télémétrique du **Slot 2 (Lune Artémis)** ; score diplomatique *Humankind* `#1/6`. | `3A8F6C1D92E047B581C3A9F02D6E4B78C501A3F9E2D74B608C1E5A9D3F720B46` |
+| **Tour 6** | `76..90` | `P2+` (`-5 %` PNJ, pré-`MESOSPHERE_2`) | **`C1-06` Inauguration Pont Orbital & Bascule Ère II (*Orbite & Lune*)**. Validation des **3 Jauges XP** (Gouvernance `84/100`, Biosphère `78/100`, Cyber-Stratégie `88/100`) & 5 Étoiles d'Ère *Humankind*. | Déblocage effectif du **Slot 2 Lune** ; persistance `turn_snapshots` + chronique Firestore. | `E504B2C97A1D63F820C9E4A71B583D06F92A4C7E1D803B65A9C2E7F41D083B72` |
+
+## **H.2 Télémétrie Comparative des 6 Superpuissances (Fin Tour 6)**
+
+| Entité / Superpuissance | Étoiles d'Ère | Tuiles Contrôlées (`/72`) | Division / Palier Local | Ratio Compute Cyber | Statut Diplomatique (`OPT-12 : B`) |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| **Joueur (`EXO-UNION 2050`)** | **5 / 6** (Ère II) | **16 tuiles** (+ Slot 2 Lune) | **`P2+`** (`-5 %` PNJ) | **`2.20x`** (Souverain) | Partenaire privilégié Super-Alliance IA |
+| **IA-1 (`Aethelgard Euro-Grid`)** | 4 / 6 | 13 tuiles | `P2` (`-15 %` PNJ) | `1.85x` | Pacte commercial C1 actif |
+| **IA-2 (`Pacifica Helios Syndicate`)** | 4 / 6 | 12 tuiles | `P2` (`-15 %` PNJ) | `2.05x` | Compétition orbitale Slot 2 |
+| **IA-3 (`Boreal Titan Collective`)** | 3 / 6 | 11 tuiles | `P1` (`-35 %` PNJ) | `1.60x` | Battu sur Tuile `#29` (Tour 4) |
+| **IA-4 (`Meridian Solar Commonwealth`)** | 3 / 6 | 10 tuiles | `P2` (`-15 %` PNJ) | `1.50x` | Neutre / Échanges marché |
+| **IA-5 (`Valkyrie Orbital Directorate`)** | 4 / 6 | 10 tuiles | `P1` (`-30 %` PNJ) | `2.10x` | Rival cyber (Raid `P0-02` Tour 4) |
+| **Super-Alliance IA Hors Contrôle** | Arbitre Orbital | Stations L1/L2 | Hors-Atmosphère | `3.00x` | Canal `C5` ouvert au Tour 5 |
+
+# **I. ANNEXE I — SYNTHÈSE BÊTA-TEST VIRTUEL VAGUE P13 (`5 PERSONAS`) & BRIEF UX *PAX HISTORIA***
+
+## **I.1 Résultats du Panel Bêta-Testeurs Virtuels (`4,81 / 5` Global — GO Release)**
+
+| Persona & Profil | Axe Évalué & Validation `[OBSERVÉ]` | Note / 5 | Priorités d'Évolution `v5.1+` |
+| :---- | :---- | :---: | :---- |
+| **Kaelen** (Stratège 4X) | Séparation pure des 5 domaines du Monde (`Territoires`, `Population`, `Biosphère`, `Militaire`, `Technologies`), Fiche Souveraine, Honneurs à 2 étages, 4 Théâtres & bouton *PA restants*. | **4,85 / 5** | Raccourci `Shift+M` vers *Militaire* & modèles de *Taskforces* nommés. |
+| **Chloé** (UX Mobile / Safari) | Zéro débordement `390×844 px`, zones tactiles `>= 44×44 px`, curseur texte `85 %–135 %`, mode *Masquer 100 % l'interface* et absence de collision d'en-tête. | **4,60 / 5** | Swipe latéral mobile & preset contraste plein soleil. |
+| **Maître Thomas** (Narratif & Éthique) | **Badges imbriqués à 3 niveaux (`Maître ▸ N1 ▸ N2`)** avec icône `(i)` de légende, **Générateur de Scénario Matriciel** (`compileScenarioMatrix`) et Module Monde Contextuel avant signature. | **4,80 / 5** | Radar éthique 5 Pôles en fin de campagne & filtre école éthique. |
+| **Driss** (Ingénieur 3D / WebGL) | Cité **24-Hex**, **Double Maglev** (civil + fret), 18 piétons waypoints, pipeline `Three.js 0.187.0` + capture WebM 3D `0 $` (`canvas.captureStream`). | **4,60 / 5** | Sélecteur qualité (`Éco / Standard / Ultra`) & caméra orbitale libre sur Maglev. |
+| **Léa** (Solarpunk & Interactive Fiction) | Thème chaleureux, libellés scientifiquement propres sans jargon interne, Super-Widget Météo, **bulles de suggestions cliquables** sur tous les champs libres. | **4,95 / 5** | Narration vocale synthétique Web Speech API locale pour titres `P0`. |
+
+## **I.2 Brief Ergonomique *EXO WORLD : 2050 × Pax Historia* (`docs/design/PAX_HISTORIA_UX_BRIEF.md`)**
+
+1. **Badges Empilés à 3 Niveaux (`Maître ▸ N1 ▸ N2`) & Légende `(i)` :** chaque événement affiche sa provenance technique (Gemini Live / Catalogue Vivant / Action Monde) et son courant philosophique (5 Pôles → 12 Écoles → 24 Sous-badges) en cumulatif et ponctuel.
+2. **Tri IA Non-Restrictif :** mise en avant contextuelle (*Recommandé* / *Préférence IA* / *Autres*) sans jamais griser ni verrouiller un choix joueur.
+3. **Configurateur Genèse & Scénario Matriciel (`Standard ↔ Avancé`) :** curseurs climat, budget, agressivité, ouverture diplomatique et règles manuelles compilés directement dans `WorldState`, complétés par des **bulles combinatoires cliquables** et des **badges d'entités inline ultra-compacts**.
+
+# **J. ANNEXE J — GOUVERNANCE RBAC (`DOC-APP-GOV-001`), API EXPRESS L8, CONTRATS SSoT (`M0/M13`) & RÈGLES FIRESTORE**
+
+## **J.1 Matrice RBAC 5 Rôles & Flux Documentaire Séparé (`APP` vs `GAME`)**
+
+| Rôle (`roleId`) | Filières Éditables (`CREATE/EDIT/SUBMIT`) | Pouvoirs de Révision & Approbation | Règle de Séparation des Tâches |
+| :---- | :---- | :---- | :---- |
+| **`LECTEUR`** | Aucune | Consultation globale (`READ` sur `APP_DOC`, `SKILLS`, `GAME_DOC`) | Aucune écriture ni transition de workflow. |
+| **`AUTEUR_JEU`** | `GAME_DOC` (`JEU-REG`, `JEU-SCE`, `JEU-BAL`, `JEU-VIS`) | Soumission à `GAME_REVIEW` | Lecture seule sur `APP_DOC` & `SKILLS` ; zéro auto-approbation. |
+| **`INGENIEUR_APP_SKILLS`** | `APP_DOC` (`APP-UPD`, `APP-GUI`, `APP-TEC`) & `SKILLS` (`APP-SKL`) | Soumission à `TECH_REVIEW` / `SKILLS_REVIEW` | Lecture seule sur `GAME_DOC` ; zéro auto-publication. |
+| **`REVISEUR_QUALITE`** | Aucune | `REVIEW_TECHNICAL`, `REVIEW_SKILLS`, `REVIEW_GAME`, `REQUEST_CHANGES` | Interdiction d'auto-révision si dernier auteur du document. |
+| **`APPROBATEUR_MAITRE`** | Toutes (`APP_DOC`, `SKILLS`, `GAME_DOC`) | `APPROVE_PUBLISH` (`R-25`), `ARCHIVE`, `MANAGE_ROLES` | Soumis aux 5 contrôles bloquants automatiques (`Z0`, `R-50`, Zéro Secret, SemVer, Classement). |
+
+* **Workflow Déterministe (`src/systems/governance/doc-governance.engine.ts`) :** `DRAFT` → `[TECH_REVIEW | SKILLS_REVIEW | GAME_REVIEW]` → (`CHANGES_REQUESTED` ou `READY_FOR_APPROVAL`) → `PUBLISHED` → `ARCHIVED`.
+
+## **J.2 Endpoints Express L8 (`server.ts` & `src/app/api/*.route.ts`)**
+
+| Route API | Méthode(s) | Rôle & Validation Zod |
+| :---- | :---- | :---- |
+| `/api/health` | `GET` | État serveur port `3000`, présence `GEMINI_API_KEY`, statut runtime AI Studio. |
+| `/api/oracle/dossier` | `POST` | Génération Dossier Dual-Pass `@google/genai` Free Tier (`FREE_TIER_ALLOWED_MODELS` ; HTTP `403` si hors liste), `EventGeneratorRequestSchema`, fallback déterministe local. |
+| `/api/dev-bridge/*` | `GET` / `POST` | Bus multi-surfaces (`/state`, `/messages`), I/O locale sécurisée (`/workspace/read`, `/workspace/write`), commits GitHub (`/github/commit`), journaux (`/logs`), audit Data Agent (`/data-agent/audit`) et Deploy Hook (`/vercel/trigger`). |
+| `/api/auth/github/url` & `/auth/callback` | `GET` | Échange OAuth 3P popup GitHub côté serveur sans stockage persistant côté client. |
+| `/api/doc-governance/*` & `/api/docs-vcs/*` | `GET` / `POST` / `PATCH` | RBAC 5 rôles, transitions workflow, commits SemVer VCS documentaire et rollback non destructif. |
+
+## **J.3 Manifestes SSoT (`/docs/master-blueprint/`) & Collections Firestore (`firebase-blueprint.json` / `firestore.rules`)**
+
+* **Manifestes SSoT :** `M0_MetaSemVer.json` (9 nœuds `EXW.L0.CONTRACTS` .. `EXW.L8.BFF_SERVER` sous `EXOW-ROOT@5.1.0-alpha.1`, `triLock [1,1,1]`), `M13_SADT_Mapping.json` (boîtes SADT `A1..A5` et mappage 1:1 de 100 % des fichiers `src/`), `contracts-ssot/*.schema.json` (`world-state`, `bridge-envelope`, `dialogue-turn`) et projections `MASTER_BLUEPRINT_{FMT-U,FMT-M,FMT-S_AISTUDIO,YAML}`.
+* **Collections Firestore Cloisonnées `ownerId == request.auth.uid` (`firestore.rules`) :** `/players/{userId}` (+ `context`, `metaHonors`), `/campaigns/{campaignId}` (+ `turnSnapshots`, `driveLinks`), `/docEntries/{docId}` (+ `revisions` append-only), `/skillRegistry/{skillId}`, `/devCommsMessages/{messageId}` et `/surfaceSyncLogs/{syncId}` (tous protégés par catch-all deny `allow read, write: if false;`, validation stricte de clés/types et `isVerifiedUser()` en écriture).
+
+# **K. ANNEXE K — PLAN DE MIGRATION ARCHITECTURALE (`8 COUCHES × 8 TIERS` & MONOREPO AAA)**
+
+> Compilé intégralement depuis `ARCHITECTURE_MIGRATION_PLAN.md` et `05_SRC_ARBO_AISTUDIO_COMPLETE.md` (désormais archivés dans `docs/archive/`).
+
+## **K.1 Trajectoire Monolithe Modulaire (`L0..L8`) → Monorepo AAA (`S1..S6`) & Matrice `8 Couches × 8 Tiers`**
+
+* **État actuel vérifié (`L0..L8`) :** `294+` modules TypeScript/TSX actifs sous `src/`, gouvernés par `eslint.config.mjs` (frontières par couche) et `npm run exo:audit` (`17/17 PASS GO`, `0` cycle Kahn, `0` violation `Z0` / `R-16` / `R-50`).
+* **Cible orthogonale `8 Couches (C0..C7) × 8 Tiers (T0..T7)` :**
+  * **Couches techniques (`C0→C7`) :** `C0` Primitives & Déterminisme (`PCG32`, `SHA-256`) → `C1` Contrats Zod & Guardrails → `C2` Noyau Runtime/ECS SoA → `C3` Données & Catalogues → `C4` Moteurs agnostiques (`@exo/rhi-render`, `@exo/audio`, `@exo/persistence-net`) → `C5` Simulateurs de domaine (`@exo/domain-planet`, `@exo/domain-gameplay`) → `C6` Extensions, IA & Pipelines (`Gemini 4T`, `WorldGen`) → `C7` Design System & Shells (`@exo/ui-kit`, `web-client`, `headless-sim`, `world-editor`).
+  * **Tiers fonctionnels (`T0→T7`) :** `T0` Plateforme/PAL → `T1` Noyau Math/ECS → `T2` Rendu 3D/Audio/Persistance → `T3` Planétologie `P1..P4` / 5 Divisions → `T4` Économie, Quartiers Ouverts & Bâtiments Individuels → `T5` Gouvernance PA, Multi-Choix, Combat 4P & Géopolitique → `T6` Narration Gemini & Plugins → `T7` Expérience Joueur, Studio UI & CLI Headless.
+  * **Règle d'or `(Ci, Tj)` :** un module en `(Ci, Tj)` ne peut importer `(Ci', Tj')` que si `i' <= i` ET `j' <= j`.
+* **Plan de bascule incrémental en 5 Lots sans rupture :**
+  1. **Lot 1 (`T0–T1`)** : extraction `@exo/pal`, `@exo/math-det`, `@exo/core-runtime`, `@exo/ecs`.
+  2. **Lot 2 (`T3–T6`)** : isolation `@exo/game-data`, `@exo/domain-planet`, `@exo/domain-gameplay` + stress-test `1 000 tours` via `apps/headless-sim` (`SHA-256` bit-à-bit).
+  3. **Lot 3 (`T2`)** : isolation `@exo/rhi-render` (`SceneDiffPacket` sans règles 2050), `@exo/audio` (FIP 6 flux) et `@exo/persistence-net` (Firebase + Drive Picker OAuth).
+  4. **Lot 4 (`T6–T7`)** : extraction `@exo/ui-kit` (Thèmes Studio, `TacticalHeatmap` D3, `ResourceTrendProjectionChart` Recharts) et `@exo/plugin-narrative-director`.
+  5. **Lot 5** : parcelles multi-bâtiments individuels (`OpenSkyDistrictZone` + `IndividualBuildingInstance` + `InstancedBuildingBatcher`) et décommissionnement des ponts hérités.
+
+# **L. ANNEXE L — CHANGELOG STRUCTURÉ (`ACTUEL / DEMANDES / PROJETÉ`) & `FUP_TRACKER` CONSOLIDÉ**
+
+> Compilé intégralement depuis `CHANGELOG.txt` et `docs/changelogs/FUP_TRACKER.md`. La version active synchronisée par `npm run exo:doc-mesh` est maintenue dans `docs/CHANGELOG.txt`.
+
+## **L.1 Historique Actuel Vérifié (`P1 → P13` & `v5.1.0-alpha.1`)**
+
+* **`P1`–`P3` :** Thème Astralis + bouclier Safari/iOS WebKit (`100dvh`, pinch-zoom 2 doigts, `< 250 Mo`), masquage HUD 100 %, Super-Widget Météo/Air 3 Tours, Centre de Notifications Header, Contexte Utilisateur 3D et Firestore Rules déployées.
+* **`P4`–`P6` :** Routeur Gemini 6 Canaux 100 % Free Tier (`R-68`, blocage HTTP `403` des modèles payants), Honneurs 2 Niveaux (Vitrine Multi-Parties + Commandant CK3), Onglet Monde purifié en 5 domaines (`Territoires`, `Population`, `Biosphère`, `Militaire`, `Technologies`), Fiche État Souverain et lancement d'initiatives PA.
+* **`P7`–`P10` :** Fiche Colon Zoom + Exosuit 3D, Citoyens Ordinaires Frostpunk, Badges Empilés 3 Niveaux (`Maître ▸ N1 ▸ N2`) + légende `(i)`, Bulles combinatoires cliquables, 4 Théâtres Militaires (`72` secteurs), Pression Civile `0★..5★`, Cité 3D 24-Hex + Dual Maglev + piétons waypoints, Studio Vidéo Climat 12 catégories (`captureStream` WebM 0 USD).
+* **`v5.1.0-alpha.1` (`FUP-017` & `FUP-018`) :**
+  * **Gouvernance Docs, VCS & 9 Skills Modulaires** : séparation stricte Code / Docs / Skills, RBAC 5 rôles, Diff ligne par ligne et Rollback non destructif (`REVERT`).
+  * **Espace Dev & Connectivité 3 Surfaces (`EXO-DEV-BRIDGE`)** : confirmation unique avant écriture simultanée AI Studio local + Google Drive + GitHub (OAuth popup + repli PAT mémoire vive), Bus Inter-IA `BUS-EXW-001`, Data Agent Kit, miroir Firestore et Deploy Hook Vercel.
+  * **Événements `4+` Choix Multiples Budgétés & Déblocage Multi-Factoriel (`FUP-018`)** : `5..10` choix par dossier, mode `BUDGETED_MULTI` (plafonds PA/Crédits), affectation coéquipiers (spécialité, niveau, fatigue), score combiné Conseiller + Équipe, et déblocage conditionnel multi-critères (`unlockConditions`) avec option `0-PA` garantie.
+  * **Fusion Totale Niveau 0 (`/docs`)** : suppression de tous les doublons documentaires à la racine, maintien de `/docs/master-blueprint/` comme sous-dossier SSoT unifié et archivage consolidé dans `/docs/archive/`.
+
+## **L.2 Demandes Intégrées & Trajectoire Projetée Post-v5.1**
+
+* **Intégré :** 100 % Free Tier Gemini strict, adaptations originales inspirées d'OpenRW/OpenGTA sans assets tiers, playtest 6 tours déterministe et bêta virtuelle 5 personas (`4,81/5`).
+* **Projeté :** Export multi-campagnes comparatif (6 Ères), pipeline visuel **Dual-Adapter AAA (`OPT-02 A+` : Unity 6 URP Principal + Aperçu Web Three.js WebGL2/WebGPU)**, PBR ACES Filmic, éclairage 3 points & shaders Rayleigh/Mie, éditeur communautaire de cartes signées `SHA-256` et bascule progressive vers le Monorepo AAA `FS4X-Kernel` (`Annexe K`).
+
+# **M. ANNEXE M — RÉFÉRENTIEL COMPILÉ DES MODULES MÉTIER, API, 3D & GOUVERNANCE (`V0 → V5.1`)**
+
+> Compilé intégralement depuis `docs/gameplay/01..04.md`, `docs/api-and-db/01..03.md`, `docs/architecture/01..04.md`, `docs/matrices/MC-00` & `SM-01..06` et `docs/governance/DOC-APP-GOV-001`.
+
+* **Gameplay Consolidé (`01..04`) :**
+  * `PA` asymétriques (`R-26`, plafond `150 %` `R-29`, verrou `PRIO-P0` bloquant `C4/C5` `R-32`, amortisseur max `2 P0/cycle`, option `0-PA` garantie) + mode `BUDGETED_MULTI` et déblocage multi-factoriel (`FUP-018`).
+  * Biosphère Open-Sky (`ATMO-D1..D5`, `EXOSPHERE_0..TROPOSPHERE_4`), zéro dôme (`R-16`), watchdog maintenance `C3 < 25 %`.
+  * Économie Fédérale (cote solvabilité `AAA..D`, Hélium-3 Ère III, jusqu'à 3 modules Anno/quartier, 4 classes de drones avec cooldown 1 cycle).
+  * Combat 4 Phases (`PHASE_1_CYBER_DRONES` `≥ 2× Compute` + paralysie 2 cycles → `PHASE_2_ORBITAL_BOMBARDMENT` → `PHASE_3_COMBINED_ROUNDS` `Pcg32` 5 classes × `L1..L5` → `PHASE_4_CAPTURE_GARRISON`).
+* **Pipeline 3D AAA Dual-Adapter (`OPT-02 A+` : Unity 6 URP Principal + Aperçu Web Three.js) & Guardrails (`architecture/01..04`) :**
+  * Flux unidirectionnel `SceneDiffPacket` (`UnityRenderBridge` `.jslib`/C# URP Burst Principal + `ThreeJsRenderAdapter` WebGL2/WebGPU pour Aperçu Web temps réel), ACES Filmic calibré (`0.92–0.96`), `RoomEnvironment` IBL pondéré (`0.38–0.44`), éclairage 3 points chaud/froid AAA (terminateur solaire + villes nocturnes Planète, heure dorée + viaducs titane brossé Cité organique), 3 échelles (`Espace` 6 mondes → `Planète` globe PBR 72 secteurs + nuages + limb Rayleigh/Mie → `Cité` Open-Sky + Dual Maglev + piétons waypoints), WebGL logiciel détecté (`!isSoftwareGl`, `DPR ≤ 1.5`, `.dispose()` complet).
+  * 5 Guardrails déterministes (`zod-airlock ±15 %`, `dag-kahn-bfs`, `nomenclature R-50`, `freetier-quota` `12 RPM / 900 RPD`, `webkit-memory` `≤ 128 MB` textures / `≤ 600` géométries).
+* **Gouvernance Documentaire, Classification 6D (`NORM-EXW v3.0.0`) & Double Workflow (`DOC-APP-GOV-001`) :**
+  * Séparation stricte **Pôle Application (`APP-UPD`, `APP-GUI`, `APP-TEC`, `APP-SKL`)** sur `docs/drive-sovereign` vs **Pôle Jeu (`JEU-REG`, `JEU-SCE`, `JEU-BAL`, `JEU-VIS`)** sur `docs/game-assets-mirror`, totalement isolés de la branche code `main`.
+  * Séparation stricte **Espace 1 (`XSC-CUBE` 6 Axes)** `⊥` **Espace 2 (`G-CUBE` 5 Échelles)** validée au niveau `L0` par `src/contracts/classification-6d.schema.ts` (0 collision `V0..V6 / O0..O6 / T0..T5 / ATMO-D1..D5 / ZOD-D1..D5 / PART-I..VI / PIV-0..7`), avec gabarit unifié vierge `docs/master-blueprint/TEMPLATE_MASTER_BLUEPRINT_UNIFIE.md`.
+  * Contrôle RBAC serveur (`403 Forbidden` si droit insuffisant), prévention d'auto-approbation et pont preview `/api/swarm-bus` (`[EXO-SWARM-HANDOFF]` + `ACK`).
+
+# **N. ANNEXE N — DIRECTIVE LIVE MULTI-IA (`SYS-INST-EXW-001 v2.0.0`), BUS `BUS-EXW-001` & ARCHIVE CONSOLIDÉE**
+
+> Référence unifiée de `docs/SYSTEM_INSTRUCTION_LIVE.md`, `docs/inter-ia/BUS_MESSAGES.md` et de la zone d'archive `docs/archive/`.
+
+* **Priorité Live Multi-IA (`SYS-INST-EXW-001 v2.0.0`) :** Google AI Studio Build, Gemini Lead, Antigravity IDE et Claude opèrent sur une seule SSoT (`/docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md` + `/docs/master-blueprint/` + Partition Drive Maître `19MuQPs6wNfh4jAU1EaEhAq1ZZHSTk93k` + GitHub `Securityme/Exo-world-2050-Ultra`). Hiérarchie `R-09` : *Contrats Zod > Formules > SADT > UI/3D > Prose*.
+* **Journal Inter-IA Actif (`docs/inter-ia/BUS_MESSAGES.md`) :**
+  * `MSG-003` : Parité socle Vague 0 (`L0..L8`, `Pcg32`, `SHA-256`).
+  * `MSG-004` : Sprint Vague 2 (`ACTION_GATEWAY`, 3 onglets footer, 3D PBR).
+  * `MSG-005` : Parité GitHub `Exo-world-2050-Ultra` et enregistrement surface Notebook Gemini (`AUTH_REQUIRED` côté serveur).
+  * `MSG-006` : VCS Documentaire isolé (`docs/drive-sovereign` / `docs/game-assets-mirror`) + Pont Preview `/api/swarm-bus`.
+  * `MSG-007` : Consolidation Niveau 0 (`/docs` unique sans doublons racine, `/docs/master-blueprint/` conservé en SSoT, compilation intégrale `v2.14.0-MAITRE`, archivage dans `/docs/archive/`).
+  * `MSG-008` : Réintégration `OPT-02 A+` (`Unity 6 URP Principal + Aperçu Web Three.js`), élévation visuelle 3D AAA (cité organique non-circulaire/non-rectiligne, ACES Filmic, terminateur orbital, viaducs titane PBR, limb Rayleigh/Mie), bilan d'événement 4 pôles & Accès Rapide HUD.
+  * `MSG-009` : Normalisation `NORM-EXW v3.0.0` (`XSC-CUBE 6D ⊥ G-CUBE 5D`), contrat Zod `src/contracts/classification-6d.schema.ts` strictement bi-espace sans collision, et gabarit vierge unifié `docs/master-blueprint/TEMPLATE_MASTER_BLUEPRINT_UNIFIE.md`.
+* **Zone d'Archive Figée (`docs/archive/`) :** Conserve en lecture seule l'historique des anciens documents sources absorbés (`ARCHITECTURE_MIGRATION_PLAN.md`, `api-and-db/`, `architecture/`, `changelogs/`, `design/`, `gameplay/`, `governance/`, `matrices/`) afin d'éviter toute édition divergente tout en préservant l'auditabilité complète.
+
 

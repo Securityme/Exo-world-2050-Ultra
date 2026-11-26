@@ -29,10 +29,10 @@ test('Triangular multi-agent pyramid has 4 strict levels (1 -> 2 -> 4 -> 8 = 15 
 
 test('Escalation chain and subordinate delegation cone traverse N0 -> N1 -> N2 -> N3 accurately', () => {
   const state = createInitialAgentPyramidState();
-  const chain = getEscalationChain('AG-L3-UNITY', state.nodes);
+  const chain = getEscalationChain('AG-L3-3D-PBR', state.nodes);
   assert.deepEqual(
     chain.map((n) => n.id),
-    ['AG-L0-ARGON', 'AG-L1-TECH', 'AG-L2-HYDRO', 'AG-L3-UNITY'],
+    ['AG-L0-ARGON', 'AG-L1-TECH', 'AG-L2-HYDRO', 'AG-L3-3D-PBR'],
   );
 
   const techSubtree = getSubordinateSubtreeIds('AG-L1-TECH', state.nodes);
@@ -40,7 +40,7 @@ test('Escalation chain and subordinate delegation cone traverse N0 -> N1 -> N2 -
   assert.ok(techSubtree.includes('AG-L2-HYDRO'));
   assert.ok(techSubtree.includes('AG-L2-SILICIUM'));
   assert.ok(techSubtree.includes('AG-L3-TANSTACK'));
-  assert.ok(techSubtree.includes('AG-L3-UNITY'));
+  assert.ok(techSubtree.includes('AG-L3-3D-PBR'));
 
   const rootChildren = getDirectSubordinates('AG-L0-ARGON', state.nodes);
   assert.equal(rootChildren.length, 2);
@@ -51,7 +51,7 @@ test('dispatchHierarchicalMission cascades directives deterministically along th
   const next = dispatchHierarchicalMission(
     initial,
     'AG-L2-BORE',
-    'Valider la release AAA et les 10 préfabriqués Unity',
+    'Valider la release AAA et les 10 modèles Three.js PBR',
     'CRITICAL',
   );
 

@@ -2,17 +2,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 /**
- * [L8 Tooling] EXO WORLD : 2050 — 4-Category Documentary Mesh Generator (`npm run exo:doc-mesh`)
- * Synchronizes:
- * - INDEX.md (4 Governance Categories: Technical Specifications | User Guides | Design Mockups | Lore, Rules & Balancing)
- * - CHANGELOG.txt (Actuel / Demandes / Projeté)
- * - docs/design/PAX_HISTORIA_UX_BRIEF.md (Exportable UX proposal for Pax Historia designers)
+ * [L8 Tooling] EXO WORLD : 2050 — Unified Documentary Mesh Generator (`npm run exo:doc-mesh`)
+ * Keeps ZERO duplicate docs at project root (level 0). Writes exclusively inside `docs/`:
+ * - `docs/00_INDEX_DOCS.md` (Unified index with Horizontal x Vertical Metadata Partition per section/file)
+ * - `docs/CHANGELOG.txt` (Structured Actuel / Demandes / Projeté changelog)
  */
 const ROOT = process.cwd();
+const DOCS_DIR = path.join(ROOT, 'docs');
+
+type HorizontalAxis = 'H-GOV' | 'H-ARCH' | 'H-GAME' | 'H-3D' | 'H-DATA' | 'H-OPS';
+type VerticalLevel = 'V0' | 'V1' | 'V2' | 'V3';
 
 interface DocEntry {
   readonly relPath: string;
-  readonly category: 'TECHNICAL_SPECS' | 'USER_GUIDES' | 'DESIGN_MOCKUPS' | 'LORE_RULES_BALANCING';
+  readonly verticalLevel: VerticalLevel;
+  readonly horizontalAxis: HorizontalAxis;
+  readonly status: 'ACTIF-MAITRE' | 'SSOT-MACHINE' | 'ACTIF-OPS' | 'ARCHIVE-CONSOLIDÉE';
+  readonly owner: string;
   readonly sizeKb: number;
 }
 
@@ -22,123 +28,152 @@ function walkDocs(dir: string, acc: string[] = []): string[] {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       walkDocs(full, acc);
-    } else if (entry.name.endsWith('.md') || entry.name.endsWith('.txt')) {
+    } else if (/\.(md|txt|yaml|json)$/i.test(entry.name)) {
       acc.push(full);
     }
   }
   return acc;
 }
 
-function classifyDoc(relPath: string): DocEntry['category'] {
+function classifyHorizontalAxis(relPath: string): HorizontalAxis {
   const low = relPath.toLowerCase();
-  if (low.includes('guide') || low.includes('readme') || low.includes('onboarding')) {
-    return 'USER_GUIDES';
+  if (low.includes('contract') || low.includes('m0_') || low.includes('m13_') || low.includes('api_db') || low.includes('firebase')) {
+    return 'H-DATA';
   }
-  if (low.includes('design') || low.includes('mockup') || low.includes('pax_historia') || low.includes('ui')) {
-    return 'DESIGN_MOCKUPS';
+  if (low.includes('3d') || low.includes('render') || low.includes('design') || low.includes('pax_historia')) {
+    return 'H-3D';
   }
-  if (low.includes('lore') || low.includes('playtest') || low.includes('beta') || low.includes('changelog')) {
-    return 'LORE_RULES_BALANCING';
+  if (low.includes('gameplay') || low.includes('playtest') || low.includes('beta')) {
+    return 'H-GAME';
   }
-  return 'TECHNICAL_SPECS';
+  if (low.includes('inter-ia') || low.includes('system_instruction') || low.includes('changelog') || low.includes('fup')) {
+    return 'H-OPS';
+  }
+  if (low.includes('architecture') || low.includes('icom') || low.includes('migration')) {
+    return 'H-ARCH';
+  }
+  return 'H-GOV';
 }
 
-function ensurePaxHistoriaUxBrief(): void {
-  const dir = path.join(ROOT, 'docs', 'design');
-  fs.mkdirSync(dir, { recursive: true });
-  const target = path.join(dir, 'PAX_HISTORIA_UX_BRIEF.md');
-  const content = `# Proposition UX Événements — EXO WORLD : 2050 × Pax Historia
-
-## 1. Constat sur l'onglet Événements dans les jeux de grande stratégie IA
-Les générateurs narratifs libres apportent une richesse diplomatique remarquable, mais souffrent fréquemment de deux limites ergonomiques :
-1. Absence de filtres structurés couplés de manière matricielle au moteur de simulation (risque de dérive ou d'incohérence mécanique).
-2. Lisibilité insuffisante de l'origine IA/locale des choix, de leur portée éthique cumulée, et des ajustements opérationnels post-décision.
-
-## 2. Logiques UX proposées (Implémentées & Validées dans EXO WORLD : 2050)
-- **Badges Empilés à 3 Niveaux (\`Maître ▸ N1 ▸ N2\`)** : chaque événement et chaque choix affiche sa provenance (Gemini Live / Catalogue Vivant / Action Monde) et son courant philosophique/éthique (5 Pôles → 12 Écoles → 24 Sous-badges) en cumulatif et ponctuel, accompagné d'une icône \`(i)\` de légende couleur à droite.
-- **Tri IA Non-Restrictif** : mise en avant contextuelle (*Recommandé* / *Préférence IA* / *Autres*) sans jamais griser ni verrouiller un seul choix joueur.
-- **Générateur de Scénario Matriciel (\`Standard ↔ Avancé\`)** : curseurs climat, budget, agressivité rivaux, ouverture diplomatique + règles manuelles compilés directement en patch opérationnel du moteur (\`compileScenarioMatrix\`).
-- **Module Monde Contextuel en fin de choix** : l'IA propose une répartition opérationnelle (affectation colons/quartiers) adaptée au choix retenu, que le joueur peut affiner manuellement avant signature.
-- **Bulles de Suggestions Cliquables** : injection instantanée d'intentions dans les champs libres (diplomatie, directives, arrivants, scénarios).
-- **Utilisation des PA restants via l'onglet Monde** : une fois les événements obligatoires résolus, le joueur déclenche ses propres initiatives depuis ses gestionnaires territoriaux.
-`;
-  fs.writeFileSync(target, content, 'utf8');
+function classifyVerticalLevel(relPath: string): VerticalLevel {
+  const depth = relPath.split('/').length - 1; // docs/file = 1, docs/sub/file = 2, docs/sub/sub/file = 3
+  if (relPath === 'docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md' || relPath === 'docs/00_INDEX_DOCS.md') return 'V0';
+  if (depth <= 1) return 'V1';
+  if (depth === 2) return 'V2';
+  return 'V3';
 }
 
-function generateIndexAndChangelog(): void {
-  ensurePaxHistoriaUxBrief();
-  const docsDir = path.join(ROOT, 'docs');
-  const files = walkDocs(docsDir);
+function classifyStatus(relPath: string): DocEntry['status'] {
+  if (relPath.startsWith('docs/archive/')) return 'ARCHIVE-CONSOLIDÉE';
+  if (relPath.startsWith('docs/master-blueprint/')) return 'SSOT-MACHINE';
+  if (relPath === 'docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md' || relPath === 'docs/00_INDEX_DOCS.md') return 'ACTIF-MAITRE';
+  return 'ACTIF-OPS';
+}
+
+function classifyOwner(axis: HorizontalAxis): string {
+  switch (axis) {
+    case 'H-DATA':
+      return 'Data & SSoT';
+    case 'H-3D':
+      return 'AG-L3-3D-PBR';
+    case 'H-GAME':
+      return 'Game Systems';
+    case 'H-OPS':
+      return 'AI Ops / DevOps';
+    case 'H-ARCH':
+      return 'Lead Architect';
+    default:
+      return 'Governance QA';
+  }
+}
+
+function generateUnifiedIndexAndChangelog(): void {
+  const files = walkDocs(DOCS_DIR);
   const entries: DocEntry[] = files
     .map((abs) => {
       const relPath = path.relative(ROOT, abs).replace(/\\/g, '/');
       const stat = fs.statSync(abs);
+      const horizontalAxis = classifyHorizontalAxis(relPath);
       return {
         relPath,
-        category: classifyDoc(relPath),
+        verticalLevel: classifyVerticalLevel(relPath),
+        horizontalAxis,
+        status: classifyStatus(relPath),
+        owner: classifyOwner(horizontalAxis),
         sizeKb: Math.max(1, Math.round(stat.size / 1024)),
       };
     })
     .sort((a, b) => a.relPath.localeCompare(b.relPath));
 
-  const byCat = {
-    TECHNICAL_SPECS: entries.filter((e) => e.category === 'TECHNICAL_SPECS'),
-    USER_GUIDES: entries.filter((e) => e.category === 'USER_GUIDES'),
-    DESIGN_MOCKUPS: entries.filter((e) => e.category === 'DESIGN_MOCKUPS'),
-    LORE_RULES_BALANCING: entries.filter((e) => e.category === 'LORE_RULES_BALANCING'),
+  const active = entries.filter((e) => e.status !== 'ARCHIVE-CONSOLIDÉE');
+  const archived = entries.filter((e) => e.status === 'ARCHIVE-CONSOLIDÉE');
+
+  const renderMetaTable = (list: readonly DocEntry[]) => {
+    if (list.length === 0) return '_Aucun document classé._\n';
+    const header = [
+      '| Document (Chemin Relatif) | Niveau V | Axe H | Statut | Owner | Taille |',
+      '| :---- | :---- | :---- | :---- | :---- | ----: |',
+    ];
+    const rows = list.map(
+      (e) =>
+        `| [\`${e.relPath}\`](${e.relPath.replace(/^docs\//, './')}) | \`${e.verticalLevel}\` | \`${e.horizontalAxis}\` | \`${e.status}\` | ${e.owner} | ${e.sizeKb} Ko |`,
+    );
+    return [...header, ...rows].join('\n') + '\n';
   };
 
-  const renderSection = (title: string, list: readonly DocEntry[]) =>
-    `## ${title} (${list.length})\n\n${
-      list.length === 0
-        ? '_Aucun document classé._\n'
-        : list.map((e) => `- [\`${e.relPath}\`](${e.relPath}) (${e.sizeKb} Ko)`).join('\n') + '\n'
-    }`;
+  const indexMd = `# INDEX DOCUMENTAIRE UNIFIÉ & PARTITION MÉTADONNÉES (H × V) — EXO WORLD : 2050
 
-  const indexMd = `# INDEX DOCUMENTAIRE — EXO WORLD : 2050 (v5.0.0)
+> Généré automatiquement par \`npm run exo:doc-mesh\` · \`v5.1.0-alpha.1\` · \`DOC-EXW-ARCH-001 v2.14.0-MAITRE\` · **Zéro doublon documentaire au niveau 0**.
+> Source de Vérité Humaine Compilée : [\`docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md\`](./DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md) (Sommaire H × V + Annexes A–N).
+> Source de Vérité Machine SSoT : \`docs/master-blueprint/\` (\`M0\`, \`M13\`, \`contracts-ssot/\`, projections Tri-Format).
 
-> Généré automatiquement par \`npm run exo:doc-mesh\` · 4 Catégories de Gouvernance Documentaire.
-> Google Drive reste strictement isolé aux **Guides Utilisateur** et à l'export du Contexte Utilisateur.
+## 0. Sommaire des Partitions Métadonnées (Vertical \`V0..V3\` × Horizontal \`H-*\`)
 
-${renderSection('1. Spécifications Techniques (Technical Specifications)', byCat.TECHNICAL_SPECS)}
-${renderSection('2. Guides Utilisateur (User Guides — Seule catégorie synchronisable Drive)', byCat.USER_GUIDES)}
-${renderSection('3. Maquettes Design & UX (Design Mockups)', byCat.DESIGN_MOCKUPS)}
-${renderSection('4. Lore, Règles, Équilibrage & Playtest (Lore, Rules & Balancing)', byCat.LORE_RULES_BALANCING)}
-`;
+| Partition Section | Niveau V | Axe H | Périmètre & Source | Statut |
+| :---- | :---- | :---- | :---- | :---- |
+| \`SEC-0\` | \`V0\` | \`H-GOV\` | Sommaire & Partition Métadonnées Multi-Niveaux | \`ACTIF\` |
+| \`SEC-1\` | \`V1\` | \`H-ARCH\` | Documents Actifs & SSoT Machine (\`${active.length}\` artefacts) | \`ACTIF\` |
+| \`SEC-2\` | \`V2\` | \`H-OPS\` | Archive Consolidée Compilée dans le Master Blueprint (\`${archived.length}\` artefacts) | \`FIGÉE\` |
 
-  fs.writeFileSync(path.join(ROOT, 'INDEX.md'), indexMd, 'utf8');
+## 1. Documents Actifs & SSoT (\`docs/\` + \`docs/master-blueprint/\` + \`docs/inter-ia/\`) (${active.length})
+
+${renderMetaTable(active)}
+## 2. Archive Consolidée (Contenu 100 % Compilé dans le Master Blueprint \`v2.14.0-MAITRE\`) (${archived.length})
+
+${renderMetaTable(archived)}`;
+
+  fs.writeFileSync(path.join(DOCS_DIR, '00_INDEX_DOCS.md'), indexMd, 'utf8');
 
   const changelogTxt = `================================================================================
-EXO WORLD : 2050 — CHANGELOG STRUCTURÉ (ACTUEL / DEMANDES / PROJETÉ)
-Version : v5.0.0-roadmap-complete | Date : ${new Date().toISOString().slice(0, 10)}
+EXO WORLD : 2050 — CHANGELOG STRUCTURÉ UNIFIÉ (ACTUEL / DEMANDES / PROJETÉ)
+Version : v5.1.0-alpha.1 | Master Blueprint : v2.14.0-MAITRE | Date : ${new Date().toISOString().slice(0, 10)}
+Emplacement unique : docs/CHANGELOG.txt (zéro doublon à la racine du projet)
 ================================================================================
 
-[ACTUEL — IMPLÉMENTÉ & VÉRIFIÉ (VAGUES P1 -> P13)]
-- P1 : Thème Rose Astralis verrouillé, bouclier Safari/iOS WebKit (100dvh, pinch zoom 2 doigts, resize split-pane).
-- P2 : Masquage HUD 100%, Super-Widget Météo/Air/3 Tours, Centre de Notifications Header priorisé.
-- P3 : Contexte Utilisateur 3D (Temps/Catégorie/Détail), Tiroir Dev Palmier, Firestore Rules déployées, React Query Devtools.
-- P4 : Routeur Gemini 6 Canaux 100% Free Tier (gemini-4-hydrogen, gemini-3.1-flash-lite, gemini-decision-1), Bilan groupé Fin de tour, Tri IA non-restrictif.
-- P5 : Système Honneurs 2 Niveaux — Niveau 1 Vitrine Multi-Parties (Lobby CoD, Avatar, Bannière, Blason, Titre, Médailles Bronze->Platine + Trophée symbolique Conception Globale) & Niveau 2 Commandant Campagne (5 attributs CK3, Traits, Titres territoriaux).
-- P6 : Onglet Monde purifié (5 domaines sans "et"/"&"), Fiche État Souverain, Stats vs Gestionnaires, Atlas interactif des chemins, lancement d'initiatives PA depuis Monde.
-- P7 : Fiche Colon Zoom + Vue 3D Exosuit, Citoyens Ordinaires Frostpunk (Santé/Éducation/Loisirs/Pollution/Origines), Badges empilés 3 niveaux (Provenance + 5 Pôles / 12 Écoles philosophiques + icône (i) légende), Bulles de suggestions cliquables, Module Monde Contextuel en fin de choix.
-- P8 : 4 Théâtres Militaires (Spatial/Ciel/Terrestre/Maritime), Planificateur Taskforce 72 secteurs, Pression Civile 0..5 étoiles (inspiration OpenGTA), Cités Extérieures + Respect Faction, Polities locales, Chat Diplomatie Libre & Générateur de Scénario Matriciel (Pax Historia).
-- P9 : Cité 3D vivante 24-Hex, Dual Maglev (Ligne Civile Rose/Émeraude + Fret Militaire Ambre), Piétons sur boucles waypoints (inspiration OpenRW), cycle solaire directionnel.
-- P10 : Studio Vidéo Climat & Catastrophes (12 catégories) avec capture native WebM 3D Free Tier (canvas.captureStream + MediaRecorder + repli Storyboard SVG).
-- P11 : Gouvernance documentaire 4 catégories (exo:doc-mesh), INDEX.md, CHANGELOG.txt, Brief UX Pax Historia.
+[ACTUEL — IMPLÉMENTÉ & VÉRIFIÉ (VAGUES P1 -> P13 + FUP-017 + FUP-018)]
+- P1..P3 : Thème Astralis, bouclier Safari/iOS WebKit (< 250 Mo, 100dvh), masquage HUD 100%, Super-Widget Météo/Air 3 Tours, Notifications Header, Firestore Rules déployées.
+- P4..P6 : Routeur Gemini 6 Canaux 100% Free Tier (R-68, HTTP 403 hors liste), Honneurs 2 Niveaux, Onglet Monde purifié (5 domaines), Fiche État Souverain.
+- P7..P10 : Fiche Colon + Exosuit 3D, Citoyens Frostpunk, Badges Empilés 3 Niveaux + légende (i), 4 Théâtres Militaires, Pression Civile 0..5★, Cité 24-Hex Dual Maglev, Studio Vidéo Climat WebM 0 USD.
+- FUP-017 : Fusion totale Niveau 0 (/docs unique sans doublon racine, /docs/master-blueprint/ SSoT, /docs/archive/ figée), Master Blueprint compilé v2.14.0-MAITRE (Sommaire Partition Métadonnées H x V + Annexes A–N), Skills Modulaires & VCS Docs isolé, et Espace Dev 3 Surfaces (AI Studio + Google Drive + GitHub + Bus + Data Agent + Firebase + Vercel).
+- FUP-018 : Événements 4+ à 10 choix principaux, mode Multi-Choix Budgété (plafonds PA/Crédits), affectation coéquipiers (spécialité, niveau, fatigue), déblocage conditionnel multi-factoriel, et Bilan partitionné en 4 Pôles (Actions & Chantiers Bâtiments, Économie, Biosphère, Humain/Politique).
+- OPT-02 A+ : Priorité Moteur 3D Unity 6 URP Principal (C#, Shader Graph, Burst/IL2CPP, .jslib, 10 Prefabs LOD0–2, Addressables) + Aperçu Web léger Three.js WebGL2 (ville 3D organique non-circulaire/non-rectiligne, éclairage AAA ACES Filmic & RoomEnvironment IBL).
 
 [DEMANDES — INTÉGRÉES SUR CETTE ITÉRATION]
-- Analyse légale & technique open-source GTA (OpenRW / OpenGTA GPLv3 sans assets Rockstar) + adaptations 100% originales EXO.
-- Respect strict du Free Tier Gemini (aucun modèle payant suite au refus de clé payante).
-- Playtest communautaire virtuel multi-personas (P13) basé sur vérifications Playwright réelles.
+- Fusion et compilation intégrale de /docs et /master-blueprint au niveau 0 sans doublon racine, avec sommaire à partition métadonnées horizontale et verticale.
+- Priorité Unity 6 URP Principal (OPT-02 A+ — plus de Unity que de Three.js : pont C#/.jslib, Prefabs, Shader Graph, Burst/IL2CPP) & refonte de la ville 3D organique réaliste.
+- Déblocage conditionnel multi-factoriel, événements à choix multiples budgétés avec coéquipiers, et bilan d'événement partitionné par pôles avec actions explicites de construction.
+- Snapshots visuels à jour, analyse des captures historiques et artefacts Skills automatisés.
 
-[PROJETÉ — PROCHAINES ÉTAPES POST-V5]
+[PROJETÉ — PROCHAINES ÉTAPES POST-V5.1]
 - Export multi-campagnes comparatif (courbes de score & d'éthique sur 6 ères).
-- Extension Unity 6 URP consommant le même contrat SceneDiffPacket L4.
-- Mode créateur de cartes communautaires partageables via JSON signé SHA-256.
+- Build WebGPU / Metal / Vulkan natif Unity 6 URP (Shader Graph Océans & Nuages Volumétriques).
+- Bascule incrémentale Monorepo AAA 8 Couches × 8 Tiers (Annexe K).
 `;
 
-  fs.writeFileSync(path.join(ROOT, 'CHANGELOG.txt'), changelogTxt, 'utf8');
-  console.log(`[exo:doc-mesh] OK — ${entries.length} documents indexés en 4 catégories (INDEX.md + CHANGELOG.txt + PAX_HISTORIA_UX_BRIEF.md).`);
+  fs.writeFileSync(path.join(DOCS_DIR, 'CHANGELOG.txt'), changelogTxt, 'utf8');
+  console.log(
+    `[exo:doc-mesh] OK — ${active.length} docs actifs + ${archived.length} archives indexés avec partition métadonnées HxV dans docs/00_INDEX_DOCS.md et docs/CHANGELOG.txt (0 fichier racine).`,
+  );
 }
 
-generateIndexAndChangelog();
+generateUnifiedIndexAndChangelog();

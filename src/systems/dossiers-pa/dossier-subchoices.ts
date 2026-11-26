@@ -11,37 +11,15 @@ import type {
  * 3 concrete execution sub-choices per choice (zero I/O, zero Math.random).
  */
 const ZERO_SUB_BONUS = {
-  credits: 0,
-  energy: 0,
-  materials: 0,
-  water: 0,
-  food: 0,
-  electronics: 0,
-  compute: 0,
-  breathingKits: 0,
-  atmosphereDelta: 0,
-  maintenanceDelta: 0,
-  allianceTrustDelta: 0,
+  credits: 0, energy: 0, materials: 0, water: 0, food: 0, electronics: 0,
+  compute: 0, breathingKits: 0, atmosphereDelta: 0, maintenanceDelta: 0, allianceTrustDelta: 0,
 } as const;
 
 const ZERO_OPTION_EFFECTS = {
-  credits: 0,
-  energy: 0,
-  materials: 0,
-  water: 0,
-  food: 0,
-  electronics: 0,
-  compute: 0,
-  breathingKits: 0,
-  approvalDelta: 0,
-  atmosphereDelta: 0,
-  maintenanceDelta: 0,
-  allianceTrustDelta: 0,
-  eraStarsDelta: 0,
-  xpCiv: 0,
-  xpCabinet: 0,
-  xpAlliance: 0,
-  oracleImpactFactor: 0,
+  credits: 0, energy: 0, materials: 0, water: 0, food: 0, electronics: 0,
+  compute: 0, breathingKits: 0, approvalDelta: 0, atmosphereDelta: 0,
+  maintenanceDelta: 0, allianceTrustDelta: 0, eraStarsDelta: 0,
+  xpCiv: 0, xpCabinet: 0, xpAlliance: 0, oracleImpactFactor: 0,
 } as const;
 
 export function getEffectiveOptionsForDossier(dossier: ExecutiveDossier): readonly DossierOption[] {
@@ -92,6 +70,95 @@ export function getEffectiveOptionsForDossier(dossier: ExecutiveDossier): readon
         maintenanceDelta: isP0 ? 4 : 2,
         allianceTrustDelta: 2,
         xpCiv: 8,
+      },
+    });
+  }
+
+  const hasSpecialistOption = options.some(
+    (o) => Boolean(o.unlockConditions?.requiredColonistSpecialty || o.unlockConditions?.minSkillThreshold),
+  );
+  if (options.length < 5 && !hasSpecialistOption) {
+    const specByClass: Record<
+      DossierClass,
+      {
+        readonly specialty: 'ENGINEERING' | 'EXOBIOLOGY' | 'CYBERNETICS' | 'SECURITY' | 'AGRONOMY';
+        readonly attr: 'engineering' | 'ecology' | 'cyber' | 'strategy' | 'diplomacy';
+        readonly subPa: 'PA_MNT' | 'PA_BIO' | 'PA_POL' | 'PA_GES';
+        readonly label: string;
+        readonly desc: string;
+      }
+    > = {
+      P0: {
+        specialty: 'ENGINEERING',
+        attr: 'engineering',
+        subPa: 'PA_MNT',
+        label: 'Intervention experte de crise (Coéquipier + Compétence)',
+        desc: 'Mobilise un ingénieur terrain pour neutraliser l’incident avec un gain net de stabilité.',
+      },
+      C1: {
+        specialty: 'AGRONOMY',
+        attr: 'diplomacy',
+        subPa: 'PA_POL',
+        label: 'Médiation civique experte (Coéquipier + Compétence)',
+        desc: 'Un coéquipier qualifié fédère les quartiers et double le rayonnement de l’accord.',
+      },
+      C2: {
+        specialty: 'ENGINEERING',
+        attr: 'engineering',
+        subPa: 'PA_GES',
+        label: 'Architecture industrielle avancée (Coéquipier + Compétence)',
+        desc: 'Débloque une optimisation de chaîne à haut rendement grâce au binôme Conseiller/Ingénieur.',
+      },
+      C3: {
+        specialty: 'ENGINEERING',
+        attr: 'engineering',
+        subPa: 'PA_MNT',
+        label: 'Refonte technique haute précision (Coéquipier Niv.2+)',
+        desc: 'Restaure fortement l’intégrité et produit du Calcul sans usure collatérale.',
+      },
+      C4: {
+        specialty: 'EXOBIOLOGY',
+        attr: 'ecology',
+        subPa: 'PA_BIO',
+        label: 'Protocole exobiologique avancé (Coéquipier + Écologie)',
+        desc: 'Accélère la terraformation grâce à un exobiologiste affecté sur site.',
+      },
+      C5: {
+        specialty: 'CYBERNETICS',
+        attr: 'cyber',
+        subPa: 'PA_POL',
+        label: 'Contre-mesure cyber-diplomatique (Coéquipier + Cyber)',
+        desc: 'Sécurise les liaisons stratégiques et accroît Calcul et Confiance Alliance.',
+      },
+    };
+    const cfg = specByClass[dossier.dossierClass];
+    options.push({
+      id: `${dossier.id}-opt-expert`,
+      label: cfg.label,
+      doctrineTag: 'SCIENTIFIC',
+      description: cfg.desc,
+      paGeneralCost: 0,
+      subPaDomain: cfg.subPa,
+      subPaCost: 1,
+      unlockConditions: {
+        requiredColonistSpecialty: cfg.specialty,
+        minColonistLevel: dossier.dossierClass === 'C3' ? 2 : 1,
+        minSkillThreshold: { attribute: cfg.attr, level: 11 },
+      },
+      effects: {
+        ...ZERO_OPTION_EFFECTS,
+        credits: dossier.dossierClass === 'C2' ? 95 : -45,
+        energy: 14,
+        materials: 16,
+        compute: 18,
+        atmosphereDelta: dossier.dossierClass === 'C4' ? 7 : 2,
+        maintenanceDelta: 12,
+        approvalDelta: 4,
+        allianceTrustDelta: 5,
+        eraStarsDelta: 1,
+        xpCiv: 32,
+        xpCabinet: 28,
+        xpAlliance: 18,
       },
     });
   }

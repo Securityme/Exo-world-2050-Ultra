@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Award,
   BookMarked,
+  CloudDownload,
   Compass,
   FolderOpen,
   Monitor,
@@ -19,7 +20,9 @@ import { ProfileAvatarFrame } from '../components/bento/ProfileAvatarFrame.tsx';
 import { AVATAR_PRESETS } from '../data/honors.catalog.ts';
 import { resolveWallpaperImageSrc } from '../data/ui-wallpapers.assets.ts';
 import { useViewportLayout } from '../hooks/use-viewport-layout.ts';
+import { loadCloudCampaign } from '../services/firebase/firebase-client.ts';
 import { listLocalCampaigns } from '../services/saves/local-saves.service.ts';
+import { useCloudAutoSaveStore } from '../stores/cloud-autosave.store.ts';
 import { useExoStore } from '../stores/game.store.ts';
 import { useMetaHonorsStore } from '../stores/meta-honors.store.ts';
 import { activeSubscreenAtom, toastNoticeAtom } from '../stores/selection.atoms.ts';
@@ -36,10 +39,13 @@ export function MainMenuScreen() {
   const setScreen = useExoStore((s) => s.setScreen);
   const startNewCampaign = useExoStore((s) => s.startNewCampaign);
   const resumeCampaign = useExoStore((s) => s.resumeCampaign);
+  const loadCampaignState = useExoStore((s) => s.loadCampaignState);
   const activeSubscreen = useAtomValue(activeSubscreenAtom);
   const setSubscreen = useSetAtom(activeSubscreenAtom);
   const setToast = useSetAtom(toastNoticeAtom);
   const { isMobile, setLayoutMode } = useViewportLayout();
+  const newerCloudCampaign = useCloudAutoSaveStore((s) => s.newerCloudCampaign);
+  const [resumingCloud, setResumingCloud] = useState(false);
 
   const savedCount = listLocalCampaigns().length;
   const canResume = hasActiveCampaign || savedCount > 0 || world.cycle > 0;
@@ -69,6 +75,23 @@ export function MainMenuScreen() {
     if (!resumed) {
       setToast({ id: Date.now(), tone: 'info', text: 'Aucune partie en cours. Lancez une campagne.' });
     }
+  };
+
+  const handleResumeFromCloud = async () => {
+    if (!newerCloudCampaign || resumingCloud) return;
+    setResumingCloud(true);
+    const [e, loaded] = await loadCloudCampaign(newerCloudCampaign.campaignId);
+    setResumingCloud(false);
+    if (e || !loaded) {
+      setToast({ id: Date.now(), tone: 'error', text: e?.message ?? 'Échec de reprise Cloud.' });
+      return;
+    }
+    loadCampaignState(loaded);
+    setToast({
+      id: Date.now(),
+      tone: 'success',
+      text: `Campagne Cloud reprise au Tour T${newerCloudCampaign.cycle}.`,
+    });
   };
 
   const vignettePct = Math.round(uiTheme.vignetteStrength);
@@ -160,6 +183,21 @@ export function MainMenuScreen() {
 
           {/* Primary Actions */}
           <div className={`flex flex-wrap items-center gap-2.5 ${isMobile ? 'flex-col items-stretch' : 'gap-3'}`}>
+            {newerCloudCampaign && (
+              <button
+                type="button"
+                data-testid="main-menu-resume-cloud-btn"
+                disabled={resumingCloud}
+                onClick={() => void handleResumeFromCloud()}
+                className="inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-xl border border-emerald-400/80 bg-emerald-600/90 px-5 py-3 font-display text-sm font-bold uppercase tracking-wider text-white shadow-md transition hover:bg-emerald-500 disabled:opacity-60 whitespace-nowrap"
+              >
+                <CloudDownload className="h-4 w-4" />
+                <span>
+                  {resumingCloud ? 'Reprise Cloud…' : `Reprendre du Cloud (T${newerCloudCampaign.cycle})`}
+                </span>
+              </button>
+            )}
+
             {canResume && (
               <button
                 type="button"

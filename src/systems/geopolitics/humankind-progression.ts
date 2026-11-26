@@ -1,42 +1,31 @@
-import type { BinarySpectra, HkProgress, HkStarDomain } from '../../contracts/v4-systems.schema.ts';
+import type {
+  BinarySpectra,
+  HkProgress,
+  HkStarDomain,
+} from '../../contracts/v4-systems.schema.ts';
 import type { WorldState } from '../../contracts/world-state.schema.ts';
+import { MAX_MACRO_ERA } from '../../data/eras-specializations.data.ts';
+import { SHARED_TECHS_30 } from '../../data/v4-catalog.data.ts';
 import {
-  resolveSuperpowerV4,
-  SHARED_TECHS_30,
-} from '../../data/v4-catalog.data.ts';
+  applyManualEraAdvance,
+  applySpecializationAdvance,
+  createDefaultHkProgress,
+  getSubEraStarThreshold,
+  type SpecializationAdvanceInput,
+} from './era-specialization.engine.ts';
 
 /**
- * [L3] EXW.L3.HUMANKIND_PROGRESSION | v4.0.0-rc.1 | SADT A3.3
- * Pure Humankind (HK) Progression, 4 Binary Spectra & 30 Shared Technologies Engine:
- * - 7 Star Domains x 3 Tiers (T1/T2/T3) -> manual Era Advance unlocked at >= 7 stars
- * - Fame accrual + Transcendence (+10% Fame per transcendence)
- * - Evolutive Faction Doctrines + Common Doctrines
- * - 30 Shared/Cyber Techs (5/Era) with +20% ally osmosis
- * - 4 Binary Spectra [-100, +100]: +1 PA bonus if |axis| >= 35, polarization warning if |axis| >= 70
+ * [L3] EXW.L3.HUMANKIND_PROGRESSION | v5.2.0 | SADT A3.3
+ * Pure Humankind (HK) Turn Star & Fame Evaluation + 4 Binary Spectra Engine.
+ * Re-exports 8-Era & 4-Specialization transition functions from era-specialization.engine.ts.
  */
-
-export function createDefaultHkProgress(superpowerId: string): HkProgress {
-  const sp = resolveSuperpowerV4(superpowerId);
-  return {
-    fame: 120,
-    starsByDomain: {
-      AESTHETE: sp.code === 'UEA' ? 1 : 0,
-      AGRARIAN: 0,
-      BUILDER: 1,
-      EXPANSIONIST: 0,
-      MERCHANT: 0,
-      MILITARIST: 0,
-      SCIENTIST: 0,
-    },
-    eraAdvanceReady: false,
-    transcendedCount: 0,
-    activeDoctrines: ['DOC_SOLAR_CHARTER'],
-    unlockedTechIds: ['tech-e1-solar-grid'],
-    activeResearchTechId: 'tech-e1-modular-fab',
-    researchTurnsLeft: 3,
-    factionEraTitle: sp.eraIdentities[0]?.factionName ?? sp.name,
-  };
-}
+export {
+  applyManualEraAdvance,
+  applySpecializationAdvance,
+  createDefaultHkProgress,
+  getSubEraStarThreshold,
+  type SpecializationAdvanceInput,
+};
 
 function tierForValue(val: number, t1: number, t2: number, t3: number): 0 | 1 | 2 | 3 {
   if (val >= t3) return 3;
@@ -54,6 +43,7 @@ export function evaluateHkTurnProgress(state: WorldState): {
 } {
   const current = state.hk ?? createDefaultHkProgress(state.superpowerId);
   const eraScale = state.era;
+  const currentSubEra = current.subEra ?? 1;
 
   const keptPromises = (state.promises ?? []).filter((p) => p.status === 'KEPT').length;
   const totalExtensions = state.districts.reduce((a, d) => a + d.modulesCount + d.level, 0);
@@ -101,8 +91,7 @@ export function evaluateHkTurnProgress(state: WorldState): {
   const nextTotal = Object.values(computedStars).reduce<number>((a, b) => a + b, 0);
   const starsEarnedThisTurn = Math.max(0, nextTotal - prevTotal);
 
-  // Advance active 3-turn shared technology research (+20% ally osmosis speeds up when compute >= 80)
-  let unlockedTechIds = [...current.unlockedTechIds];
+  const unlockedTechIds = [...current.unlockedTechIds];
   let activeResearchTechId = current.activeResearchTechId;
   let researchTurnsLeft = current.researchTurnsLeft;
   let newlyUnlockedTechName: string | null = null;
@@ -120,7 +109,7 @@ export function evaluateHkTurnProgress(state: WorldState): {
         newlyUnlockedTechName = tech.name;
       }
       const nextTech = SHARED_TECHS_30.find(
-        (t) => t.era <= state.era && !unlockedTechIds.includes(t.id),
+        (t) => t.era <= Math.min(6, state.era) && !unlockedTechIds.includes(t.id),
       );
       activeResearchTechId = nextTech?.id ?? null;
       researchTurnsLeft = nextTech?.turnsBase ?? 0;
@@ -131,13 +120,19 @@ export function evaluateHkTurnProgress(state: WorldState): {
   const rawFameGain =
     18 + starsEarnedThisTurn * 45 + (newlyUnlockedTechName ? 35 : 0) + Math.floor(state.approval / 10);
   const fameEarnedThisTurn = Math.round(rawFameGain * transcendMult);
-  const eraAdvanceReady = nextTotal >= 7 && state.era < 6;
+  const subEraAdvanceReady =
+    (currentSubEra === 1 && nextTotal >= 3) || (currentSubEra === 2 && nextTotal >= 5);
+  const eraAdvanceReady = nextTotal >= 7 && state.era < MAX_MACRO_ERA;
 
   return {
     hk: {
       ...current,
       fame: current.fame + fameEarnedThisTurn,
       starsByDomain: computedStars,
+      subEra: currentSubEra,
+      activeBranchId: current.activeBranchId ?? 'BIOSPHERE',
+      subEraAdvanceReady,
+      chosenSpecializations: current.chosenSpecializations ?? [],
       eraAdvanceReady,
       unlockedTechIds,
       activeResearchTechId,
@@ -147,70 +142,6 @@ export function evaluateHkTurnProgress(state: WorldState): {
     totalEraStars: nextTotal,
     fameEarnedThisTurn,
     newlyUnlockedTechName,
-  };
-}
-
-export function applyManualEraAdvance(
-  state: WorldState,
-  mode: 'EVOLVE' | 'TRANSCEND',
-  doctrineId: string,
-): WorldState {
-  const currentHk = state.hk ?? createDefaultHkProgress(state.superpowerId);
-  if (state.era >= 6) return state;
-
-  const nextEra = state.era + 1;
-  const sp = resolveSuperpowerV4(state.superpowerId);
-  const eraIdentity = sp.eraIdentities.find((e) => e.era === nextEra);
-
-  const nextDoctrines = currentHk.activeDoctrines.includes(doctrineId)
-    ? currentHk.activeDoctrines
-    : [...currentHk.activeDoctrines, doctrineId];
-
-  const nextTech = SHARED_TECHS_30.find(
-    (t) => t.era <= nextEra && !currentHk.unlockedTechIds.includes(t.id),
-  );
-
-  return {
-    ...state,
-    era: nextEra,
-    unlockedSlots: Math.min(6, Math.max(state.unlockedSlots, nextEra)),
-    hk: {
-      ...currentHk,
-      fame: currentHk.fame + (mode === 'TRANSCEND' ? 120 : 80),
-      starsByDomain: {
-        AESTHETE: 0,
-        AGRARIAN: 0,
-        BUILDER: 0,
-        EXPANSIONIST: 0,
-        MERCHANT: 0,
-        MILITARIST: 0,
-        SCIENTIST: 0,
-      },
-      eraAdvanceReady: false,
-      transcendedCount: currentHk.transcendedCount + (mode === 'TRANSCEND' ? 1 : 0),
-      activeDoctrines: nextDoctrines,
-      activeResearchTechId: currentHk.activeResearchTechId ?? nextTech?.id ?? null,
-      researchTurnsLeft: currentHk.activeResearchTechId ? currentHk.researchTurnsLeft : 3,
-      factionEraTitle:
-        mode === 'TRANSCEND'
-          ? `${currentHk.factionEraTitle} (Transcendée)`
-          : eraIdentity?.factionName ?? `Ère ${nextEra}`,
-    },
-    chronicle: [
-      {
-        id: `chr-hk-era-${nextEra}-c${state.cycle}`,
-        cycle: state.cycle,
-        tick: state.tick,
-        category: 'ERA' as const,
-        title:
-          mode === 'TRANSCEND'
-            ? `Transcendance vers l’Ère ${nextEra}`
-            : `Avènement : ${eraIdentity?.factionName ?? `Ère ${nextEra}`}`,
-        detail: `Doctrine adoptée : ${doctrineId} · Bonus Gloire ${mode === 'TRANSCEND' ? '+10% cumulatif' : 'Fédération'}.`,
-        stateHash: state.stateHash,
-      },
-      ...state.chronicle,
-    ].slice(0, 60),
   };
 }
 

@@ -73,27 +73,27 @@ export const EXTERNAL_SSOT_SURFACES: readonly ExternalSsotSurface[] = Object.fre
 export const SOT_MANIFEST: readonly SotManifestEntry[] = Object.freeze([
   {
     id: 'DOC-EXW-ARCH-001',
-    version: 'v2.10.0-MAITRE',
+    version: 'v2.14.0-MAITRE',
     localPath: 'docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md',
-    role: 'Master Blueprint partitionné (Annexes A-G, SADT A0..A5, AR-01..18, R-01..69)',
+    role: 'Master Blueprint Unifié intégral en 1 fichier (Annexes A-N, docs/master-blueprint/, EXO-DEV-BRIDGE, FUP-018, SADT A0..A5, AR-01..19, R-01..69)',
   },
   {
     id: 'SYS-INST-EXW-001',
-    version: 'v5.0.0',
+    version: 'v5.1.0-alpha.1',
     localPath: 'docs/SYSTEM_INSTRUCTION_LIVE.md',
-    role: 'System Instruction universel multi-IA (GitHub Ultra + Gemini Notebook + Drive)',
+    role: 'System Instruction universel multi-IA (GitHub Ultra + Drive + AI Studio + Antigravity + Gemini)',
   },
   {
     id: 'SPEC-SRC-DOC-EXW-001',
-    version: 'v1.2.0',
-    localPath: 'docs/architecture/05_SRC_ARBO_AISTUDIO_COMPLETE.md',
-    role: 'Arborescence plate normative 24 domaines L0 -> L8 (0 src/features, 0 src/handlers)',
+    version: 'v1.4.0',
+    localPath: 'docs/00_INDEX_DOCS.md',
+    role: 'Index documentaire unifié Niveau 0 (/docs unique, /docs/master-blueprint/ SSoT, /docs/archive/ figée)',
   },
   {
     id: 'V1-PLAYTEST-6T',
     version: 'v1.0.0',
-    localPath: 'docs/changelogs/V1_PLAYTEST_HISTOIRE_6_TOURS.md',
-    role: 'Synthèse narrative & télémétrique déterministe 6 tours (90 ticks, seed 0x2050E801)',
+    localPath: 'docs/archive/changelogs/V1_PLAYTEST_HISTOIRE_6_TOURS.md',
+    role: 'Synthèse narrative & télémétrique déterministe 6 tours (compilée en Annexe H du Master Blueprint)',
   },
 ]);
 

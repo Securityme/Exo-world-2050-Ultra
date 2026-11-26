@@ -1,0 +1,44 @@
+{
+  "messages": [
+    {
+      "id": "bus-init-001",
+      "sender": "ANTIGRAVITY",
+      "target": "AI_STUDIO",
+      "kind": "ACK",
+      "content": "Canal BUS-EXW-001 initialisé : passerelles AI Studio, Antigravity, Gemini Swarm, Data Agent Kit, Firebase, Vercel, Drive et GitHub prêtes.",
+      "linkedPath": "docs/inter-ia/BUS_MESSAGES.md",
+      "linkedDocId": "doc-master-blueprint-ssot",
+      "createdAtIso": "2026-11-24T22:00:00.000Z",
+      "shaDigest": "38066151107745d2"
+    },
+    {
+      "id": "bus-init-002",
+      "sender": "SWARM",
+      "target": "DATA_AGENT_KIT",
+      "kind": "HANDOFF",
+      "content": "Vérifier la parité M13_SADT_Mapping.json et préparer le paquet de synchronisation tri-surface avant publication.",
+      "linkedPath": "docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md",
+      "linkedDocId": "doc-master-blueprint-ssot",
+      "createdAtIso": "2026-11-24T22:05:00.000Z",
+      "shaDigest": "d4b1ef0f7aa8155a"
+    }
+  ],
+  "syncLogs": [],
+  "vercelProjectUrl": "",
+  "vercelHookConfigured": false,
+  "githubOAuthConfigured": false,
+  "lastAudit": {
+    "modulesCount": 294,
+    "matricesPass": 17,
+    "totalMatrices": 17,
+    "dsmCycleCount": 0,
+    "gate": "GO",
+    "githubParity": "SYNCED",
+    "generatedAtIso": "2026-11-24T23:00:19.280Z",
+    "details": [
+      "SemVer SSoT : 5.1.0-alpha.1",
+      "Modules non mappés : 0",
+      "Références orphelines : 0"
+    ]
+  }
+}

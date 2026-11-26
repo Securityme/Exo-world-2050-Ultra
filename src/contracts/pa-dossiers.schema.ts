@@ -150,6 +150,40 @@ export const DossierSubChoiceSchema = z.object({
   badgeMeta: SubChoiceBadgeMetaSchema.optional(),
 });
 
+export const OptionUnlockConditionsSchema = z.object({
+  requiredColonistSpecialty: z
+    .enum(['ENGINEERING', 'AGRONOMY', 'CYBERNETICS', 'SECURITY', 'EXOBIOLOGY'])
+    .optional(),
+  minColonistLevel: z.number().int().min(1).max(10).optional(),
+  minColonistCount: z.number().int().min(0).max(3).optional(),
+  minSkillThreshold: z
+    .object({
+      attribute: z.enum(['engineering', 'diplomacy', 'ecology', 'strategy', 'cyber']),
+      level: z.number().int().min(1).max(30),
+    })
+    .optional(),
+  minEra: z.number().int().min(1).max(6).optional(),
+  minAtmosphereTier: z.enum(['P1', 'P2', 'P3', 'P4']).optional(),
+  requiredTechId: z.string().min(2).max(64).optional(),
+  minResources: z
+    .object({
+      credits: z.number().nonnegative().optional(),
+      compute: z.number().nonnegative().optional(),
+      materials: z.number().nonnegative().optional(),
+      energy: z.number().nonnegative().optional(),
+    })
+    .optional(),
+  minAllianceTrust: z.number().min(0).max(100).optional(),
+});
+
+export const DossierSelectionBudgetSchema = z.object({
+  mode: z.enum(['SINGLE', 'BUDGETED_MULTI']).default('SINGLE'),
+  maxSelections: z.number().int().min(1).max(4).default(1),
+  paBudgetCap: z.number().int().min(0).max(12).default(4),
+  creditsBudgetCap: z.number().int().min(0).max(2000).default(500),
+  requireColonistOnBundle: z.boolean().default(false),
+});
+
 export const DossierOptionSchema = z.object({
   id: z.string().min(2).max(64),
   label: z.string().min(3).max(110),
@@ -159,6 +193,7 @@ export const DossierOptionSchema = z.object({
   subPaDomain: SubPaDomainSchema.nullable(),
   subPaCost: z.number().int().min(0).max(6),
   skillCheck: SkillCheckSchema.optional(),
+  unlockConditions: OptionUnlockConditionsSchema.optional(),
   effects: DossierEffectVectorSchema,
   actionPayload: DossierActionPayloadSchema.optional(),
   subChoices: z.array(DossierSubChoiceSchema).max(4).optional(),
@@ -175,12 +210,15 @@ export const ExecutiveDossierSchema = z.object({
   tileIndex: z.number().int().min(0).max(71).default(12),
   expiresInCycles: z.number().int().min(1).max(6),
   scientificTag: z.string().max(80).optional(),
-  options: z.array(DossierOptionSchema).min(2).max(6),
+  selectionBudget: DossierSelectionBudgetSchema.optional(),
+  options: z.array(DossierOptionSchema).min(2).max(10),
 });
 
 export const ExecutiveDecisionIntentSchema = z.object({
   dossierId: z.string().min(3).max(80),
   optionId: z.string().min(2).max(64),
+  extraOptionIds: z.array(z.string().min(2).max(64)).max(3).optional(),
+  assignedColonistIds: z.array(z.string().min(2).max(64)).max(3).optional(),
   subChoiceId: z.string().max(64).optional(),
   refinementLevel: RefinementLevelSchema,
   assignedAdvisorId: z.string().min(2).max(64),
@@ -212,6 +250,8 @@ export type RefinementLevel = z.infer<typeof RefinementLevelSchema>;
 export type DossierActionPayload = z.infer<typeof DossierActionPayloadSchema>;
 export type SubChoiceBadgeMeta = z.infer<typeof SubChoiceBadgeMetaSchema>;
 export type DossierSubChoice = z.infer<typeof DossierSubChoiceSchema>;
+export type OptionUnlockConditions = z.infer<typeof OptionUnlockConditionsSchema>;
+export type DossierSelectionBudget = z.infer<typeof DossierSelectionBudgetSchema>;
 export type DossierOption = z.infer<typeof DossierOptionSchema>;
 export type ExecutiveDossier = z.infer<typeof ExecutiveDossierSchema>;
 export type ExecutiveDecisionIntent = z.infer<typeof ExecutiveDecisionIntentSchema>;

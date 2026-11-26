@@ -13,6 +13,8 @@
     "lint:eslint": "eslint src",
     "test": "vitest run tests/v0-guardrails-kahn-nomenclature.test.ts tests/v0-determinism-360-ticks.test.ts tests/v0-pa-fungibility-and-p0.test.ts tests/v1-simulation-and-events.test.ts tests/v2-event-gateway-and-resources.test.ts tests/v4-core-and-fuzz.test.ts && tsx --test tests/safari-webkit.test.ts tests/climate-and-notifications.test.ts tests/user-context-3d.test.ts tests/v5-roadmap.test.ts",
     "exo:audit": "tsx scripts/exo-audit.ts",
+    "exo:taxo:audit": "tsx scripts/exo-taxo-audit.ts",
+    "exo:matrices:audit": "tsx scripts/exo-matrices-audit.ts",
     "exo:sync-bp": "tsx scripts/export-trifmt.ts",
     "exo:doc-mesh": "tsx scripts/exo-doc-mesh.ts"
   },

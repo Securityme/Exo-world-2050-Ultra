@@ -389,10 +389,11 @@ export function createInitialWorldState(config: InitialCampaignConfig): WorldSta
       },
     ],
     colonists: [
-      { id: 'col-1', name: 'Nadia Kowalski', specialty: 'ENGINEERING', trait: 'Précision Modulaire', morale: 78, fatigue: 20, assignedDistrictId: 'dist-cmd' },
-      { id: 'col-2', name: 'Kenji Takahashi', specialty: 'CYBERNETICS', trait: 'Pare-Feu Quantique', morale: 81, fatigue: 18, assignedDistrictId: 'dist-dc' },
-      { id: 'col-3', name: 'Amina Diallo', specialty: 'EXOBIOLOGY', trait: 'Bio-Enzymes Adaptatives', morale: 76, fatigue: 24, assignedDistrictId: 'dist-bio' },
-      { id: 'col-4', name: 'Lucas Ferreira', specialty: 'AGRONOMY', trait: 'Hydroponie Rendement', morale: 74, fatigue: 22, assignedDistrictId: 'dist-hab' },
+      { id: 'col-1', name: 'Nadia Kowalski', specialty: 'ENGINEERING', trait: 'Précision Modulaire', morale: 78, fatigue: 20, level: 2, xp: 65, assignedDistrictId: 'dist-cmd' },
+      { id: 'col-2', name: 'Kenji Takahashi', specialty: 'CYBERNETICS', trait: 'Pare-Feu Quantique', morale: 81, fatigue: 18, level: 2, xp: 70, assignedDistrictId: 'dist-dc' },
+      { id: 'col-3', name: 'Amina Diallo', specialty: 'EXOBIOLOGY', trait: 'Bio-Enzymes Adaptatives', morale: 76, fatigue: 24, level: 1, xp: 35, assignedDistrictId: 'dist-bio' },
+      { id: 'col-4', name: 'Lucas Ferreira', specialty: 'AGRONOMY', trait: 'Hydroponie Rendement', morale: 74, fatigue: 22, level: 1, xp: 30, assignedDistrictId: 'dist-hab' },
+      { id: 'col-5', name: 'Soraia Mendes', specialty: 'SECURITY', trait: 'Protocole Orbital', morale: 77, fatigue: 16, level: 1, xp: 25, assignedDistrictId: null },
     ],
     districts: [
       { id: 'dist-cmd', name: 'Centre de commandement', kind: 'COMMAND', level: 2, modulesCount: 1, integrity: 94, gridX: 0, gridZ: 0 },

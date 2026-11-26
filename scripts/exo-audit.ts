@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
+  Classification6DManifestSchema,
+  detectPrefixCollisions,
+} from '../src/contracts/classification-6d.schema.ts';
+import {
   evaluateMatrixArchitecture,
   type M0Manifest,
   type M13Manifest,
@@ -10,7 +14,7 @@ import { syncMasterBlueprint } from './export-trifmt.ts';
 const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, 'src');
 const TESTS_DIR = path.join(ROOT, 'tests');
-const BP_DIR = path.join(ROOT, 'master-blueprint');
+const BP_DIR = path.join(ROOT, 'docs', 'master-blueprint');
 
 // Auto-immunized Z0 ban patterns (constructed dynamically so this script never triggers itself)
 const Z0_TOKENS = [
@@ -136,11 +140,53 @@ function runAudit(): void {
   for (const f of expectedFiles) {
     const full = path.join(BP_DIR, f);
     if (!fs.existsSync(full)) {
-      errors.push(`[DIR-01] Projection manquante: master-blueprint/${f}`);
+      errors.push(`[DIR-01] Projection manquante: docs/master-blueprint/${f}`);
     } else {
       const txt = fs.readFileSync(full, 'utf8');
       if (!txt.includes(m0.rootSemver)) {
-        errors.push(`[DIR-01] Désynchronisation SemVer dans master-blueprint/${f}`);
+        errors.push(`[DIR-01] Désynchronisation SemVer dans docs/master-blueprint/${f}`);
+      }
+    }
+  }
+
+  // 6. XSC-CUBE 6D ⊥ G-CUBE Classification & Zero Prefix-Collision Gate (NORM-EXW v3.0)
+  const classifPath = path.join(BP_DIR, 'classif-6d.json');
+  let classifNodeCount = 0;
+  if (!fs.existsSync(classifPath)) {
+    errors.push('[XSC-6D] Manifeste manquant: docs/master-blueprint/classif-6d.json');
+  } else {
+    const rawClassif: unknown = JSON.parse(fs.readFileSync(classifPath, 'utf8'));
+    const parsedClassif = Classification6DManifestSchema.safeParse(rawClassif);
+    if (!parsedClassif.success) {
+      for (const issue of parsedClassif.error.issues) {
+        errors.push(`[XSC-6D] ${issue.path.join('.')}: ${issue.message}`);
+      }
+    } else {
+      classifNodeCount = parsedClassif.data.nodes.length;
+      const allTokens: string[] = [];
+      for (const node of parsedClassif.data.nodes) {
+        allTokens.push(
+          node.xsc_cube_6d.axe_1_doc.depth,
+          node.xsc_cube_6d.axe_1_doc.part,
+          node.xsc_cube_6d.axe_1_doc.pivot,
+          ...node.xsc_cube_6d.axe_1_doc.h_active,
+          ...node.xsc_cube_6d.axe_2_taxo.class_iso7573,
+          ...node.xsc_cube_6d.axe_3_arch.layers,
+          node.xsc_cube_6d.axe_4_gov.gemma,
+        );
+        if (node.g_cube_overlay) {
+          allTokens.push(
+            ...node.g_cube_overlay.g1_spatial,
+            ...node.g_cube_overlay.g3_atmo,
+            ...node.g_cube_overlay.g4_decision,
+          );
+        }
+      }
+      const collisions = detectPrefixCollisions(allTokens);
+      for (const c of collisions) {
+        errors.push(
+          `[XSC-6D-COLLISION] Préfixe ambigu "${c.token}" (${c.legacyGroup}) → utiliser ${c.canonicalReplacement}`,
+        );
       }
     }
   }
@@ -148,6 +194,7 @@ function runAudit(): void {
   console.log(`\n=== EXO WORLD : 2050 — AUDIT DE GOUVERNANCE (${m0.rootId}@${m0.rootSemver}) ===`);
   console.log(`Modules SRC vérifiés : ${actualSrcRel.length}`);
   console.log(`Matrices M0..M15     : ${report.matrices.filter((m) => m.status === 'PASS').length}/${report.matrices.length} PASS`);
+  console.log(`XSC-CUBE 6D ⊥ G-CUBE : ${classifNodeCount} nœuds validés (0 collision préfixe)`);
   console.log(`Cycles DSM (Kahn)    : ${report.dsmCycleCount}`);
   console.log(`Release Gate         : ${errors.length === 0 && report.gate === 'GO' ? 'GO' : 'NO-GO'}`);
 

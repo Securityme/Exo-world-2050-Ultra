@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocFromServer,
@@ -17,12 +18,17 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
   updateDoc,
   where,
 } from 'firebase/firestore';
 import firebaseConfig from '../../../firebase-applet-config.json';
 import { err, ok, type ExwResult } from '../../contracts/trigger-bus.schema.ts';
 import type { WorldState } from '../../contracts/world-state.schema.ts';
+import {
+  sanitizeCampaignForFirestore,
+  sanitizeFirestoreDocId,
+} from '../../utils/cloud-autosave-policy.ts';
 
 /**
  * [L5] FUP-004 / FUP-008 | SM-01 | SADT A5.1
@@ -45,6 +51,10 @@ onAuthStateChanged(auth, (user) => {
     workspaceAccessTokenInMemory = null;
   }
 });
+
+export function subscribeAuthState(listener: (user: User | null) => void): () => void {
+  return onAuthStateChanged(auth, listener);
+}
 
 export function getWorkspaceAccessToken(): string | null {
   return workspaceAccessTokenInMemory;
@@ -193,10 +203,25 @@ async function ensurePlayerProfile(user: User): Promise<void> {
 export interface CampaignSaveMeta {
   readonly campaignId: string;
   readonly superpowerId: string;
+  readonly worldSeed: string;
   readonly era: number;
   readonly cycle: number;
+  readonly tick: number;
   readonly atmosphereTier: string;
   readonly stateHash: string;
+  readonly updatedAtIso: string | null;
+}
+
+function toIsoTimestamp(value: unknown): string | null {
+  if (value instanceof Timestamp) return value.toDate().toISOString();
+  if (value && typeof value === 'object' && 'toDate' in value && typeof (value as { toDate?: unknown }).toDate === 'function') {
+    try {
+      return (value as { toDate: () => Date }).toDate().toISOString();
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 export async function saveCampaignToCloud(state: WorldState): Promise<ExwResult<string>> {
@@ -204,39 +229,43 @@ export async function saveCampaignToCloud(state: WorldState): Promise<ExwResult<
   if (!user) {
     return err('EXW_ERR_AUTH_REQUIRED', 'Connexion Google requise pour sauvegarder sur le Cloud.');
   }
-  const safeId = state.campaignId.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 60);
-  const ref = doc(db, 'campaigns', safeId);
+  const payload = sanitizeCampaignForFirestore(state);
+  const ref = doc(db, 'campaigns', payload.campaignId);
   try {
     const existing = await getDoc(ref);
     if (existing.exists()) {
       await updateDoc(ref, {
-        era: state.era,
-        cycle: state.cycle,
-        tick: state.tick,
-        atmosphereTier: state.atmosphereTier,
-        stateHash: state.stateHash,
-        snapshot: state,
+        era: payload.era,
+        cycle: payload.cycle,
+        tick: payload.tick,
+        atmosphereTier: payload.atmosphereTier,
+        stateHash: payload.stateHash,
+        snapshot: payload.snapshot,
         updatedAt: serverTimestamp(),
       });
     } else {
       await setDoc(ref, {
-        campaignId: safeId,
+        campaignId: payload.campaignId,
         ownerId: user.uid,
-        worldSeed: state.worldSeed,
-        superpowerId: state.superpowerId,
-        era: state.era,
-        cycle: state.cycle,
-        tick: state.tick,
-        atmosphereTier: state.atmosphereTier,
-        stateHash: state.stateHash,
-        snapshot: state,
+        worldSeed: payload.worldSeed,
+        superpowerId: payload.superpowerId,
+        era: payload.era,
+        cycle: payload.cycle,
+        tick: payload.tick,
+        atmosphereTier: payload.atmosphereTier,
+        stateHash: payload.stateHash,
+        snapshot: payload.snapshot,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
     }
-    return ok(safeId);
+    return ok(payload.campaignId);
   } catch (error) {
-    const detail = handleFirestoreError(error, FirestoreOperationType.WRITE, `campaigns/${safeId}`);
+    const detail = handleFirestoreError(
+      error,
+      FirestoreOperationType.WRITE,
+      `campaigns/${payload.campaignId}`,
+    );
     return err('EXW_ERR_SCHEMA', detail);
   }
 }
@@ -247,17 +276,27 @@ export async function listUserCloudCampaigns(): Promise<ExwResult<CampaignSaveMe
   try {
     const q = query(collection(db, 'campaigns'), where('ownerId', '==', user.uid));
     const snaps = await getDocs(q);
-    const items: CampaignSaveMeta[] = snaps.docs.map((d) => {
-      const data = d.data();
-      return {
-        campaignId: String(data.campaignId ?? d.id),
-        superpowerId: String(data.superpowerId ?? 'eu-spatiale'),
-        era: Number(data.era ?? 1),
-        cycle: Number(data.cycle ?? 0),
-        atmosphereTier: String(data.atmosphereTier ?? 'P1'),
-        stateHash: String(data.stateHash ?? ''),
-      };
-    });
+    const items: CampaignSaveMeta[] = snaps.docs
+      .map((d) => {
+        const data = d.data();
+        return {
+          campaignId: String(data.campaignId ?? d.id),
+          superpowerId: String(data.superpowerId ?? 'sp-uea'),
+          worldSeed: String(data.worldSeed ?? '20500409'),
+          era: Number(data.era ?? 1),
+          cycle: Number(data.cycle ?? 0),
+          tick: Number(data.tick ?? 0),
+          atmosphereTier: String(data.atmosphereTier ?? 'P1'),
+          stateHash: String(data.stateHash ?? ''),
+          updatedAtIso: toIsoTimestamp(data.updatedAt),
+        };
+      })
+      .sort((a, b) => {
+        if (a.updatedAtIso && b.updatedAtIso && a.updatedAtIso !== b.updatedAtIso) {
+          return b.updatedAtIso.localeCompare(a.updatedAtIso);
+        }
+        return b.cycle - a.cycle || b.tick - a.tick;
+      });
     return ok(items);
   } catch (error) {
     const detail = handleFirestoreError(error, FirestoreOperationType.LIST, 'campaigns');
@@ -268,13 +307,27 @@ export async function listUserCloudCampaigns(): Promise<ExwResult<CampaignSaveMe
 export async function loadCloudCampaign(campaignId: string): Promise<ExwResult<WorldState>> {
   const user = auth.currentUser;
   if (!user) return err('EXW_ERR_AUTH_REQUIRED', 'Connexion requise.');
+  const safeId = sanitizeFirestoreDocId(campaignId, 60);
   try {
-    const snap = await getDoc(doc(db, 'campaigns', campaignId));
+    const snap = await getDoc(doc(db, 'campaigns', safeId));
     if (!snap.exists()) return err('EXW_ERR_SCHEMA', 'Campagne introuvable.');
     const data = snap.data();
     return ok(data.snapshot as WorldState);
   } catch (error) {
-    const detail = handleFirestoreError(error, FirestoreOperationType.GET, `campaigns/${campaignId}`);
+    const detail = handleFirestoreError(error, FirestoreOperationType.GET, `campaigns/${safeId}`);
+    return err('EXW_ERR_SCHEMA', detail);
+  }
+}
+
+export async function deleteCloudCampaign(campaignId: string): Promise<ExwResult<string>> {
+  const user = auth.currentUser;
+  if (!user) return err('EXW_ERR_AUTH_REQUIRED', 'Connexion requise.');
+  const safeId = sanitizeFirestoreDocId(campaignId, 60);
+  try {
+    await deleteDoc(doc(db, 'campaigns', safeId));
+    return ok(safeId);
+  } catch (error) {
+    const detail = handleFirestoreError(error, FirestoreOperationType.DELETE, `campaigns/${safeId}`);
     return err('EXW_ERR_SCHEMA', detail);
   }
 }

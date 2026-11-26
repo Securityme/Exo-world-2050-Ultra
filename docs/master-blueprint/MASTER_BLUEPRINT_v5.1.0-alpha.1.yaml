@@ -79,7 +79,7 @@ matrices:
     code: "SRC-MAPPING"
     status: "PASS"
     iso: "ISO 12207"
-    metric: "279 modules · 0 non-mappés"
+    metric: "303 modules · 0 non-mappés"
   - id: "M14"
     code: "SAVE-MIG"
     status: "PASS"

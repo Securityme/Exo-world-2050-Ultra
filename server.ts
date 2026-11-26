@@ -24,6 +24,7 @@ import {
 } from './src/doc-sync/sot-manifest.ts';
 import { createDocGovernanceRouter } from './src/app/api/doc-governance.route.ts';
 import { createDocsVcsRouter } from './src/app/api/docs-vcs.route.ts';
+import { createDevBridgeRouter } from './src/app/api/dev-bridge.route.ts';
 import { classifyProjectDocument } from './src/systems/governance/doc-governance.engine.ts';
 import { applyLlmLexicon, buildLlmLexiconPromptBlock } from './src/utils/llm-lexicon.ts';
 
@@ -55,11 +56,31 @@ const RATE_LIMIT_MAX = 12;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const sessionHits = new Map<string, number[]>();
 
+const CombinatorialRecipeBrickSchema = z.object({
+  recipeId: z.string().max(64),
+  category: z.enum(['P0', 'C1', 'C2', 'C3', 'C4', 'C5']),
+  actor: z.string().max(80),
+  location: z.string().max(80),
+  stake: z.string().max(140),
+  lever: z.string().max(100),
+  questThread: z.string().max(100),
+});
+
+const CombinatorialBriefSchema = z.object({
+  eraLabel: z.string().max(120),
+  subEraCode: z.string().max(16),
+  branchLabel: z.string().max(80),
+  specializationTitles: z.array(z.string().max(80)).max(6).default([]),
+  activeQuestHighlights: z.array(z.string().max(140)).max(6).default([]),
+  worldTensions: z.array(z.string().max(140)).max(8).default([]),
+  combinationMatrix: z.array(CombinatorialRecipeBrickSchema).max(4).default([]),
+});
+
 const TurnEventsRequestSchema = z.object({
   sessionId: z.string().min(2).max(80).default('default'),
   cycle: z.number().int().min(0),
   year: z.number().int().min(2050),
-  era: z.number().int().min(1).max(6),
+  era: z.number().int().min(1).max(8),
   atmosphereTier: z.enum(['P1', 'P2', 'P3', 'P4']),
   superpowerName: z.string().max(80),
   aiPersonaName: z.string().max(50).default('AURA-2050'),
@@ -67,6 +88,7 @@ const TurnEventsRequestSchema = z.object({
   approval: z.number().min(0).max(100),
   credits: z.number(),
   excludedCodes: z.array(z.string()).max(30).default([]),
+  combinatorialBrief: CombinatorialBriefSchema.optional(),
 });
 
 function checkRateLimit(sessionId: string): boolean {
@@ -96,15 +118,33 @@ async function withTimeout<T>(promise: Promise<T>, ms: number, label: string): P
 }
 
 function buildGeminiPrompt(input: z.infer<typeof TurnEventsRequestSchema>): string {
+  const cb = input.combinatorialBrief;
+  const combinatorialBlock = cb
+    ? [
+        `ASSEMBLAGE COMBINATOIRE LIVE :`,
+        `- Horizon : ${cb.eraLabel} (${cb.subEraCode}) · Branche active : ${cb.branchLabel}.`,
+        `- Spécialisations adoptées : ${cb.specializationTitles.join(' | ') || 'Première phase pionnière'}.`,
+        `- Fils de quêtes actifs : ${cb.activeQuestHighlights.join(' | ') || 'Genèse 2050'}.`,
+        `- Tensions réelles du monde : ${cb.worldTensions.join(' ; ')}.`,
+        `- Briques combinatoires à croiser (choisis et combine Acteur × Lieu × Enjeu × Levier × Quête) :`,
+        ...cb.combinationMatrix.map(
+          (b) => `  * [${b.category}] Acteur=${b.actor} × Lieu=${b.location} × Enjeu=${b.stake} × Levier=${b.lever} × Fil=${b.questThread}`,
+        ),
+      ].join('\n')
+    : '';
+
   return [
-    `Tu es le moteur narratif de EXO WORLD : 2050 (Tour ${input.cycle}, Année ${input.year}, Ère ${input.era}, Atmosphère ${input.atmosphereTier}).`,
+    `Tu es le moteur narratif combinatoire de EXO WORLD : 2050 (Tour ${input.cycle}, Année ${input.year}, Ère ${input.era}/8, Atmosphère ${input.atmosphereTier}).`,
     `Superpuissance: ${input.superpowerName}. Co-pilote IA: ${input.aiPersonaName} (Ton ${input.aiPersonality}). Approbation: ${input.approval}%. Crédits: ${input.credits}.`,
+    combinatorialBlock,
     `Règles strictes: Français précis, réalisme scientifique 2050 (R-50). Interdiction absolue d'évoquer des mécaniques fantastiques ou obsolètes.`,
     buildLlmLexiconPromptBlock(),
     `Génère UNIQUEMENT un objet JSON valide avec la structure exacte: { "aiCopilotComment": string (max 160 car), "dossiers": [ { "id": string, "code": string, "dossierClass": "C1"|"C2"|"C3"|"C4"|"C5", "title": string, "briefing": string, "source": "ORACLE_GEMINI", "slotIndex": 1, "tileIndex": integer 0..71, "expiresInCycles": 2, "options": [ 2 à 3 options dont AU MOINS UNE avec paGeneralCost=0 et subPaCost=0 ] } ] }.`,
     `Chaque option doit contenir: id, label, doctrineTag ("SOLARPUNK"|"CORPORATE"|"SECURITY"|"SCIENTIFIC"|"FEDERAL"), description, paGeneralCost (0..2), subPaDomain ("PA_GES"|"PA_MNT"|"PA_BIO"|"PA_POL"|null), subPaCost (0..2), effects { credits, energy, materials, water, food, electronics, compute, breathingKits, approvalDelta, atmosphereDelta, maintenanceDelta, allianceTrustDelta, eraStarsDelta, xpCiv, xpCabinet, xpAlliance, oracleImpactFactor }.`,
-    `Génère exactement 1 dossier exécutif très incarné (mentionnant un quartier ou un conseiller) et évite les codes: ${input.excludedCodes.join(', ') || 'aucun'}.`,
-  ].join('\n');
+    `Assemble 1 à 2 dossiers exécutifs très incarnés en croisant les briques combinatoires ci-dessus (acteur, lieu, tension et fil de quête actifs) et évite les codes: ${input.excludedCodes.join(', ') || 'aucun'}.`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 }
 
 function cleanNarrativeText(raw: string): string {
@@ -202,6 +242,104 @@ async function startServer() {
 
   app.use('/api/governance', createDocGovernanceRouter());
   app.use('/api/docs-vcs', createDocsVcsRouter());
+  app.use('/api/dev-bridge', createDevBridgeRouter());
+
+  app.get('/api/auth/github/url', (_req, res) => {
+    const appUrl = (process.env.APP_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+    const callbackUrl = `${appUrl}/auth/callback`;
+    const clientId = (process.env.GITHUB_OAUTH_CLIENT_ID ?? '').trim();
+    if (!clientId) {
+      res.json({
+        configured: false,
+        callbackUrl,
+        error: 'Variables GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET non renseignées.',
+      });
+      return;
+    }
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: callbackUrl,
+      scope: 'repo',
+    });
+    res.json({
+      configured: true,
+      callbackUrl,
+      url: `https://github.com/login/oauth/authorize?${params.toString()}`,
+    });
+  });
+
+  app.get(['/auth/callback', '/auth/callback/'], async (req, res) => {
+    const code = typeof req.query.code === 'string' ? req.query.code.trim() : '';
+    const clientId = (process.env.GITHUB_OAUTH_CLIENT_ID ?? '').trim();
+    const clientSecret = (process.env.GITHUB_OAUTH_CLIENT_SECRET ?? '').trim();
+    const appUrl = (process.env.APP_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+    const redirectUri = `${appUrl}/auth/callback`;
+
+    let payload: { type: string; accessToken?: string; login?: string; error?: string } = {
+      type: 'GITHUB_OAUTH_ERROR',
+      error: 'Code OAuth GitHub manquant ou identifiants serveur absents.',
+    };
+
+    if (code && clientId && clientSecret) {
+      try {
+        const tokenResp = await fetch('https://github.com/login/oauth/access_token', {
+          method: 'POST',
+          headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id: clientId,
+            client_secret: clientSecret,
+            code,
+            redirect_uri: redirectUri,
+          }),
+        });
+        const tokenJson = (await tokenResp.json()) as { access_token?: string; error_description?: string };
+        if (tokenJson.access_token) {
+          let login = 'github-user';
+          try {
+            const userResp = await fetch('https://api.github.com/user', {
+              headers: {
+                Authorization: `Bearer ${tokenJson.access_token}`,
+                Accept: 'application/vnd.github+json',
+                'User-Agent': 'exo-world-2050-dev-bridge',
+              },
+            });
+            if (userResp.ok) {
+              const userJson = (await userResp.json()) as { login?: string };
+              if (userJson.login) login = userJson.login;
+            }
+          } catch {
+            // Keep default login label
+          }
+          payload = {
+            type: 'GITHUB_OAUTH_SUCCESS',
+            accessToken: tokenJson.access_token,
+            login,
+          };
+        } else {
+          payload = {
+            type: 'GITHUB_OAUTH_ERROR',
+            error: tokenJson.error_description ?? 'Échange OAuth GitHub refusé.',
+          };
+        }
+      } catch (err) {
+        payload = {
+          type: 'GITHUB_OAUTH_ERROR',
+          error: err instanceof Error ? err.message : 'Erreur réseau OAuth GitHub.',
+        };
+      }
+    }
+
+    const safeJson = JSON.stringify(payload).replace(/</g, '\\u003c');
+    res.send(`<!DOCTYPE html><html><body style="background:#050811;color:#e2e8f0;font-family:sans-serif;padding:24px;">
+      <script>
+        if (window.opener) {
+          window.opener.postMessage(${safeJson}, '*');
+          window.close();
+        }
+      </script>
+      <p>Authentification GitHub traitée. Vous pouvez fermer cette fenêtre.</p>
+    </body></html>`);
+  });
 
   // R-68 Strict $0 Free Tier Guard: reject any request explicitly asking for a paid/non-allowlisted model
   app.use('/api/gemini', (req, res, next) => {
@@ -225,10 +363,6 @@ async function startServer() {
       const rootDir = path.resolve(__dirname);
       const docsRoot = path.resolve(rootDir, 'docs');
       const candidates: string[] = [];
-      for (const topFile of ['INDEX.md', 'CHANGELOG.txt']) {
-        const abs = path.resolve(rootDir, topFile);
-        if (fs.existsSync(abs)) candidates.push(abs);
-      }
       const walk = (dir: string) => {
         if (!fs.existsSync(dir)) return;
         for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -245,7 +379,11 @@ async function startServer() {
 
       const categoryCounters = new Map<string, number>();
       const documents = candidates
-        .sort((a, b) => a.localeCompare(b))
+        .sort((a, b) => {
+          const aArch = a.includes(`${path.sep}archive${path.sep}`) ? 1 : 0;
+          const bArch = b.includes(`${path.sep}archive${path.sep}`) ? 1 : 0;
+          return aArch !== bArch ? aArch - bArch : a.localeCompare(b);
+        })
         .slice(0, 80)
         .map((abs, idx) => {
           const rel = path.relative(rootDir, abs).replace(/\\/g, '/');
@@ -647,29 +785,55 @@ async function startServer() {
     });
   });
 
+  let viteServer: Awaited<ReturnType<typeof createViteServer>> | null = null;
+  let viteReadyError: Error | null = null;
+  let viteReadyPromise: Promise<void> = Promise.resolve();
+
   if (process.env.NODE_ENV !== 'production') {
     const disableHmr = process.env.DISABLE_HMR === 'true';
-    const viteReadyPromise = createViteServer({
+    viteReadyPromise = createViteServer({
       server: {
         middlewareMode: true,
         allowedHosts: true,
-        ws: { server: httpServer },
-        hmr: !disableHmr,
-        watch: disableHmr ? null : undefined,
+        hmr: false,
+        ws: false,
+        watch: disableHmr
+          ? null
+          : {
+              ignored: [
+                '**/.aistudio/**',
+                '**/docs/**',
+                '**/tests/**',
+                '**/scripts/**',
+                '**/.playwright-cli/**',
+                '**/dist/**',
+              ],
+            },
       },
       appType: 'spa',
-    });
+    })
+      .then((server) => {
+        viteServer = server;
+      })
+      .catch((err: unknown) => {
+        viteReadyError = err instanceof Error ? err : new Error(String(err));
+        console.error('[EXO WORLD 2050] Vite middleware init error:', viteReadyError);
+      });
 
     app.use((req, res, next) => {
+      if (viteServer) {
+        viteServer.middlewares(req, res, next);
+        return;
+      }
       viteReadyPromise
-        .then((vite) => {
-          vite.middlewares(req, res, next);
+        .then(() => {
+          if (viteServer) {
+            viteServer.middlewares(req, res, next);
+          } else {
+            res.status(503).send(viteReadyError?.message ?? 'Dev server initializing');
+          }
         })
         .catch(next);
-    });
-
-    viteReadyPromise.catch((err: unknown) => {
-      console.error('[EXO WORLD 2050] Failed to initialize Vite middleware:', err);
     });
   } else {
     const distDir = path.join(__dirname, 'dist');
@@ -679,9 +843,33 @@ async function startServer() {
     });
   }
 
+  httpServer.on('error', (err: NodeJS.ErrnoException) => {
+    console.error(`[EXO WORLD 2050] HTTP server error on ${HOST}:${PORT}:`, err.message);
+    process.exit(1);
+  });
+
+  const shutdown = (signal: string) => {
+    console.log(`[EXO WORLD 2050] Received ${signal}, shutting down cleanly...`);
+    const forceTimer = setTimeout(() => process.exit(0), 1500);
+    forceTimer.unref();
+    httpServer.closeAllConnections?.();
+    Promise.resolve(viteServer?.close())
+      .catch(() => undefined)
+      .finally(() => {
+        httpServer.close(() => process.exit(0));
+      });
+  };
+  process.once('SIGTERM', () => shutdown('SIGTERM'));
+  process.once('SIGINT', () => shutdown('SIGINT'));
+
   httpServer.listen(PORT, HOST, () => {
     console.log(`[EXO WORLD 2050] Server running on http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`);
   });
+
+  await viteReadyPromise;
+  if (viteReadyError) {
+    throw viteReadyError;
+  }
 }
 
 startServer().catch((err: unknown) => {

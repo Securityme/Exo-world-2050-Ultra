@@ -83,6 +83,8 @@ export function DossierCard({
   const isLive = dos.source === 'ORACLE_GEMINI';
   const ctx = resolveDossierContext(world, dos);
   const isUrgent = dos.dossierClass === 'P0' || ctx.urgency.level === 'CRITICAL';
+  const isBudgetedMulti = dos.selectionBudget?.mode === 'BUDGETED_MULTI';
+  const hasMultiFactor = expandedOptions.some((o) => Boolean(o.unlockConditions));
   const primaryOpt = expandedOptions[0];
   const badgeTriplets = [
     buildProvenanceBadgeTriplet(dos),
@@ -119,6 +121,16 @@ export function DossierCard({
               }`}
             >
               {tier === 'RECOMMENDED' ? '★ Prioritaire IA' : '◆ Pertinent'}
+            </span>
+          )}
+          {isBudgetedMulti && (
+            <span className="rounded-md border border-cyan-400/80 bg-cyan-500/12 px-1.5 py-0.5 font-bold text-cyan-800 dark:text-cyan-200">
+              Multi-Choix · Max {dos.selectionBudget?.maxSelections}
+            </span>
+          )}
+          {hasMultiFactor && (
+            <span className="rounded-md border border-violet-400/70 bg-violet-500/12 px-1.5 py-0.5 font-bold text-violet-800 dark:text-violet-200">
+              Déblocage multi-factoriel
             </span>
           )}
           <span className="text-rose-900/65 dark:text-rose-200/70">
@@ -220,6 +232,13 @@ export function DossierCard({
                   <p className="mt-1 text-[10.5px] leading-snug text-rose-900/75 dark:text-rose-200/75">
                     {opt.description}
                   </p>
+                  {opt.unlockConditions && (
+                    <p className="mt-1 font-mono text-[9.5px] font-semibold text-cyan-800 dark:text-cyan-300">
+                      Requis : {opt.unlockConditions.requiredColonistSpecialty ?? 'Équipe'}
+                      {opt.unlockConditions.minColonistLevel ? ` · Niv.${opt.unlockConditions.minColonistLevel}+` : ''}
+                      {opt.unlockConditions.minSkillThreshold ? ` · Comp.${opt.unlockConditions.minSkillThreshold.level}+` : ''}
+                    </p>
+                  )}
                 </div>
 
                 <div className="mt-2 flex flex-wrap gap-1 border-t border-rose-200/50 pt-1.5 dark:border-rose-900/40">

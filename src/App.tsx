@@ -7,7 +7,9 @@ import { CampaignTutorialOverlay, TUTORIAL_STORAGE_KEY } from './components/Camp
 import { DynamicSvgBackdrop } from './components/DynamicSvgBackdrop.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { ColonistDetailModal } from './components/world/ColonistDetailModal.tsx';
+import { EraSpecializationModal } from './components/world/EraSpecializationModal.tsx';
 import { TacticalHeatmap } from './components/world/TacticalHeatmap.tsx';
+import { useCloudAutoSave } from './hooks/use-cloud-autosave.ts';
 import { useCycleClock } from './hooks/use-cycle-clock.ts';
 import { useFipAudio } from './hooks/use-fip-audio.ts';
 import { useThemeEngine } from './hooks/use-theme-engine.ts';
@@ -30,6 +32,7 @@ import { useExoStore } from './stores/game.store.ts';
 import {
   activeDossierIdAtom,
   activeSubscreenAtom,
+  eraAdvanceModalOpenAtom,
   inspectedColonistIdAtom,
   inspectedEntityAtom,
   showQueryDevtoolsAtom,
@@ -60,7 +63,9 @@ function ExoShellRoot() {
   const [inspectedEntity, setInspectedEntity] = useAtom(inspectedEntityAtom);
   const [inspectedColonistId, setInspectedColonistId] = useAtom(inspectedColonistIdAtom);
   const [tacticalHeatmapOpen, setTacticalHeatmapOpen] = useAtom(tacticalHeatmapOpenAtom);
+  const [eraModalOpen, setEraModalOpen] = useAtom(eraAdvanceModalOpenAtom);
 
+  useCloudAutoSave();
   useCycleClock();
   useFipAudio();
   useThemeEngine();
@@ -116,6 +121,10 @@ function ExoShellRoot() {
         return;
       }
       if (e.key === 'Escape') {
+        if (eraModalOpen) {
+          setEraModalOpen(false);
+          return;
+        }
         if (inspectedColonistId) {
           setInspectedColonistId(null);
           return;
@@ -152,12 +161,14 @@ function ExoShellRoot() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [
     activeDossierId,
+    eraModalOpen,
     inspectedColonistId,
     inspectedEntity,
     paused,
     screen,
     setActiveDossierId,
     setActiveScale,
+    setEraModalOpen,
     setInspectedColonistId,
     setInspectedEntity,
     setPaused,
@@ -187,6 +198,7 @@ function ExoShellRoot() {
           <EntityWindowModal />
           <GeneseAct0Modal />
           <TurnSummaryHkModal />
+          <EraSpecializationModal />
           <Isolated3DViewerModal />
           <CampaignTutorialOverlay />
           <OutcomeModal />

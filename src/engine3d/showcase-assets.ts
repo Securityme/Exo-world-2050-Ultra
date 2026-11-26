@@ -28,7 +28,10 @@ export interface ShowcaseAssetSpec {
   readonly category: ShowcaseAssetCategory;
   readonly tierLabel: string;
   readonly description: string;
-  readonly unityPrefabId: string;
+  readonly unityPrefabPath: string;
+  readonly unityShaderGraph: string;
+  readonly unityLodProfile: string;
+  readonly sceneAssetKey: string;
   readonly recommendedDistance: number;
   readonly targetY: number;
 }
@@ -807,7 +810,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'T5 · Flotte',
     description:
       'Centrifugeuse d’habitation rotative, ailes photovoltaïques biseautées et tuyère à fusion pour la colonisation multi-mondes.',
-    unityPrefabId: 'Prefabs/Fleet/PF_ColonyArk_Aurore',
+    unityPrefabPath: 'Assets/Prefabs/Fleet/PF_ColonyArk_Aurore.prefab',
+    unityShaderGraph: 'SG_URP_HullCeramic_SolarPBR.shadergraph',
+    unityLodProfile: 'LOD0: 18k · LOD1: 7k · LOD2: 2.2k (Burst Culling)',
+    sceneAssetKey: 'Assets3D/Fleet/ColonyArk_Aurore',
     recommendedDistance: 4.5,
     targetY: 1.0,
   },
@@ -819,7 +825,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'T3 · Flotte',
     description:
       'Double coque catamaran à voile solaire dorée, passerelle blindée et propulseurs ioniques à haute endurance.',
-    unityPrefabId: 'Prefabs/Fleet/PF_FrigateSolar_Helios',
+    unityPrefabPath: 'Assets/Prefabs/Fleet/PF_FrigateSolar_Helios.prefab',
+    unityShaderGraph: 'SG_URP_GoldSail_Iridescent.shadergraph',
+    unityLodProfile: 'LOD0: 12k · LOD1: 4.8k · LOD2: 1.5k (URP Instanced)',
+    sceneAssetKey: 'Assets3D/Fleet/FrigateSolar_Helios',
     recommendedDistance: 3.9,
     targetY: 0.9,
   },
@@ -831,7 +840,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'T2 · Flotte',
     description:
       'Aile delta profilée, tourelle dorsale à double rail et grappe triple-tuyère dédiée à la supériorité orbitale.',
-    unityPrefabId: 'Prefabs/Fleet/PF_Corvette_Valkyrie',
+    unityPrefabPath: 'Assets/Prefabs/Fleet/PF_Corvette_Valkyrie.prefab',
+    unityShaderGraph: 'SG_URP_TitaniumBrushed_Emissive.shadergraph',
+    unityLodProfile: 'LOD0: 9.5k · LOD1: 3.6k · LOD2: 1.1k (GPU Resident Drawer)',
+    sceneAssetKey: 'Assets3D/Fleet/Corvette_Valkyrie',
     recommendedDistance: 3.6,
     targetY: 0.85,
   },
@@ -843,7 +855,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'T1 · Flotte',
     description:
       'Antenne parabolique à haut gain, bus octogonal revêtu d’or, 4 pétales solaires et magnétomètre longue portée.',
-    unityPrefabId: 'Prefabs/Fleet/PF_ScienceProbe_KeplerEye',
+    unityPrefabPath: 'Assets/Prefabs/Fleet/PF_ScienceProbe_KeplerEye.prefab',
+    unityShaderGraph: 'SG_URP_FoilGold_Telemetry.shadergraph',
+    unityLodProfile: 'LOD0: 6.4k · LOD1: 2.4k · LOD2: 780 (SRP Batcher)',
+    sceneAssetKey: 'Assets3D/Fleet/ScienceProbe_KeplerEye',
     recommendedDistance: 3.6,
     targetY: 1.0,
   },
@@ -855,7 +870,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'L4 · Terrestre',
     description:
       'Châssis bipède articulé, plaques céramiques composites, optique cyan et pods d’épaule pour la défense périmétrique.',
-    unityPrefabId: 'Prefabs/Units/PF_ArmorMech_TitanL4',
+    unityPrefabPath: 'Assets/Prefabs/Units/PF_ArmorMech_TitanL4.prefab',
+    unityShaderGraph: 'SG_URP_CompositeArmor_Wear.shadergraph',
+    unityLodProfile: 'LOD0: 14k · LOD1: 5.5k · LOD2: 1.8k (Skinned URP)',
+    sceneAssetKey: 'Assets3D/Units/ArmorMech_TitanL4',
     recommendedDistance: 3.9,
     targetY: 1.05,
   },
@@ -867,7 +885,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'L3 · Aérien',
     description:
       'Ailes en flèche inversée et nacelles VTOL carénées opérant de la troposphère à la haute stratosphère.',
-    unityPrefabId: 'Prefabs/Units/PF_AeroInterceptor_Zephyr',
+    unityPrefabPath: 'Assets/Prefabs/Units/PF_AeroInterceptor_Zephyr.prefab',
+    unityShaderGraph: 'SG_URP_AeroCarbon_VtolHeat.shadergraph',
+    unityLodProfile: 'LOD0: 10.2k · LOD1: 4.1k · LOD2: 1.2k (Burst Flight)',
+    sceneAssetKey: 'Assets3D/Units/AeroInterceptor_Zephyr',
     recommendedDistance: 3.7,
     targetY: 0.8,
   },
@@ -879,7 +900,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'P4 · Biosphère',
     description:
       'Tour vortex sans dôme à ailettes de condensation et anneaux d’ionisation pour purifier l’atmosphère planétaire.',
-    unityPrefabId: 'Prefabs/Buildings/PF_AtmoHarvester_Eole',
+    unityPrefabPath: 'Assets/Prefabs/Buildings/PF_AtmoHarvester_Eole.prefab',
+    unityShaderGraph: 'SG_URP_VortexIon_OpenSky.shadergraph',
+    unityLodProfile: 'LOD0: 16k · LOD1: 6.2k · LOD2: 1.9k (VFX Graph)',
+    sceneAssetKey: 'Assets3D/Buildings/AtmoHarvester_Eole',
     recommendedDistance: 4.3,
     targetY: 1.1,
   },
@@ -891,7 +915,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'Niv. 4 · Cité',
     description:
       'Terrasses végétalisées étagées, colonnes hydro-vitrées et couronne photovoltaïque au cœur des cités à ciel ouvert.',
-    unityPrefabId: 'Prefabs/Buildings/PF_BioEdenTower',
+    unityPrefabPath: 'Assets/Prefabs/Buildings/PF_BioEdenTower_Organic.prefab',
+    unityShaderGraph: 'SG_URP_SolarpunkGlass_FoliageSSS.shadergraph',
+    unityLodProfile: 'LOD0: 19k · LOD1: 7.5k · LOD2: 2.3k (URP Foliage)',
+    sceneAssetKey: 'Assets3D/Buildings/BioEdenTower',
     recommendedDistance: 4.3,
     targetY: 1.05,
   },
@@ -903,7 +930,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'Palier II · Calcul',
     description:
       'Six monolithes dissipateurs en obsidienne entourant un cœur cryo-optique doré et ses anneaux télémétriques.',
-    unityPrefabId: 'Prefabs/Buildings/PF_QuantumNexus_Silicium',
+    unityPrefabPath: 'Assets/Prefabs/Buildings/PF_QuantumNexus_Silicium.prefab',
+    unityShaderGraph: 'SG_URP_ObsidianCryo_Hologram.shadergraph',
+    unityLodProfile: 'LOD0: 13k · LOD1: 5.1k · LOD2: 1.6k (SRP Batcher)',
+    sceneAssetKey: 'Assets3D/Buildings/QuantumNexus_Silicium',
     recommendedDistance: 4.2,
     targetY: 1.05,
   },
@@ -915,7 +945,10 @@ export const SHOWCASE_3D_ASSETS_CATALOG: readonly ShowcaseAssetSpec[] = Object.f
     tierLabel: 'Échelle 1 · Orbital',
     description:
       'Double anneau d’habitation contre-rotatif, 6 bras d’amarrage et 4 ailes photovoltaïques en orbite géostationnaire.',
-    unityPrefabId: 'Prefabs/Orbital/PF_OrbitalCitadel_Astralis',
+    unityPrefabPath: 'Assets/Prefabs/Orbital/PF_OrbitalCitadel_Astralis.prefab',
+    unityShaderGraph: 'SG_URP_OrbitalStation_Specular.shadergraph',
+    unityLodProfile: 'LOD0: 24k · LOD1: 9.2k · LOD2: 2.8k (Addressables)',
+    sceneAssetKey: 'Assets3D/Orbital/OrbitalCitadel_Astralis',
     recommendedDistance: 4.6,
     targetY: 1.15,
   },

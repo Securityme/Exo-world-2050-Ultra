@@ -1,0 +1,77 @@
+# ARCH-TOC-7PIVOTS x ARCH-TOC-TENSOR-6D — EXO WORLD : 2050
+# SSoT Location: docs/master-blueprint/toc-tensor-6d.yaml (Zero root doc duplicates)
+blueprintId: "DOC-EXW-ARCH-001"
+docSemver: "2.14.0-MAITRE"
+projectSemverObserved: "5.1.0-alpha.1"
+projectSemverTarget: "5.2.0-fs4x"
+activeMode: "MODE_2_ULTRA_DENSE_MATRICIEL"
+renderEnginePolicy: "OPT-02 A+ (Unity 6 URP Primary + Three.js Lightweight Web Preview)"
+totalGus3Units: 66
+fmtMTokenAllocated: 19000
+fmtMTokenHardCap: 20000
+
+pivots:
+  - pivot: P0
+    partitionLabel: "EXOW-ROOT — Cartouche ISO 7200, SemVer & Sommaire 7 Pivots"
+    gus3Units: 4
+    masterRefs: [MAD, MBE]
+    srcLayers: "L0..L8 · root"
+    holonRing: 3
+    zoomLevel: Z1
+    maxTokensFmtM: 1100
+  - pivot: P1
+    partitionLabel: "P-I — Gouvernance, /teamworker, GUS-3 & Laniakea"
+    gus3Units: 9
+    masterRefs: [CdCF, MAD]
+    srcLayers: "L0, docs/master-blueprint"
+    holonRing: 3
+    zoomLevel: Z1
+    maxTokensFmtM: 2900
+  - pivot: P2
+    partitionLabel: "P-II — Produit, GDD, 6 Ères & Boucles GL-0..GL-5"
+    gus3Units: 7
+    masterRefs: [GDD]
+    srcLayers: "L1, L2"
+    holonRing: 2
+    zoomLevel: Z2
+    maxTokensFmtM: 1900
+  - pivot: P3
+    partitionLabel: "P-III-A — 5 Divisions Scientifiques, Bioclimat, Éthique & Église"
+    gus3Units: 8
+    masterRefs: [GDD, CdCF, DAT]
+    srcLayers: "L0..L4, L7"
+    holonRing: 3
+    zoomLevel: Z1
+    maxTokensFmtM: 3100
+  - pivot: P4
+    partitionLabel: "P-III-B — Décisionnel Dossiers (FUP-018), Bilan 4 Pôles & Noyau SADT"
+    gus3Units: 12
+    masterRefs: [MBE, GDD, DAT]
+    srcLayers: "L0..L3, L5"
+    holonRing: 3
+    zoomLevel: Z1
+    maxTokensFmtM: 4200
+  - pivot: P5
+    partitionLabel: "P-IV-A — Architecture Code SRC/ L0..L8 -> FS4X & V0-BOOT"
+    gus3Units: 4
+    masterRefs: [DAT]
+    srcLayers: "L0..L8"
+    holonRing: 3
+    zoomLevel: Z1
+    maxTokensFmtM: 1500
+  - pivot: P6
+    partitionLabel: "P-IV-B — EXO-SHELL, Unity 6 URP Principal + Aperçu Web Three.js, Mobile 360px"
+    gus3Units: 4
+    masterRefs: [DAT, DMT-SW]
+    srcLayers: "L4, L6, L7"
+    holonRing: 2
+    zoomLevel: Z2
+    maxTokensFmtM: 1200
+  - pivot: P7
+    partitionLabel: "P-IV-C / P-V / P-VI — BFF $0, MX16-ICOM, 7 Classes ISO 7573, Registres & Annexes A..N"
+    gus3Units: 18
+    masterRefs: [MBE, DMT-SW, CdCF]
+    srcLayers: "L5, L8, scripts, docs"
+    holonRing: 3
+    zoomLevel: Z2
+    maxTokensFmtM: 3100

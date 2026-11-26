@@ -150,7 +150,7 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     renderer.setSize(width, height);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 0.94;
     renderer.shadowMap.enabled = !this.isSoftwareGl;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.style.display = 'block';
@@ -168,22 +168,23 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     scene.fog = new THREE.FogExp2('#070d1a', 0.011);
     this.scene = scene;
 
-    // Universal studio RoomEnvironment IBL reflections across hardware & software WebGL
+    // Universal studio RoomEnvironment IBL reflections (damped for rich contrast without diffuse washout)
     const pmrem = new THREE.PMREMGenerator(renderer);
     this.pmremTarget = pmrem.fromScene(new RoomEnvironment(), 0.04);
     scene.environment = this.pmremTarget.texture;
+    scene.environmentIntensity = 0.42;
     pmrem.dispose();
 
     const camera = new THREE.PerspectiveCamera(46, width / height, 0.1, 180);
     this.camera = camera;
 
-    // 3-point atmospheric lighting: warm directional key (2048px PCFSoftShadowMap) + sky/ground hemisphere + rim
-    const hemi = new THREE.HemisphereLight(0x93c5fd, 0x1e293b, 0.95);
+    // 3-point AAA atmospheric lighting: warm solar key (2048px PCFSoftShadowMap) + cool sky/ground fill + crisp rim
+    const hemi = new THREE.HemisphereLight(0x38bdf8, 0x050816, 0.28);
     scene.add(hemi);
     this.hemiLight = hemi;
 
-    const keyLight = new THREE.DirectionalLight(0xfff4e0, 2.15);
-    keyLight.position.set(14, 16, 12);
+    const keyLight = new THREE.DirectionalLight(0xfff3de, 2.65);
+    keyLight.position.set(17, 9, 11);
     keyLight.castShadow = !this.isSoftwareGl;
     keyLight.shadow.mapSize.set(2048, 2048);
     keyLight.shadow.camera.near = 2;
@@ -194,12 +195,12 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
     keyLight.shadow.camera.bottom = -14;
     keyLight.shadow.bias = -0.0004;
     keyLight.shadow.normalBias = 0.02;
-    keyLight.shadow.radius = 2.5;
+    keyLight.shadow.radius = 2.8;
     scene.add(keyLight);
     this.keyLight = keyLight;
 
-    const rimLight = new THREE.DirectionalLight(this.currentThemeAccentNum, 0.78);
-    rimLight.position.set(-14, 6, -12);
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.62);
+    rimLight.position.set(-15, 5, -13);
     scene.add(rimLight);
     this.rimLight = rimLight;
 
@@ -395,9 +396,12 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       this.districtPatrolTargets = [];
       for (const dist of packet.districts) {
         const mesh = buildDistrictMesh(dist);
-        const wx = dist.gridX * 3.1 - 0.6;
-        const wz = dist.gridZ * 3.1 - 0.6;
+        const jitterX = Math.sin(dist.gridX * 2.1 + dist.gridZ * 1.7) * 0.38;
+        const jitterZ = Math.cos(dist.gridX * 1.5 - dist.gridZ * 2.3) * 0.38;
+        const wx = dist.gridX * 3.05 - 0.55 + jitterX;
+        const wz = dist.gridZ * 3.05 - 0.55 + jitterZ;
         mesh.position.set(wx, 0, wz);
+        mesh.rotation.y = Math.sin(dist.gridX * 1.3 + dist.gridZ * 0.9) * 0.24;
         this.districtPatrolTargets.push({
           id: dist.id,
           x: wx,
@@ -562,35 +566,47 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
   private syncScaleLighting(scale: CameraScale, isLight: boolean): void {
     if (!this.hemiLight || !this.keyLight || !this.rimLight) return;
     if (scale === 3) {
+      if (this.renderer) {
+        this.renderer.toneMappingExposure = isLight ? 0.96 : 0.94;
+      }
+      if (this.scene) {
+        this.scene.environmentIntensity = isLight ? 0.44 : 0.38;
+      }
       if (isLight) {
-        this.hemiLight.color.setHex(0xfff1f5);
-        this.hemiLight.groundColor.setHex(0xd6bfc7);
-        this.hemiLight.intensity = 1.35;
-        this.keyLight.color.setHex(0xfff6e5);
-        this.keyLight.intensity = 2.35;
-        this.keyLight.position.set(16, 22, 14);
+        this.hemiLight.color.setHex(0xbfe3ff);
+        this.hemiLight.groundColor.setHex(0x475569);
+        this.hemiLight.intensity = 0.72;
+        this.keyLight.color.setHex(0xffe6bd);
+        this.keyLight.intensity = 2.25;
+        this.keyLight.position.set(16, 13, 10);
         this.rimLight.color.setHex(0xfb7185);
-        this.rimLight.intensity = 0.85;
+        this.rimLight.intensity = 0.56;
       } else {
-        this.hemiLight.color.setHex(0xfbcfe8);
-        this.hemiLight.groundColor.setHex(0x281330);
-        this.hemiLight.intensity = 1.05;
-        this.keyLight.color.setHex(0xffe4d6);
-        this.keyLight.intensity = 1.9;
-        this.keyLight.position.set(14, 18, 12);
-        this.rimLight.color.setHex(0xf43f5e);
-        this.rimLight.intensity = 1.0;
+        this.hemiLight.color.setHex(0x7dd3fc);
+        this.hemiLight.groundColor.setHex(0x1e2438);
+        this.hemiLight.intensity = 0.56;
+        this.keyLight.color.setHex(0xffdfa8);
+        this.keyLight.intensity = 2.15;
+        this.keyLight.position.set(15, 13, 10);
+        this.rimLight.color.setHex(0x38bdf8);
+        this.rimLight.intensity = 0.62;
       }
     } else {
-      // Preserved Scale 1 & Scale 2 cosmic 3-point lighting
-      this.hemiLight.color.setHex(0xfde8ef);
-      this.hemiLight.groundColor.setHex(0x1e1326);
-      this.hemiLight.intensity = 0.95;
-      this.keyLight.color.setHex(0xfff4e0);
-      this.keyLight.intensity = 2.15;
-      this.keyLight.position.set(14, 16, 12);
-      this.rimLight.color.setHex(this.currentThemeAccentNum);
-      this.rimLight.intensity = 0.78;
+      // AAA Orbital 3-point lighting with dramatic sunlit terminator & night city glow
+      if (this.renderer) {
+        this.renderer.toneMappingExposure = 0.92;
+      }
+      if (this.scene) {
+        this.scene.environmentIntensity = 0.38;
+      }
+      this.hemiLight.color.setHex(0x38bdf8);
+      this.hemiLight.groundColor.setHex(0x050816);
+      this.hemiLight.intensity = scale === 1 ? 0.55 : 0.28;
+      this.keyLight.color.setHex(0xfff3de);
+      this.keyLight.intensity = scale === 1 ? 2.25 : 2.65;
+      this.keyLight.position.set(17, 9, 11);
+      this.rimLight.color.setHex(scale === 1 ? this.currentThemeAccentNum : 0x38bdf8);
+      this.rimLight.intensity = 0.62;
     }
   }
 
@@ -1108,9 +1124,15 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
       this.camera.position.set(cx, cy, cz);
       this.camera.lookAt(this.currentTargetX, this.currentTargetY, this.currentTargetZ);
 
+      if (this.starfield && this.starfield.visible) {
+        this.starfield.rotation.y = t * 0.0045;
+      }
+
       if (this.planetNodes && this.planetNodes.group.visible) {
         this.planetNodes.cloudsMesh.rotation.y = t * 0.032;
         this.planetNodes.cirrusMesh.rotation.y = -t * 0.018 + 1.4;
+        this.planetNodes.eclipticRing.rotation.z = t * 0.04;
+        this.planetNodes.polarRing.rotation.z = -t * 0.032;
         if (this.keyLight) {
           this.scratchVec3.copy(this.keyLight.position).normalize();
           const sMat = this.planetNodes.surfaceMesh.material as THREE.MeshStandardMaterial;
@@ -1141,6 +1163,16 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
           sat2.position.set(Math.cos(a2) * 3.95, Math.sin(a2) * 3.1, Math.sin(a2) * 2.4);
           sat2.rotation.y = a2;
         }
+        for (const beacon of this.planetNodes.orbitalBeacons) {
+          const ud = beacon.userData as { orbitR: number; speed: number; phase: number; tilt: number };
+          const a = t * ud.speed + ud.phase;
+          beacon.position.set(
+            Math.cos(a) * ud.orbitR,
+            Math.sin(a) * ud.orbitR * ud.tilt,
+            Math.sin(a) * ud.orbitR,
+          );
+          beacon.rotation.y = t * 2.2;
+        }
         this.planetNodes.pinGroup.children.forEach((pin, idx) => {
           const core = pin.getObjectByName('pinCore');
           if (core) {
@@ -1153,6 +1185,16 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
         this.spaceNodes.station.position.x = Math.cos(t * 0.45) * 3.4;
         this.spaceNodes.station.position.z = Math.sin(t * 0.45) * 3.4;
         this.spaceNodes.station.rotation.y = -t * 0.45;
+        this.spaceNodes.beltPoints.rotation.y = t * 0.014;
+        for (const sh of this.spaceNodes.tradeShuttles) {
+          const ud = sh.userData as { orbitR: number; speed: number; phase: number; yAmp: number };
+          const a = t * ud.speed + ud.phase;
+          const x = Math.cos(a) * ud.orbitR;
+          const z = Math.sin(a) * ud.orbitR;
+          const y = Math.sin(a * 2) * ud.yAmp;
+          sh.position.set(x, y, z);
+          sh.rotation.y = -a + (ud.speed >= 0 ? 0 : Math.PI);
+        }
       }
 
       if (this.cityNodes && this.cityNodes.group.visible) {
@@ -1195,6 +1237,12 @@ export class ThreeJsRenderAdapter implements RenderAdapterInterface {
         this.cityNodes.windRotors.forEach((rotor, idx) => {
           rotor.rotation.z = -t * (1.2 + (idx % 3) * 0.25);
         });
+
+        for (const buoy of this.cityNodes.harborBuoys) {
+          const ph = (buoy.userData as { phase?: number }).phase ?? 0;
+          buoy.position.y = 0.015 + Math.sin(t * 1.8 + ph) * 0.032;
+          buoy.rotation.z = Math.sin(t * 1.3 + ph) * 0.06;
+        }
       }
 
       this.renderer.render(this.scene, this.camera);

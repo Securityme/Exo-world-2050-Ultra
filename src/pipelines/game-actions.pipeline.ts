@@ -6,7 +6,7 @@ import type { WorldState } from '../contracts/world-state.schema.ts';
 import { computeStateHash } from '../core/hashing/state-hasher.ts';
 import { requestTurnEvents4T } from '../pipelines/turn-events-4t.pipeline.ts';
 import { fipRadioService } from '../services/audio/fip-radio.service.ts';
-import { saveCampaignToCloud } from '../services/firebase/firebase-client.ts';
+import { triggerCloudAutoSave } from '../services/saves/cloud-autosave.service.ts';
 import { useExoStore } from '../stores/game.store.ts';
 import { useMetaHonorsStore } from '../stores/meta-honors.store.ts';
 import { useUserContextStore } from '../stores/user-context.store.ts';
@@ -16,14 +16,25 @@ import {
 } from '../systems/dossiers-pa/action-event-generator.ts';
 import { resolvePhilosophySchoolForOption } from '../systems/dossiers-pa/badge-taxonomy.ts';
 import { applyGeneseAct0Choice } from '../systems/dossiers-pa/genese-promises.ts';
+import {
+  ASTRALIS_HAND_LIMIT,
+  findNextPlayableAstralisDossier,
+  getAstralisEventHand,
+  pickMagicWandArbitration,
+} from '../systems/dossiers-pa/magic-wand-astralis.ts';
 import { createDirectInitiativeDossier, executeDossierDecision } from '../systems/dossiers-pa/pa-engine.ts';
 import { computeOptimalAssignments } from '../systems/economy-urban/workforce-assignments.ts';
-import { applyManualEraAdvance } from '../systems/geopolitics/humankind-progression.ts';
+import {
+  applyManualEraAdvance,
+  applySpecializationAdvance,
+  type SpecializationAdvanceInput,
+} from '../systems/geopolitics/humankind-progression.ts';
 import {
   applyQuestRewardToWorld,
   type CampaignQuestStatus,
   type QuestUiMilestones,
 } from '../systems/quests/campaign-quests.ts';
+import { synthesizeCombinatorialBonusDossier } from '../systems/turn-orchestration/scenario-combinator.ts';
 import {
   commitEndOfTurnV4,
   ensureZeroPaOption,
@@ -40,7 +51,11 @@ import {
 export function handleExecuteDossier(intent: ExecutiveDecisionIntent): ExwResult<string> {
   const { world, setWorld } = useExoStore.getState();
   const targetDossier = world.activeDossiers.find((d) => d.id === intent.dossierId);
-  const chosenOption = targetDossier?.options.find((o) => o.id === intent.optionId);
+  const allIds = [intent.optionId, ...(intent.extraOptionIds ?? [])];
+  const chosenOptions = targetDossier
+    ? targetDossier.options.filter((o) => allIds.includes(o.id))
+    : [];
+  const chosenOption = chosenOptions[0] ?? targetDossier?.options.find((o) => o.id === intent.optionId);
   const [error, report] = executeDossierDecision(world, intent);
   if (error || !report) return err(error?.code ?? 'EXW_ERR_SCHEMA', error?.message ?? 'Échec exécution.');
   setWorld(report.nextState);
@@ -48,6 +63,14 @@ export function handleExecuteDossier(intent: ExecutiveDecisionIntent): ExwResult
 
   if (targetDossier && chosenOption) {
     const school = resolvePhilosophySchoolForOption(chosenOption);
+    const totalPa =
+      chosenOptions.length > 0
+        ? chosenOptions.reduce((sum, o) => sum + o.paGeneralCost + o.subPaCost, 0)
+        : chosenOption.paGeneralCost + chosenOption.subPaCost;
+    const optionSummary =
+      chosenOptions.length > 1
+        ? chosenOptions.map((o) => o.label).join(' + ')
+        : chosenOption.label;
     const honors = useMetaHonorsStore.getState();
     honors.recordTurnChoice({
       id: `ch-${world.cycle}-${targetDossier.id}`,
@@ -55,11 +78,11 @@ export function handleExecuteDossier(intent: ExecutiveDecisionIntent): ExwResult
       dossierCode: targetDossier.code,
       dossierTitle: targetDossier.title,
       dossierClass: targetDossier.dossierClass,
-      optionLabel: chosenOption.label,
+      optionLabel: optionSummary,
       sourceModel: targetDossier.source === 'ORACLE_GEMINI' ? 'gemini-4-hydrogen' : 'catalog-cv-local',
       channel: 'text',
       philosophySchoolId: school.id,
-      paSpent: chosenOption.paGeneralCost + chosenOption.subPaCost,
+      paSpent: totalPa,
     });
     honors.syncShowcaseFromWorld(report.nextState);
 
@@ -71,11 +94,12 @@ export function handleExecuteDossier(intent: ExecutiveDecisionIntent): ExwResult
       actionType: `${targetDossier.dossierClass}:${targetDossier.code}`,
       sourceChannel: targetDossier.source === 'ORACLE_GEMINI' ? 'gemini-4-hydrogen' : 'catalog-local',
       philosophyPole: school.poleId,
-      paSpent: chosenOption.paGeneralCost + chosenOption.subPaCost,
+      paSpent: totalPa,
       deltaSummary: report.summary.slice(0, 120),
     });
   }
 
+  void triggerCloudAutoSave(report.nextState, 'DOSSIER');
   return ok(report.summary);
 }
 
@@ -124,6 +148,9 @@ export async function handleCommitEndOfTurn(
   useMetaHonorsStore.getState().syncShowcaseFromWorld(nextState);
   fipRadioService.playUiCue(summary.starsEarnedThisTurn > 0 ? 'FANFARE' : 'CHIME');
 
+  // Automatic turn-by-turn Cloud Save + immutable turn checkpoint archival
+  void triggerCloudAutoSave(nextState, 'TURN_END');
+
   // Fire non-blocking BFF 4T Gemini generation while player reads the Humankind Turn Summary modal
   if (oracleEnabled) {
     void requestTurnEvents4T(nextState).then((liveRes) => {
@@ -141,9 +168,11 @@ export async function handleCommitEndOfTurn(
         const merged = [
           ...liveRes.dossiers.map(ensureZeroPaOption),
           ...cur.activeDossiers,
-        ].slice(0, 4);
+        ].slice(0, ASTRALIS_HAND_LIMIT);
         const draft = { ...cur, activeDossiers: merged };
-        useExoStore.getState().setWorld({ ...draft, stateHash: computeStateHash(draft) });
+        const updated = { ...draft, stateHash: computeStateHash(draft) };
+        useExoStore.getState().setWorld(updated);
+        void triggerCloudAutoSave(updated, 'DOSSIER');
       }
     });
   }
@@ -154,15 +183,111 @@ export async function handleCommitEndOfTurn(
 export function handleCompleteGeneseAct0(choiceId: string, expertBypass = false): void {
   const { world, setWorld } = useExoStore.getState();
   const next = applyGeneseAct0Choice(world, choiceId, expertBypass);
-  setWorld({ ...next, stateHash: computeStateHash(next) });
+  const hashed = { ...next, stateHash: computeStateHash(next) };
+  setWorld(hashed);
   fipRadioService.playUiCue('FANFARE');
+  void triggerCloudAutoSave(hashed, 'MILESTONE');
 }
 
-export function handleManualEraAdvance(mode: 'EVOLVE' | 'TRANSCEND', doctrineId: string): void {
+export function handleManualEraAdvance(
+  mode: 'EVOLVE' | 'TRANSCEND',
+  doctrineId: string,
+  specializationId?: string,
+): void {
   const { world, setWorld } = useExoStore.getState();
-  const next = applyManualEraAdvance(world, mode, doctrineId);
-  setWorld({ ...next, stateHash: computeStateHash(next) });
+  const next = applyManualEraAdvance(world, mode, doctrineId, specializationId);
+  const hashed = { ...next, stateHash: computeStateHash(next) };
+  setWorld(hashed);
   fipRadioService.playUiCue('FANFARE');
+  void triggerCloudAutoSave(hashed, 'MILESTONE');
+}
+
+export function handleApplySpecializationAdvance(input: SpecializationAdvanceInput): ExwResult<WorldState> {
+  const { world, setWorld } = useExoStore.getState();
+  const next = applySpecializationAdvance(world, input);
+  if (next === world) {
+    return err('EXW_ERR_SCHEMA', 'Transition d’Ère ou de Sous-Ère non disponible pour le moment.');
+  }
+  const hashed = { ...next, stateHash: computeStateHash(next) };
+  setWorld(hashed);
+  fipRadioService.playUiCue('FANFARE');
+  void triggerCloudAutoSave(hashed, 'MILESTONE');
+  return ok(hashed);
+}
+
+export function handleDrawAstralisBonusEvent(): ExwResult<ExecutiveDossier> {
+  const { world, setWorld } = useExoStore.getState();
+  const hand = getAstralisEventHand(world);
+  if (!hand.canDrawBonusCard) {
+    return err(
+      'EXW_ERR_PA_INSUFFICIENT',
+      hand.drawBlockedReason ?? 'Pioche impossible pour le moment.',
+    );
+  }
+  const drawIndex = world.bonusEventDrawsThisCycle ?? 0;
+  const fresh = ensureZeroPaOption(synthesizeCombinatorialBonusDossier(world, drawIndex));
+  const draft: WorldState = {
+    ...world,
+    activeDossiers: [...world.activeDossiers, fresh].slice(0, ASTRALIS_HAND_LIMIT),
+    bonusEventDrawsThisCycle: drawIndex + 1,
+  };
+  const hashed = { ...draft, stateHash: computeStateHash(draft) };
+  setWorld(hashed);
+  fipRadioService.playUiCue('CLICK');
+  return ok(fresh);
+}
+
+export interface MagicWandChainOutcome {
+  readonly summary: string;
+  readonly pickedLabel: string;
+  readonly nextDossier: ExecutiveDossier | null;
+  readonly autoDrawnBonus: boolean;
+}
+
+export function handleMagicWandResolveAndChain(
+  dossierId: string,
+  salt = 0,
+): ExwResult<MagicWandChainOutcome> {
+  const { world } = useExoStore.getState();
+  const dossier = world.activeDossiers.find((d) => d.id === dossierId);
+  if (!dossier) {
+    return err('EXW_ERR_SCHEMA', 'Événement introuvable dans la main courante.');
+  }
+
+  const pick = pickMagicWandArbitration(world, dossier, salt);
+  if (!pick) {
+    return err(
+      'EXW_ERR_PA_INSUFFICIENT',
+      'Aucun arbitrage valide et finançable disponible pour cet événement.',
+    );
+  }
+
+  const [execErr, execSummary] = handleExecuteDossier(pick.intent);
+  if (execErr || !execSummary) {
+    return err(execErr?.code ?? 'EXW_ERR_SCHEMA', execErr?.message ?? 'Échec validation Baguette Magique.');
+  }
+
+  const updatedWorld = useExoStore.getState().world;
+  let nextDossier = findNextPlayableAstralisDossier(updatedWorld, dossierId);
+  let autoDrawnBonus = false;
+
+  if (!nextDossier) {
+    const handAfter = getAstralisEventHand(updatedWorld);
+    if (handAfter.canDrawBonusCard) {
+      const [drawErr, drawn] = handleDrawAstralisBonusEvent();
+      if (!drawErr && drawn) {
+        nextDossier = drawn;
+        autoDrawnBonus = true;
+      }
+    }
+  }
+
+  return ok({
+    summary: execSummary,
+    pickedLabel: `${pick.selectedOptionLabels.join(' + ')} · ${pick.subChoiceLabel}`,
+    nextDossier,
+    autoDrawnBonus,
+  });
 }
 
 export function handleSelectResearchTech(techId: string): void {
@@ -210,8 +335,10 @@ export function handleClaimQuestReward(
   if (!applied) {
     return err('EXW_ERR_SCHEMA', 'Quête non validée ou récompense déjà réclamée.');
   }
-  setWorld({ ...applied.nextState, stateHash: computeStateHash(applied.nextState) });
+  const hashed = { ...applied.nextState, stateHash: computeStateHash(applied.nextState) };
+  setWorld(hashed);
   fipRadioService.playUiCue('FANFARE');
+  void triggerCloudAutoSave(hashed, 'MILESTONE');
   return ok(applied.quest);
 }
 
@@ -232,5 +359,5 @@ export function handleInjectOracleDossier(oracleRes: EventGeneratorResponse): Ex
 
 export async function handleCloudSave(): Promise<ExwResult<string>> {
   const { world } = useExoStore.getState();
-  return saveCampaignToCloud(world);
+  return triggerCloudAutoSave(world, 'MANUAL');
 }

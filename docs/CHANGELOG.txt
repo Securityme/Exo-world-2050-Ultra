@@ -1,0 +1,24 @@
+================================================================================
+EXO WORLD : 2050 — CHANGELOG STRUCTURÉ UNIFIÉ (ACTUEL / DEMANDES / PROJETÉ)
+Version : v5.1.0-alpha.1 | Master Blueprint : v2.14.0-MAITRE | Date : 2026-11-25
+Emplacement unique : docs/CHANGELOG.txt (zéro doublon à la racine du projet)
+================================================================================
+
+[ACTUEL — IMPLÉMENTÉ & VÉRIFIÉ (VAGUES P1 -> P13 + FUP-017 + FUP-018)]
+- P1..P3 : Thème Astralis, bouclier Safari/iOS WebKit (< 250 Mo, 100dvh), masquage HUD 100%, Super-Widget Météo/Air 3 Tours, Notifications Header, Firestore Rules déployées.
+- P4..P6 : Routeur Gemini 6 Canaux 100% Free Tier (R-68, HTTP 403 hors liste), Honneurs 2 Niveaux, Onglet Monde purifié (5 domaines), Fiche État Souverain.
+- P7..P10 : Fiche Colon + Exosuit 3D, Citoyens Frostpunk, Badges Empilés 3 Niveaux + légende (i), 4 Théâtres Militaires, Pression Civile 0..5★, Cité 24-Hex Dual Maglev, Studio Vidéo Climat WebM 0 USD.
+- FUP-017 : Fusion totale Niveau 0 (/docs unique sans doublon racine, /docs/master-blueprint/ SSoT, /docs/archive/ figée), Master Blueprint compilé v2.14.0-MAITRE (Sommaire Partition Métadonnées H x V + Annexes A–N), Skills Modulaires & VCS Docs isolé, et Espace Dev 3 Surfaces (AI Studio + Google Drive + GitHub + Bus + Data Agent + Firebase + Vercel).
+- FUP-018 : Événements 4+ à 10 choix principaux, mode Multi-Choix Budgété (plafonds PA/Crédits), affectation coéquipiers (spécialité, niveau, fatigue), déblocage conditionnel multi-factoriel, et Bilan partitionné en 4 Pôles (Actions & Chantiers Bâtiments, Économie, Biosphère, Humain/Politique).
+- OPT-02 A+ : Priorité Moteur 3D Unity 6 URP Principal (C#, Shader Graph, Burst/IL2CPP, .jslib, 10 Prefabs LOD0–2, Addressables) + Aperçu Web léger Three.js WebGL2 (ville 3D organique non-circulaire/non-rectiligne, éclairage AAA ACES Filmic & RoomEnvironment IBL).
+
+[DEMANDES — INTÉGRÉES SUR CETTE ITÉRATION]
+- Fusion et compilation intégrale de /docs et /master-blueprint au niveau 0 sans doublon racine, avec sommaire à partition métadonnées horizontale et verticale.
+- Priorité Unity 6 URP Principal (OPT-02 A+ — plus de Unity que de Three.js : pont C#/.jslib, Prefabs, Shader Graph, Burst/IL2CPP) & refonte de la ville 3D organique réaliste.
+- Déblocage conditionnel multi-factoriel, événements à choix multiples budgétés avec coéquipiers, et bilan d'événement partitionné par pôles avec actions explicites de construction.
+- Snapshots visuels à jour, analyse des captures historiques et artefacts Skills automatisés.
+
+[PROJETÉ — PROCHAINES ÉTAPES POST-V5.1]
+- Export multi-campagnes comparatif (courbes de score & d'éthique sur 6 ères).
+- Build WebGPU / Metal / Vulkan natif Unity 6 URP (Shader Graph Océans & Nuages Volumétriques).
+- Bascule incrémentale Monorepo AAA 8 Couches × 8 Tiers (Annexe K).

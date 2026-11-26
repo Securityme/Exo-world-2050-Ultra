@@ -186,3 +186,58 @@ export async function uploadContextFileToDrive(input: {
     return err('EXW_ERR_DOC_SYNC', error instanceof Error ? error.message : 'Erreur export Drive.');
   }
 }
+
+export async function saveFileToGoogleDrive(input: {
+  readonly fileName: string;
+  readonly mimeType: string;
+  readonly content: string;
+  readonly existingFileId?: string | null;
+}): Promise<ExwResult<{ fileId: string; webViewLink: string }>> {
+  const existingId = input.existingFileId?.trim();
+  if (!existingId) {
+    return uploadContextFileToDrive({
+      fileName: input.fileName,
+      mimeType: input.mimeType,
+      content: input.content,
+    });
+  }
+
+  const [tokenErr, token] = requireAccessToken();
+  if (tokenErr || !token) return err(tokenErr?.code ?? 'EXW_ERR_DOC_SYNC', tokenErr?.message ?? 'Non connecté.');
+
+  const boundary = 'exo_patch_boundary_2050';
+  const metadata = JSON.stringify({ name: input.fileName.slice(0, 120) });
+  const body =
+    `--${boundary}\r\n` +
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+    `${metadata}\r\n` +
+    `--${boundary}\r\n` +
+    `Content-Type: ${input.mimeType}; charset=UTF-8\r\n\r\n` +
+    `${input.content}\r\n` +
+    `--${boundary}--`;
+
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(existingId)}?uploadType=multipart&fields=id,webViewLink`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': `multipart/related; boundary=${boundary}`,
+        },
+        body,
+      },
+    );
+    if (!res.ok) {
+      return err('EXW_ERR_DOC_SYNC', `Échec mise à jour Drive HTTP ${res.status}.`);
+    }
+    const data = (await res.json()) as { id?: string; webViewLink?: string };
+    return ok({
+      fileId: data.id ?? existingId,
+      webViewLink: data.webViewLink ?? `https://drive.google.com/file/d/${existingId}/view`,
+    });
+  } catch (error) {
+    return err('EXW_ERR_DOC_SYNC', error instanceof Error ? error.message : 'Erreur mise à jour Drive.');
+  }
+}
+

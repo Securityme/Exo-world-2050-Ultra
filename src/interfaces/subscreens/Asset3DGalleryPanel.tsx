@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
+  Code2,
   Grid3X3,
   Layers,
   Pause,
@@ -10,6 +11,7 @@ import {
   Sparkles,
   Sun,
 } from 'lucide-react';
+import { buildUnity6UrpExportBundle } from '../../bridges/render-unity.bridge.ts';
 import {
   IsolatedInspectorScene,
   type StudioLightingPreset,
@@ -26,7 +28,7 @@ import { useExoStore } from '../../stores/game.store.ts';
  * AAA Interactive 3D Showcase Gallery inside the Profile Hub:
  * - Real-time WebGL PBR inspection of 10 multi-part Solarpunk/Orbital 3D assets
  * - 3 Studio Lighting Presets (Obsidienne, Orbite Solaire, Ciel Éden) + Turntable Auto-Rotate
- * - Category filter (Flotte, Unités, Infrastructures, Orbital), orbit/zoom, wireframe & Unity prefab mapping
+ * - Category filter (Flotte, Unités, Infrastructures, Orbital), orbit/zoom, wireframe & Three.js PBR asset key
  */
 const CATEGORY_LABEL: Readonly<Record<'ALL' | ShowcaseAssetCategory, string>> = {
   ALL: 'Tous (10)',
@@ -51,11 +53,13 @@ export function Asset3DGalleryPanel() {
   const [wireframe, setWireframe] = useState(false);
   const [autoRotate, setAutoRotate] = useState(false);
   const [lightingPreset, setLightingPreset] = useState<StudioLightingPreset>('OBSIDIAN');
+  const [showUnityExport, setShowUnityExport] = useState(false);
   const [contextLost, setContextLost] = useState(false);
   const [stats, setStats] = useState<{ meshCount: number; triangleCount: number }>({
     meshCount: 0,
     triangleCount: 0,
   });
+  const unityBundle = useMemo(() => buildUnity6UrpExportBundle(), []);
 
   const canvasHostRef = useRef<HTMLDivElement | null>(null);
   const sceneRef = useRef<IsolatedInspectorScene | null>(null);
@@ -117,10 +121,10 @@ export function Asset3DGalleryPanel() {
           <div>
             <h3 className="flex items-center gap-1.5 font-display text-base font-bold exo-accent-text">
               <Box className="h-4 w-4" />
-              Atelier &amp; Galerie d&apos;Assets 3D PBR ({SHOWCASE_3D_ASSETS_CATALOG.length} modèles)
+              Atelier 3D Unity 6 URP Principal &amp; Aperçu Web ({SHOWCASE_3D_ASSETS_CATALOG.length} modèles)
             </h3>
             <p className="text-xs exo-muted-text">
-              Modèles procéduraux multi-pièces (Three.js r170+ · PBR RoomEnvironment) prêts pour le pont Unity 6 URP.
+              OPT-02 A+ : Pipeline principal Unity 6 URP (Prefabs, Shader Graph, Burst/IL2CPP, .jslib) · Aperçu WebGL léger Three.js.
             </p>
           </div>
 
@@ -249,10 +253,35 @@ export function Asset3DGalleryPanel() {
               <p className="text-[11.5px] leading-relaxed exo-muted-text">
                 {activeSpec.description}
               </p>
-              <div className="flex items-center gap-1.5 pt-1 font-mono text-[10px] exo-muted-text">
-                <Layers className="h-3 w-3 shrink-0 exo-accent-text" />
-                <span>Cible Unity 6 URP :</span>
-                <code className="font-semibold text-[var(--exo-text)]">{activeSpec.unityPrefabId}</code>
+              <div className="space-y-1 pt-1 font-mono text-[10px] exo-muted-text">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Layers className="h-3 w-3 shrink-0 exo-accent-text" />
+                  <span>Prefab Unity 6 URP (Principal) :</span>
+                  <code className="font-semibold text-[var(--exo-text)]">{activeSpec.unityPrefabPath}</code>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span>Shader Graph : <code className="text-[var(--exo-text)]">{activeSpec.unityShaderGraph}</code></span>
+                  <span>· {activeSpec.unityLodProfile}</span>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                  <span>Aperçu Web Three.js : <code>{activeSpec.sceneAssetKey}</code></span>
+                  <button
+                    type="button"
+                    data-testid="unity-urp-export-toggle"
+                    onClick={() => setShowUnityExport((v) => !v)}
+                    className="exo-accent-chip inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold"
+                  >
+                    <Code2 className="h-3 w-3" />
+                    {showUnityExport ? 'Masquer C# / .jslib Unity 6' : 'Pont C# / .jslib Unity 6 URP'}
+                  </button>
+                </div>
+                {showUnityExport && (
+                  <pre className="mt-2 max-h-44 overflow-y-auto rounded-lg border exo-accent-border bg-slate-950/90 p-2.5 text-[10px] text-cyan-100">
+                    {unityBundle.csharpScript}
+                    {'\n// --- .jslib WebGL Plugin ---\n'}
+                    {unityBundle.jslibScript}
+                  </pre>
+                )}
               </div>
             </div>
           </div>

@@ -64,7 +64,7 @@ const HUB_WINGS = [
   {
     id: 'GAME_ASSETS' as const,
     title: 'Pôle 2 · Jeu, Règles & Assets 3D',
-    subtitle: 'Règles PA, scénarios 6 Ères, catalogues gameplay, Dico LLM, plans 3D/Unity & Bêta P13',
+    subtitle: 'Règles PA, scénarios 6 Ères, catalogues gameplay, Dico LLM, plans 3D Unity 6 URP (+ aperçu Three.js) & Bêta P13',
     defaultTab: 'PROJECT_DOCS' as const,
     icon: Gamepad2,
   },
@@ -92,7 +92,7 @@ const TABS_BY_WING: Readonly<
     { id: 'PROJECT_DOCS', label: 'Archives Séparées (Jeu / App)', icon: BookOpen },
     { id: 'CATALOGS', label: 'Catalogues Gameplay', icon: Database },
     { id: 'LLM_LEXICON', label: 'Dico LLM', icon: BookMarked },
-    { id: 'ATLAS', label: 'Plans 3D & Unity', icon: Compass },
+    { id: 'ATLAS', label: 'Plans 3D (Unity 6 URP / Three.js)', icon: Compass },
     { id: 'BETA_P13', label: 'Bêta P13', icon: ClipboardCheck },
   ],
   WORKFLOWS_SWARM: [

@@ -201,6 +201,41 @@
         "config",
         "updatedAt"
       ]
+    },
+    "DevCommsMessageRecord": {
+      "title": "DevCommsMessageRecord",
+      "description": "Multi-surface developer and agent communication bus message (AI Studio, Antigravity, Gemini Swarm, Data Agent Kit, Vercel, Firebase).",
+      "type": "object",
+      "properties": {
+        "messageId": { "type": "string", "description": "Message ID matching document key" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of owner" },
+        "sender": { "type": "string", "enum": ["USER", "AI_STUDIO", "ANTIGRAVITY", "GEMINI_LEAD", "SWARM", "DATA_AGENT_KIT", "GOOGLE_DRIVE", "GITHUB", "FIREBASE", "VERCEL"], "description": "Origin surface or agent" },
+        "target": { "type": "string", "enum": ["USER", "AI_STUDIO", "ANTIGRAVITY", "GEMINI_LEAD", "SWARM", "DATA_AGENT_KIT", "GOOGLE_DRIVE", "GITHUB", "FIREBASE", "VERCEL"], "description": "Destination surface or agent" },
+        "kind": { "type": "string", "enum": ["DIRECTIVE", "HANDOFF", "SYNC_PATCH", "ACK", "ALERT"], "description": "Message classification" },
+        "content": { "type": "string", "description": "Message body (max 2000 chars)" },
+        "linkedPath": { "type": "string", "description": "Optional workspace path" },
+        "linkedDocId": { "type": "string", "description": "Optional VCS docId" },
+        "shaDigest": { "type": "string", "description": "Deterministic digest" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" }
+      },
+      "required": ["messageId", "ownerId", "sender", "target", "kind", "content", "linkedPath", "linkedDocId", "shaDigest", "createdAt"]
+    },
+    "SurfaceSyncLogRecord": {
+      "title": "SurfaceSyncLogRecord",
+      "description": "Immutable tri-surface file save audit entry covering AI Studio local, Google Drive, and GitHub.",
+      "type": "object",
+      "properties": {
+        "syncId": { "type": "string", "description": "Sync log ID matching document key" },
+        "ownerId": { "type": "string", "description": "Firebase Auth UID of owner" },
+        "relativePath": { "type": "string", "description": "Workspace relative file path" },
+        "contentSha256": { "type": "string", "description": "Saved content digest" },
+        "commitSummary": { "type": "string", "description": "Save summary" },
+        "aiStudioStatus": { "type": "string", "enum": ["SUCCESS", "AUTH_REQUIRED", "SKIPPED", "ERROR"], "description": "AI Studio workspace write status" },
+        "driveStatus": { "type": "string", "enum": ["SUCCESS", "AUTH_REQUIRED", "SKIPPED", "ERROR"], "description": "Google Drive write status" },
+        "githubStatus": { "type": "string", "enum": ["SUCCESS", "AUTH_REQUIRED", "SKIPPED", "ERROR"], "description": "GitHub commit status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server creation timestamp" }
+      },
+      "required": ["syncId", "ownerId", "relativePath", "contentSha256", "commitSummary", "aiStudioStatus", "driveStatus", "githubStatus", "createdAt"]
     }
   },
   "firestore": {
@@ -239,6 +274,14 @@
     "/skillRegistry/{skillId}": {
       "schema": { "$ref": "#/entities/ModularSkillRecord" },
       "description": "Owner-scoped modular skills registry decoupled from documentation."
+    },
+    "/devCommsMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/DevCommsMessageRecord" },
+      "description": "Owner-scoped inter-surface developer communication bus entries."
+    },
+    "/surfaceSyncLogs/{syncId}": {
+      "schema": { "$ref": "#/entities/SurfaceSyncLogRecord" },
+      "description": "Owner-scoped immutable logs of tri-surface saves across AI Studio, Drive, and GitHub."
     }
   }
 }

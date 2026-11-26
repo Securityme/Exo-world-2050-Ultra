@@ -1,9 +1,26 @@
 import { z } from 'zod';
 
 /**
- * [L0] FUP-007 / FUP-010 | SM-05 | SADT A5.3
- * Dual-Adapter 3D Render Contract (Three.js r170+ ↔ Unity 6 URP V5) (OPT-02 A, R-15).
+ * [L0] FUP-007 / FUP-010 | SM-05 | SADT A5.3 | OPT-02 A+
+ * Unity-First Dual-Adapter 3D Render Contract:
+ * Primary: Unity 6 URP (C# / Shader Graph / Burst / IL2CPP / .jslib)
+ * Web Preview Fallback: Three.js r170+ WebGL2/WebGPU (R-15).
  */
+export const RenderEngineTargetSchema = z.enum(['UNITY_6_URP', 'THREEJS_WEB_PREVIEW']);
+
+export const UnityUrpQualityPresetSchema = z.enum(['URP_MOBILE_BALANCED', 'URP_DESKTOP_AAA', 'URP_WEBGPU_HIGH']);
+
+export const UnityUrpRenderProfileSchema = z.object({
+  engineTarget: RenderEngineTargetSchema.default('UNITY_6_URP'),
+  urpPipelineAsset: z.string().default('Assets/Settings/URP_ExoWorld2050_AAA.asset'),
+  shaderGraphPreset: z.string().default('Assets/Shaders/SG_RayleighMie_OpenSky.shadergraph'),
+  qualityPreset: UnityUrpQualityPresetSchema.default('URP_DESKTOP_AAA'),
+  burstJobsEnabled: z.boolean().default(true),
+  il2cppTarget: z.enum(['METAL_IOS', 'VULKAN_ANDROID', 'WEBGPU_WASM', 'DX12_DESKTOP']).default('WEBGPU_WASM'),
+  jslibBridgeObject: z.string().default('ExoWorldBridge'),
+  addressablesGroup: z.string().default('ExoWorld2050_Prefabs_URP'),
+});
+
 export const CameraScaleSchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
 
 export const AtmosphereTierSchema = z.enum(['P1', 'P2', 'P3', 'P4']);
@@ -114,6 +131,9 @@ export const RenderToGameEventSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('SCALE_CHANGED'), scale: CameraScaleSchema }),
 ]);
 
+export type RenderEngineTarget = z.infer<typeof RenderEngineTargetSchema>;
+export type UnityUrpQualityPreset = z.infer<typeof UnityUrpQualityPresetSchema>;
+export type UnityUrpRenderProfile = z.infer<typeof UnityUrpRenderProfileSchema>;
 export type CameraScale = z.infer<typeof CameraScaleSchema>;
 export type AtmosphereTier = z.infer<typeof AtmosphereTierSchema>;
 export type ViewportOverlayMode = z.infer<typeof ViewportOverlayModeSchema>;

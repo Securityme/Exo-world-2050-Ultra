@@ -206,6 +206,58 @@ service cloud.firestore {
         data.updatedAt is timestamp;
     }
 
+    function isValidSurfaceActor(actor) {
+      return actor is string && actor in [
+        'USER', 'AI_STUDIO', 'ANTIGRAVITY', 'GEMINI_LEAD', 'SWARM',
+        'DATA_AGENT_KIT', 'GOOGLE_DRIVE', 'GITHUB', 'FIREBASE', 'VERCEL'
+      ];
+    }
+
+    function isValidSurfaceOutcome(status) {
+      return status is string && status in ['SUCCESS', 'AUTH_REQUIRED', 'SKIPPED', 'ERROR'];
+    }
+
+    function isValidDevCommsMessage(data) {
+      return data.keys().hasAll([
+          'messageId', 'ownerId', 'sender', 'target', 'kind',
+          'content', 'linkedPath', 'linkedDocId', 'shaDigest', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'messageId', 'ownerId', 'sender', 'target', 'kind',
+          'content', 'linkedPath', 'linkedDocId', 'shaDigest', 'createdAt'
+        ]) &&
+        isValidId(data.messageId) && data.messageId.size() <= 96 &&
+        isValidId(data.ownerId) &&
+        isValidSurfaceActor(data.sender) &&
+        isValidSurfaceActor(data.target) &&
+        data.kind is string && data.kind in ['DIRECTIVE', 'HANDOFF', 'SYNC_PATCH', 'ACK', 'ALERT'] &&
+        data.content is string && data.content.size() >= 2 && data.content.size() <= 2000 &&
+        data.linkedPath is string && data.linkedPath.size() <= 180 &&
+        data.linkedDocId is string && data.linkedDocId.size() <= 80 &&
+        data.shaDigest is string && data.shaDigest.size() >= 6 && data.shaDigest.size() <= 64 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidSurfaceSyncLog(data) {
+      return data.keys().hasAll([
+          'syncId', 'ownerId', 'relativePath', 'contentSha256', 'commitSummary',
+          'aiStudioStatus', 'driveStatus', 'githubStatus', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'syncId', 'ownerId', 'relativePath', 'contentSha256', 'commitSummary',
+          'aiStudioStatus', 'driveStatus', 'githubStatus', 'createdAt'
+        ]) &&
+        isValidId(data.syncId) && data.syncId.size() <= 96 &&
+        isValidId(data.ownerId) &&
+        data.relativePath is string && data.relativePath.size() >= 3 && data.relativePath.size() <= 180 &&
+        data.contentSha256 is string && data.contentSha256.size() >= 8 && data.contentSha256.size() <= 128 &&
+        data.commitSummary is string && data.commitSummary.size() >= 2 && data.commitSummary.size() <= 240 &&
+        isValidSurfaceOutcome(data.aiStudioStatus) &&
+        isValidSurfaceOutcome(data.driveStatus) &&
+        isValidSurfaceOutcome(data.githubStatus) &&
+        data.createdAt is timestamp;
+    }
+
     match /players/{userId} {
       allow get: if isOwner(userId);
       allow list: if false;
@@ -379,6 +431,36 @@ service cloud.firestore {
         incoming().ownerId == request.auth.uid &&
         incoming().updatedAt == request.time;
 
+      allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+    }
+
+    match /devCommsMessages/{messageId} {
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(messageId) &&
+        isValidDevCommsMessage(incoming()) &&
+        incoming().messageId == messageId &&
+        incoming().ownerId == request.auth.uid &&
+        incoming().createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+    }
+
+    match /surfaceSyncLogs/{syncId} {
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(syncId) &&
+        isValidSurfaceSyncLog(incoming()) &&
+        incoming().syncId == syncId &&
+        incoming().ownerId == request.auth.uid &&
+        incoming().createdAt == request.time;
+
+      allow update: if false;
       allow delete: if isVerifiedUser() && existing().ownerId == request.auth.uid;
     }
   }

@@ -341,7 +341,7 @@ export const INITIAL_GOVERNED_DOCUMENTS: readonly GovernedDocument[] = Object.fr
     updatedAtIso: '2026-11-22T10:00:00Z',
     verifiedStandardIds: ['STD-APP-ARCH', 'STD-APP-UX'],
     tags: ['rbac', 'gouvernance', 'acces'],
-    sourcePath: 'docs/governance/DOC-APP-GOV-001_ROLES_PERMISSIONS_WORKFLOW.md',
+    sourcePath: 'docs/archive/governance/DOC-APP-GOV-001_ROLES_PERMISSIONS_WORKFLOW.md',
     auditLog: [
       {
         id: 'aud-1',
@@ -400,7 +400,7 @@ export const INITIAL_GOVERNED_DOCUMENTS: readonly GovernedDocument[] = Object.fr
     updatedAtIso: '2026-11-22T11:15:00Z',
     verifiedStandardIds: ['STD-APP-ARCH'],
     tags: ['changelog', 'v5.1', 'application'],
-    sourcePath: 'CHANGELOG.txt',
+    sourcePath: 'docs/CHANGELOG.txt',
     auditLog: [
       {
         id: 'aud-upd-1',
@@ -439,7 +439,7 @@ export const INITIAL_GOVERNED_DOCUMENTS: readonly GovernedDocument[] = Object.fr
     updatedAtIso: '2026-11-21T16:40:00Z',
     verifiedStandardIds: ['STD-APP-ARCH', 'STD-APP-UX'],
     tags: ['architecture', 'l0-l8', 'zod'],
-    sourcePath: 'docs/architecture/01.md',
+    sourcePath: 'docs/archive/architecture/01.md',
     auditLog: [
       {
         id: 'aud-tec-1',
@@ -568,7 +568,7 @@ export const INITIAL_GOVERNED_DOCUMENTS: readonly GovernedDocument[] = Object.fr
     updatedAtIso: '2026-11-21T15:00:00Z',
     verifiedStandardIds: ['STD-GAME-RULES', 'STD-GAME-LORE'],
     tags: ['regles', 'pa', 'dossiers'],
-    sourcePath: 'docs/gameplay/01.md',
+    sourcePath: 'docs/archive/gameplay/01.md',
     auditLog: [
       {
         id: 'aud-reg-1',
@@ -607,7 +607,7 @@ export const INITIAL_GOVERNED_DOCUMENTS: readonly GovernedDocument[] = Object.fr
     updatedAtIso: '2026-11-22T12:20:00Z',
     verifiedStandardIds: ['STD-GAME-LORE'],
     tags: ['scenarios', 'campagne', 'lore'],
-    sourcePath: 'docs/gameplay/02.md',
+    sourcePath: 'docs/archive/gameplay/02.md',
     auditLog: [
       {
         id: 'aud-sce-1',
@@ -646,7 +646,7 @@ export const INITIAL_GOVERNED_DOCUMENTS: readonly GovernedDocument[] = Object.fr
     updatedAtIso: '2026-11-22T12:40:00Z',
     verifiedStandardIds: [],
     tags: ['equilibrage', 'combat', 'playtest'],
-    sourcePath: 'docs/gameplay/04.md',
+    sourcePath: 'docs/archive/gameplay/04.md',
     auditLog: [
       {
         id: 'aud-bal-1',
@@ -685,7 +685,7 @@ export const INITIAL_GOVERNED_DOCUMENTS: readonly GovernedDocument[] = Object.fr
     updatedAtIso: '2026-11-20T18:00:00Z',
     verifiedStandardIds: ['STD-GAME-RULES', 'STD-GAME-LORE'],
     tags: ['direction-artistique', 'ciel-ouvert', '3d'],
-    sourcePath: 'docs/design/01.md',
+    sourcePath: 'docs/DOC-EXW-ARCH-001_MASTER_BLUEPRINT.md',
     auditLog: [
       {
         id: 'aud-vis-1',

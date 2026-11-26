@@ -12,7 +12,7 @@ import {
 
 const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, 'src');
-const BP_DIR = path.join(ROOT, 'master-blueprint');
+const BP_DIR = path.join(ROOT, 'docs', 'master-blueprint');
 
 function walkSrcFiles(dir: string, acc: string[] = []): string[] {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -119,7 +119,7 @@ export function syncMasterBlueprint(): { m0: M0Manifest; m13: M13Manifest; srcFi
     `import type { M0Manifest, M13Manifest } from '../services/architecture/matrix-engine.ts';`,
     '',
     '/**',
-    ' * [L1] Auto-synchronized by `npm run exo:sync-bp` from master-blueprint/*.json.',
+    ' * [L1] Auto-synchronized by `npm run exo:sync-bp` from docs/master-blueprint/*.json.',
     ' */',
     `export const M0_MANIFEST: M0Manifest = ${JSON.stringify(m0, null, 2)} as const;`,
     '',

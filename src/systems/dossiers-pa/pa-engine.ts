@@ -27,6 +27,10 @@ import {
   getSubChoicesForOption,
 } from './dossier-subchoices.ts';
 import {
+  computeCombinedSkillScore,
+  evaluateBudgetedSelection,
+} from './multi-factor-unlock.engine.ts';
+import {
   commissionShipPure,
   computeFleetTotals,
   installShipModulePure,
@@ -316,104 +320,175 @@ export function executeDossierDecision(
   }
 
   const effectiveOptions = getEffectiveOptionsForDossier(dossier);
+  const selectedIds = [intent.optionId, ...(intent.extraOptionIds ?? [])];
   const option = effectiveOptions.find((o) => o.id === intent.optionId);
   if (!option) {
     return err('EXW_ERR_SCHEMA', 'Option de dossier introuvable.');
   }
 
+  const assignedColonistIds = [...new Set(intent.assignedColonistIds ?? [])];
   const availableSubChoices = getSubChoicesForOption(option, dossier.dossierClass);
   const selectedSubChoice = intent.subChoiceId
     ? availableSubChoices.find((sc) => sc.id === intent.subChoiceId) ?? availableSubChoices[0]
     : availableSubChoices[0];
 
-  const baseCosts = calculateEffectivePaCosts(
-    option.paGeneralCost,
-    option.subPaCost,
-    intent.refinementLevel
+  const budgetEval = evaluateBudgetedSelection(
+    state,
+    dossier,
+    effectiveOptions,
+    selectedIds,
+    selectedSubChoice,
+    intent.refinementLevel,
+    intent.assignedAdvisorId,
+    assignedColonistIds,
   );
-  const generalCost = baseCosts.generalCost + (selectedSubChoice?.extraPaGeneralCost ?? 0);
-  const subPaCost = baseCosts.subPaCost + (selectedSubChoice?.extraSubPaCost ?? 0);
+  if (!budgetEval.allowed) {
+    return err('EXW_ERR_SCHEMA', budgetEval.reason);
+  }
+  const selectedOptions = budgetEval.selectedOptions;
 
-  // R-26 Asymmetric Fungibility: PA General can pay anything; Sub-PA only pays its own domain
-  const domain: SubPaDomain | null = dossier.dossierClass === 'P0' ? null : option.subPaDomain;
-  let requiredGeneral = generalCost;
-  let requiredSubPa = 0;
+  // R-26 Asymmetric Fungibility across 1..N selected options
+  let requiredGeneral = selectedSubChoice?.extraPaGeneralCost ?? 0;
+  const subSpendByDomain: Record<SubPaDomain, number> = {
+    PA_GES: 0,
+    PA_MNT: 0,
+    PA_BIO: 0,
+    PA_POL: 0,
+  };
 
-  if (dossier.dossierClass === 'P0' || domain === null) {
-    requiredGeneral += subPaCost;
-  } else if (intent.useGeneralPaFallback) {
-    const availSub = state.pa.subPa[domain];
-    const fromSub = Math.min(availSub, subPaCost);
-    requiredSubPa = fromSub;
-    requiredGeneral += subPaCost - fromSub;
+  for (const opt of selectedOptions) {
+    const c = calculateEffectivePaCosts(opt.paGeneralCost, opt.subPaCost, intent.refinementLevel);
+    requiredGeneral += c.generalCost;
+    const dom: SubPaDomain | null = dossier.dossierClass === 'P0' ? null : opt.subPaDomain;
+    if (dossier.dossierClass === 'P0' || dom === null) {
+      requiredGeneral += c.subPaCost;
+    } else {
+      subSpendByDomain[dom] += c.subPaCost;
+    }
+  }
+  if ((selectedSubChoice?.extraSubPaCost ?? 0) > 0 && dossier.dossierClass !== 'P0' && option.subPaDomain) {
+    subSpendByDomain[option.subPaDomain] += selectedSubChoice?.extraSubPaCost ?? 0;
   } else {
-    requiredSubPa = subPaCost;
+    requiredGeneral += selectedSubChoice?.extraSubPaCost ?? 0;
+  }
+
+  const finalSubDeduct: Record<SubPaDomain, number> = { ...subSpendByDomain };
+  for (const dom of ['PA_GES', 'PA_MNT', 'PA_BIO', 'PA_POL'] as const) {
+    const need = subSpendByDomain[dom];
+    if (need <= 0) continue;
+    const avail = state.pa.subPa[dom];
+    if (intent.useGeneralPaFallback) {
+      const fromSub = Math.min(avail, need);
+      finalSubDeduct[dom] = fromSub;
+      requiredGeneral += need - fromSub;
+    } else if (avail < need) {
+      return err(
+        'EXW_ERR_PA_INSUFFICIENT',
+        `Sous-PA ${dom} insuffisant (${avail}/${need}). Activez la fongibilité PA Général (R-26).`,
+      );
+    }
   }
 
   if (state.pa.general < requiredGeneral) {
     return err(
       'EXW_ERR_PA_INSUFFICIENT',
-      `PA Général insuffisant (${state.pa.general}/${requiredGeneral}).`
-    );
-  }
-  if (domain !== null && state.pa.subPa[domain] < requiredSubPa) {
-    return err(
-      'EXW_ERR_PA_INSUFFICIENT',
-      `Sous-PA ${domain} insuffisant (${state.pa.subPa[domain]}/${requiredSubPa}). Activez la fongibilité PA Général (R-26).`
+      `PA Général insuffisant (${state.pa.general}/${requiredGeneral}).`,
     );
   }
 
-  // Execute embedded Action-Gateway payload FIRST so resource/era checks fail cleanly before PA spend
+  // Execute embedded Action-Gateway payloads (deduplicated per payload key)
   let workingState: WorldState = state;
-  let actionNote = '';
-  if (option.actionPayload) {
-    const [actErr, actRes] = applyActionPayloadPure(state, option.actionPayload);
+  const actionNotes: string[] = [];
+  const executedPayloadKeys = new Set<string>();
+  for (const opt of selectedOptions) {
+    if (!opt.actionPayload) continue;
+    const payloadKey = JSON.stringify(opt.actionPayload);
+    if (executedPayloadKeys.has(payloadKey)) continue;
+    executedPayloadKeys.add(payloadKey);
+    const [actErr, actRes] = applyActionPayloadPure(workingState, opt.actionPayload);
     if (actErr || !actRes) {
       return err(actErr?.code ?? 'EXW_ERR_FINANCE_LIMIT', actErr?.message ?? 'Action refusée.');
     }
     workingState = actRes.nextState;
-    actionNote = actRes.note;
+    if (actRes.note) actionNotes.push(actRes.note);
   }
 
-  const isDeferred = option.actionPayload?.kind === 'DEFER_ACTION';
-
+  const isDeferred = selectedOptions.every((o) => o.actionPayload?.kind === 'DEFER_ACTION');
   const advisor =
     workingState.advisors.find((a) => a.id === intent.assignedAdvisorId) ?? workingState.advisors[0]!;
   const prng = new Pcg32(workingState.prngState ^ (workingState.tick + 31));
 
-  // New Vegas Deterministic Skill Check (R-28)
+  // New Vegas Deterministic Skill Check (R-28) amplified by assigned teammates
   let skillCheckPassed: boolean | null = null;
   let refinementMultiplier = 1 + intent.refinementLevel * 0.2;
-  if (option.skillCheck) {
-    const roll = advisor.attributeScore + advisor.traitBonus + intent.refinementLevel * 2 + prng.nextInt(0, 2);
-    skillCheckPassed = roll >= option.skillCheck.threshold;
+  const primarySkillCheck = selectedOptions.find((o) => o.skillCheck)?.skillCheck;
+  if (primarySkillCheck) {
+    const teamScore = computeCombinedSkillScore(
+      workingState,
+      advisor.id,
+      assignedColonistIds,
+      primarySkillCheck.attribute,
+    );
+    const roll = teamScore + intent.refinementLevel * 2 + prng.nextInt(0, 2);
+    skillCheckPassed = roll >= primarySkillCheck.threshold;
     refinementMultiplier *= skillCheckPassed ? 1.25 : 0.78;
   }
 
-  const fx = option.effects;
+  const agg = selectedOptions.reduce(
+    (acc, opt) => ({
+      credits: acc.credits + opt.effects.credits,
+      energy: acc.energy + opt.effects.energy,
+      materials: acc.materials + opt.effects.materials,
+      water: acc.water + opt.effects.water,
+      food: acc.food + opt.effects.food,
+      electronics: acc.electronics + opt.effects.electronics,
+      compute: acc.compute + opt.effects.compute,
+      breathingKits: acc.breathingKits + opt.effects.breathingKits,
+      approvalDelta: acc.approvalDelta + opt.effects.approvalDelta,
+      atmosphereDelta: acc.atmosphereDelta + opt.effects.atmosphereDelta,
+      maintenanceDelta: acc.maintenanceDelta + opt.effects.maintenanceDelta,
+      allianceTrustDelta: acc.allianceTrustDelta + opt.effects.allianceTrustDelta,
+      eraStarsDelta: acc.eraStarsDelta + opt.effects.eraStarsDelta,
+      xpCiv: acc.xpCiv + opt.effects.xpCiv,
+      xpCabinet: acc.xpCabinet + opt.effects.xpCabinet,
+      xpAlliance: acc.xpAlliance + opt.effects.xpAlliance,
+      oracleImpactFactor: Math.max(-0.15, Math.min(0.15, acc.oracleImpactFactor + opt.effects.oracleImpactFactor)),
+      delayedEchoSummary: acc.delayedEchoSummary ?? opt.effects.delayedEchoSummary,
+    }),
+    {
+      credits: 0, energy: 0, materials: 0, water: 0, food: 0, electronics: 0,
+      compute: 0, breathingKits: 0, approvalDelta: 0, atmosphereDelta: 0,
+      maintenanceDelta: 0, allianceTrustDelta: 0, eraStarsDelta: 0,
+      xpCiv: 0, xpCabinet: 0, xpAlliance: 0, oracleImpactFactor: 0,
+      delayedEchoSummary: undefined as string | undefined,
+    },
+  );
+
   const subFx = selectedSubChoice?.bonusEffects;
   const nextPa: PaBudget = {
     ...workingState.pa,
     general: workingState.pa.general - requiredGeneral,
     subPa: {
-      ...workingState.pa.subPa,
-      ...(domain !== null ? { [domain]: workingState.pa.subPa[domain] - requiredSubPa } : {}),
+      PA_GES: workingState.pa.subPa.PA_GES - finalSubDeduct.PA_GES,
+      PA_MNT: workingState.pa.subPa.PA_MNT - finalSubDeduct.PA_MNT,
+      PA_BIO: workingState.pa.subPa.PA_BIO - finalSubDeduct.PA_BIO,
+      PA_POL: workingState.pa.subPa.PA_POL - finalSubDeduct.PA_POL,
     },
   };
 
   const nextResources = {
     ...workingState.resources,
-    credits: Math.round(workingState.resources.credits + fx.credits + (subFx?.credits ?? 0)),
-    energy: Math.max(0, Math.round(workingState.resources.energy + fx.energy * refinementMultiplier + (subFx?.energy ?? 0))),
-    materials: Math.max(0, Math.round(workingState.resources.materials + fx.materials * refinementMultiplier + (subFx?.materials ?? 0))),
-    water: Math.max(0, Math.round(workingState.resources.water + fx.water * refinementMultiplier + (subFx?.water ?? 0))),
-    food: Math.max(0, Math.round(workingState.resources.food + fx.food * refinementMultiplier + (subFx?.food ?? 0))),
-    electronics: Math.max(0, Math.round(workingState.resources.electronics + fx.electronics * refinementMultiplier + (subFx?.electronics ?? 0))),
-    compute: Math.max(0, Math.round(workingState.resources.compute + fx.compute * refinementMultiplier + (subFx?.compute ?? 0))),
-    breathingKits: Math.max(0, Math.round(workingState.resources.breathingKits + fx.breathingKits + (subFx?.breathingKits ?? 0))),
+    credits: Math.round(workingState.resources.credits + agg.credits + (subFx?.credits ?? 0)),
+    energy: Math.max(0, Math.round(workingState.resources.energy + agg.energy * refinementMultiplier + (subFx?.energy ?? 0))),
+    materials: Math.max(0, Math.round(workingState.resources.materials + agg.materials * refinementMultiplier + (subFx?.materials ?? 0))),
+    water: Math.max(0, Math.round(workingState.resources.water + agg.water * refinementMultiplier + (subFx?.water ?? 0))),
+    food: Math.max(0, Math.round(workingState.resources.food + agg.food * refinementMultiplier + (subFx?.food ?? 0))),
+    electronics: Math.max(0, Math.round(workingState.resources.electronics + agg.electronics * refinementMultiplier + (subFx?.electronics ?? 0))),
+    compute: Math.max(0, Math.round(workingState.resources.compute + agg.compute * refinementMultiplier + (subFx?.compute ?? 0))),
+    breathingKits: Math.max(0, Math.round(workingState.resources.breathingKits + agg.breathingKits + (subFx?.breathingKits ?? 0))),
   };
 
-  const totalMaintenanceDelta = fx.maintenanceDelta + (subFx?.maintenanceDelta ?? 0);
+  const totalMaintenanceDelta = agg.maintenanceDelta + (subFx?.maintenanceDelta ?? 0);
   const nextDistricts = workingState.districts.map((dist, idx) => {
     const integrity = Math.max(0, Math.min(100, dist.integrity + totalMaintenanceDelta));
     const addModule =
@@ -428,13 +503,28 @@ export function executeDossierDecision(
           ? {
               ...adv,
               fatigue: Math.min(100, adv.fatigue + 12 + intent.refinementLevel * 6),
-              xpLevel: Math.min(20, adv.xpLevel + (fx.xpCabinet >= 25 ? 1 : 0)),
+              xpLevel: Math.min(20, adv.xpLevel + (agg.xpCabinet >= 25 ? 1 : 0)),
             }
           : adv,
       );
 
+  const nextColonists = isDeferred || assignedColonistIds.length === 0
+    ? workingState.colonists
+    : workingState.colonists.map((col) => {
+        if (!assignedColonistIds.includes(col.id)) return col;
+        const nextXp = (col.xp ?? 20) + 30;
+        const nextLevel = Math.min(10, Math.max(col.level ?? 1, 1 + Math.floor(nextXp / 60)));
+        return {
+          ...col,
+          fatigue: Math.min(96, col.fatigue + 12),
+          xp: nextXp,
+          level: nextLevel,
+          morale: Math.min(100, col.morale + 2),
+        };
+      });
+
   let nextBus = workingState.triggerBus;
-  if (fx.delayedEchoSummary) {
+  if (agg.delayedEchoSummary) {
     const [, updatedBus] = enqueueTriggerEvent(
       nextBus,
       {
@@ -446,36 +536,41 @@ export function executeDossierDecision(
         severity: 'STANDARD',
         category: 'DELAYED_CONSEQUENCE',
         title: `Suite : ${dossier.title}`,
-        summary: fx.delayedEchoSummary,
+        summary: agg.delayedEchoSummary,
         sourceNode: 'A2.3',
-        deltaModifier: fx.oracleImpactFactor,
+        deltaModifier: agg.oracleImpactFactor,
         resolved: false,
       },
-      workingState.cycle
+      workingState.cycle,
     );
     if (updatedBus) nextBus = updatedBus;
   }
 
-  const nextApproval = Math.max(0, Math.min(100, Math.round(workingState.approval + fx.approvalDelta)));
+  const nextApproval = Math.max(0, Math.min(100, Math.round(workingState.approval + agg.approvalDelta)));
   const nextAtmo = Math.max(
     0,
-    Math.min(100, Math.round(workingState.atmosphereProgress + fx.atmosphereDelta * refinementMultiplier + (subFx?.atmosphereDelta ?? 0))),
+    Math.min(100, Math.round(workingState.atmosphereProgress + agg.atmosphereDelta * refinementMultiplier + (subFx?.atmosphereDelta ?? 0))),
   );
   const nextTrust = Math.max(
     0,
-    Math.min(100, Math.round(workingState.superAllianceTrust + fx.allianceTrustDelta + (subFx?.allianceTrustDelta ?? 0))),
+    Math.min(100, Math.round(workingState.superAllianceTrust + agg.allianceTrustDelta + (subFx?.allianceTrustDelta ?? 0))),
   );
 
   const subTag = selectedSubChoice ? ` · ${selectedSubChoice.label}` : '';
+  const colNames = assignedColonistIds
+    .map((id) => workingState.colonists.find((c) => c.id === id)?.name)
+    .filter((n): n is string => Boolean(n));
+  const teamTag = colNames.length > 0 ? ` · Équipe : ${colNames.join(', ')}` : '';
   const baseStatus =
     skillCheckPassed === null
       ? 'Validé'
       : skillCheckPassed
-        ? 'Bonus conseiller réussi'
+        ? 'Bonus équipe réussi'
         : 'Exécution standard';
-  const summary = actionNote
-    ? `${dossier.code} · ${actionNote}${subTag}`
-    : `${dossier.code} validé (${option.label}${subTag}) · ${baseStatus}`;
+  const combinedLabels = selectedOptions.map((o) => o.label).join(' + ');
+  const summary = actionNotes.length > 0
+    ? `${dossier.code} · ${actionNotes.join(' ; ')}${subTag}${teamTag}`
+    : `${dossier.code} validé (${combinedLabels}${subTag})${teamTag} · ${baseStatus}`;
 
   const draft: WorldState = {
     ...workingState,
@@ -484,16 +579,17 @@ export function executeDossierDecision(
     resources: nextResources,
     districts: nextDistricts,
     advisors: nextAdvisors,
+    colonists: nextColonists,
     approval: nextApproval,
     atmosphereProgress: nextAtmo,
     superAllianceTrust: nextTrust,
-    eraStars: workingState.eraStars + fx.eraStarsDelta,
+    eraStars: workingState.eraStars + agg.eraStarsDelta,
     activeDossiers: workingState.activeDossiers.filter((d) => d.id !== dossier.id),
     triggerBus: nextBus,
     xp: {
-      civilization: workingState.xp.civilization + fx.xpCiv,
-      cabinet: workingState.xp.cabinet + fx.xpCabinet,
-      alliance: workingState.xp.alliance + fx.xpAlliance,
+      civilization: workingState.xp.civilization + agg.xpCiv,
+      cabinet: workingState.xp.cabinet + agg.xpCabinet,
+      alliance: workingState.xp.alliance + agg.xpAlliance,
     },
     chronicle: isDeferred
       ? workingState.chronicle
@@ -502,7 +598,9 @@ export function executeDossierDecision(
             id: `chr-${workingState.cycle}-${workingState.tick}-${dossier.code}`,
             cycle: workingState.cycle,
             tick: workingState.tick,
-            category: option.actionPayload?.kind === 'LAUNCH_COMBAT' ? ('COMBAT' as const) : ('DOSSIER' as const),
+            category: selectedOptions.some((o) => o.actionPayload?.kind === 'LAUNCH_COMBAT')
+              ? ('COMBAT' as const)
+              : ('DOSSIER' as const),
             title: dossier.title,
             detail: summary,
             stateHash: workingState.stateHash,

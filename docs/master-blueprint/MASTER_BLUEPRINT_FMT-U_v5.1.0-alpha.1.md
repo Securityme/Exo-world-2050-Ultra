@@ -18,7 +18,7 @@
 | M11 | GENESE-2050 | L3,L6,L7 | ISO 9241-210 | PASS | 3 Doctrines · 5 Personnalités IA · Bypass |
 | M12 | AUDIO-FIP | L5,L6 | ISO 9241-210 | PASS | Auto-ON 1er geste · Fallback <500ms |
 | M13-A | SADT-ARCH | L0,L2,L4,L5,L7 | ISO 31320-1 | PASS | 5 D1 · 15 D2 · 0 err |
-| M13-D | SRC-MAPPING | L0,L1,L2,L3,L4,L5,L6,L7,L8 | ISO 12207 | PASS | 279 modules · 0 non-mappés |
+| M13-D | SRC-MAPPING | L0,L1,L2,L3,L4,L5,L6,L7,L8 | ISO 12207 | PASS | 303 modules · 0 non-mappés |
 | M14 | SAVE-MIG | L0,L5,L6 | ISO 25012 | PASS | Backup exow_backup · Zod D1..D5 |
 | M15 | AUDIT-CI | L0,L2,L3,L5,L8 | ISO 27001 | PASS | ISO err: 0 · Parité U⇄M⇄S |
 
@@ -28,6 +28,8 @@
 | L7 | A5.1 | `src/App.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L4 | A5.3 | `src/adapters/render-adapter.interface.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L4 | A5.3 | `src/adapters/scene-diff-projector.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L5 | A4.3 | `src/app/api/dev-bridge-remotes.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L5 | A4.3 | `src/app/api/dev-bridge.route.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/app/api/doc-governance.route.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/app/api/docs-vcs.route.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/app/api/health.route.ts` | 5.1.0-alpha.1 | VERIFIED |
@@ -50,6 +52,9 @@
 | L7 | A5.1 | `src/components/ThemeStudioEffectsSection.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/ThemeStudioPanel.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/bento/ContextualMondeMicroModule.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/bento/DossierBilanPolesPanel.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/bento/DossierMultiFactorPanel.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/bento/DossierOptionUnlockStrip.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/bento/ExoTooltip.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/bento/FoundationSvgIcon.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/bento/NestedBadgeGroup.tsx` | 5.1.0-alpha.1 | VERIFIED |
@@ -64,9 +69,14 @@
 | L7 | A5.1 | `src/components/genesis/GenesisGovernanceStep.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/genesis/PlanetLivePreview.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/genesis/SuggestionBubbleField.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/governance/DevCommsBusPanel.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/governance/DevConnectivityPanel.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/governance/DevConnectorsStrip.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/governance/DevDataVercelCard.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/governance/DocRevisionTimelineDiff.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/governance/DocsVcsLibraryPanel.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/governance/ModularSkillsRegistryPanel.tsx` | 5.1.0-alpha.1 | VERIFIED |
+| L7 | A5.1 | `src/components/governance/TriSurfaceSaveModal.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/hud/HeaderDevDrawer.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/hud/HeaderNotificationCenter.tsx` | 5.1.0-alpha.1 | VERIFIED |
 | L7 | A5.1 | `src/components/hud/HeaderWeatherSuperWidget.tsx` | 5.1.0-alpha.1 | VERIFIED |
@@ -104,7 +114,9 @@
 | L1 | A1.1 | `src/config/telemetry.constants.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/agent-hierarchy.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/beta-p13.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L0 | A1.1 | `src/contracts/classification-6d.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/combat-units.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L0 | A1.1 | `src/contracts/dev-bridge.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/doc-governance.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/doc-sync.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/economy-cyber.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
@@ -120,6 +132,7 @@
 | L0 | A1.1 | `src/contracts/pa-dossiers.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/render-bridge.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/skills-vcs.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L0 | A1.1 | `src/contracts/toc-7pivots.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/trigger-bus.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/ui-theme.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L0 | A1.1 | `src/contracts/user-context.schema.ts` | 5.1.0-alpha.1 | VERIFIED |
@@ -183,6 +196,7 @@
 | L2 | A1.3 | `src/guardrails/nomenclature.guardrail.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L2 | A1.3 | `src/guardrails/webkit-memory.guardrail.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L2 | A1.3 | `src/guardrails/zod-airlock.guardrail.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L6 | A4.2 | `src/hooks/use-cloud-autosave.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L6 | A4.2 | `src/hooks/use-cycle-clock.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L6 | A4.2 | `src/hooks/use-fip-audio.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L6 | A4.2 | `src/hooks/use-oracle-query.ts` | 5.1.0-alpha.1 | VERIFIED |
@@ -250,17 +264,22 @@
 | L5 | A4.3 | `src/services/audio/fip-radio.service.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/firebase/firebase-client.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/firebase/firestore-archives.service.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L5 | A4.3 | `src/services/governance/dev-bridge-telemetry.service.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L5 | A4.3 | `src/services/governance/dev-bridge.service.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/governance/doc-governance.service.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/governance/docs-vcs.service.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/persistence/save-migration.service.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/queues/cloud-sync.queue.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/queues/oracle-request.queue.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L5 | A4.3 | `src/services/saves/cloud-autosave.service.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/services/saves/local-saves.service.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L6 | A4.2 | `src/stores/cloud-autosave.store.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L6 | A4.2 | `src/stores/game.store.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L6 | A4.2 | `src/stores/meta-honors.store.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L6 | A4.2 | `src/stores/selection.atoms.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L6 | A4.2 | `src/stores/user-context.store.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/biosphere-cabinet/bioclimate-health.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L3 | A3.1 | `src/systems/biosphere-cabinet/colonist-quick-access.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/biosphere-cabinet/terraformation-v4.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/biosphere/climate-ledger.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/biosphere/video-studio-catalog.ts` | 5.1.0-alpha.1 | VERIFIED |
@@ -270,10 +289,13 @@
 | L3 | A3.1 | `src/systems/combat-conquest/theaters-and-polities.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/action-event-generator.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/badge-taxonomy.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L3 | A3.1 | `src/systems/dossiers-pa/budgeted-selection.engine.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L3 | A3.1 | `src/systems/dossiers-pa/dossier-bilan-poles.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/dossier-subchoices.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/entity-markup.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/event-action-taxonomy.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/genese-promises.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L3 | A3.1 | `src/systems/dossiers-pa/multi-factor-unlock.engine.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/pa-engine.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/dossiers-pa/pax-scenario-matrix.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/economy-urban/citizens-society.ts` | 5.1.0-alpha.1 | VERIFIED |
@@ -285,6 +307,7 @@
 | L3 | A3.1 | `src/systems/geopolitics/humankind-progression.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/geopolitics/planetary-diplomacy.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/governance/agent-hierarchy.engine.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L3 | A3.1 | `src/systems/governance/dev-bridge.engine.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/governance/doc-governance.engine.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/governance/skills-vcs.engine.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/honors/honors-evaluator.ts` | 5.1.0-alpha.1 | VERIFIED |
@@ -298,6 +321,7 @@
 | L3 | A3.1 | `src/systems/turn-orchestration/turn-gate-v4.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L3 | A3.1 | `src/systems/turn-orchestration/user-context-3d.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/utils/atmosphere-labels.ts` | 5.1.0-alpha.1 | VERIFIED |
+| L5 | A4.3 | `src/utils/cloud-autosave-policy.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/utils/combat-snapshot-parser.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/utils/llm-lexicon.ts` | 5.1.0-alpha.1 | VERIFIED |
 | L5 | A4.3 | `src/utils/safari-webkit.ts` | 5.1.0-alpha.1 | VERIFIED |

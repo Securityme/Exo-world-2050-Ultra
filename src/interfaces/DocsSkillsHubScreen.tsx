@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { BookMarked, Cpu, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { BookMarked, Cpu, Network, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import type { DocVcsStoreState } from '../contracts/skills-vcs.schema.ts';
 import {
   fetchDocsVcsState,
   loadFirestoreDocSyncStatus,
 } from '../services/governance/docs-vcs.service.ts';
 import { createInitialDocVcsStoreState } from '../systems/governance/skills-vcs.engine.ts';
+import { DevConnectivityPanel } from '../components/governance/DevConnectivityPanel.tsx';
 import { DocsVcsLibraryPanel } from '../components/governance/DocsVcsLibraryPanel.tsx';
 import { ModularSkillsRegistryPanel } from '../components/governance/ModularSkillsRegistryPanel.tsx';
 
-type StudioWing = 'DOCS_VCS' | 'SKILLS_REGISTRY';
+type StudioWing = 'DOCS_VCS' | 'SKILLS_REGISTRY' | 'DEV_BRIDGE';
 
 interface DocsSkillsHubScreenProps {
   readonly onClose: () => void;
@@ -112,12 +113,25 @@ export function DocsSkillsHubScreen({ onClose }: DocsSkillsHubScreenProps) {
               aria-selected={wing === 'SKILLS_REGISTRY'}
               data-testid="hub-wing-skills-registry"
               onClick={() => setWing('SKILLS_REGISTRY')}
-              className={`inline-flex min-h-[42px] items-center gap-2 rounded-xl px-4 text-xs font-bold transition ${
+              className={`inline-flex min-h-[42px] items-center gap-2 rounded-xl px-4 text-xs font-bold transition whitespace-nowrap shrink-0 ${
                 wing === 'SKILLS_REGISTRY' ? 'exo-window-tab-active' : 'exo-window-tab'
               }`}
             >
               <Cpu className="h-4 w-4" />
               <span>Registre Skills Modulaires ({vcsState.skills.length})</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={wing === 'DEV_BRIDGE'}
+              data-testid="hub-wing-dev-bridge"
+              onClick={() => setWing('DEV_BRIDGE')}
+              className={`inline-flex min-h-[42px] items-center gap-2 rounded-xl px-4 text-xs font-bold transition whitespace-nowrap shrink-0 ${
+                wing === 'DEV_BRIDGE' ? 'exo-window-tab-active' : 'exo-window-tab'
+              }`}
+            >
+              <Network className="h-4 w-4" />
+              <span>Connectivité &amp; Dev (3 Surfaces)</span>
             </button>
           </div>
 
@@ -127,20 +141,22 @@ export function DocsSkillsHubScreen({ onClose }: DocsSkillsHubScreenProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 sm:p-5">
-          {wing === 'DOCS_VCS' ? (
+          {wing === 'DOCS_VCS' && (
             <DocsVcsLibraryPanel
               vcsState={vcsState}
               selectedDocId={selectedDocId}
               onSelectDocId={setSelectedDocId}
               onStateChange={setVcsState}
             />
-          ) : (
+          )}
+          {wing === 'SKILLS_REGISTRY' && (
             <ModularSkillsRegistryPanel
               vcsState={vcsState}
               onStateChange={setVcsState}
               onOpenLinkedDoc={handleOpenLinkedDoc}
             />
           )}
+          {wing === 'DEV_BRIDGE' && <DevConnectivityPanel vcsState={vcsState} />}
         </div>
       </div>
     </div>

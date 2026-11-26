@@ -279,7 +279,7 @@ export function BlueprintAtlasView() {
               DMT-SW · Référentiel Normatif NF / AFNOR &amp; SSoT
             </div>
             <p className="mt-1 exo-muted-text">
-              Traçabilité bidirectionnelle entre exigences (FUP / R-01..69), architecture en 9 couches L0..L8, tests SHA-256 et Master Blueprint v2.12.0-MAITRE.
+              Traçabilité bidirectionnelle entre exigences (FUP-001..018 / R-01..69), architecture en 9 couches L0..L8, tests SHA-256 et Master Blueprint v2.14.0-MAITRE (Unity 6 URP Principal + Aperçu Three.js · OPT-02 A+ · Dossier /docs unifié).
             </p>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
